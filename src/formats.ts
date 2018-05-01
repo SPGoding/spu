@@ -1,8 +1,5 @@
 export default class Formats {
-    pairs = new Map()
-
-    constructor() {
-        let pairs = new Map([
+    static pairs = new Map([
         [
             'advancement grant %player only %string',
             'advancement grant %0 only %1'
@@ -11,7 +8,4 @@ export default class Formats {
             'advancement grant %0 only %1 %2'
         ]
         ])
-
-        this.pairs = pairs
-    }
 }

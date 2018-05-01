@@ -1,3 +1,5 @@
+import CharReader from './char_reader'
+
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
  * @author SPGoding
@@ -47,41 +49,6 @@ class Token {
     }
 }
 
-class CharReader {
-    private str: string
-    private pos: number
-    private length: number
-
-    constructor(str: string) {
-        this.str = str
-        this.pos = 0
-        this.length = str.length
-    }
-
-    peek() {
-        if (this.pos - 1 >= this.length) {
-            return ''
-        }
-
-        return this.str.charAt(this.pos)
-    }
-
-    next() {
-        if (!this.hasMore()) {
-            return ''
-        }
-        return this.str.charAt(this.pos++)
-    }
-
-    back() {
-        this.pos = Math.max(0, --this.pos)
-    }
-
-    hasMore() {
-        return this.pos < this.length
-    }
-}
-
 class Tokenizer {
     private charReader: CharReader
     private tokens: Array<Token>
@@ -114,6 +81,6 @@ class Tokenizer {
     }
 
     isWhiteSpace(char: string) {
-        
+        return char === ''     
     }
 }
