@@ -10,6 +10,7 @@ export default class Selector {
     private type: SelectorType
     private properties: Map<string, any>
     private scores: Map<string, Range>
+    private advancements: Map<string, bool>
 
     static parse112(str: string) {
         let charReader = new CharReader(str)
@@ -47,6 +48,7 @@ export default class Selector {
                 key = ''
                 val = ''
                 do {
+                    // 读取key
                     char = charReader.next()
                     if (isWhiteSpace(char)) {
                         continue
@@ -54,13 +56,36 @@ export default class Selector {
                     key.append(char)
                 } while (char !== '=')
                 do {
+                    // 读取value
                     char = charReader.next()
                     if (isWhiteSpace(char)) {
                         continue
                     }
                     val.append(char)
                 } while (char !== ',' && char !== ']' )
-                this.properties.set(key, val)
+
+                if (key.length > 6 && key.substring(0, 5) === 'score_') {
+                    // 特殊处理score
+                    let objective: string
+                    if (key.substr(-4) === '_min') {
+                        // 最小值
+                        objective = key.substring(6, key.length - 5)
+                        if (this.scores.has(objective) {
+                            // map里已经存了这个记分项，补全
+                            this.scores.get(objective).setMin(val)
+                        }
+                    } else {
+                        // 最大值
+                        objective = key.substring(6)
+                         if (this.scores.has(objective) {
+                            // map里已经存了这个记分项，补全
+                            this.scores.get(objective).setMax(val)
+                        }
+                    }
+                } else {
+                    // 普通属性
+                    this.properties.set(key, val)
+                }
             } while (char !== ']')
         } else {
             console.log(`Unexpected token: ${str}`)
@@ -80,8 +105,16 @@ class Range {
         return this.min
     }
 
+    setMin(min: number) {
+        this.min = min
+    }
+
     getMax() {
         return this.max
+    }
+
+    setMax(max: number) {
+        this.max = max
     }
 
     parse113(str: string) {
