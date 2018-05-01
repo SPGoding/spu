@@ -11,7 +11,7 @@ export default class Selector {
     private type: SelectorType
     private properties: Map<string, any>
     private scores: Map<string, Range>
-    private advancements: Map<string, bool>
+    private advancements: Map<string, boolean>
     private ranges: Map<string, Range>
 
     constructor() {}
@@ -254,14 +254,14 @@ enum SelectorType {
 }
 
 class Range {
-    private min: number
-    private max: number
+    private min: number | null
+    private max: number | null
 
     getMin() {
         return this.min
     }
 
-    setMin(min: number) {
+    setMin(min: number | null) {
         this.min = min
     }
 
@@ -269,8 +269,13 @@ class Range {
         return this.max
     }
 
-    setMax(max: number) {
+    setMax(max: number | null) {
         this.max = max
+    }
+
+    constructor(min: number | null, max: number | null) {
+        this.max = max
+        this.min = min
     }
 
     parse113(str: string) {
