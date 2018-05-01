@@ -1,6 +1,6 @@
 import CharReader from './char_reader'
-import { isWhiteSpace } from './char_reader'
 import Converter from './converter'
+import { isWhiteSpace } from './char_reader'
 
 /**
  * Represent an entity selector.
@@ -102,7 +102,7 @@ export default class Selector {
                         }
                     }
                 } else {
-                    // 普通属性
+                    // 其他属性
                     switch (key) {
                         // 无变化
                         case 'dx':
@@ -193,10 +193,18 @@ export default class Selector {
         result += '['
 
         if (this.properties.size !== 0) {
-            // 普通属性 TODO
+            // 普通属性
             for (const key of this.properties.keys()) {
                 let val = this.properties.get(key)
                 result += `${key}=${val},`
+            }
+        }
+
+        if (this.ranges.size !== 0) {
+            // range属性
+            for (const key of this.ranges.keys()) {
+                let range = this.ranges.get(key)
+                result += `${key}=${range.toString()},`
             }
         }
 
@@ -213,6 +221,8 @@ export default class Selector {
         if (this.advancements.size !== 0) {
             // 进度 TODO
         }
+
+        // NBT TODO
         
         // 完美闭合选择器
         if (result.slice(-1) === ',') {
