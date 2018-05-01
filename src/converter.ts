@@ -13,6 +13,27 @@ export default class Converter {
     isMatch(oldCommand: string, oldFormat: string) {
 
     }
+
+    gamemode(input: string) {
+        switch (input) {
+            case 's':
+            case '0':
+            case 'survival':
+                return 'survival'
+            case 'c':
+            case '1':
+            case 'creative':
+                return 'creative'
+            case 'a'
+            case '2'
+            case 'adventure'
+                return 'adventure'
+            case 'sp'
+            case '3'
+            case 'spector'
+                return 'spector'
+        }
+    }
 }
 
 enum TokenType {
