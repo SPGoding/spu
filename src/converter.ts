@@ -1,10 +1,11 @@
-import CharReader from './char_reader'
+//import CharReader from './char_reader'
+//import Selector from './selector'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
  * @author SPGoding
  */
-export default class Converter {
+/*export default*/ class Converter {
     /**
      * Returns if an command matches an format.
      * @param oldCommand An old minecraft command.
@@ -14,7 +15,13 @@ export default class Converter {
 
     }
 
-    gamemode(input: string) {
+    static line(input: string) {
+        let sel = new Selector()
+        sel.parse112(input)
+        return sel.get113()
+    }
+
+    static gamemode(input: string) {
         switch (input) {
             case 's':
             case '0':
@@ -24,14 +31,16 @@ export default class Converter {
             case '1':
             case 'creative':
                 return 'creative'
-            case 'a'
-            case '2'
-            case 'adventure'
+            case 'a':
+            case '2':
+            case 'adventure':
                 return 'adventure'
-            case 'sp'
-            case '3'
-            case 'spector'
+            case 'sp':
+            case '3':
+            case 'spector':
                 return 'spector'
+            default:
+                return ''
         }
     }
 }
@@ -99,6 +108,7 @@ class Tokenizer {
                 break
             }
         }
+        return null
     }
 
     isWhiteSpace(char: string) {

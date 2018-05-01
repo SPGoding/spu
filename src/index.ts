@@ -1,5 +1,5 @@
-import Converter from './converter'
-import Selector from './selector'
+//import Converter from './converter'
+//import Selector from './selector'
 
 $(document).ready(function() {
     $('#button').click(function() {

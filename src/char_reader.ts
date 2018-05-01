@@ -1,4 +1,4 @@
-export default class CharReader {
+/*export default*/ class CharReader {
     private str: string
     private pos: number
     private length: number
@@ -31,4 +31,8 @@ export default class CharReader {
     hasMore() {
         return this.pos < this.length
     }
+}
+
+/*export*/ function isWhiteSpace(char: string) {
+    return char === ' ' || char === '\t'
 }

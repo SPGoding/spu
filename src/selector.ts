@@ -1,13 +1,13 @@
-import CharReader from './char_reader'
-import Converter from './converter'
-import { isWhiteSpace } from './char_reader'
+// import CharReader from './char_reader'
+// import Converter from './converter'
+// import { isWhiteSpace } from './char_reader'
 
 /**
  * Represent an entity selector.
  * Provides methods to operate it.
  * @author SPGoding
  */
-export default class Selector {
+/*export default*/ class Selector {
     private type: SelectorType
     private properties: Map<string, any>
     private scores: Map<string, Range>
@@ -19,6 +19,11 @@ export default class Selector {
     parse112(str: string) {
         let charReader = new CharReader(str)
         let char: string
+
+        this.properties = new Map<string, any>()
+        this.scores = new Map<string, Range>()
+        this.advancements = new Map<string, boolean>()
+        this.ranges = new Map<string, Range>()
 
         char = charReader.next()
         if (char !== '@') {
@@ -56,49 +61,56 @@ export default class Selector {
         } else if (char === '[') {
             let key: string
             let val: string
-            do {
+            while (char !== ']') {
                 key = ''
                 val = ''
-                do {
+                char = charReader.next()
+                while (char !== '=') {
                     // 读取key
-                    char = charReader.next()
                     if (isWhiteSpace(char)) {
                         continue
                     }
                     key += char
-                } while (char !== '=')
-
-                do {
-                    // 读取value
                     char = charReader.next()
+                }
+
+
+                char = charReader.next()
+                while (char !== ',' && char !== ']' ) {
+                    // 读取value
                     if (isWhiteSpace(char)) {
                         continue
                     }
-                    val += char
-                } while (char !== ',' && char !== ']' )
+                    val += char 
+                    char = charReader.next()
+                }
 
-                if (key.length > 6 && key.substring(0, 5) === 'score_') {
+
+console.log(key + '=' + val)
+
+
+                if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // 特殊处理score
                     let objective: string
                     if (key.slice(-4) === '_min') {
                         // 最小值
                         objective = key.slice(6, -4)
-                        if (this.scores.has(objective) {
+                        if (this.scores.has(objective)) {
                             // map里已经存了这个记分项，补全
-                            this.scores.get(objective).setMin(val)
+                            this.scores.get(objective).setMin(Number(val))
                         } else {
                             // map里没这个记分项，创建
-                            this.scores.set(objective, new Range(val, null))
+                            this.scores.set(objective, new Range(Number(val), null))
                         }
                     } else {
                         // 最大值
                         objective = key.slice(6)
-                         if (this.scores.has(objective) {
+                         if (this.scores.has(objective)) {
                             // map里已经存了这个记分项，补全
-                            this.scores.get(objective).setMax(val)
+                            this.scores.get(objective).setMax(Number(val))
                         } else {
                             // map里没这个记分项，创建
-                            this.scores.set(objective, new Range(null, val))
+                            this.scores.set(objective, new Range(null, Number(val)))
                         }
                     }
                 } else {
@@ -116,14 +128,14 @@ export default class Selector {
                             break
                         // 重命名
                         case 'c':
-                            if (key >= 0) {
+                            if (Number(val) >= 0) {
                                 this.properties.set('limit', val)
                             } else {
                                 this.properties.set('sort', 'furthest')
-                                this.properties.set('limit', -val)
+                                this.properties.set('limit', (-Number(val)).toString())
                             }
                             break
-                        case 'm'
+                        case 'm':
                             this.properties.set('gamemode', Converter.gamemode(val))
                             break
                         // range且重命名
@@ -162,7 +174,7 @@ export default class Selector {
                             break
                     }
                 }
-            } while (char !== ']')
+            }
         } else {
             console.log(`Unexpected token: ${str}`)
         }
@@ -173,19 +185,19 @@ export default class Selector {
 
         switch (this.type) {
             // 类型
-            case Selector.A:
+            case SelectorType.A:
                 result += 'a'
                 break
-            case Selector.E:
+            case SelectorType.E:
                 result += 'e'
                 break
-            case Selector.P:
+            case SelectorType.P:
                 result += 'p'
                 break
-            case Selector.R:
+            case SelectorType.R:
                 result += 'r'
                 break
-            case Selector.S:
+            case SelectorType.S:
                 result += 's'
                 break
         }
@@ -215,7 +227,7 @@ export default class Selector {
                 let range = this.scores.get(objective)
                 result += `${objective}=${range.toString()},`
             }
-            result += result.slice(0, -1) + '},'
+            result = result.slice(0, -1) + '},'
         }
 
         if (this.advancements.size !== 0) {
@@ -227,16 +239,18 @@ export default class Selector {
         // 完美闭合选择器
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + ']'
-        } else if (result.slice(-1) === '[' {
+        } else if (result.slice(-1) === '[') {
             result = result.slice(0, -1)
         }
+        
+        return result
     }
 
     private setRangeMin(key: string, min: string) {
         if (this.ranges.has(key)) {
             this.ranges.get(key).setMin(Number(min))
         } else {
-            this.ranges.set(key, new Range(Number(min), null)
+            this.ranges.set(key, new Range(Number(min), null))
         }
     }
 
@@ -244,7 +258,7 @@ export default class Selector {
         if (this.ranges.has(key)) {
             this.ranges.get(key).setMax(Number(max))
         } else {
-            this.ranges.set(key, new Range(null, Number(max))
+            this.ranges.set(key, new Range(null, Number(max)))
         }
     }
 }
@@ -289,6 +303,8 @@ class Range {
     }
 
     toString() {
+        let min = this.min
+        let max = this.max
         if (min && max) {
             if (min !== max) {
                 return `${min}..${max}`
@@ -301,6 +317,7 @@ class Range {
             return `..${max}`
         } else {
             console.log(`NullPointerException at Range!`)
+            return ''
         }
     }
 }
