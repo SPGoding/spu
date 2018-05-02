@@ -1,4 +1,4 @@
-import CharReader from './char_reader'
+import ArgReader from './arg_reader'
 import Selector from './selector'
 
 /**
@@ -8,17 +8,67 @@ import Selector from './selector'
 export default class Converter {
     /**
      * Returns if an command matches an format.
-     * @param oldCommand An old minecraft command.
-     * @param oldFormat An old format defined in formats.ts.
+     * @param cmd An old minecraft command.
+     * @param fmt An old format defined in formats.ts.
      */
-    isMatch(oldCommand: string, oldFormat: string) {
+    private static isMatch(cmd: string, fmt: string) {
+        let fmtReader = new ArgReader(fmt)
+        let fmtArg = fmtReader.next()
+        let cmdReader = new ArgReader(cmd)
+        let cmdArg = cmdReader.next()
+        while (fmtArg !== '') {
+            while (!Converter.isArgMatch(cmdArg, fmtArg)) {
+                if (cmdReader.hasMore()) {
+                    cmdArg += '\s' +  cmdReader.next()
+                } else {
+                    // 把arg连接到最后一个了也不匹配，凉了
+                    // Exm??? Why Chinese??? What are you saying???
+                    return false
+                }
+            }
+        }
+        return true
+    }
 
+    private static isArgMatch(cmdArg: string, fmtArg: string) {
+        if (fmtArg.charAt(0) === '%") {
+            switch (fmtArg.slice(1)) {
+                case 'entity':
+                    return Converter.isEntity(cmdArg)
+                    break
+                // TODO
+            }
+        } else {
+            return cmdArg === fmtArg
+        }
+    }
+
+    private static isEntity(input: string) {
+        return Converter.isSelector() || Converter.isString() || Converter.isUuid()
+    }
+
+    private static isString(input: string) {
+        return /^\w*$/.test(input)
+    }
+
+    private static isUuid(input: string) {
+        return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
+    }
+
+    private static isNumber(input: string) {
+        return /^[+-]?[0-9]+\.?[0-9]*$/.test(input)
+    }
+
+    private static isSelector(input: string) {
+        return Selector.isValid(input)
     }
 
     static line(input: string) {
-        let sel = new Selector()
-        sel.parse112(input)
-        return sel.get113()
+        if (string.charAt(0) === '#') {
+            return input
+        } else {
+
+        }
     }
 
     static gamemode(input: string) {
@@ -43,75 +93,10 @@ export default class Converter {
                 return ''
         }
     }
-}
 
-enum TokenType {
-    Literal,
-    Bool,
-    Number,
-    String,
-    Position,
-    Entity,
-    Block,
-    Item,
-    Nbt,
-    NbtPath,
-    Vec2,
-    Vec3,
-    End
-}
-
-class Token {
-    private tokenType: TokenType
-    private value: string
-
-    constructor(tokenType: TokenType, value: string) {
-        this.tokenType = tokenType
-        this.value = value
-    }
-
-    getTokenType() {
-        return this.tokenType
-    }
-
-    getValue() {
-        return this.value
-    }
-}
-
-class Tokenizer {
-    private charReader: CharReader
-    private tokens: Array<Token>
-
-    constructor(charReader: CharReader) {
-        this.charReader = charReader
-        this.tokens = new Array<Token>()
-    }
-
-    tokenize() {
-        let token: Token
-        do {
-            token = this.start()
-            this.tokens.push(token)
-        } while (token.getTokenType() !== TokenType.End)
-    }
-
-    start() {
-        let char: string
-        while (true) {
-            if (!this.charReader.hasMore()) {
-                return new Token(TokenType.End, null)
-            }
-
-            char = this.charReader.next()
-            if (!this.isWhiteSpace(char)) {
-                break
-            }
-        }
-        return null
-    }
-
-    isWhiteSpace(char: string) {
-        return char === ''     
+    static selector(input: string) {
+        let sel = new Selector()
+        sel.parse112(input)
+        return sel.get113()
     }
 }

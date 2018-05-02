@@ -85,10 +85,6 @@ export default class Selector {
                     char = charReader.next()
                 }
 
-
-console.log(key + '=' + val)
-
-
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // 特殊处理score
                     let objective: string
