@@ -27,8 +27,7 @@ export default class Selector {
 
         char = charReader.next()
         if (char !== '@') {
-            console.log(`First char should be '@': ${str}`)
-            return
+            throw `First char should be '@': ${str}`
         }
 
         char = charReader.next()
@@ -51,8 +50,7 @@ export default class Selector {
                 this.type = SelectorType.S
                 break
             default:
-                console.log(`Unknown type: ${str}`)
-                break
+                throw `Unknown type: ${char} in ${str}`
         }
 
         char = charReader.next()
@@ -73,7 +71,6 @@ export default class Selector {
                     key += char
                     char = charReader.next()
                 }
-
 
                 char = charReader.next()
                 while (char !== ',' && char !== ']' ) {
@@ -172,7 +169,7 @@ export default class Selector {
                 }
             }
         } else {
-            console.log(`Unexpected token: ${str}`)
+            throw `Unexpected token: ${str}`
         }
     }
 
@@ -256,6 +253,16 @@ export default class Selector {
         } else {
             this.ranges.set(key, new Range(null, Number(max)))
         }
+    }
+
+    static isValid(input: string) {
+        try {
+            let sel = new Selector()
+            sel.parse112(input)
+        } catch(ignored) {
+            return false
+        }
+        return true
     }
 }
 

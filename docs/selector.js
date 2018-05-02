@@ -19,8 +19,7 @@ class Selector {
         this.ranges = new Map();
         char = charReader.next();
         if (char !== '@') {
-            console.log(`First char should be '@': ${str}`);
-            return;
+            throw `First char should be '@': ${str}`;
         }
         char = charReader.next();
         switch (char) {
@@ -42,8 +41,7 @@ class Selector {
                 this.type = SelectorType.S;
                 break;
             default:
-                console.log(`Unknown type: ${str}`);
-                break;
+                throw `Unknown type: ${char} in ${str}`;
         }
         char = charReader.next();
         if (char === '') {
@@ -73,7 +71,6 @@ class Selector {
                     val += char;
                     char = charReader.next();
                 }
-                console.log(key + '=' + val);
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // 特殊处理score
                     let objective;
@@ -167,7 +164,7 @@ class Selector {
             }
         }
         else {
-            console.log(`Unexpected token: ${str}`);
+            throw `Unexpected token: ${str}`;
         }
     }
     get113() {
@@ -242,6 +239,16 @@ class Selector {
         else {
             this.ranges.set(key, new Range(null, Number(max)));
         }
+    }
+    static isValid(input) {
+        try {
+            let sel = new Selector();
+            sel.parse112(input);
+        }
+        catch (ignored) {
+            return false;
+        }
+        return true;
     }
 }
 exports.default = Selector;

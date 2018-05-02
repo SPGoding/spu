@@ -1,14 +1,12 @@
-import CharReader from './char_reader'
-
 export default class ArgReader {
     private arg: string[]
     private pos: number
     private length: number
 
     constructor(str: string) {
-        this.arg = str.split('\s')
+        this.arg = str.split(' ')
         this.pos = 0
-        this.length = arg.length
+        this.length = this.arg.length
     }
 
     peek() {

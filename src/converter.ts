@@ -1,5 +1,6 @@
 import ArgReader from './arg_reader'
 import Selector from './selector'
+import Formats from './formats'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -7,35 +8,58 @@ import Selector from './selector'
  */
 export default class Converter {
     /**
-     * Returns if an command matches an format.
+     * Returns an command matches an format.
      * @param cmd An old minecraft command.
      * @param fmt An old format defined in formats.ts.
+     * @returns An map of {%n: converted val}
      */
-    private static isMatch(cmd: string, fmt: string) {
+    private static match(cmd: string, fmt: string) {
         let fmtReader = new ArgReader(fmt)
         let fmtArg = fmtReader.next()
         let cmdReader = new ArgReader(cmd)
         let cmdArg = cmdReader.next()
+        let map = new Map<string, string>()
+        let cnt = 0
         while (fmtArg !== '') {
             while (!Converter.isArgMatch(cmdArg, fmtArg)) {
                 if (cmdReader.hasMore()) {
-                    cmdArg += '\s' +  cmdReader.next()
+                    cmdArg += ' ' +  cmdReader.next()
                 } else {
                     // 把arg连接到最后一个了也不匹配，凉了
                     // Exm??? Why Chinese??? What are you saying???
-                    return false
+                    return null
                 }
             }
+            if (fmtArg.charAt(0) === '%') {
+                map.set(`%${cnt}`, Converter.arg(cmdArg, fmtArg))
+                cnt++
+            }
+            fmtArg = fmtReader.next()
+            cmdArg = cmdReader.next()
         }
-        return true
+        if (cmdArg === '') {
+            // cmd也到头了，完美匹配
+            return map
+        } else {
+            return null
+        }
     }
 
     private static isArgMatch(cmdArg: string, fmtArg: string) {
-        if (fmtArg.charAt(0) === '%") {
+        if (fmtArg.charAt(0) === '%') {
             switch (fmtArg.slice(1)) {
                 case 'entity':
                     return Converter.isEntity(cmdArg)
-                    break
+                case 'string':
+                    return Converter.isString(cmdArg)
+                case 'number':
+                    return Converter.isNumber(cmdArg)
+                case 'selector':
+                    return Converter.isSelector(cmdArg)
+                case 'uuid':
+                    return Converter.isUuid(cmdArg)
+                default:
+                    throw `Unknown arg type: ${fmtArg.slice(1)}`
                 // TODO
             }
         } else {
@@ -43,8 +67,17 @@ export default class Converter {
         }
     }
 
+    private static arg(cmd: string, fmt: string) {
+        switch (fmt.slice(1)) {
+            case 'entity':
+                return Converter.entity(cmd)
+            default:
+                return cmd
+        }
+    }
+
     private static isEntity(input: string) {
-        return Converter.isSelector() || Converter.isString() || Converter.isUuid()
+        return Converter.isSelector(input) || Converter.isString(input) || Converter.isUuid(input)
     }
 
     private static isString(input: string) {
@@ -64,10 +97,22 @@ export default class Converter {
     }
 
     static line(input: string) {
-        if (string.charAt(0) === '#') {
+        if (input.charAt(0) === '#') {
             return input
         } else {
-
+            for (const fmtOld of Formats.pairs.keys()) {
+                let map = Converter.match(input, fmtOld)
+                if (map) {
+                    let fmtNew = Formats.pairs.get(fmtOld)
+                    let cnt = 0
+                    while (/\s%[0-9]+(\s|$)/.test(fmtNew)) {
+                        fmtNew = fmtNew.replace(`%${cnt}`, map.get(`%${cnt}`))
+                        cnt++
+                    }
+                    return fmtNew
+                }
+            }
+            throw `Unknown line: ${input}`
         }
     }
 
@@ -90,7 +135,7 @@ export default class Converter {
             case 'spector':
                 return 'spector'
             default:
-                return ''
+                throw `Unknown gamemode: ${input}`
         }
     }
 
@@ -98,5 +143,13 @@ export default class Converter {
         let sel = new Selector()
         sel.parse112(input)
         return sel.get113()
+    }
+
+    static entity(input: string) {
+        if (Converter.isSelector(input)) {
+            return Converter.selector(input)
+        } else {
+            return input
+        }
     }
 }
