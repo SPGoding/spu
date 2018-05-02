@@ -1,4 +1,4 @@
-/*export default*/ class CharReader {
+export default class CharReader {
     private str: string
     private pos: number
     private length: number
@@ -33,6 +33,6 @@
     }
 }
 
-/*export*/ function isWhiteSpace(char: string) {
+export function isWhiteSpace(char: string) {
     return char === ' ' || char === '\t'
 }

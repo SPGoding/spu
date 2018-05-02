@@ -1,11 +1,11 @@
-//import CharReader from './char_reader'
-//import Selector from './selector'
+import CharReader from './char_reader'
+import Selector from './selector'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
  * @author SPGoding
  */
-/*export default*/ class Converter {
+export default class Converter {
     /**
      * Returns if an command matches an format.
      * @param oldCommand An old minecraft command.

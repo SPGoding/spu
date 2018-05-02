@@ -1,13 +1,13 @@
-// import CharReader from './char_reader'
-// import Converter from './converter'
-// import { isWhiteSpace } from './char_reader'
+import CharReader from './char_reader'
+import Converter from './converter'
+import { isWhiteSpace } from './char_reader'
 
 /**
  * Represent an entity selector.
  * Provides methods to operate it.
  * @author SPGoding
  */
-/*export default*/ class Selector {
+export default class Selector {
     private type: SelectorType
     private properties: Map<string, any>
     private scores: Map<string, Range>

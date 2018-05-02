@@ -1,3 +1,157 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class CharReader {
+    constructor(str) {
+        this.str = str;
+        this.pos = 0;
+        this.length = str.length;
+    }
+    peek() {
+        if (this.pos - 1 >= this.length) {
+            return '';
+        }
+        return this.str.charAt(this.pos);
+    }
+    next() {
+        if (!this.hasMore()) {
+            return '';
+        }
+        return this.str.charAt(this.pos++);
+    }
+    back() {
+        this.pos = Math.max(0, --this.pos);
+    }
+    hasMore() {
+        return this.pos < this.length;
+    }
+}
+exports.default = CharReader;
+function isWhiteSpace(char) {
+    return char === ' ' || char === '\t';
+}
+exports.isWhiteSpace = isWhiteSpace;
+
+},{}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const selector_1 = require("./selector");
+/**
+ * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
+ * @author SPGoding
+ */
+class Converter {
+    /**
+     * Returns if an command matches an format.
+     * @param oldCommand An old minecraft command.
+     * @param oldFormat An old format defined in formats.ts.
+     */
+    isMatch(oldCommand, oldFormat) {
+    }
+    static line(input) {
+        let sel = new selector_1.default();
+        sel.parse112(input);
+        return sel.get113();
+    }
+    static gamemode(input) {
+        switch (input) {
+            case 's':
+            case '0':
+            case 'survival':
+                return 'survival';
+            case 'c':
+            case '1':
+            case 'creative':
+                return 'creative';
+            case 'a':
+            case '2':
+            case 'adventure':
+                return 'adventure';
+            case 'sp':
+            case '3':
+            case 'spector':
+                return 'spector';
+            default:
+                return '';
+        }
+    }
+}
+exports.default = Converter;
+var TokenType;
+(function (TokenType) {
+    TokenType[TokenType["Literal"] = 0] = "Literal";
+    TokenType[TokenType["Bool"] = 1] = "Bool";
+    TokenType[TokenType["Number"] = 2] = "Number";
+    TokenType[TokenType["String"] = 3] = "String";
+    TokenType[TokenType["Position"] = 4] = "Position";
+    TokenType[TokenType["Entity"] = 5] = "Entity";
+    TokenType[TokenType["Block"] = 6] = "Block";
+    TokenType[TokenType["Item"] = 7] = "Item";
+    TokenType[TokenType["Nbt"] = 8] = "Nbt";
+    TokenType[TokenType["NbtPath"] = 9] = "NbtPath";
+    TokenType[TokenType["Vec2"] = 10] = "Vec2";
+    TokenType[TokenType["Vec3"] = 11] = "Vec3";
+    TokenType[TokenType["End"] = 12] = "End";
+})(TokenType || (TokenType = {}));
+class Token {
+    constructor(tokenType, value) {
+        this.tokenType = tokenType;
+        this.value = value;
+    }
+    getTokenType() {
+        return this.tokenType;
+    }
+    getValue() {
+        return this.value;
+    }
+}
+class Tokenizer {
+    constructor(charReader) {
+        this.charReader = charReader;
+        this.tokens = new Array();
+    }
+    tokenize() {
+        let token;
+        do {
+            token = this.start();
+            this.tokens.push(token);
+        } while (token.getTokenType() !== TokenType.End);
+    }
+    start() {
+        let char;
+        while (true) {
+            if (!this.charReader.hasMore()) {
+                return new Token(TokenType.End, null);
+            }
+            char = this.charReader.next();
+            if (!this.isWhiteSpace(char)) {
+                break;
+            }
+        }
+        return null;
+    }
+    isWhiteSpace(char) {
+        return char === '';
+    }
+}
+
+},{"./selector":4}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const converter_1 = require("./converter");
+$(document).ready(function () {
+    $('#button').click(function () {
+        let result = '';
+        let lines = $('#input').val().toString().split('\n');
+        for (let line of lines) {
+            line = converter_1.default.line(line);
+            result += line + '<br>';
+        }
+        $('#output').html(result);
+    });
+});
+
+},{"./converter":2}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const char_reader_1 = require("./char_reader");
@@ -303,3 +457,5 @@ class Range {
         }
     }
 }
+
+},{"./char_reader":1,"./converter":2}]},{},[3]);

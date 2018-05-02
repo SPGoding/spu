@@ -1,4 +1,6 @@
-/*export default*/ class CharReader {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class CharReader {
     constructor(str) {
         this.str = str;
         this.pos = 0;
@@ -23,6 +25,8 @@
         return this.pos < this.length;
     }
 }
-/*export*/ function isWhiteSpace(char) {
+exports.default = CharReader;
+function isWhiteSpace(char) {
     return char === ' ' || char === '\t';
 }
+exports.isWhiteSpace = isWhiteSpace;
