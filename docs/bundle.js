@@ -171,7 +171,7 @@ class Converter {
                         fmtNew = fmtNew.replace(`%${cnt}`, map.get(`%${cnt}`));
                         cnt++;
                     }
-                    return fmtNew;
+                    return `execute positioned 0.0 0.0 0.0 run ${fmtNew}`;
                 }
             }
             throw `Unknown line: ${input}`;
