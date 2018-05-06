@@ -1,4 +1,7 @@
-export default class ArgReader {
+/**
+ * A reader that provides methods to read a command argument by argument.
+ */
+export default class ArgumentReader {
     private arg: string[]
     private pos: number
     private length: number

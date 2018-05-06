@@ -3,11 +3,14 @@ import Converter from './converter'
 import { isWhiteSpace } from './char_reader'
 
 /**
- * Represent an entity selector.
+ * Represent a target selector.
  * Provides methods to operate it.
  * @author SPGoding
  */
-export default class Selector {
+export default class TargetSelector {
+    /**
+     * Type of this target selector.
+     */
     private type: SelectorType
     private properties: Map<string, any>
     private scores: Map<string, Range>
@@ -16,11 +19,15 @@ export default class Selector {
 
     constructor() {}
 
+    /**
+     * Parse this selector according to a string in 1.12.
+     * @param str An string representing a target selector..
+     */
     parse112(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
-        this.properties = new Map<string, any>()
+        this.properties = new Map<string, Range>()
         this.scores = new Map<string, Range>()
         this.advancements = new Map<string, boolean>()
         this.ranges = new Map<string, Range>()
@@ -64,7 +71,7 @@ export default class Selector {
                 val = ''
                 char = charReader.next()
                 while (char !== '=') {
-                    // 读取key
+                    // Read key.
                     if (isWhiteSpace(char)) {
                         continue
                     }
@@ -74,7 +81,7 @@ export default class Selector {
 
                 char = charReader.next()
                 while (char !== ',' && char !== ']' ) {
-                    // 读取value
+                    // Read value.
                     if (isWhiteSpace(char)) {
                         continue
                     }
@@ -83,33 +90,21 @@ export default class Selector {
                 }
 
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
-                    // 特殊处理score
+                    // Deal with scores.
                     let objective: string
                     if (key.slice(-4) === '_min') {
-                        // 最小值
+                        // The min.
                         objective = key.slice(6, -4)
-                        if (this.scores.has(objective)) {
-                            // map里已经存了这个记分项，补全
-                            this.scores.get(objective).setMin(Number(val))
-                        } else {
-                            // map里没这个记分项，创建
-                            this.scores.set(objective, new Range(Number(val), null))
-                        }
+                        this.setScoreMin(objective, val)
                     } else {
-                        // 最大值
+                        // The max.
                         objective = key.slice(6)
-                         if (this.scores.has(objective)) {
-                            // map里已经存了这个记分项，补全
-                            this.scores.get(objective).setMax(Number(val))
-                        } else {
-                            // map里没这个记分项，创建
-                            this.scores.set(objective, new Range(null, Number(val)))
-                        }
+                        this.setScoreMax(objective, val)
                     }
                 } else {
-                    // 其他属性
+                    // Deal with normal properties.
                     switch (key) {
-                        // 无变化
+                        // These are properties that don't need to change.
                         case 'dx':
                         case 'dy':
                         case 'dz':
@@ -119,7 +114,7 @@ export default class Selector {
                         case 'type':
                             this.properties.set(key, val)
                             break
-                        // 重命名
+                        // These are properties that need to rename.
                         case 'c':
                             if (Number(val) >= 0) {
                                 this.properties.set('limit', val)
@@ -129,9 +124,9 @@ export default class Selector {
                             }
                             break
                         case 'm':
-                            this.properties.set('gamemode', Converter.gamemode(val))
+                            this.properties.set('gamemode', Converter.cvtGamemode(val))
                             break
-                        // range且重命名
+                        // These are properties that need to change to range and rename.
                         case 'l':
                             this.setRangeMax('level', val)
                             break
@@ -156,7 +151,7 @@ export default class Selector {
                         case 'rym': 
                             this.setRangeMin('y_rotation', val)
                             break
-                        // 中心对正
+                        // These are properties that need to center correct.
                         case 'x':
                         case 'y':
                         case 'z':
@@ -173,11 +168,13 @@ export default class Selector {
         }
     }
 
+    /**
+     * Get a string that can represent this target selector in 1.13.
+     */
     get113() {
         let result = '@'
 
         switch (this.type) {
-            // 类型
             case SelectorType.A:
                 result += 'a'
                 break
@@ -198,7 +195,7 @@ export default class Selector {
         result += '['
 
         if (this.properties.size !== 0) {
-            // 普通属性
+            // Deal with normal properties.
             for (const key of this.properties.keys()) {
                 let val = this.properties.get(key)
                 result += `${key}=${val},`
@@ -206,7 +203,7 @@ export default class Selector {
         }
 
         if (this.ranges.size !== 0) {
-            // range属性
+            // Deal with ranges.
             for (const key of this.ranges.keys()) {
                 let range = this.ranges.get(key)
                 result += `${key}=${range.toString()},`
@@ -215,7 +212,7 @@ export default class Selector {
 
         if (this.scores.size !== 0) {
             result += 'scores={'
-            // 分数
+            // Deal with scores
             for (const objective of this.scores.keys()) {
                 let range = this.scores.get(objective)
                 result += `${objective}=${range.toString()},`
@@ -224,12 +221,14 @@ export default class Selector {
         }
 
         if (this.advancements.size !== 0) {
-            // 进度 TODO
+            // Deal with advancements.
+            // TODO
         }
 
-        // NBT TODO
+            // Deal with NBT.
+            // TODO
         
-        // 完美闭合选择器
+        // Close the square brackets.
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + ']'
         } else if (result.slice(-1) === '[') {
@@ -239,30 +238,58 @@ export default class Selector {
         return result
     }
 
+    /**
+     * Returns if a target selector is valid.
+     * @param input a target selector.
+     */
+    static isValid(input: string) {
+        try {
+            let sel = new TargetSelector()
+            sel.parse112(input)
+        } catch(ignored) {
+            return false
+        }
+        return true
+    }
+
     private setRangeMin(key: string, min: string) {
         if (this.ranges.has(key)) {
+            // The 'ranges' map has this objective, so complete it.
             this.ranges.get(key).setMin(Number(min))
         } else {
+            // The 'ranges' map doesn't have this objective, so create it.
             this.ranges.set(key, new Range(Number(min), null))
         }
     }
 
     private setRangeMax(key: string, max: string) {
         if (this.ranges.has(key)) {
+            // The 'ranges' map has this objective, so complete it.
             this.ranges.get(key).setMax(Number(max))
         } else {
+            // The 'ranges' map doesn't have this objective, so create it.
             this.ranges.set(key, new Range(null, Number(max)))
         }
     }
 
-    static isValid(input: string) {
-        try {
-            let sel = new Selector()
-            sel.parse112(input)
-        } catch(ignored) {
-            return false
+    private setScoreMin(objective: string, min: string) {
+        if (this.scores.has(objective)) {
+            // The 'scores' map has this objective, so complete it.
+            this.scores.get(objective).setMin(Number(min))
+        } else {
+            // The 'scores' map doesn't have this objective, so create it.
+            this.scores.set(objective, new Range(Number(min), null))
         }
-        return true
+    }
+
+    private setScoreMax(objective: string, max: string) {
+        if (this.scores.has(objective)) {
+            // The 'scores' map has this objective, so complete it.
+            this.scores.get(objective).setMax(Number(max))
+        } else {
+            // The 'scores' map doesn't have this objective, so create it.
+            this.scores.set(objective, new Range(null, Number(max)))
+        }
     }
 }
 
@@ -270,6 +297,9 @@ enum SelectorType {
     A, E, P, R, S
 }
 
+/**
+ * Represents a range in a target selector.
+ */
 class Range {
     private min: number | null
     private max: number | null
@@ -319,8 +349,7 @@ class Range {
         } else if (max) {
             return `..${max}`
         } else {
-            console.log(`NullPointerException at Range!`)
-            return ''
+            throw `NullPointerException at Range: ${this}`
         }
     }
 }

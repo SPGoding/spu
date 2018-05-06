@@ -1,6 +1,7 @@
-import ArgReader from './arg_reader'
-import Selector from './selector'
-import Formats from './formats'
+import ArgumentReader from './argument_reader'
+import Spuses from './spuses'
+import TargetSelector from './selector'
+import SweetPragmaticsUpdaterScript from './sweet_pragmatics_updater_script'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -8,46 +9,45 @@ import Formats from './formats'
  */
 export default class Converter {
     /**
-     * Returns an command matches an format.
+     * Returns an result map from an old command and an old spus.
      * @param cmd An old minecraft command.
-     * @param fmt An old format defined in formats.ts.
-     * @returns An map of {%n: converted val}
+     * @param spus An old spus defined in spuses.ts.
+     * @returns NULLABLE. A map filled with converted value. Like {%n: converted value}.
      */
-    private static match(cmd: string, fmt: string) {
-        let fmtReader = new ArgReader(fmt)
-        let fmtArg = fmtReader.next()
-        let cmdReader = new ArgReader(cmd)
+    private static getResultMap(cmd: string, spus: string) {
+        let spusReader = new ArgumentReader(spus)
+        let spusArg = spusReader.next()
+        let cmdReader = new ArgumentReader(cmd)
         let cmdArg = cmdReader.next()
         let map = new Map<string, string>()
         let cnt = 0
-        while (fmtArg !== '') {
-            while (!Converter.isArgMatch(cmdArg, fmtArg)) {
+        while (spusArg !== '') {
+            while (!Converter.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
                     cmdArg += ' ' +  cmdReader.next()
                 } else {
-                    // 把arg连接到最后一个了也不匹配，凉了
-                    // Exm??? Why Chinese??? What are you saying???
+                    // Can't match this spus.
                     return null
                 }
             }
-            if (fmtArg.charAt(0) === '%') {
-                map.set(`%${cnt}`, Converter.arg(cmdArg, fmtArg))
+            if (spusArg.charAt(0) === '%') {
+                map.set(`%${cnt}`, Converter.cvtArgument(cmdArg, spusArg))
                 cnt++
             }
-            fmtArg = fmtReader.next()
+            spusArg = spusReader.next()
             cmdArg = cmdReader.next()
         }
         if (cmdArg === '') {
-            // cmd也到头了，完美匹配
+            // Match successfully.
             return map
         } else {
             return null
         }
     }
 
-    private static isArgMatch(cmdArg: string, fmtArg: string) {
-        if (fmtArg.charAt(0) === '%') {
-            switch (fmtArg.slice(1)) {
+    private static isArgumentMatch(cmdArg: string, spusArg: string) {
+        if (spusArg.charAt(0) === '%') {
+            switch (spusArg.slice(1)) {
                 case 'entity':
                     return Converter.isEntity(cmdArg)
                 case 'string':
@@ -55,29 +55,29 @@ export default class Converter {
                 case 'number':
                     return Converter.isNumber(cmdArg)
                 case 'selector':
-                    return Converter.isSelector(cmdArg)
+                    return Converter.isTargetSelector(cmdArg)
                 case 'uuid':
                     return Converter.isUuid(cmdArg)
                 default:
-                    throw `Unknown arg type: ${fmtArg.slice(1)}`
+                    throw `Unknown argument type: ${spusArg.slice(1)}`
                 // TODO
             }
         } else {
-            return cmdArg === fmtArg
+            return cmdArg === spusArg
         }
     }
 
-    private static arg(cmd: string, fmt: string) {
-        switch (fmt.slice(1)) {
+    private static cvtArgument(cmd: string, spus: string) {
+        switch (spus.slice(1)) {
             case 'entity':
-                return Converter.entity(cmd)
+                return Converter.cvtEntity(cmd)
             default:
                 return cmd
         }
     }
 
     private static isEntity(input: string) {
-        return Converter.isSelector(input) || Converter.isString(input) || Converter.isUuid(input)
+        return Converter.isTargetSelector(input) || Converter.isString(input) || Converter.isUuid(input)
     }
 
     private static isString(input: string) {
@@ -92,62 +92,59 @@ export default class Converter {
         return /^[+-]?[0-9]+\.?[0-9]*$/.test(input)
     }
 
-    private static isSelector(input: string) {
-        return Selector.isValid(input)
+    private static isTargetSelector(input: string) {
+        return TargetSelector.isValid(input)
     }
 
-    static line(input: string) {
+    static cvtLine(input: string) {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            for (const fmtOld of Formats.pairs.keys()) {
-                let map = Converter.match(input, fmtOld)
+            for (const spusOld of Spuses.pairs.keys()) {
+                let map = Converter.getResultMap(input, spusOld)
                 if (map) {
-                    let fmtNew = Formats.pairs.get(fmtOld)
-                    let cnt = 0
-                    while (/\s%[0-9]+(\s|$)/.test(fmtNew)) {
-                        fmtNew = fmtNew.replace(`%${cnt}`, map.get(`%${cnt}`))
-                        cnt++
-                    }
-                    return `execute positioned 0.0 0.0 0.0 run ${fmtNew}`
+                    let spusNew = Spuses.pairs.get(spusOld)
+                    let spus = new SweetPragmaticsUpdaterScript(spusNew)
+                    let result = spus.compileWith(map)
+                    return `execute positioned 0.0 0.0 0.0 run ${result}`
                 }
             }
             throw `Unknown line: ${input}`
         }
     }
 
-    static gamemode(input: string) {
+    static cvtGamemode(input: string) {
         switch (input) {
-            case 's':
             case '0':
+            case 's':
             case 'survival':
                 return 'survival'
-            case 'c':
             case '1':
+            case 'c':
             case 'creative':
                 return 'creative'
-            case 'a':
             case '2':
+            case 'a':
             case 'adventure':
                 return 'adventure'
-            case 'sp':
             case '3':
-            case 'spector':
-                return 'spector'
+            case 'sp':
+            case 'spectator':
+                return 'spectator'
             default:
                 throw `Unknown gamemode: ${input}`
         }
     }
 
-    static selector(input: string) {
-        let sel = new Selector()
+    static cvtTargetSelector(input: string) {
+        let sel = new TargetSelector()
         sel.parse112(input)
         return sel.get113()
     }
 
-    static entity(input: string) {
-        if (Converter.isSelector(input)) {
-            return Converter.selector(input)
+    static cvtEntity(input: string) {
+        if (Converter.isTargetSelector(input)) {
+            return Converter.cvtTargetSelector(input)
         } else {
             return input
         }

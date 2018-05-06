@@ -1,3 +1,6 @@
+/**
+ * A reader that provides methods to read a string char by char.
+ */
 export default class CharReader {
     private str: string
     private pos: number
