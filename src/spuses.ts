@@ -1,5 +1,5 @@
 /**
- * Store a map providing old command spus and new command spus.
+ * Providing methods to operate with spus.
  */
 export default class Spus {
     static spuses = new Map([
