@@ -22,7 +22,7 @@ export default class Converter {
         let map = new Map<string, string>()
         let cnt = 0
         while (spusArg !== '') {
-            while (!Spu.isArgumentMatch(cmdArg, spusArg)) {
+            while (!Spus.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
                     cmdArg += ' ' +  cmdReader.next()
                 } else {
@@ -58,10 +58,10 @@ export default class Converter {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            for (const spusOld of Spu.spuses.keys()) {
+            for (const spusOld of Spus.spuses.keys()) {
                 let map = Converter.getResultMap(input, spusOld)
                 if (map) {
-                    let spusNew = Spu.spuses.get(spusOld)
+                    let spusNew = Spus.spuses.get(spusOld)
                     let spus = new SweetPragmaticsUpdaterScript(spusNew)
                     let result = spus.compileWith(map)
                     return `execute positioned 0.0 0.0 0.0 run ${result}`
@@ -101,7 +101,7 @@ export default class Converter {
     }
 
     static cvtEntity(input: string) {
-        if (Spu.isTargetSelector(input)) {
+        if (Spus.isTargetSelector(input)) {
             return Converter.cvtTargetSelector(input)
         } else {
             return input
