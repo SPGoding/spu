@@ -22,7 +22,7 @@ export default class Converter {
         let map = new Map<string, string>()
         let cnt = 0
         while (spusArg !== '') {
-            while (!Converter.isArgumentMatch(cmdArg, spusArg)) {
+            while (!Spu.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
                     cmdArg += ' ' +  cmdReader.next()
                 } else {
@@ -45,28 +45,6 @@ export default class Converter {
         }
     }
 
-    private static isArgumentMatch(cmdArg: string, spusArg: string) {
-        if (spusArg.charAt(0) === '%') {
-            switch (spusArg.slice(1)) {
-                case 'entity':
-                    return Converter.isEntity(cmdArg)
-                case 'string':
-                    return Converter.isString(cmdArg)
-                case 'number':
-                    return Converter.isNumber(cmdArg)
-                case 'selector':
-                    return Converter.isTargetSelector(cmdArg)
-                case 'uuid':
-                    return Converter.isUuid(cmdArg)
-                default:
-                    throw `Unknown argument type: ${spusArg.slice(1)}`
-                // TODO
-            }
-        } else {
-            return cmdArg === spusArg
-        }
-    }
-
     private static cvtArgument(cmd: string, spus: string) {
         switch (spus.slice(1)) {
             case 'entity':
@@ -76,34 +54,14 @@ export default class Converter {
         }
     }
 
-    private static isEntity(input: string) {
-        return Converter.isTargetSelector(input) || Converter.isString(input) || Converter.isUuid(input)
-    }
-
-    private static isString(input: string) {
-        return /^\w*$/.test(input)
-    }
-
-    private static isUuid(input: string) {
-        return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
-    }
-
-    private static isNumber(input: string) {
-        return /^[+-]?[0-9]+\.?[0-9]*$/.test(input)
-    }
-
-    private static isTargetSelector(input: string) {
-        return TargetSelector.isValid(input)
-    }
-
-    static cvtLine(input: string) {
+   static cvtLine(input: string) {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            for (const spusOld of Spuses.pairs.keys()) {
+            for (const spusOld of Spu.spuses.keys()) {
                 let map = Converter.getResultMap(input, spusOld)
                 if (map) {
-                    let spusNew = Spuses.pairs.get(spusOld)
+                    let spusNew = Spu.spuses.get(spusOld)
                     let spus = new SweetPragmaticsUpdaterScript(spusNew)
                     let result = spus.compileWith(map)
                     return `execute positioned 0.0 0.0 0.0 run ${result}`
@@ -143,7 +101,7 @@ export default class Converter {
     }
 
     static cvtEntity(input: string) {
-        if (Converter.isTargetSelector(input)) {
+        if (Spu.isTargetSelector(input)) {
             return Converter.cvtTargetSelector(input)
         } else {
             return input
