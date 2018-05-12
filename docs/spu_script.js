@@ -13,7 +13,7 @@ class SpuScript {
         let result = '';
         while (arg) {
             if (arg.slice(0, 1) === '%') {
-                arg = this.compileArgument(arg);
+                arg = this.compileArgument(arg, map);
             }
             result += arg + ' ';
             arg = argReader.next();
@@ -21,15 +21,23 @@ class SpuScript {
         result = result.slice(0, -1);
         return result;
     }
-    compileArgument(arg) {
-        let map = this.compileArgumentToMap(arg);
-        let id = map.keys().next().value;
-        let methods = map.get(id);
-        console.log(id);
-        console.log(methods);
-        return '';
+    compileArgument(arg, resultMap) {
+        let tokensMap = this.tokenize(arg);
+        let id = tokensMap.keys().next().value;
+        let methods = tokensMap.get(id);
+        let source = resultMap.get(`%${id}`);
+        for (const name of methods.keys()) {
+            const params = methods.get(name);
+            switch (name) {
+                case 'adv':
+                    break;
+                default:
+                    break;
+            }
+        }
+        return source;
     }
-    compileArgumentToMap(arg) {
+    tokenize(arg) {
         let result = '';
         let charReader = new char_reader_1.default(arg);
         let char = charReader.next();
@@ -45,28 +53,28 @@ class SpuScript {
             id += char;
             char = charReader.next();
         }
-        let methodName;
-        let methodParam;
-        let methodParams;
+        let name;
+        let param;
+        let params;
         while (char) {
-            methodName = '';
-            methodParams = [];
+            name = '';
+            params = [];
             char = charReader.next();
             while (char && char !== '%' && char !== '$') {
-                methodName += char;
+                name += char;
                 char = charReader.next();
             }
             char = charReader.next();
             while (char && char !== '$') {
-                methodParam = '';
+                param = '';
                 while (char && char !== '%' && char !== '$') {
-                    methodParam += char;
+                    param += char;
                     char = charReader.next();
                 }
-                methodParams.push(methodParam);
+                params.push(param);
                 char = charReader.next();
             }
-            methods.set(methodName, methodParams);
+            methods.set(name, params);
         }
         return new Map([[id, methods]]);
     }

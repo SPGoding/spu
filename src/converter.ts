@@ -12,7 +12,8 @@ export default class Converter {
      * Returns an result map from an old command and an old spus.
      * @param cmd An old minecraft command.
      * @param spus An old spus defined in spuses.ts.
-     * @returns NULLABLE. A map filled with converted value. Like {%n: converted value}.
+     * @returns NULLABLE. A map filled with converted value.
+     * @example {'%0': 'converted value'}.
      */
     private static getResultMap(cmd: string, spus: string) {
         let spusReader = new ArgumentReader(spus)

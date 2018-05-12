@@ -43,13 +43,32 @@ export default class SpuScript {
         return result
     }
 
-    private compileArgument(arg: string, map: Map<string, string>) {
-        let compiledMap = this.compileArgumentToMap(arg)
-        let id = map.keys().next().value
-        let methods = map.get(id)
+    private compileArgument(arg: string, resultMap: Map<string, string>) {
+        let tokensMap = this.tokenize(arg)
+        let id = tokensMap.keys().next().value
+        let methods = tokensMap.get(id)
+        let source = resultMap.get(`%${id}`)
+        let result = source
         
+        for (const name of methods.keys()) {
+            const params = methods.get(name)
+            switch (name) {
+                case 'adv':
+                    if (params.length === 1) {
+                        let sel = new TargetSelector()
+                        // sel.parse113()
+                    } else if (params.length === 2) {
 
-        return ''
+                    } else {
+                        throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
+                    }
+                    break
+                default:
+                    break
+            }
+        }
+
+        return result
     }
 
     /**
@@ -57,10 +76,10 @@ export default class SpuScript {
      * @param arg A spu script arg.
      * @returns A map contains id and methods.
      * @example 
-     * compileArgument('%0') => {'0': {}}
-     * compileArgument('%1$adv%0%2$nbt%3') => {'1': {adv: ['0', '2'], nbt: ['3']}}
+     * tokenize('%0') => {'0': {}}
+     * tokenize('%1$adv%0%2$nbt%3') => {'1': {adv: ['0', '2'], nbt: ['3']}}
      */
-    private compileArgumentToMap(arg: string) {
+    private tokenize(arg: string) {
         let result = ''
         let charReader = new CharReader(arg)
         let char = charReader.next()
@@ -77,28 +96,28 @@ export default class SpuScript {
             id += char
             char = charReader.next()
         }
-        let methodName: string
-        let methodParam: string
-        let methodParams: string[]
+        let name: string
+        let param: string
+        let params: string[]
         while (char) {
-            methodName = ''
-            methodParams = []
+            name = ''
+            params = []
             char = charReader.next()
             while (char && char !== '%' && char !== '$') {
-                methodName += char
+                name += char
                 char = charReader.next()
             }
             char = charReader.next()
             while (char && char !== '$') {
-                methodParam = ''
+                param = ''
                 while (char && char !== '%' && char !== '$') {
-                    methodParam += char
+                    param += char
                     char = charReader.next()
                 }
-                methodParams.push(methodParam)
+                params.push(param)
                 char = charReader.next()
             }
-            methods.set(methodName, methodParams)
+            methods.set(name, params)
         }
 
         return new Map([[id, methods]])
