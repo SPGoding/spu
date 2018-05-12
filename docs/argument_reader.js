@@ -1,8 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * A reader that provides methods to read a command argument by argument.
- */
 class ArgumentReader {
     constructor(str) {
         this.arg = str.split(' ');

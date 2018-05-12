@@ -11,3 +11,12 @@ export default class Nbt {
 
     constructor() {}
 }
+
+class NbtValue {
+    private tag: NbtTag
+    private value: string
+}
+
+enum NbtTag {
+    long, 
+}

@@ -1,8 +1,8 @@
 /**
- * Providing methods to operate with spus.
+ * Providing a map storing old spus and new spus.
  */
-export default class Spus {
-    static spuses = new Map([
+export default class Spuses {
+    static pairs = new Map([
         [
             'advancement grant %entity only %string',
             'advancement grant %0 only %1'
@@ -47,46 +47,4 @@ export default class Spus {
             'execute if entity %0$adv%1%2'
         ]
         ])
-    
-    private static isArgumentMatch(cmdArg: string, spusArg: string) {
-        if (spusArg.charAt(0) === '%') {
-            switch (spusArg.slice(1)) {
-                case 'entity':
-                    return Spus.isEntity(cmdArg)
-                case 'string':
-                    return Spus.isString(cmdArg)
-                case 'number':
-                    return Spus.isNumber(cmdArg)
-                case 'selector':
-                    return Spus.isTargetSelector(cmdArg)
-                case 'uuid':
-                    return Spus.isUuid(cmdArg)
-                default:
-                    throw `Unknown argument type: ${spusArg.slice(1)}`
-                // TODO
-            }
-        } else {
-            return cmdArg === spusArg
-        }
-    }
-
-    private static isEntity(input: string) {
-        return Spus.isTargetSelector(input) || Spus.isString(input) || Spus.isUuid(input)
-    }
-
-    private static isString(input: string) {
-        return /^\w*$/.test(input)
-    }
-
-    private static isUuid(input: string) {
-        return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
-    }
-
-    private static isNumber(input: string) {
-        return /^[+-]?[0-9]+\.?[0-9]*$/.test(input)
-    }
-
-    private static isTargetSelector(input: string) {
-        return Spus.TargetSelector.isValid(input)
-    }
 }

@@ -9,6 +9,8 @@
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
-        "alwaysStrict": true
+        "pretty": true,
+        "alwaysStrict": true,
+        "removeComments": true
     }
 }

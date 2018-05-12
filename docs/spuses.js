@@ -1,8 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Store a map providing old command spus and new command spus.
- */
 class Spuses {
 }
 Spuses.pairs = new Map([

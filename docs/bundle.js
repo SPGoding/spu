@@ -1,9 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * A reader that provides methods to read a command argument by argument.
- */
 class ArgumentReader {
     constructor(str) {
         this.arg = str.split(' ');
@@ -34,9 +31,6 @@ exports.default = ArgumentReader;
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * A reader that provides methods to read a string char by char.
- */
 class CharReader {
     constructor(str) {
         this.str = str;
@@ -72,20 +66,10 @@ exports.isWhiteSpace = isWhiteSpace;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const argument_reader_1 = require("./argument_reader");
-const spuses_1 = require("./spuses");
 const selector_1 = require("./selector");
-const sweet_pragmatics_updater_script_1 = require("./sweet_pragmatics_updater_script");
-/**
- * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
- * @author SPGoding
- */
+const spuses_1 = require("./spuses");
+const spu_script_1 = require("./spu_script");
 class Converter {
-    /**
-     * Returns an result map from an old command and an old spus.
-     * @param cmd An old minecraft command.
-     * @param spus An old spus defined in spuses.ts.
-     * @returns NULLABLE. A map filled with converted value. Like {%n: converted value}.
-     */
     static getResultMap(cmd, spus) {
         let spusReader = new argument_reader_1.default(spus);
         let spusArg = spusReader.next();
@@ -94,12 +78,11 @@ class Converter {
         let map = new Map();
         let cnt = 0;
         while (spusArg !== '') {
-            while (!Converter.isArgumentMatch(cmdArg, spusArg)) {
+            while (!spu_script_1.default.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
                     cmdArg += ' ' + cmdReader.next();
                 }
                 else {
-                    // Can't match this spus.
                     return null;
                 }
             }
@@ -111,33 +94,10 @@ class Converter {
             cmdArg = cmdReader.next();
         }
         if (cmdArg === '') {
-            // Match successfully.
             return map;
         }
         else {
             return null;
-        }
-    }
-    static isArgumentMatch(cmdArg, spusArg) {
-        if (spusArg.charAt(0) === '%') {
-            switch (spusArg.slice(1)) {
-                case 'entity':
-                    return Converter.isEntity(cmdArg);
-                case 'string':
-                    return Converter.isString(cmdArg);
-                case 'number':
-                    return Converter.isNumber(cmdArg);
-                case 'selector':
-                    return Converter.isTargetSelector(cmdArg);
-                case 'uuid':
-                    return Converter.isUuid(cmdArg);
-                default:
-                    throw `Unknown argument type: ${spusArg.slice(1)}`;
-                // TODO
-            }
-        }
-        else {
-            return cmdArg === spusArg;
         }
     }
     static cvtArgument(cmd, spus) {
@@ -148,21 +108,6 @@ class Converter {
                 return cmd;
         }
     }
-    static isEntity(input) {
-        return Converter.isTargetSelector(input) || Converter.isString(input) || Converter.isUuid(input);
-    }
-    static isString(input) {
-        return /^\w*$/.test(input);
-    }
-    static isUuid(input) {
-        return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input);
-    }
-    static isNumber(input) {
-        return /^[+-]?[0-9]+\.?[0-9]*$/.test(input);
-    }
-    static isTargetSelector(input) {
-        return selector_1.default.isValid(input);
-    }
     static cvtLine(input) {
         if (input.charAt(0) === '#') {
             return input;
@@ -172,7 +117,7 @@ class Converter {
                 let map = Converter.getResultMap(input, spusOld);
                 if (map) {
                     let spusNew = spuses_1.default.pairs.get(spusOld);
-                    let spus = new sweet_pragmatics_updater_script_1.default(spusNew);
+                    let spus = new spu_script_1.default(spusNew);
                     let result = spus.compileWith(map);
                     return `execute positioned 0.0 0.0 0.0 run ${result}`;
                 }
@@ -208,7 +153,7 @@ class Converter {
         return sel.get113();
     }
     static cvtEntity(input) {
-        if (Converter.isTargetSelector(input)) {
+        if (spu_script_1.default.isTargetSelector(input)) {
             return Converter.cvtTargetSelector(input);
         }
         else {
@@ -218,7 +163,7 @@ class Converter {
 }
 exports.default = Converter;
 
-},{"./argument_reader":1,"./selector":5,"./spuses":6,"./sweet_pragmatics_updater_script":7}],4:[function(require,module,exports){
+},{"./argument_reader":1,"./selector":5,"./spu_script":6,"./spuses":7}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const converter_1 = require("./converter");
@@ -240,17 +185,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const char_reader_1 = require("./char_reader");
 const converter_1 = require("./converter");
 const char_reader_2 = require("./char_reader");
-/**
- * Represent a target selector.
- * Provides methods to operate it.
- * @author SPGoding
- */
 class TargetSelector {
     constructor() { }
-    /**
-     * Parse this selector according to a string in 1.12.
-     * @param str An string representing a target selector..
-     */
     parse112(str) {
         let charReader = new char_reader_1.default(str);
         let char;
@@ -296,7 +232,6 @@ class TargetSelector {
                 val = '';
                 char = charReader.next();
                 while (char !== '=') {
-                    // Read key.
                     if (char_reader_2.isWhiteSpace(char)) {
                         continue;
                     }
@@ -305,7 +240,6 @@ class TargetSelector {
                 }
                 char = charReader.next();
                 while (char !== ',' && char !== ']') {
-                    // Read value.
                     if (char_reader_2.isWhiteSpace(char)) {
                         continue;
                     }
@@ -313,23 +247,18 @@ class TargetSelector {
                     char = charReader.next();
                 }
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
-                    // Deal with scores.
                     let objective;
                     if (key.slice(-4) === '_min') {
-                        // The min.
                         objective = key.slice(6, -4);
                         this.setScoreMin(objective, val);
                     }
                     else {
-                        // The max.
                         objective = key.slice(6);
                         this.setScoreMax(objective, val);
                     }
                 }
                 else {
-                    // Deal with normal properties.
                     switch (key) {
-                        // These are properties that don't need to change.
                         case 'dx':
                         case 'dy':
                         case 'dz':
@@ -339,7 +268,6 @@ class TargetSelector {
                         case 'type':
                             this.properties.set(key, val);
                             break;
-                        // These are properties that need to rename.
                         case 'c':
                             if (Number(val) >= 0) {
                                 this.properties.set('limit', val);
@@ -352,7 +280,6 @@ class TargetSelector {
                         case 'm':
                             this.properties.set('gamemode', converter_1.default.cvtGamemode(val));
                             break;
-                        // These are properties that need to change to range and rename.
                         case 'l':
                             this.setRangeMax('level', val);
                             break;
@@ -377,7 +304,6 @@ class TargetSelector {
                         case 'rym':
                             this.setRangeMin('y_rotation', val);
                             break;
-                        // These are properties that need to center correct.
                         case 'x':
                         case 'y':
                         case 'z':
@@ -394,9 +320,6 @@ class TargetSelector {
             throw `Unexpected token: ${str}`;
         }
     }
-    /**
-     * Get a string that can represent this target selector in 1.13.
-     */
     get113() {
         let result = '@';
         switch (this.type) {
@@ -418,14 +341,12 @@ class TargetSelector {
         }
         result += '[';
         if (this.properties.size !== 0) {
-            // Deal with normal properties.
             for (const key of this.properties.keys()) {
                 let val = this.properties.get(key);
                 result += `${key}=${val},`;
             }
         }
         if (this.ranges.size !== 0) {
-            // Deal with ranges.
             for (const key of this.ranges.keys()) {
                 let range = this.ranges.get(key);
                 result += `${key}=${range.toString()},`;
@@ -433,7 +354,6 @@ class TargetSelector {
         }
         if (this.scores.size !== 0) {
             result += 'scores={';
-            // Deal with scores
             for (const objective of this.scores.keys()) {
                 let range = this.scores.get(objective);
                 result += `${objective}=${range.toString()},`;
@@ -441,12 +361,7 @@ class TargetSelector {
             result = result.slice(0, -1) + '},';
         }
         if (this.advancements.size !== 0) {
-            // Deal with advancements.
-            // TODO
         }
-        // Deal with NBT.
-        // TODO
-        // Close the square brackets.
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + ']';
         }
@@ -455,10 +370,6 @@ class TargetSelector {
         }
         return result;
     }
-    /**
-     * Returns if a target selector is valid.
-     * @param input a target selector.
-     */
     static isValid(input) {
         try {
             let sel = new TargetSelector();
@@ -471,41 +382,33 @@ class TargetSelector {
     }
     setRangeMin(key, min) {
         if (this.ranges.has(key)) {
-            // The 'ranges' map has this objective, so complete it.
             this.ranges.get(key).setMin(Number(min));
         }
         else {
-            // The 'ranges' map doesn't have this objective, so create it.
             this.ranges.set(key, new Range(Number(min), null));
         }
     }
     setRangeMax(key, max) {
         if (this.ranges.has(key)) {
-            // The 'ranges' map has this objective, so complete it.
             this.ranges.get(key).setMax(Number(max));
         }
         else {
-            // The 'ranges' map doesn't have this objective, so create it.
             this.ranges.set(key, new Range(null, Number(max)));
         }
     }
     setScoreMin(objective, min) {
         if (this.scores.has(objective)) {
-            // The 'scores' map has this objective, so complete it.
             this.scores.get(objective).setMin(Number(min));
         }
         else {
-            // The 'scores' map doesn't have this objective, so create it.
             this.scores.set(objective, new Range(Number(min), null));
         }
     }
     setScoreMax(objective, max) {
         if (this.scores.has(objective)) {
-            // The 'scores' map has this objective, so complete it.
             this.scores.get(objective).setMax(Number(max));
         }
         else {
-            // The 'scores' map doesn't have this objective, so create it.
             this.scores.set(objective, new Range(null, Number(max)));
         }
     }
@@ -519,9 +422,6 @@ var SelectorType;
     SelectorType[SelectorType["R"] = 3] = "R";
     SelectorType[SelectorType["S"] = 4] = "S";
 })(SelectorType || (SelectorType = {}));
-/**
- * Represents a range in a target selector.
- */
 class Range {
     getMin() {
         return this.min;
@@ -575,9 +475,120 @@ class Range {
 },{"./char_reader":2,"./converter":3}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Store a map providing old command spus and new command spus.
- */
+const char_reader_1 = require("./char_reader");
+const argument_reader_1 = require("./argument_reader");
+const selector_1 = require("./selector");
+class SpuScript {
+    constructor(spus) {
+        this.spus = spus;
+    }
+    compileWith(map) {
+        let argReader = new argument_reader_1.default(this.spus);
+        let arg = argReader.next();
+        let result = '';
+        while (arg) {
+            if (arg.slice(0, 1) === '%') {
+                arg = this.compileArgument(arg);
+            }
+            result += arg + ' ';
+            arg = argReader.next();
+        }
+        result = result.slice(0, -1);
+        return result;
+    }
+    compileArgument(arg) {
+        let map = this.compileArgumentToMap(arg);
+        let id = map.keys().next().value;
+        let methods = map.get(id);
+        console.log(id);
+        console.log(methods);
+        return '';
+    }
+    compileArgumentToMap(arg) {
+        let result = '';
+        let charReader = new char_reader_1.default(arg);
+        let char = charReader.next();
+        let id = '';
+        let methods = new Map();
+        if (char === '%') {
+            char = charReader.next();
+        }
+        else {
+            throw `Unexpected token: ${char} in ${arg}. Should be '%".`;
+        }
+        while (char && char !== '$') {
+            id += char;
+            char = charReader.next();
+        }
+        let methodName;
+        let methodParam;
+        let methodParams;
+        while (char) {
+            methodName = '';
+            methodParams = [];
+            char = charReader.next();
+            while (char && char !== '%' && char !== '$') {
+                methodName += char;
+                char = charReader.next();
+            }
+            char = charReader.next();
+            while (char && char !== '$') {
+                methodParam = '';
+                while (char && char !== '%' && char !== '$') {
+                    methodParam += char;
+                    char = charReader.next();
+                }
+                methodParams.push(methodParam);
+                char = charReader.next();
+            }
+            methods.set(methodName, methodParams);
+        }
+        return new Map([[id, methods]]);
+    }
+    static isArgumentMatch(cmdArg, spusArg) {
+        if (spusArg.charAt(0) === '%') {
+            switch (spusArg.slice(1)) {
+                case 'entity':
+                    return SpuScript.isEntity(cmdArg);
+                case 'string':
+                    return SpuScript.isString(cmdArg);
+                case 'number':
+                    return SpuScript.isNumber(cmdArg);
+                case 'selector':
+                    return SpuScript.isTargetSelector(cmdArg);
+                case 'uuid':
+                    return SpuScript.isUuid(cmdArg);
+                default:
+                    throw `Unknown argument type: ${spusArg.slice(1)}`;
+            }
+        }
+        else {
+            return cmdArg.toLowerCase() === spusArg;
+        }
+    }
+    static isEntity(input) {
+        return SpuScript.isTargetSelector(input) ||
+            SpuScript.isString(input) ||
+            SpuScript.isUuid(input);
+    }
+    static isString(input) {
+        return /^\w*$/.test(input);
+    }
+    static isUuid(input) {
+        return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input);
+    }
+    static isNumber(input) {
+        return /^[+-]?[0-9]+\.?[0-9]*$/.test(input);
+    }
+    static isTargetSelector(input) {
+        return selector_1.default.isValid(input);
+    }
+}
+exports.default = SpuScript;
+
+},{"./argument_reader":1,"./char_reader":2,"./selector":5}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class Spuses {
 }
 Spuses.pairs = new Map([
@@ -627,62 +638,4 @@ Spuses.pairs = new Map([
 ]);
 exports.default = Spuses;
 
-},{}],7:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const char_reader_1 = require("./char_reader");
-const argument_reader_1 = require("./argument_reader");
-class SweetPragmaticsUpdaterScript {
-    /**
-     * Constructs this spus object from a format.
-     * @param spus A new minecraft command format.
-     */
-    constructor(spus) {
-        this.spus = spus;
-    }
-    /**
-     * Compile this spus from an result map.
-     * @param map An result map.
-     */
-    compileWith(map) {
-        let argReader = new argument_reader_1.default(this.spus);
-        let arg = argReader.next();
-        let result = '';
-        while (arg) {
-            if (arg.slice(0, 1) === '%') {
-                arg = this.compileArgument(arg);
-            }
-            result += arg + ' ';
-            arg = argReader.next();
-        }
-        // Remove extra space.
-        result = result.slice(0, -1);
-        return result;
-    }
-    compileArgument(arg) {
-        let result = '';
-        let charReader = new char_reader_1.default(arg);
-        let char = charReader.next();
-        let id = '';
-        if (char === '%') {
-            char = charReader.next();
-        }
-        else {
-            throw `Unexpected token: ${char} in ${arg}`;
-        }
-        while (char) {
-            if (char !== '$') {
-                id += char;
-            }
-            else {
-                char = charReader.next();
-                break;
-            }
-            char = charReader.next();
-        }
-        return result;
-    }
-}
-exports.default = SweetPragmaticsUpdaterScript;
-
-},{"./argument_reader":1,"./char_reader":2}]},{},[4]);
+},{}]},{},[4]);

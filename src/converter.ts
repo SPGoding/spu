@@ -1,7 +1,7 @@
 import ArgumentReader from './argument_reader'
-import Spuses from './spuses'
 import TargetSelector from './selector'
-import SweetPragmaticsUpdaterScript from './sweet_pragmatics_updater_script'
+import Spuses from './spuses'
+import SpuScript from './spu_script'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -22,7 +22,7 @@ export default class Converter {
         let map = new Map<string, string>()
         let cnt = 0
         while (spusArg !== '') {
-            while (!Spus.isArgumentMatch(cmdArg, spusArg)) {
+            while (!SpuScript.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
                     cmdArg += ' ' +  cmdReader.next()
                 } else {
@@ -58,11 +58,11 @@ export default class Converter {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            for (const spusOld of Spus.spuses.keys()) {
+            for (const spusOld of Spuses.pairs.keys()) {
                 let map = Converter.getResultMap(input, spusOld)
                 if (map) {
-                    let spusNew = Spus.spuses.get(spusOld)
-                    let spus = new SweetPragmaticsUpdaterScript(spusNew)
+                    let spusNew = Spuses.pairs.get(spusOld)
+                    let spus = new SpuScript(spusNew)
                     let result = spus.compileWith(map)
                     return `execute positioned 0.0 0.0 0.0 run ${result}`
                 }
@@ -101,7 +101,7 @@ export default class Converter {
     }
 
     static cvtEntity(input: string) {
-        if (Spus.isTargetSelector(input)) {
+        if (SpuScript.isTargetSelector(input)) {
             return Converter.cvtTargetSelector(input)
         } else {
             return input

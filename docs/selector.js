@@ -3,17 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const char_reader_1 = require("./char_reader");
 const converter_1 = require("./converter");
 const char_reader_2 = require("./char_reader");
-/**
- * Represent a target selector.
- * Provides methods to operate it.
- * @author SPGoding
- */
 class TargetSelector {
     constructor() { }
-    /**
-     * Parse this selector according to a string in 1.12.
-     * @param str An string representing a target selector..
-     */
     parse112(str) {
         let charReader = new char_reader_1.default(str);
         let char;
@@ -59,7 +50,6 @@ class TargetSelector {
                 val = '';
                 char = charReader.next();
                 while (char !== '=') {
-                    // Read key.
                     if (char_reader_2.isWhiteSpace(char)) {
                         continue;
                     }
@@ -68,7 +58,6 @@ class TargetSelector {
                 }
                 char = charReader.next();
                 while (char !== ',' && char !== ']') {
-                    // Read value.
                     if (char_reader_2.isWhiteSpace(char)) {
                         continue;
                     }
@@ -76,23 +65,18 @@ class TargetSelector {
                     char = charReader.next();
                 }
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
-                    // Deal with scores.
                     let objective;
                     if (key.slice(-4) === '_min') {
-                        // The min.
                         objective = key.slice(6, -4);
                         this.setScoreMin(objective, val);
                     }
                     else {
-                        // The max.
                         objective = key.slice(6);
                         this.setScoreMax(objective, val);
                     }
                 }
                 else {
-                    // Deal with normal properties.
                     switch (key) {
-                        // These are properties that don't need to change.
                         case 'dx':
                         case 'dy':
                         case 'dz':
@@ -102,7 +86,6 @@ class TargetSelector {
                         case 'type':
                             this.properties.set(key, val);
                             break;
-                        // These are properties that need to rename.
                         case 'c':
                             if (Number(val) >= 0) {
                                 this.properties.set('limit', val);
@@ -115,7 +98,6 @@ class TargetSelector {
                         case 'm':
                             this.properties.set('gamemode', converter_1.default.cvtGamemode(val));
                             break;
-                        // These are properties that need to change to range and rename.
                         case 'l':
                             this.setRangeMax('level', val);
                             break;
@@ -140,7 +122,6 @@ class TargetSelector {
                         case 'rym':
                             this.setRangeMin('y_rotation', val);
                             break;
-                        // These are properties that need to center correct.
                         case 'x':
                         case 'y':
                         case 'z':
@@ -157,9 +138,6 @@ class TargetSelector {
             throw `Unexpected token: ${str}`;
         }
     }
-    /**
-     * Get a string that can represent this target selector in 1.13.
-     */
     get113() {
         let result = '@';
         switch (this.type) {
@@ -181,14 +159,12 @@ class TargetSelector {
         }
         result += '[';
         if (this.properties.size !== 0) {
-            // Deal with normal properties.
             for (const key of this.properties.keys()) {
                 let val = this.properties.get(key);
                 result += `${key}=${val},`;
             }
         }
         if (this.ranges.size !== 0) {
-            // Deal with ranges.
             for (const key of this.ranges.keys()) {
                 let range = this.ranges.get(key);
                 result += `${key}=${range.toString()},`;
@@ -196,7 +172,6 @@ class TargetSelector {
         }
         if (this.scores.size !== 0) {
             result += 'scores={';
-            // Deal with scores
             for (const objective of this.scores.keys()) {
                 let range = this.scores.get(objective);
                 result += `${objective}=${range.toString()},`;
@@ -204,12 +179,7 @@ class TargetSelector {
             result = result.slice(0, -1) + '},';
         }
         if (this.advancements.size !== 0) {
-            // Deal with advancements.
-            // TODO
         }
-        // Deal with NBT.
-        // TODO
-        // Close the square brackets.
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + ']';
         }
@@ -218,10 +188,6 @@ class TargetSelector {
         }
         return result;
     }
-    /**
-     * Returns if a target selector is valid.
-     * @param input a target selector.
-     */
     static isValid(input) {
         try {
             let sel = new TargetSelector();
@@ -234,41 +200,33 @@ class TargetSelector {
     }
     setRangeMin(key, min) {
         if (this.ranges.has(key)) {
-            // The 'ranges' map has this objective, so complete it.
             this.ranges.get(key).setMin(Number(min));
         }
         else {
-            // The 'ranges' map doesn't have this objective, so create it.
             this.ranges.set(key, new Range(Number(min), null));
         }
     }
     setRangeMax(key, max) {
         if (this.ranges.has(key)) {
-            // The 'ranges' map has this objective, so complete it.
             this.ranges.get(key).setMax(Number(max));
         }
         else {
-            // The 'ranges' map doesn't have this objective, so create it.
             this.ranges.set(key, new Range(null, Number(max)));
         }
     }
     setScoreMin(objective, min) {
         if (this.scores.has(objective)) {
-            // The 'scores' map has this objective, so complete it.
             this.scores.get(objective).setMin(Number(min));
         }
         else {
-            // The 'scores' map doesn't have this objective, so create it.
             this.scores.set(objective, new Range(Number(min), null));
         }
     }
     setScoreMax(objective, max) {
         if (this.scores.has(objective)) {
-            // The 'scores' map has this objective, so complete it.
             this.scores.get(objective).setMax(Number(max));
         }
         else {
-            // The 'scores' map doesn't have this objective, so create it.
             this.scores.set(objective, new Range(null, Number(max)));
         }
     }
@@ -282,9 +240,6 @@ var SelectorType;
     SelectorType[SelectorType["R"] = 3] = "R";
     SelectorType[SelectorType["S"] = 4] = "S";
 })(SelectorType || (SelectorType = {}));
-/**
- * Represents a range in a target selector.
- */
 class Range {
     getMin() {
         return this.min;
