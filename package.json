@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && browserify ./docs/index.js > ./docs/bundle.js"
+    "build": "tsc && browserify ./dist/index.js > ./docs/bundle.js"
   },
   "repository": {
     "type": "git",

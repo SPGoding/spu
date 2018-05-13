@@ -8,29 +8,36 @@ import { isWhiteSpace } from './char_reader'
  * @author SPGoding
  */
 export default class TargetSelector {
-    /**
-     * Type of this target selector.
-     */
-    private type: SelectorType
-    private properties: Map<string, any>
+    private variable: SelectorType
+    private dx: number
+    private dy: number
+    private dz: number
+    private limit: number
+    private x: number
+    private y: number
+    private z: number
+    private sort: string
+    private tag: string[]
+    private team: string[]
+    private name: string[]
+    private type: string[]
+    private gamemode: string[]
+    private level = new Range(null, null)
+    private distance = new Range(null, null)
+    private x_rotation = new Range(null, null)
+    private y_rotation = new Range(null, null)
     private scores: Map<string, Range>
     private advancements: Map<string, boolean>
-    private ranges: Map<string, Range>
 
     constructor() {}
 
     /**
-     * Parse this selector according to a string in 1.12.
-     * @param str An string representing a target selector..
+     * Parses this selector according to a string in 1.12.
+     * @param str An string representing a target selector.
      */
     parse112(str: string) {
         let charReader = new CharReader(str)
         let char: string
-
-        this.properties = new Map<string, Range>()
-        this.scores = new Map<string, Range>()
-        this.advancements = new Map<string, boolean>()
-        this.ranges = new Map<string, Range>()
 
         char = charReader.next()
         if (char !== '@') {
@@ -40,24 +47,24 @@ export default class TargetSelector {
         char = charReader.next()
         switch (char) {
             case 'a':
-                this.type = SelectorType.A
-                this.properties.set('sort', 'nearest')
+                this.variable = SelectorType.A
+                this.sort = 'nearest'
                 break
             case 'e':
-                this.type = SelectorType.E
-                this.properties.set('sort', 'nearest')
+                this.variable = SelectorType.E
+                this.sort = 'nearest'
                 break
             case 'p':
-                this.type = SelectorType.P
+                this.variable = SelectorType.P
                 break
             case 'r':
-                this.type = SelectorType.R
+                this.variable = SelectorType.R
                 break
             case 's':
-                this.type = SelectorType.S
+                this.variable = SelectorType.S
                 break
             default:
-                throw `Unknown type: ${char} in ${str}`
+                throw `Unknown variable: ${char} in ${str}`
         }
 
         char = charReader.next()
@@ -104,6 +111,148 @@ export default class TargetSelector {
                 } else {
                     // Deal with normal properties.
                     switch (key) {
+                        case 'dx':
+                            this.dx = Number(val)
+                            break
+                        case 'dy':
+                            this.dy = Number(val)
+                            break
+                        case 'dz':
+                            this.dz = Number(val)
+                            break
+                        case 'tag':
+                            this.tag.push(val)
+                            break
+                        case 'team':
+                            this.team.push(val)
+                            break
+                        case 'name':
+                            this.name.push(val)
+                            break
+                        case 'type':
+                            this.type.push(val)
+                            break
+                        case 'c':
+                            if (Number(val) >= 0) {
+                                this.limit = Number(val)
+                            } else {
+                                this.sort = 'furthest'
+                                this.limit = -Number(val)
+                            }
+                            break
+                        case 'm':
+                            this.gamemode.push(Converter.cvtGamemode(val))
+                            break
+                        case 'l':
+                            this.level.setMax(Number(val))
+                            break
+                        case 'lm': 
+                            this.level.setMax(Number(val))
+                            break
+                        case 'r': 
+                            this.setMax('distance', val)
+                            break
+                        case 'rm': 
+                            this.setRange('distance', val)
+                            break
+                        case 'rx': 
+                            this.setMax('x_rotation', val)
+                            break
+                        case 'rxm': 
+                            this.setRange('x_rotation', val)
+                            break
+                        case 'ry': 
+                            this.setMax('y_rotation', val)
+                            break
+                        case 'rym': 
+                            this.setRange('y_rotation', val)
+                            break
+                        // These are properties that need to center correct.
+                        case 'x':
+                        case 'y':
+                        case 'z':
+                            if (val.indexOf('.') === -1) {
+                                val += '.5'
+                            }
+                            this.properties.set(key, val)
+                            break
+                    }
+                }
+            }
+        } else {
+            throw `Unexpected token: ${str}`
+        }
+    }
+    
+    /**
+     * Parses this selector according to a string in 1.13.
+     * @param str An string representing a target selector.
+     */
+    parse113(str: string) {
+        let charReader = new CharReader(str)
+        let char: string
+
+        char = charReader.next()
+        if (char !== '@') {
+            throw `First char should be '@': ${str}`
+        }
+
+        char = charReader.next()
+        switch (char) {
+            case 'a':
+                this.variable = SelectorType.A
+                break
+            case 'e':
+                this.variable = SelectorType.E
+                break
+            case 'p':
+                this.variable = SelectorType.P
+                break
+            case 'r':
+                this.variable = SelectorType.R
+                break
+            case 's':
+                this.variable = SelectorType.S
+                break
+            default:
+                throw `Unknown type: ${char} in ${str}`
+        }
+
+        char = charReader.next()
+        if (char === '') {
+            return
+        } else if (char === '[') {
+            let key: string
+            let val: string
+            while (char !== ']') {
+                key = ''
+                val = ''
+                char = charReader.next()
+                while (char !== '=') {
+                    // Read key.
+                    if (isWhiteSpace(char)) {
+                        continue
+                    }
+                    key += char
+                    char = charReader.next()
+                }
+
+                char = charReader.next()
+                while (char !== ',' && char !== ']' ) {
+                    // Read value.
+                    if (isWhiteSpace(char)) {
+                        continue
+                    }
+                    val += char 
+                    char = charReader.next()
+                }
+
+                if (key === 'scores') {
+                    // Deal with scores.
+                    this.setScores(val)
+                } else {
+                    // Deal with normal properties.
+                    switch (key) {
                         // These are properties that don't need to change.
                         case 'dx':
                         case 'dy':
@@ -128,28 +277,28 @@ export default class TargetSelector {
                             break
                         // These are properties that need to change to range and rename.
                         case 'l':
-                            this.setRangeMax('level', val)
+                            this.setMax('level', val)
                             break
                         case 'lm': 
-                            this.setRangeMin('level', val)
+                            this.setRange('level', val)
                             break
                         case 'r': 
-                            this.setRangeMax('distance', val)
+                            this.setMax('distance', val)
                             break
                         case 'rm': 
-                            this.setRangeMin('distance', val)
+                            this.setRange('distance', val)
                             break
                         case 'rx': 
-                            this.setRangeMax('x_rotation', val)
+                            this.setMax('x_rotation', val)
                             break
                         case 'rxm': 
-                            this.setRangeMin('x_rotation', val)
+                            this.setRange('x_rotation', val)
                             break
                         case 'ry': 
-                            this.setRangeMax('y_rotation', val)
+                            this.setMax('y_rotation', val)
                             break
                         case 'rym': 
-                            this.setRangeMin('y_rotation', val)
+                            this.setRange('y_rotation', val)
                             break
                         // These are properties that need to center correct.
                         case 'x':
@@ -169,12 +318,12 @@ export default class TargetSelector {
     }
 
     /**
-     * Get a string that can represent this target selector in 1.13.
+     * Gets a string that can represent this target selector in 1.13.
      */
     get113() {
         let result = '@'
 
-        switch (this.type) {
+        switch (this.variable) {
             case SelectorType.A:
                 result += 'a'
                 break
@@ -252,23 +401,16 @@ export default class TargetSelector {
         return true
     }
 
-    private setRangeMin(key: string, min: string) {
-        if (this.ranges.has(key)) {
-            // The 'ranges' map has this objective, so complete it.
-            this.ranges.get(key).setMin(Number(min))
-        } else {
-            // The 'ranges' map doesn't have this objective, so create it.
-            this.ranges.set(key, new Range(Number(min), null))
-        }
-    }
-
-    private setRangeMax(key: string, max: string) {
-        if (this.ranges.has(key)) {
-            // The 'ranges' map has this objective, so complete it.
-            this.ranges.get(key).setMax(Number(max))
-        } else {
-            // The 'ranges' map doesn't have this objective, so create it.
-            this.ranges.set(key, new Range(null, Number(max)))
+    /**
+     * 
+     * @param key 
+     * @param type 
+     * @param val 
+     * @example this.setRange(this.distance, 'max', 10)
+     */
+    private setRange(key: any, type: string, val: number) {
+        if (!key) {
+            key = new Range(null, null)
         }
     }
 
@@ -290,6 +432,24 @@ export default class TargetSelector {
             // The 'scores' map doesn't have this objective, so create it.
             this.scores.set(objective, new Range(null, Number(max)))
         }
+    }
+
+    /**
+     * Sets the 'scores' field with a string.
+     * @param str The value of 'scores' in target selector in 1.13.
+     * @example
+     * this.setScores('{}')
+     * this.setScores('{foo=1,bar=1..5,fuck=2..,me=..10}')
+     */
+    private setScores(str: string) {
+        let charReader = new CharReader(str)
+        let char = charReader.next()
+
+        if (char !== '{') {
+            throw `Unexpected 'scores' value begins: ${char} at ${str}.`
+        }
+
+
     }
 }
 
@@ -349,7 +509,7 @@ class Range {
         } else if (max) {
             return `..${max}`
         } else {
-            throw `NullPointerException at Range: ${this}`
+            return ''
         }
     }
 }

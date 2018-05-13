@@ -4,7 +4,7 @@
         "module": "commonjs",
         "target": "es2015",
         "rootDir": "src",
-        "outDir": "docs",
+        "outDir": "dist",
         "sourceMap": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,

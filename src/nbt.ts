@@ -7,16 +7,28 @@ import { isWhiteSpace } from './char_reader'
  * @author SPGoding
  */
 export default class Nbt {
-    private values: Map<string, NbtValue>
+	private tag: NbtTag
+    private value: any
 
     constructor() {}
-}
-
-class NbtValue {
-    private tag: NbtTag
-    private value: string
+    
+    parse(nbt: string) {
+        let charReader = new CharReader(nbt)
+        
+    }
 }
 
 enum NbtTag {
-    long, 
+    Byte,
+    Short,
+    Int,
+    Long,
+    Float,
+    Double,
+    String,
+    ByteArray,
+    IntArray,
+    LongArray,
+    List,
+    Compound
 }
