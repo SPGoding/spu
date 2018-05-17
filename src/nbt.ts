@@ -14,7 +14,6 @@ export default class Nbt {
     
     parse(nbt: string) {
         let charReader = new CharReader(nbt)
-        
     }
 }
 
