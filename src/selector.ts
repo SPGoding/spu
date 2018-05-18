@@ -261,69 +261,71 @@ export default class TargetSelector {
                     char = charReader.next()
                 }
 
-                if (key === 'scores') {
-                    // Deal with scores.
-                    this.setScores(val)
-                } else {
-                    // Deal with normal properties.
-                    switch (key) {
-                        // These are properties that don't need to change.
-                        case 'dx':
-                        case 'dy':
-                        case 'dz':
-                        case 'tag':
-                        case 'team':
-                        case 'name':
-                        case 'type':
-                            this.properties.set(key, val)
-                            break
-                        // These are properties that need to rename.
-                        case 'c':
-                            if (Number(val) >= 0) {
-                                this.properties.set('limit', val)
-                            } else {
-                                this.properties.set('sort', 'furthest')
-                                this.properties.set('limit', (-Number(val)).toString())
-                            }
-                            break
-                        case 'm':
-                            this.properties.set('gamemode', Converter.cvtGamemode(val))
-                            break
-                        // These are properties that need to change to range and rename.
-                        case 'l':
-                            this.setMax('level', val)
-                            break
-                        case 'lm': 
-                            this.setRange('level', val)
-                            break
-                        case 'r': 
-                            this.setMax('distance', val)
-                            break
-                        case 'rm': 
-                            this.setRange('distance', val)
-                            break
-                        case 'rx': 
-                            this.setMax('x_rotation', val)
-                            break
-                        case 'rxm': 
-                            this.setRange('x_rotation', val)
-                            break
-                        case 'ry': 
-                            this.setMax('y_rotation', val)
-                            break
-                        case 'rym': 
-                            this.setRange('y_rotation', val)
-                            break
-                        // These are properties that need to center correct.
-                        case 'x':
-                        case 'y':
-                        case 'z':
-                            if (val.indexOf('.') === -1) {
-                                val += '.5'
-                            }
-                            this.properties.set(key, val)
-                            break
-                    }
+                // Deal with normal properties.
+                switch (key) {
+                    case 'dx':
+                        this.dx = Number(val)
+                        break
+                    case 'dy':
+                        this.dy = Number(val)
+                        break
+                    case 'dz':
+                        this.dz = Number(val)
+                        break
+                    case 'tag':
+                        this.tag.push(val)
+                        break
+                    case 'team':
+                        this.team.push(val)
+                        break
+                    case 'name':
+                        this.name.push(val)
+                        break
+                    case 'type':
+                        this.type.push(val)
+                        break
+                    case 'gamemode':
+                        this.gamemode.push(val)
+                        break
+                    case 'limit':
+                        this.limit = Number(val)
+                        break
+                    case 'level':
+                        let range = new Range(null, null)
+                        range.parse113(val)
+                        this.level = range
+                        break
+                    case 'distance': 
+                        range = new Range(null, null)
+                        range.parse113(val)
+                        this.distance = range
+                        break
+                    case 'x_rotation': 
+                        range = new Range(null, null)
+                        range.parse113(val)
+                        this.x_rotation = range
+                        break
+                    case 'y_rotation': 
+                        range = new Range(null, null)
+                        range.parse113(val)
+                        this.y_rotation = range
+                        break
+                    case 'x':
+                        this.x = Number(val)
+                        break
+                    case 'y':
+                        this.y = Number(val)
+                        break
+                    case 'z':
+                        this.z = Number(val)
+                        break
+                    case 'scores':
+                        this.setScores113(key)
+                        // TODO
+                    case 'advancements':
+                    case 'nbt':
+                    default:
+                        break
                 }
             }
         } else {
@@ -357,40 +359,74 @@ export default class TargetSelector {
 
         result += '['
 
-        if (this.properties.size !== 0) {
-            // Deal with normal properties.
-            for (const key of this.properties.keys()) {
-                let val = this.properties.get(key)
-                result += `${key}=${val},`
+        if (this.dx) {
+            result += `dx=${this.dx},`
+        }
+        if (this.dy) {
+            result += `dy=${this.dy},`
+        }
+        if (this.dz) {
+            result += `dz=${this.dz},`
+        }
+        if (this.limit) {
+            result += `limit=${this.limit},`
+        }
+        if (this.x) {
+            result += `x=${this.x},`
+        }
+        if (this.y) {
+            result += `y=${this.y},`
+        }
+        if (this.z) {
+            result += `z=${this.z},`
+        }
+        if (this.sort) {
+            result += `sort=${this.sort},`
+        }
+        if (this.tag.length > 0) {
+            for (const i of this.tag) {
+                result += `tag=${i},`                
             }
         }
-
-        if (this.ranges.size !== 0) {
-            // Deal with ranges.
-            for (const key of this.ranges.keys()) {
-                let range = this.ranges.get(key)
-                result += `${key}=${range.toString()},`
+        if (this.team.length > 0) {
+            for (const i of this.tag) {
+                result += `team=${i},`                
             }
         }
-
-        if (this.scores.size !== 0) {
-            result += 'scores={'
-            // Deal with scores
-            for (const objective of this.scores.keys()) {
-                let range = this.scores.get(objective)
-                result += `${objective}=${range.toString()},`
+        if (this.name.length > 0) {
+            for (const i of this.tag) {
+                result += `name=${i},`                
             }
-            result = result.slice(0, -1) + '},'
+        }
+        if (this.type.length > 0) {
+            for (const i of this.tag) {
+                result += `type=${i},`                
+            }
+        }
+        if (this.gamemode.length > 0) {
+            for (const i of this.tag) {
+                result += `gamemode=${i},`                
+            }
+        }
+        if (this.level.get113()) {
+            result += `level=${this.level.get113()},`
+        }
+        if (this.distance.get113()) {
+            result += `distance=${this.distance.get113()},`
+        }
+        if (this.x_rotation.get113()) {
+            result += `x_rotation=${this.x_rotation.get113()},`
+        }
+        if (this.y_rotation.get113()) {
+            result += `y_rotation=${this.y_rotation.get113()},`
+        }
+        if (this.getScores113()) {
+            result += `scores=${this.getScores113()},`
+        }
+        if (this.getAdvancements113()) {
+            result += `advancements=${this.getAdvancements113()},`
         }
 
-        if (this.advancements.size !== 0) {
-            // Deal with advancements.
-            // TODO
-        }
-
-            // Deal with NBT.
-            // TODO
-        
         // Close the square brackets.
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + ']'
@@ -413,19 +449,6 @@ export default class TargetSelector {
             return false
         }
         return true
-    }
-
-    /**
-     * 
-     * @param key 
-     * @param type 
-     * @param val 
-     * @example this.setRange(this.distance, 'max', 10)
-     */
-    private setRange(key: any, type: string, val: number) {
-        if (!key) {
-            key = new Range(null, null)
-        }
     }
 
     private setScoreMin(objective: string, min: string) {
@@ -455,15 +478,80 @@ export default class TargetSelector {
      * this.setScores('{}')
      * this.setScores('{foo=1,bar=1..5,fuck=2..,me=..10}')
      */
-    private setScores(str: string) {
+    private setScores113(str: string) {
         let charReader = new CharReader(str)
         let char = charReader.next()
+        let objective: string
+        let rangeStr: string
+        let range: Range
 
         if (char !== '{') {
             throw `Unexpected 'scores' value begins: ${char} at ${str}.`
         }
 
+        char = charReader.next()
 
+        while (char) {
+            objective = ''
+            rangeStr = ''
+            range = new Range(null, null)
+
+            while (char !== '=') {
+                if (isWhiteSpace(char)) {
+                    continue
+                }
+                objective += char                
+            }
+    
+            char = charReader.next()
+    
+            while (char && char !== ',' && char !== '}') {
+                if (isWhiteSpace(char)) {
+                    continue
+                }
+                rangeStr += char                
+            }
+
+            char = charReader.next()
+
+            range.parse113(rangeStr)
+            this.scores.set(objective, range)
+        }
+    }
+
+    private getScores113() {
+        let result = '{'
+
+        for (const i of this.scores.keys()) {
+            result += `${i}=${this.scores.get(i).get113()}`
+        }
+
+        // Close the flower brackets.
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + '}'
+        } else if (result.slice(-1) === '{') {
+            result = result.slice(0, -1)
+        }
+
+        return result
+    }
+
+    private getAdvancements113() {
+        // TODO
+        let result = '{'
+
+        for (const i of this.scores.keys()) {
+            result += `${i}=${this.scores.get(i).get113()}`
+        }
+
+        // Close the flower brackets.
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + '}'
+        } else if (result.slice(-1) === '{') {
+            result = result.slice(0, -1)
+        }
+
+        return result
     }
 }
 
@@ -509,7 +597,7 @@ class Range {
         }
     }
 
-    toString() {
+    get113() {
         let min = this.min
         let max = this.max
         if (min && max) {
