@@ -150,31 +150,45 @@ export default class TargetSelector {
                             this.level.setMax(Number(val))
                             break
                         case 'r': 
-                            this.setMax('distance', val)
+                            this.distance.setMax(Number(val))
                             break
                         case 'rm': 
-                            this.setRange('distance', val)
+                            this.distance.setMin(Number(val))
                             break
                         case 'rx': 
-                            this.setMax('x_rotation', val)
+                            this.x_rotation.setMax(Number(val))
                             break
                         case 'rxm': 
-                            this.setRange('x_rotation', val)
+                            this.x_rotation.setMin(Number(val))
                             break
                         case 'ry': 
-                            this.setMax('y_rotation', val)
+                            this.y_rotation.setMax(Number(val))
                             break
                         case 'rym': 
-                            this.setRange('y_rotation', val)
+                            this.y_rotation.setMin(Number(val))
                             break
-                        // These are properties that need to center correct.
                         case 'x':
                         case 'y':
                         case 'z':
+                            // Center correct.
                             if (val.indexOf('.') === -1) {
                                 val += '.5'
                             }
-                            this.properties.set(key, val)
+                            switch (key) {
+                                case 'x':
+                                    this.x = Number(val)
+                                    break
+                                case 'y':
+                                    this.y = Number(val)
+                                    break
+                                case 'z':
+                                    this.z = Number(val)
+                                    break
+                                default:
+                                    break
+                            }
+                            break
+                        default:
                             break
                     }
                 }
@@ -215,7 +229,7 @@ export default class TargetSelector {
                 this.variable = SelectorType.S
                 break
             default:
-                throw `Unknown type: ${char} in ${str}`
+                throw `Unknown variable: ${char} in ${str}`
         }
 
         char = charReader.next()
