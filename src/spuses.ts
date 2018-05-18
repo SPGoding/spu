@@ -87,6 +87,88 @@ export default class Spuses {
         ], [
             'clear %entity %itemWithData %number %nbt',
             'clear %0$addNbt%3 %1 %2'
+        ], [
+            // CLONE TODO
+            'clone %position %position %position',
+            'clone %0 %1 %2'
+        ], [
+            'debug %string',
+            'debug %0'
+        ], [
+            'defaultgamemode %mode',
+            'defaultgamemode %0'
+        ], [
+            'deop %entity',
+            'deop %0'
+        ], [
+            'difficulty %difficulty',
+            'difficulty %0'
+        ], [
+            'effect %entity clear',
+            'effect clear %0'
+        ], [
+            'effect %entity %string',
+            'effect give %0 %1'
+        ], [
+            'effect %entity %string %int',
+            'effect give %0 %1 %2'
+        ], [
+            'effect %entity %string %int %int',
+            'effect give %0 %1 %2 %3'
+        ], [
+            'effect %entity %string %int %int %bool',
+            'effect give %0 %1 %2 %3 %4'
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
+        ], [
+            '',
+            ''
         ]
         ])
 }
