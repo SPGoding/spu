@@ -56,7 +56,7 @@ export default class SpuScript {
                 case 'adv':
                     if (params.length === 1) {
                         let sel = new TargetSelector()
-                        // sel.parse113()
+                        sel.parse113(params[0])
                     } else if (params.length === 2) {
                     } else {
                         throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
@@ -129,6 +129,8 @@ export default class SpuScript {
                     return SpuScript.isEntity(cmdArg)
                 case 'string':
                     return SpuScript.isString(cmdArg)
+                case 'word':
+                    return SpuScript.isWord(cmdArg)
                 case 'number':
                     return SpuScript.isNumber(cmdArg)
                 case 'selector':
@@ -137,7 +139,7 @@ export default class SpuScript {
                     return SpuScript.isUuid(cmdArg)
                 default:
                     throw `Unknown argument type: ${spusArg.slice(1)}`
-                // TODO
+                // TODO:
             }
         } else {
             return cmdArg.toLowerCase() === spusArg
@@ -146,14 +148,16 @@ export default class SpuScript {
 
     static isEntity(input: string) {
         return (
-            SpuScript.isTargetSelector(input) ||
-            SpuScript.isString(input) ||
-            SpuScript.isUuid(input)
+            SpuScript.isTargetSelector(input) || SpuScript.isWord(input) || SpuScript.isUuid(input)
         )
     }
 
+    static isWord(input: string) {
+        return /^[\w:]*$/.test(input)
+    }
+
     static isString(input: string) {
-        return /^\w*$/.test(input)
+        return /^.*$/.test(input)
     }
 
     static isUuid(input: string) {

@@ -17,17 +17,17 @@ export default class TargetSelector {
     private y: number
     private z: number
     private sort: string
-    private tag: string[]
-    private team: string[]
-    private name: string[]
-    private type: string[]
-    private gamemode: string[]
+    private tag: string[] = []
+    private team: string[] = []
+    private name: string[] = []
+    private type: string[] = []
+    private gamemode: string[] = []
     private level = new Range(null, null)
     private distance = new Range(null, null)
     private x_rotation = new Range(null, null)
     private y_rotation = new Range(null, null)
-    private scores: Map<string, Range>
-    private advancements: Map<string, boolean>
+    private scores = new Map<string, Range>()
+    private advancements = new Map<string, boolean>()
 
     constructor() {}
 
@@ -98,12 +98,12 @@ export default class TargetSelector {
      * @param input a target selector.
      */
     public static isValid(input: string) {
-        try {
-            let sel = new TargetSelector()
-            sel.parse112(input)
-        } catch (ignored) {
-            return false
-        }
+        //try {
+        let sel = new TargetSelector()
+        sel.parse112(input)
+        //} catch (ignored) {
+        //    return false
+        //}
         return true
     }
 
@@ -121,7 +121,8 @@ export default class TargetSelector {
                 this.variable = SelectorVariable.P
                 break
             case 'r':
-                this.variable = SelectorVariable.R
+                this.variable = SelectorVariable.E
+                this.sort = 'random'
                 break
             case 's':
                 this.variable = SelectorVariable.S
@@ -168,11 +169,11 @@ export default class TargetSelector {
                     if (key.slice(-4) === '_min') {
                         // The min.
                         objective = key.slice(6, -4)
-                        this.setScore(objective, val, 'min')
+                        this.setScore112(objective, val, 'min')
                     } else {
                         // The max.
                         objective = key.slice(6)
-                        this.setScore(objective, val, 'max')
+                        this.setScore112(objective, val, 'max')
                     }
                 } else {
                     // Deal with normal properties.
@@ -202,7 +203,9 @@ export default class TargetSelector {
                             if (Number(val) >= 0) {
                                 this.limit = Number(val)
                             } else {
-                                this.sort = 'furthest'
+                                if (this.sort !== 'random') {
+                                    this.sort = 'furthest'
+                                }
                                 this.limit = -Number(val)
                             }
                             break
@@ -433,57 +436,49 @@ export default class TargetSelector {
         if (this.sort) {
             result += `sort=${this.sort},`
         }
-        if (this.tag) {
-            for (const i of this.tag) {
-                result += `tag=${i},`
-            }
+        for (const i of this.tag) {
+            result += `tag=${i},`
         }
-        if (this.team) {
-            for (const i of this.tag) {
-                result += `team=${i},`
-            }
+        for (const i of this.team) {
+            result += `team=${i},`
         }
-        if (this.name) {
-            for (const i of this.tag) {
-                result += `name=${i},`
-            }
+        for (const i of this.name) {
+            result += `name=${i},`
         }
-        if (this.type) {
-            for (const i of this.tag) {
-                result += `type=${i},`
-            }
+        for (const i of this.type) {
+            result += `type=${i},`
         }
-        if (this.gamemode) {
-            for (const i of this.tag) {
-                result += `gamemode=${i},`
-            }
+        for (const i of this.gamemode) {
+            result += `gamemode=${i},`
         }
-        let rangeStr = this.level.get113()
-        if (rangeStr) {
-            result += `level=${rangeStr},`
+        let tmp = this.level.get113()
+        if (tmp) {
+            result += `level=${tmp},`
         }
-        rangeStr = this.distance.get113()
+        tmp = this.distance.get113()
         if (this.distance.get113()) {
             result += `distance=${this.distance.get113()},`
         }
-        rangeStr = this.x_rotation.get113()
-        if (rangeStr) {
-            result += `x_rotation=${rangeStr},`
+        tmp = this.x_rotation.get113()
+        if (tmp) {
+            result += `x_rotation=${tmp},`
         }
-        rangeStr = this.y_rotation.get113()
-        if (rangeStr) {
-            result += `y_rotation=${rangeStr},`
+        tmp = this.y_rotation.get113()
+        if (tmp) {
+            result += `y_rotation=${tmp},`
         }
-        if (this.scores) {
-            result += `scores=${this.getScores113()},`
+        tmp = this.getScores113()
+        if (tmp) {
+            result += `scores=${tmp},`
         }
-        if (this.advancements) {
-            result += `advancements=${this.getAdvancements113()},`
+        tmp = this.getAdvancements113()
+        if (tmp) {
+            result += `advancements=${tmp},`
         }
         return result
     }
 
-    private setScore(objective: string, value: string, type: string) {
+    private setScore112(objective: string, value: string, type: string) {
         if (this.scores.has(objective)) {
             // The 'scores' map has this objective, so complete it.
             switch (type) {
@@ -565,7 +560,7 @@ export default class TargetSelector {
         let result = '{'
 
         for (const i of this.scores.keys()) {
-            result += `${i}=${this.scores.get(i).get113()}`
+            result += `${i}=${this.scores.get(i).get113()},`
         }
 
         // Close the flower brackets.
@@ -579,21 +574,23 @@ export default class TargetSelector {
     }
 
     private getAdvancements113() {
-        // TODO
+        // TODO: Finish
         let result = '{'
 
-        for (const i of this.scores.keys()) {
-            result += `${i}=${this.scores.get(i).get113()}`
-        }
+        // for (const i of this.scores.keys()) {
+        //     result += `${i}=${this.scores.get(i).get113()},`
+        // }
 
-        // Close the flower brackets.
-        if (result.slice(-1) === ',') {
-            result = result.slice(0, -1) + '}'
-        } else if (result.slice(-1) === '{') {
-            result = result.slice(0, -1)
-        }
+        // // Close the flower brackets.
+        // if (result.slice(-1) === ',') {
+        //     result = result.slice(0, -1) + '}'
+        // } else if (result.slice(-1) === '{') {
+        //     result = result.slice(0, -1)
+        // }
 
-        return result
+        // return result
+
+        return ''
     }
 }
 

@@ -212,10 +212,17 @@ const converter_1 = require("./converter");
 const char_reader_2 = require("./char_reader");
 class TargetSelector {
     constructor() {
+        this.tag = [];
+        this.team = [];
+        this.name = [];
+        this.type = [];
+        this.gamemode = [];
         this.level = new Range(null, null);
         this.distance = new Range(null, null);
         this.x_rotation = new Range(null, null);
         this.y_rotation = new Range(null, null);
+        this.scores = new Map();
+        this.advancements = new Map();
     }
     parse112(str) {
         let charReader = new char_reader_1.default(str);
@@ -255,13 +262,8 @@ class TargetSelector {
         return result;
     }
     static isValid(input) {
-        try {
-            let sel = new TargetSelector();
-            sel.parse112(input);
-        }
-        catch (ignored) {
-            return false;
-        }
+        let sel = new TargetSelector();
+        sel.parse112(input);
         return true;
     }
     parseVariable112(char, str) {
@@ -278,7 +280,8 @@ class TargetSelector {
                 this.variable = SelectorVariable.P;
                 break;
             case 'r':
-                this.variable = SelectorVariable.R;
+                this.variable = SelectorVariable.E;
+                this.sort = 'random';
                 break;
             case 's':
                 this.variable = SelectorVariable.S;
@@ -317,11 +320,11 @@ class TargetSelector {
                     let objective;
                     if (key.slice(-4) === '_min') {
                         objective = key.slice(6, -4);
-                        this.setScore(objective, val, 'min');
+                        this.setScore112(objective, val, 'min');
                     }
                     else {
                         objective = key.slice(6);
-                        this.setScore(objective, val, 'max');
+                        this.setScore112(objective, val, 'max');
                     }
                 }
                 else {
@@ -352,7 +355,9 @@ class TargetSelector {
                                 this.limit = Number(val);
                             }
                             else {
-                                this.sort = 'furthest';
+                                if (this.sort !== 'random') {
+                                    this.sort = 'furthest';
+                                }
                                 this.limit = -Number(val);
                             }
                             break;
@@ -575,56 +580,48 @@ class TargetSelector {
         if (this.sort) {
             result += `sort=${this.sort},`;
         }
-        if (this.tag) {
-            for (const i of this.tag) {
-                result += `tag=${i},`;
-            }
+        for (const i of this.tag) {
+            result += `tag=${i},`;
         }
-        if (this.team) {
-            for (const i of this.tag) {
-                result += `team=${i},`;
-            }
+        for (const i of this.team) {
+            result += `team=${i},`;
         }
-        if (this.name) {
-            for (const i of this.tag) {
-                result += `name=${i},`;
-            }
+        for (const i of this.name) {
+            result += `name=${i},`;
         }
-        if (this.type) {
-            for (const i of this.tag) {
-                result += `type=${i},`;
-            }
+        for (const i of this.type) {
+            result += `type=${i},`;
         }
-        if (this.gamemode) {
-            for (const i of this.tag) {
-                result += `gamemode=${i},`;
-            }
+        for (const i of this.gamemode) {
+            result += `gamemode=${i},`;
         }
-        let rangeStr = this.level.get113();
-        if (rangeStr) {
-            result += `level=${rangeStr},`;
+        let tmp = this.level.get113();
+        if (tmp) {
+            result += `level=${tmp},`;
         }
-        rangeStr = this.distance.get113();
+        tmp = this.distance.get113();
         if (this.distance.get113()) {
             result += `distance=${this.distance.get113()},`;
         }
-        rangeStr = this.x_rotation.get113();
-        if (rangeStr) {
-            result += `x_rotation=${rangeStr},`;
+        tmp = this.x_rotation.get113();
+        if (tmp) {
+            result += `x_rotation=${tmp},`;
         }
-        rangeStr = this.y_rotation.get113();
-        if (rangeStr) {
-            result += `y_rotation=${rangeStr},`;
+        tmp = this.y_rotation.get113();
+        if (tmp) {
+            result += `y_rotation=${tmp},`;
         }
-        if (this.scores) {
-            result += `scores=${this.getScores113()},`;
+        tmp = this.getScores113();
+        if (tmp) {
+            result += `scores=${tmp},`;
         }
-        if (this.advancements) {
-            result += `advancements=${this.getAdvancements113()},`;
+        tmp = this.getAdvancements113();
+        if (tmp) {
+            result += `advancements=${tmp},`;
         }
         return result;
     }
-    setScore(objective, value, type) {
+    setScore112(objective, value, type) {
         if (this.scores.has(objective)) {
             switch (type) {
                 case 'max':
@@ -687,7 +684,7 @@ class TargetSelector {
     getScores113() {
         let result = '{';
         for (const i of this.scores.keys()) {
-            result += `${i}=${this.scores.get(i).get113()}`;
+            result += `${i}=${this.scores.get(i).get113()},`;
         }
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + '}';
@@ -699,16 +696,7 @@ class TargetSelector {
     }
     getAdvancements113() {
         let result = '{';
-        for (const i of this.scores.keys()) {
-            result += `${i}=${this.scores.get(i).get113()}`;
-        }
-        if (result.slice(-1) === ',') {
-            result = result.slice(0, -1) + '}';
-        }
-        else if (result.slice(-1) === '{') {
-            result = result.slice(0, -1);
-        }
-        return result;
+        return '';
     }
 }
 exports.default = TargetSelector;
@@ -806,6 +794,7 @@ class SpuScript {
                 case 'adv':
                     if (params.length === 1) {
                         let sel = new selector_1.default();
+                        sel.parse113(params[0]);
                     }
                     else if (params.length === 2) {
                     }
@@ -867,6 +856,8 @@ class SpuScript {
                     return SpuScript.isEntity(cmdArg);
                 case 'string':
                     return SpuScript.isString(cmdArg);
+                case 'word':
+                    return SpuScript.isWord(cmdArg);
                 case 'number':
                     return SpuScript.isNumber(cmdArg);
                 case 'selector':
@@ -882,12 +873,13 @@ class SpuScript {
         }
     }
     static isEntity(input) {
-        return (SpuScript.isTargetSelector(input) ||
-            SpuScript.isString(input) ||
-            SpuScript.isUuid(input));
+        return (SpuScript.isTargetSelector(input) || SpuScript.isWord(input) || SpuScript.isUuid(input));
+    }
+    static isWord(input) {
+        return /^[\w:]*$/.test(input);
     }
     static isString(input) {
-        return /^\w*$/.test(input);
+        return /^.*$/.test(input);
     }
     static isUuid(input) {
         return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input);
@@ -907,27 +899,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Spuses {
 }
 Spuses.pairs = new Map([
-    ['advancement grant %entity only %string', 'advancement grant %0 only %1'],
-    ['advancement grant %entity only %string %string', 'advancement grant %0 only %1 %2'],
-    ['advancement revoke %entity only %string', 'advancement revoke %0 only %1'],
-    ['advancement revoke %entity only %string %string', 'advancement revoke %0 only %1 %2'],
-    ['advancement grant %entity until %string', 'advancement grant %0 until %1'],
-    ['advancement grant %entity from %string', 'advancement grant %0 from %1'],
-    ['advancement grant %entity through %string', 'advancement grant %0 through %1'],
-    ['advancement revoke %entity until %string', 'advancement revoke %0 until %1'],
-    ['advancement revoke %entity from %string', 'advancement revoke %0 from %1'],
-    ['advancement revoke %entity through %string', 'advancement revoke %0 through %1'],
+    ['advancement grant %entity only %word', 'advancement grant %0 only %1'],
+    ['advancement grant %entity only %word %word', 'advancement grant %0 only %1 %2'],
+    ['advancement revoke %entity only %word', 'advancement revoke %0 only %1'],
+    ['advancement revoke %entity only %word %word', 'advancement revoke %0 only %1 %2'],
+    ['advancement grant %entity until %word', 'advancement grant %0 until %1'],
+    ['advancement grant %entity from %word', 'advancement grant %0 from %1'],
+    ['advancement grant %entity through %word', 'advancement grant %0 through %1'],
+    ['advancement revoke %entity until %word', 'advancement revoke %0 until %1'],
+    ['advancement revoke %entity from %word', 'advancement revoke %0 from %1'],
+    ['advancement revoke %entity through %word', 'advancement revoke %0 through %1'],
     ['advancement grant %entity everything', 'advancement grant %0 everything'],
     ['advancement revoke %entity everything', 'advancement revoke %0 everything'],
-    ['advancement test %entity %string', 'execute if entity %0$addAdvancement%1'],
-    ['advancement test %entity %string %string', 'execute if entity %0$addAdvancement%1%2'],
+    ['advancement test %entity %word', 'execute if entity %0$addAdvancement%1'],
+    ['advancement test %entity %word %word', 'execute if entity %0$addAdvancement%1%2'],
     ['ban %entity', 'ban %0'],
     ['ban %entity %string', 'ban %0 %1'],
     ['ban-ip %entity', 'ban-ip %0'],
     ['ban-ip %entity %string', 'ban-ip %0 %1'],
     ['ban-ip %string', 'ban-ip %0'],
     ['ban-ip %string %string', 'ban-ip %0 %1'],
-    ['banlist %string', 'banlist %0'],
+    ['banlist %word', 'banlist %0'],
     ['blockdata %position %nbt', 'data merge block %0 %1'],
     ['clear', 'clear'],
     ['clear %entity', 'clear %0'],
@@ -936,24 +928,24 @@ Spuses.pairs = new Map([
     ['clear %entity %itemWithData %number', 'clear %0 %1 %2 %'],
     ['clear %entity %itemWithData %number %nbt', 'clear %0$addNbt%3 %1 %2'],
     ['clone %position %position %position', 'clone %0 %1 %2'],
-    ['clone %position %position %position %string', 'clone %0 %1 %2 %3'],
-    ['clone %position %position %position %string %string', 'clone %0 %1 %2 %3 %4'],
-    ['clone %position %position %position %string %string %block', 'clone %0 %1 %2 %3 %5 %4'],
+    ['clone %position %position %position %word', 'clone %0 %1 %2 %3'],
+    ['clone %position %position %position %word %word', 'clone %0 %1 %2 %3 %4'],
+    ['clone %position %position %position %word %word %block', 'clone %0 %1 %2 %3 %5 %4'],
     [
-        'clone %position %position %position %string %string %blockWithData',
+        'clone %position %position %position %word %word %blockWithData',
         'clone %0 %1 %2 %3 %5 %4'
     ],
-    ['debug %string', 'debug %0'],
+    ['debug %word', 'debug %0'],
     ['defaultgamemode %mode', 'defaultgamemode %0'],
     ['deop %entity', 'deop %0'],
     ['difficulty %difficulty', 'difficulty %0'],
     ['effect %entity clear', 'effect clear %0'],
-    ['effect %entity %string', 'effect give %0 %1'],
-    ['effect %entity %string %int', 'effect give %0 %1 %2'],
-    ['effect %entity %string %int %int', 'effect give %0 %1 %2 %3'],
-    ['effect %entity %string %int %int %bool', 'effect give %0 %1 %2 %3 %4'],
-    ['enchant %entity %string', 'enchant %0 %1'],
-    ['enchant %entity %string %int', 'enchant %0 %1 %2'],
+    ['effect %entity %word', 'effect give %0 %1'],
+    ['effect %entity %word %int', 'effect give %0 %1 %2'],
+    ['effect %entity %word %int %int', 'effect give %0 %1 %2 %3'],
+    ['effect %entity %word %int %int %bool', 'effect give %0 %1 %2 %3 %4'],
+    ['enchant %entity %word', 'enchant %0 %1'],
+    ['enchant %entity %word %int', 'enchant %0 %1 %2'],
     ['entitydata %entity %nbt', 'data merge entity %0$setLimitTo1 %1'],
     ['execute %entity %position %command', 'execute as %0 at @s positioned %1 run %2'],
     [
