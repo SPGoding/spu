@@ -30,7 +30,7 @@ When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be c
 
     ```typescript
     {
-        '%0': '@e[type=armor_stand,distance=..5]',
+        '%0': '@e[sort=nearest,type=armor_stand,distance=..5]',
         '%1': '{CustomName:"[\\"hhh\\"]"}'
     }
     ```

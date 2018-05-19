@@ -113,17 +113,25 @@ class Converter {
             return input;
         }
         else {
-            for (const spusOld of spuses_1.default.pairs.keys()) {
-                let map = Converter.getResultMap(input, spusOld);
-                if (map) {
-                    let spusNew = spuses_1.default.pairs.get(spusOld);
-                    let spus = new spu_script_1.default(spusNew);
-                    let result = spus.compileWith(map);
+            return Converter.cvtCommand(input, true);
+        }
+    }
+    static cvtCommand(input, positionCorrect) {
+        for (const spusOld of spuses_1.default.pairs.keys()) {
+            let map = Converter.getResultMap(input, spusOld);
+            if (map) {
+                let spusNew = spuses_1.default.pairs.get(spusOld);
+                let spus = new spu_script_1.default(spusNew);
+                let result = spus.compileWith(map);
+                if (positionCorrect) {
                     return `execute positioned 0.0 0.0 0.0 run ${result}`;
                 }
+                else {
+                    return result;
+                }
             }
-            throw `Unknown line: ${input}`;
         }
+        throw `Unknown command: ${input}`;
     }
     static cvtGamemode(input) {
         switch (input) {
@@ -696,7 +704,26 @@ class TargetSelector {
     }
     getAdvancements113() {
         let result = '{';
-        return '';
+        for (const i of this.advancements.keys()) {
+            const val = this.advancements.get(i);
+            if (typeof val === 'boolean') {
+                result += `${i}=${val},`;
+            }
+            else {
+                result += `${i}={`;
+                for (const j of val.keys()) {
+                    result += `${j}=${val.get(j)}`;
+                }
+                result = result.slice(0, -1) + '}';
+            }
+        }
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + '}';
+        }
+        else if (result.slice(-1) === '{') {
+            result = result.slice(0, -1);
+        }
+        return result;
     }
 }
 exports.default = TargetSelector;

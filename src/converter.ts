@@ -60,17 +60,25 @@ export default class Converter {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            for (const spusOld of Spuses.pairs.keys()) {
-                let map = Converter.getResultMap(input, spusOld)
-                if (map) {
-                    let spusNew = Spuses.pairs.get(spusOld)
-                    let spus = new SpuScript(spusNew)
-                    let result = spus.compileWith(map)
+            return Converter.cvtCommand(input, true)
+        }
+    }
+
+    static cvtCommand(input: string, positionCorrect: boolean) {
+        for (const spusOld of Spuses.pairs.keys()) {
+            let map = Converter.getResultMap(input, spusOld)
+            if (map) {
+                let spusNew = Spuses.pairs.get(spusOld)
+                let spus = new SpuScript(spusNew)
+                let result = spus.compileWith(map)
+                if (positionCorrect) {
                     return `execute positioned 0.0 0.0 0.0 run ${result}`
+                } else {
+                    return result
                 }
             }
-            throw `Unknown line: ${input}`
         }
+        throw `Unknown command: ${input}`
     }
 
     static cvtGamemode(input: string) {

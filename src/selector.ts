@@ -574,23 +574,29 @@ export default class TargetSelector {
     }
 
     private getAdvancements113() {
-        // TODO: Finish
         let result = '{'
 
-        // for (const i of this.scores.keys()) {
-        //     result += `${i}=${this.scores.get(i).get113()},`
-        // }
+        for (const i of this.advancements.keys()) {
+            const val = this.advancements.get(i)
+            if (typeof val === 'boolean') {
+                result += `${i}=${val},`
+            } else {
+                result += `${i}={`
+                for (const j of val.keys()) {
+                    result += `${j}=${val.get(j)}`
+                }
+                result = result.slice(0, -1) + '}'
+            }
+        }
 
-        // // Close the flower brackets.
-        // if (result.slice(-1) === ',') {
-        //     result = result.slice(0, -1) + '}'
-        // } else if (result.slice(-1) === '{') {
-        //     result = result.slice(0, -1)
-        // }
+        // Close the flower brackets.
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + '}'
+        } else if (result.slice(-1) === '{') {
+            result = result.slice(0, -1)
+        }
 
-        // return result
-
-        return ''
+        return result
     }
 }
 
