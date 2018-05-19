@@ -267,12 +267,32 @@ class TargetSelector {
         else if (result.slice(-1) === '[') {
             result = result.slice(0, -1);
         }
+        console.log(this);
         return result;
     }
     static isValid(input) {
         let sel = new TargetSelector();
         sel.parse112(input);
         return true;
+    }
+    addFinishedAdvancement(adv, crit) {
+        if (crit) {
+            if (this.advancements.has(adv)) {
+                let val = this.advancements.get(adv);
+                if (typeof val === 'boolean') {
+                    return;
+                }
+                else {
+                    val.set(crit, true);
+                }
+            }
+            else {
+                this.advancements.set(adv, new Map([[crit, true]]));
+            }
+        }
+        else {
+            this.advancements.set(adv, true);
+        }
     }
     parseVariable112(char, str) {
         switch (char) {
@@ -325,15 +345,7 @@ class TargetSelector {
                     char = charReader.next();
                 }
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
-                    let objective;
-                    if (key.slice(-4) === '_min') {
-                        objective = key.slice(6, -4);
-                        this.setScore112(objective, val, 'min');
-                    }
-                    else {
-                        objective = key.slice(6);
-                        this.setScore112(objective, val, 'max');
-                    }
+                    this.parseScore112(key, val);
                 }
                 else {
                     switch (key) {
@@ -466,13 +478,21 @@ class TargetSelector {
                     char = charReader.next();
                 }
                 char = charReader.next();
-                while (char !== ',' && char !== ']') {
+                let depth = 0;
+                while (depth !== 0 || (char !== ',' && char !== ']')) {
                     if (char_reader_2.isWhiteSpace(char)) {
                         continue;
+                    }
+                    if (char === '{' || char === '[') {
+                        depth += 1;
+                    }
+                    else if (char === '}' || char === ']') {
+                        depth -= 1;
                     }
                     val += char;
                     char = charReader.next();
                 }
+                let range;
                 switch (key) {
                     case 'dx':
                         this.dx = Number(val);
@@ -502,7 +522,7 @@ class TargetSelector {
                         this.limit = Number(val);
                         break;
                     case 'level':
-                        let range = new Range(null, null);
+                        range = new Range(null, null);
                         range.parse113(val);
                         this.level = range;
                         break;
@@ -531,8 +551,9 @@ class TargetSelector {
                         this.z = Number(val);
                         break;
                     case 'scores':
-                        this.setScores113(key);
+                        this.parseScores113(val);
                     case 'advancements':
+                        this.parseAdvancements113(val);
                     case 'nbt':
                     default:
                         break;
@@ -541,6 +562,72 @@ class TargetSelector {
         }
         else {
             throw `Unexpected token: ${str}`;
+        }
+    }
+    parseAdvancements113(val) {
+        let charReader = new char_reader_1.default(val);
+        let char = charReader.next();
+        let adv;
+        let crit;
+        let bool;
+        let map;
+        if (char !== '{') {
+            throw `Advancements should start with '{', but get '${char}' at '${val}'`;
+        }
+        char = charReader.next();
+        if (char === '}') {
+            return;
+        }
+        while (char) {
+            adv = '';
+            bool = '';
+            while (char !== '=') {
+                if (char_reader_2.isWhiteSpace(char)) {
+                    char = charReader.next();
+                    continue;
+                }
+                adv += char;
+                char = charReader.next();
+            }
+            char = charReader.next();
+            if (char === '{') {
+                map = new Map();
+                while (char !== '}') {
+                    char = charReader.next();
+                    crit = '';
+                    bool = '';
+                    while (char !== '=') {
+                        if (char_reader_2.isWhiteSpace(char)) {
+                            char = charReader.next();
+                            continue;
+                        }
+                        crit += char;
+                        char = charReader.next();
+                    }
+                    char = charReader.next();
+                    while (char !== '}' && char !== ',') {
+                        if (char_reader_2.isWhiteSpace(char)) {
+                            char = charReader.next();
+                            continue;
+                        }
+                        bool += char;
+                        char = charReader.next();
+                    }
+                    map.set(crit, Boolean(bool));
+                }
+                this.advancements.set(adv, map);
+            }
+            else {
+                while (char !== '}' && char !== ',') {
+                    if (char_reader_2.isWhiteSpace(char)) {
+                        char = charReader.next();
+                        continue;
+                    }
+                    bool += char;
+                }
+            }
+            char = charReader.next();
+            this.advancements.set(adv, Boolean(bool));
         }
     }
     getVariable113(result) {
@@ -629,7 +716,7 @@ class TargetSelector {
         }
         return result;
     }
-    setScore112(objective, value, type) {
+    setScore(objective, value, type) {
         if (this.scores.has(objective)) {
             switch (type) {
                 case 'max':
@@ -657,7 +744,18 @@ class TargetSelector {
             this.scores.set(objective, range);
         }
     }
-    setScores113(str) {
+    parseScore112(key, val) {
+        let objective;
+        if (key.slice(-4) === '_min') {
+            objective = key.slice(6, -4);
+            this.setScore(objective, val, 'min');
+        }
+        else {
+            objective = key.slice(6);
+            this.setScore(objective, val, 'max');
+        }
+    }
+    parseScores113(str) {
         let charReader = new char_reader_1.default(str);
         let char = charReader.next();
         let objective;
@@ -673,16 +771,20 @@ class TargetSelector {
             range = new Range(null, null);
             while (char !== '=') {
                 if (char_reader_2.isWhiteSpace(char)) {
+                    char = charReader.next();
                     continue;
                 }
                 objective += char;
+                char = charReader.next();
             }
             char = charReader.next();
             while (char && char !== ',' && char !== '}') {
                 if (char_reader_2.isWhiteSpace(char)) {
+                    char = charReader.next();
                     continue;
                 }
                 rangeStr += char;
+                char = charReader.next();
             }
             char = charReader.next();
             range.parse113(rangeStr);
@@ -712,9 +814,9 @@ class TargetSelector {
             else {
                 result += `${i}={`;
                 for (const j of val.keys()) {
-                    result += `${j}=${val.get(j)}`;
+                    result += `${j}=${val.get(j)},`;
                 }
-                result = result.slice(0, -1) + '}';
+                result = result.slice(0, -1) + '},';
             }
         }
         if (result.slice(-1) === ',') {
@@ -816,18 +918,22 @@ class SpuScript {
         let source = resultMap.get(`%${id}`);
         let result = source;
         for (const name of methods.keys()) {
-            const params = methods.get(name);
+            let params = methods.get(name);
+            params = params.map(x => resultMap.get(`%${x}`));
             switch (name) {
-                case 'adv':
+                case 'addAdvancement':
+                    let sel = new selector_1.default();
+                    sel.parse113(source);
                     if (params.length === 1) {
-                        let sel = new selector_1.default();
-                        sel.parse113(params[0]);
+                        sel.addFinishedAdvancement(params[0]);
                     }
                     else if (params.length === 2) {
+                        sel.addFinishedAdvancement(params[0], params[1]);
                     }
                     else {
                         throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`;
                     }
+                    result = sel.get113();
                     break;
                 default:
                     break;

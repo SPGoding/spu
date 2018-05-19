@@ -51,16 +51,20 @@ export default class SpuScript {
         let result = source
 
         for (const name of methods.keys()) {
-            const params = methods.get(name)
+            let params = methods.get(name)
+            params = params.map(x => resultMap.get(`%${x}`))
             switch (name) {
-                case 'adv':
+                case 'addAdvancement':
+                    let sel = new TargetSelector()
+                    sel.parse113(source)
                     if (params.length === 1) {
-                        let sel = new TargetSelector()
-                        sel.parse113(params[0])
+                        sel.addFinishedAdvancement(params[0])
                     } else if (params.length === 2) {
+                        sel.addFinishedAdvancement(params[0], params[1])
                     } else {
                         throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
                     }
+                    result = sel.get113()
                     break
                 default:
                     break

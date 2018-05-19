@@ -90,6 +90,8 @@ export default class TargetSelector {
             result = result.slice(0, -1)
         }
 
+        console.log(this)
+
         return result
     }
 
@@ -105,6 +107,23 @@ export default class TargetSelector {
         //    return false
         //}
         return true
+    }
+
+    public addFinishedAdvancement(adv: string, crit?: string) {
+        if (crit) {
+            if (this.advancements.has(adv)) {
+                let val = this.advancements.get(adv)
+                if (typeof val === 'boolean') {
+                    return
+                } else {
+                    val.set(crit, true)
+                }
+            } else {
+                this.advancements.set(adv, new Map([[crit, true]]))
+            }
+        } else {
+            this.advancements.set(adv, true)
+        }
     }
 
     private parseVariable112(char: string, str: string) {
@@ -300,16 +319,23 @@ export default class TargetSelector {
                 }
 
                 char = charReader.next()
-                while (char !== ',' && char !== ']') {
+                let depth = 0
+                while (depth !== 0 || (char !== ',' && char !== ']')) {
                     // Read value.
                     if (isWhiteSpace(char)) {
                         continue
+                    }
+                    if (char === '{' || char === '[') {
+                        depth += 1
+                    } else if (char === '}' || char === ']') {
+                        depth -= 1
                     }
                     val += char
                     char = charReader.next()
                 }
 
                 // Deal with normal properties.
+                let range: Range
                 switch (key) {
                     case 'dx':
                         this.dx = Number(val)
@@ -339,7 +365,7 @@ export default class TargetSelector {
                         this.limit = Number(val)
                         break
                     case 'level':
-                        let range = new Range(null, null)
+                        range = new Range(null, null)
                         range.parse113(val)
                         this.level = range
                         break
@@ -369,10 +395,10 @@ export default class TargetSelector {
                         break
                     case 'scores':
                         this.parseScores113(val)
-                    // TODO:
                     case 'advancements':
-                        this.parseAdvancements(val)
+                        this.parseAdvancements113(val)
                     case 'nbt':
+                        // TODO:
                     default:
                         break
                 }
@@ -382,8 +408,78 @@ export default class TargetSelector {
         }
     }
 
-    private parseAdvancements(val: string) {
-        if (char 
+    private parseAdvancements113(val: string) {
+        let charReader = new CharReader(val)
+        let char = charReader.next()
+        let adv: string
+        let crit: string
+        let bool: string
+        let map: Map<string, boolean>
+
+        if (char !== '{') {
+            throw `Advancements should start with '{', but get '${char}' at '${val}'`
+        }
+
+        char = charReader.next()
+
+        if (char === '}') {
+            return
+        }
+        
+        while (char) {
+            adv = ''
+            bool = ''
+
+            while (char !== '=') {
+                if (isWhiteSpace(char)) {
+                    char = charReader.next()
+                    continue
+                }
+                adv += char
+                char = charReader.next()
+            }
+
+            char = charReader.next()
+
+            if (char === '{') {
+                map = new Map<string, boolean>()
+                while (char !== '}') {
+                    char = charReader.next()
+                    crit = ''
+                    bool = ''
+                    while (char !== '=') {
+                        if (isWhiteSpace(char)) {
+                            char = charReader.next()
+                            continue
+                        }
+                        crit += char
+                        char = charReader.next()
+                    }
+                    char = charReader.next()
+                    while (char !== '}' && char !== ',') {
+                        if (isWhiteSpace(char)) {
+                            char = charReader.next()
+                            continue
+                        }
+                        bool += char
+                        char = charReader.next()
+                    }
+                    map.set(crit, Boolean(bool))
+                }
+                this.advancements.set(adv, map)
+            } else {
+                while (char !== '}' && char !== ',') {
+                    if (isWhiteSpace(char)) {
+                        char = charReader.next()
+                        continue
+                    }
+                    bool += char
+                }
+            }
+
+            char = charReader.next()
+            this.advancements.set(adv, Boolean(bool))
+        }
     }
 
     private getVariable113(result: string) {
@@ -545,18 +641,22 @@ export default class TargetSelector {
 
             while (char !== '=') {
                 if (isWhiteSpace(char)) {
+                    char = charReader.next()
                     continue
                 }
                 objective += char
+                char = charReader.next()
             }
 
             char = charReader.next()
 
             while (char && char !== ',' && char !== '}') {
                 if (isWhiteSpace(char)) {
+                    char = charReader.next()
                     continue
                 }
                 rangeStr += char
+                char = charReader.next()
             }
 
             char = charReader.next()
@@ -593,9 +693,9 @@ export default class TargetSelector {
             } else {
                 result += `${i}={`
                 for (const j of val.keys()) {
-                    result += `${j}=${val.get(j)}`
+                    result += `${j}=${val.get(j)},`
                 }
-                result = result.slice(0, -1) + '}'
+                result = result.slice(0, -1) + '},'
             }
         }
 
