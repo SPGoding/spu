@@ -165,16 +165,7 @@ export default class TargetSelector {
 
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
-                    let objective: string
-                    if (key.slice(-4) === '_min') {
-                        // The min.
-                        objective = key.slice(6, -4)
-                        this.setScore112(objective, val, 'min')
-                    } else {
-                        // The max.
-                        objective = key.slice(6)
-                        this.setScore112(objective, val, 'max')
-                    }
+                    this.parseScore112(key, val)
                 } else {
                     // Deal with normal properties.
                     switch (key) {
@@ -377,9 +368,10 @@ export default class TargetSelector {
                         this.z = Number(val)
                         break
                     case 'scores':
-                        this.setScores113(key)
-                    // TODO
+                        this.parseScores113(val)
+                    // TODO:
                     case 'advancements':
+                        this.parseAdvancements(val)
                     case 'nbt':
                     default:
                         break
@@ -388,6 +380,10 @@ export default class TargetSelector {
         } else {
             throw `Unexpected token: ${str}`
         }
+    }
+
+    private parseAdvancements(val: string) {
+        if (char 
     }
 
     private getVariable113(result: string) {
@@ -478,7 +474,7 @@ export default class TargetSelector {
         return result
     }
 
-    private setScore112(objective: string, value: string, type: string) {
+    private setScore(objective: string, value: string, type: string) {
         if (this.scores.has(objective)) {
             // The 'scores' map has this objective, so complete it.
             switch (type) {
@@ -508,14 +504,28 @@ export default class TargetSelector {
         }
     }
 
+    private parseScore112(key: string, val: string) {
+        // Deal with scores.
+        let objective: string
+        if (key.slice(-4) === '_min') {
+            // The min.
+            objective = key.slice(6, -4)
+            this.setScore(objective, val, 'min')
+        } else {
+            // The max.
+            objective = key.slice(6)
+            this.setScore(objective, val, 'max')
+        }
+    }
+
     /**
      * Sets the 'scores' field with a string.
      * @param str The value of 'scores' in target selector in 1.13.
      * @example
-     * this.setScores('{}')
-     * this.setScores('{foo=1,bar=1..5,fuck=2..,me=..10}')
+     * this.parseScores113('{}')
+     * this.parseScores113('{foo=1,bar=1..5,fuck=2..,me=..10}')
      */
-    private setScores113(str: string) {
+    private parseScores113(str: string) {
         let charReader = new CharReader(str)
         let char = charReader.next()
         let objective: string
