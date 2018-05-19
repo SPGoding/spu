@@ -27,7 +27,7 @@ export default class TargetSelector {
     private x_rotation = new Range(null, null)
     private y_rotation = new Range(null, null)
     private scores = new Map<string, Range>()
-    private advancements = new Map<string, boolean>()
+    private advancements = new Map<string, boolean | Map<string, boolean>>()
 
     constructor() {}
 
