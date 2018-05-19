@@ -132,6 +132,10 @@ export default class TargetSelector {
     }
 
     private parseProperties112(char: string, charReader: CharReader, str: string) {
+        if (!char) {
+            return
+        }
+
         if (char === '[') {
             let key: string
             let val: string
@@ -454,17 +458,21 @@ export default class TargetSelector {
                 result += `gamemode=${i},`
             }
         }
-        if (this.level) {
-            result += `level=${this.level.get113()},`
+        let rangeStr = this.level.get113()
+        if (rangeStr) {
+            result += `level=${rangeStr},`
         }
-        if (this.distance) {
+        rangeStr = this.distance.get113()
+        if (this.distance.get113()) {
             result += `distance=${this.distance.get113()},`
         }
-        if (this.x_rotation) {
-            result += `x_rotation=${this.x_rotation.get113()},`
+        rangeStr = this.x_rotation.get113()
+        if (rangeStr) {
+            result += `x_rotation=${rangeStr},`
         }
-        if (this.y_rotation) {
-            result += `y_rotation=${this.y_rotation.get113()},`
+        rangeStr = this.y_rotation.get113()
+        if (rangeStr) {
+            result += `y_rotation=${rangeStr},`
         }
         if (this.scores) {
             result += `scores=${this.getScores113()},`
