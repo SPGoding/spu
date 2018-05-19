@@ -5,7 +5,7 @@ import TargetSelector from './selector'
 /**
  * Represents a spu script.
  * Provides methods to compile itself.
- * @example 
+ * @example
  * let spus = new SpuScript('execute if entity %0$adv%1%2')
  * let result = spus.compileWith(resultMap)
  */
@@ -49,7 +49,7 @@ export default class SpuScript {
         let methods = tokensMap.get(id)
         let source = resultMap.get(`%${id}`)
         let result = source
-        
+
         for (const name of methods.keys()) {
             const params = methods.get(name)
             switch (name) {
@@ -58,7 +58,6 @@ export default class SpuScript {
                         let sel = new TargetSelector()
                         // sel.parse113()
                     } else if (params.length === 2) {
-
                     } else {
                         throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
                     }
@@ -72,10 +71,10 @@ export default class SpuScript {
     }
 
     /**
-     * 
+     *
      * @param arg A spu script arg.
      * @returns A map contains id and methods.
-     * @example 
+     * @example
      * tokenize('%0') => {'0': {}}
      * tokenize('%1$adv%0%2$nbt%3') => {'1': {adv: ['0', '2'], nbt: ['3']}}
      */
@@ -146,9 +145,11 @@ export default class SpuScript {
     }
 
     static isEntity(input: string) {
-        return SpuScript.isTargetSelector(input) || 
-               SpuScript.isString(input) || 
-               SpuScript.isUuid(input)
+        return (
+            SpuScript.isTargetSelector(input) ||
+            SpuScript.isString(input) ||
+            SpuScript.isUuid(input)
+        )
     }
 
     static isString(input: string) {

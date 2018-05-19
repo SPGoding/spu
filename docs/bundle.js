@@ -147,6 +147,28 @@ class Converter {
                 throw `Unknown gamemode: ${input}`;
         }
     }
+    static cvtDifficulty(input) {
+        switch (input) {
+            case '0':
+            case 'p':
+            case 'peaceful':
+                return 'peaceful';
+            case '1':
+            case 'e':
+            case 'easy':
+                return 'easy';
+            case '2':
+            case 'n':
+            case 'normal':
+                return 'normal';
+            case '3':
+            case 'h':
+            case 'hard':
+                return 'hard';
+            default:
+                throw `Unknown difficulty: ${input}`;
+        }
+    }
     static cvtTargetSelector(input) {
         let sel = new selector_1.default();
         sel.parse112(input);
@@ -186,45 +208,84 @@ const char_reader_1 = require("./char_reader");
 const converter_1 = require("./converter");
 const char_reader_2 = require("./char_reader");
 class TargetSelector {
-    constructor() { }
+    constructor() {
+        this.level = new Range(null, null);
+        this.distance = new Range(null, null);
+        this.x_rotation = new Range(null, null);
+        this.y_rotation = new Range(null, null);
+    }
     parse112(str) {
         let charReader = new char_reader_1.default(str);
         let char;
-        this.properties = new Map();
-        this.scores = new Map();
-        this.advancements = new Map();
-        this.ranges = new Map();
         char = charReader.next();
         if (char !== '@') {
             throw `First char should be '@': ${str}`;
         }
         char = charReader.next();
-        switch (char) {
-            case 'a':
-                this.type = SelectorType.A;
-                this.properties.set('sort', 'nearest');
-                break;
-            case 'e':
-                this.type = SelectorType.E;
-                this.properties.set('sort', 'nearest');
-                break;
-            case 'p':
-                this.type = SelectorType.P;
-                break;
-            case 'r':
-                this.type = SelectorType.R;
-                break;
-            case 's':
-                this.type = SelectorType.S;
-                break;
-            default:
-                throw `Unknown type: ${char} in ${str}`;
+        this.parseVariable112(char, str);
+        char = charReader.next();
+        this.parseProperties112(char, charReader, str);
+    }
+    parse113(str) {
+        let charReader = new char_reader_1.default(str);
+        let char;
+        char = charReader.next();
+        if (char !== '@') {
+            throw `First char should be '@': ${str}`;
         }
         char = charReader.next();
-        if (char === '') {
-            return;
+        this.parseVariable113(char, str);
+        char = charReader.next();
+        this.parseProperties113(char, charReader, str);
+    }
+    get113() {
+        let result = '@';
+        result = this.getVariable113(result);
+        result += '[';
+        result = this.getProperties113(result);
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + ']';
         }
-        else if (char === '[') {
+        else if (result.slice(-1) === '[') {
+            result = result.slice(0, -1);
+        }
+        return result;
+    }
+    static isValid(input) {
+        try {
+            let sel = new TargetSelector();
+            sel.parse112(input);
+        }
+        catch (ignored) {
+            return false;
+        }
+        return true;
+    }
+    parseVariable112(char, str) {
+        switch (char) {
+            case 'a':
+                this.variable = SelectorVariable.A;
+                this.sort = 'nearest';
+                break;
+            case 'e':
+                this.variable = SelectorVariable.E;
+                this.sort = 'nearest';
+                break;
+            case 'p':
+                this.variable = SelectorVariable.P;
+                break;
+            case 'r':
+                this.variable = SelectorVariable.R;
+                break;
+            case 's':
+                this.variable = SelectorVariable.S;
+                break;
+            default:
+                throw `Unknown variable: ${char} in ${str}`;
+        }
+    }
+    parseProperties112(char, charReader, str) {
+        if (char === '[') {
             let key;
             let val;
             while (char !== ']') {
@@ -250,59 +311,71 @@ class TargetSelector {
                     let objective;
                     if (key.slice(-4) === '_min') {
                         objective = key.slice(6, -4);
-                        this.setScoreMin(objective, val);
+                        this.setScore(objective, val, 'min');
                     }
                     else {
                         objective = key.slice(6);
-                        this.setScoreMax(objective, val);
+                        this.setScore(objective, val, 'max');
                     }
                 }
                 else {
                     switch (key) {
                         case 'dx':
+                            this.dx = Number(val);
+                            break;
                         case 'dy':
+                            this.dy = Number(val);
+                            break;
                         case 'dz':
+                            this.dz = Number(val);
+                            break;
                         case 'tag':
+                            this.tag.push(val);
+                            break;
                         case 'team':
+                            this.team.push(val);
+                            break;
                         case 'name':
+                            this.name.push(val);
+                            break;
                         case 'type':
-                            this.properties.set(key, val);
+                            this.type.push(val);
                             break;
                         case 'c':
                             if (Number(val) >= 0) {
-                                this.properties.set('limit', val);
+                                this.limit = Number(val);
                             }
                             else {
-                                this.properties.set('sort', 'furthest');
-                                this.properties.set('limit', (-Number(val)).toString());
+                                this.sort = 'furthest';
+                                this.limit = -Number(val);
                             }
                             break;
                         case 'm':
-                            this.properties.set('gamemode', converter_1.default.cvtGamemode(val));
+                            this.gamemode.push(converter_1.default.cvtGamemode(val));
                             break;
                         case 'l':
-                            this.setRangeMax('level', val);
+                            this.level.setMax(Number(val));
                             break;
                         case 'lm':
-                            this.setRangeMin('level', val);
+                            this.level.setMax(Number(val));
                             break;
                         case 'r':
-                            this.setRangeMax('distance', val);
+                            this.distance.setMax(Number(val));
                             break;
                         case 'rm':
-                            this.setRangeMin('distance', val);
+                            this.distance.setMin(Number(val));
                             break;
                         case 'rx':
-                            this.setRangeMax('x_rotation', val);
+                            this.x_rotation.setMax(Number(val));
                             break;
                         case 'rxm':
-                            this.setRangeMin('x_rotation', val);
+                            this.x_rotation.setMin(Number(val));
                             break;
                         case 'ry':
-                            this.setRangeMax('y_rotation', val);
+                            this.y_rotation.setMax(Number(val));
                             break;
                         case 'rym':
-                            this.setRangeMin('y_rotation', val);
+                            this.y_rotation.setMin(Number(val));
                             break;
                         case 'x':
                         case 'y':
@@ -310,7 +383,21 @@ class TargetSelector {
                             if (val.indexOf('.') === -1) {
                                 val += '.5';
                             }
-                            this.properties.set(key, val);
+                            switch (key) {
+                                case 'x':
+                                    this.x = Number(val);
+                                    break;
+                                case 'y':
+                                    this.y = Number(val);
+                                    break;
+                                case 'z':
+                                    this.z = Number(val);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -320,108 +407,309 @@ class TargetSelector {
             throw `Unexpected token: ${str}`;
         }
     }
-    get113() {
-        let result = '@';
-        switch (this.type) {
-            case SelectorType.A:
+    parseVariable113(char, str) {
+        switch (char) {
+            case 'a':
+                this.variable = SelectorVariable.A;
+                break;
+            case 'e':
+                this.variable = SelectorVariable.E;
+                break;
+            case 'p':
+                this.variable = SelectorVariable.P;
+                break;
+            case 'r':
+                this.variable = SelectorVariable.R;
+                break;
+            case 's':
+                this.variable = SelectorVariable.S;
+                break;
+            default:
+                throw `Unknown variable: ${char} in ${str}`;
+        }
+    }
+    parseProperties113(char, charReader, str) {
+        if (char === '') {
+            return;
+        }
+        else if (char === '[') {
+            let key;
+            let val;
+            while (char !== ']') {
+                key = '';
+                val = '';
+                char = charReader.next();
+                while (char !== '=') {
+                    if (char_reader_2.isWhiteSpace(char)) {
+                        continue;
+                    }
+                    key += char;
+                    char = charReader.next();
+                }
+                char = charReader.next();
+                while (char !== ',' && char !== ']') {
+                    if (char_reader_2.isWhiteSpace(char)) {
+                        continue;
+                    }
+                    val += char;
+                    char = charReader.next();
+                }
+                switch (key) {
+                    case 'dx':
+                        this.dx = Number(val);
+                        break;
+                    case 'dy':
+                        this.dy = Number(val);
+                        break;
+                    case 'dz':
+                        this.dz = Number(val);
+                        break;
+                    case 'tag':
+                        this.tag.push(val);
+                        break;
+                    case 'team':
+                        this.team.push(val);
+                        break;
+                    case 'name':
+                        this.name.push(val);
+                        break;
+                    case 'type':
+                        this.type.push(val);
+                        break;
+                    case 'gamemode':
+                        this.gamemode.push(val);
+                        break;
+                    case 'limit':
+                        this.limit = Number(val);
+                        break;
+                    case 'level':
+                        let range = new Range(null, null);
+                        range.parse113(val);
+                        this.level = range;
+                        break;
+                    case 'distance':
+                        range = new Range(null, null);
+                        range.parse113(val);
+                        this.distance = range;
+                        break;
+                    case 'x_rotation':
+                        range = new Range(null, null);
+                        range.parse113(val);
+                        this.x_rotation = range;
+                        break;
+                    case 'y_rotation':
+                        range = new Range(null, null);
+                        range.parse113(val);
+                        this.y_rotation = range;
+                        break;
+                    case 'x':
+                        this.x = Number(val);
+                        break;
+                    case 'y':
+                        this.y = Number(val);
+                        break;
+                    case 'z':
+                        this.z = Number(val);
+                        break;
+                    case 'scores':
+                        this.setScores113(key);
+                    case 'advancements':
+                    case 'nbt':
+                    default:
+                        break;
+                }
+            }
+        }
+        else {
+            throw `Unexpected token: ${str}`;
+        }
+    }
+    getVariable113(result) {
+        switch (this.variable) {
+            case SelectorVariable.A:
                 result += 'a';
                 break;
-            case SelectorType.E:
+            case SelectorVariable.E:
                 result += 'e';
                 break;
-            case SelectorType.P:
+            case SelectorVariable.P:
                 result += 'p';
                 break;
-            case SelectorType.R:
+            case SelectorVariable.R:
                 result += 'r';
                 break;
-            case SelectorType.S:
+            case SelectorVariable.S:
                 result += 's';
                 break;
         }
-        result += '[';
-        if (this.properties.size !== 0) {
-            for (const key of this.properties.keys()) {
-                let val = this.properties.get(key);
-                result += `${key}=${val},`;
+        return result;
+    }
+    getProperties113(result) {
+        if (this.dx) {
+            result += `dx=${this.dx},`;
+        }
+        if (this.dy) {
+            result += `dy=${this.dy},`;
+        }
+        if (this.dz) {
+            result += `dz=${this.dz},`;
+        }
+        if (this.limit) {
+            result += `limit=${this.limit},`;
+        }
+        if (this.x) {
+            result += `x=${this.x},`;
+        }
+        if (this.y) {
+            result += `y=${this.y},`;
+        }
+        if (this.z) {
+            result += `z=${this.z},`;
+        }
+        if (this.sort) {
+            result += `sort=${this.sort},`;
+        }
+        if (this.tag) {
+            for (const i of this.tag) {
+                result += `tag=${i},`;
             }
         }
-        if (this.ranges.size !== 0) {
-            for (const key of this.ranges.keys()) {
-                let range = this.ranges.get(key);
-                result += `${key}=${range.toString()},`;
+        if (this.team) {
+            for (const i of this.tag) {
+                result += `team=${i},`;
             }
         }
-        if (this.scores.size !== 0) {
-            result += 'scores={';
-            for (const objective of this.scores.keys()) {
-                let range = this.scores.get(objective);
-                result += `${objective}=${range.toString()},`;
+        if (this.name) {
+            for (const i of this.tag) {
+                result += `name=${i},`;
             }
-            result = result.slice(0, -1) + '},';
         }
-        if (this.advancements.size !== 0) {
+        if (this.type) {
+            for (const i of this.tag) {
+                result += `type=${i},`;
+            }
+        }
+        if (this.gamemode) {
+            for (const i of this.tag) {
+                result += `gamemode=${i},`;
+            }
+        }
+        if (this.level) {
+            result += `level=${this.level.get113()},`;
+        }
+        if (this.distance) {
+            result += `distance=${this.distance.get113()},`;
+        }
+        if (this.x_rotation) {
+            result += `x_rotation=${this.x_rotation.get113()},`;
+        }
+        if (this.y_rotation) {
+            result += `y_rotation=${this.y_rotation.get113()},`;
+        }
+        if (this.scores) {
+            result += `scores=${this.getScores113()},`;
+        }
+        if (this.advancements) {
+            result += `advancements=${this.getAdvancements113()},`;
+        }
+        return result;
+    }
+    setScore(objective, value, type) {
+        if (this.scores.has(objective)) {
+            switch (type) {
+                case 'max':
+                    this.scores.get(objective).setMax(Number(value));
+                    break;
+                case 'min':
+                    this.scores.get(objective).setMin(Number(value));
+                    break;
+                default:
+                    throw `Unknown type: ${type}. Expected 'max' or 'min'`;
+            }
+        }
+        else {
+            let range;
+            switch (type) {
+                case 'max':
+                    range = new Range(null, Number(value));
+                    break;
+                case 'min':
+                    range = new Range(Number(value), null);
+                    break;
+                default:
+                    throw `Unknown type: ${type}. Expected 'max' or 'min'`;
+            }
+            this.scores.set(objective, range);
+        }
+    }
+    setScores113(str) {
+        let charReader = new char_reader_1.default(str);
+        let char = charReader.next();
+        let objective;
+        let rangeStr;
+        let range;
+        if (char !== '{') {
+            throw `Unexpected 'scores' value begins: ${char} at ${str}.`;
+        }
+        char = charReader.next();
+        while (char) {
+            objective = '';
+            rangeStr = '';
+            range = new Range(null, null);
+            while (char !== '=') {
+                if (char_reader_2.isWhiteSpace(char)) {
+                    continue;
+                }
+                objective += char;
+            }
+            char = charReader.next();
+            while (char && char !== ',' && char !== '}') {
+                if (char_reader_2.isWhiteSpace(char)) {
+                    continue;
+                }
+                rangeStr += char;
+            }
+            char = charReader.next();
+            range.parse113(rangeStr);
+            this.scores.set(objective, range);
+        }
+    }
+    getScores113() {
+        let result = '{';
+        for (const i of this.scores.keys()) {
+            result += `${i}=${this.scores.get(i).get113()}`;
         }
         if (result.slice(-1) === ',') {
-            result = result.slice(0, -1) + ']';
+            result = result.slice(0, -1) + '}';
         }
-        else if (result.slice(-1) === '[') {
+        else if (result.slice(-1) === '{') {
             result = result.slice(0, -1);
         }
         return result;
     }
-    static isValid(input) {
-        try {
-            let sel = new TargetSelector();
-            sel.parse112(input);
+    getAdvancements113() {
+        let result = '{';
+        for (const i of this.scores.keys()) {
+            result += `${i}=${this.scores.get(i).get113()}`;
         }
-        catch (ignored) {
-            return false;
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + '}';
         }
-        return true;
-    }
-    setRangeMin(key, min) {
-        if (this.ranges.has(key)) {
-            this.ranges.get(key).setMin(Number(min));
+        else if (result.slice(-1) === '{') {
+            result = result.slice(0, -1);
         }
-        else {
-            this.ranges.set(key, new Range(Number(min), null));
-        }
-    }
-    setRangeMax(key, max) {
-        if (this.ranges.has(key)) {
-            this.ranges.get(key).setMax(Number(max));
-        }
-        else {
-            this.ranges.set(key, new Range(null, Number(max)));
-        }
-    }
-    setScoreMin(objective, min) {
-        if (this.scores.has(objective)) {
-            this.scores.get(objective).setMin(Number(min));
-        }
-        else {
-            this.scores.set(objective, new Range(Number(min), null));
-        }
-    }
-    setScoreMax(objective, max) {
-        if (this.scores.has(objective)) {
-            this.scores.get(objective).setMax(Number(max));
-        }
-        else {
-            this.scores.set(objective, new Range(null, Number(max)));
-        }
+        return result;
     }
 }
 exports.default = TargetSelector;
-var SelectorType;
-(function (SelectorType) {
-    SelectorType[SelectorType["A"] = 0] = "A";
-    SelectorType[SelectorType["E"] = 1] = "E";
-    SelectorType[SelectorType["P"] = 2] = "P";
-    SelectorType[SelectorType["R"] = 3] = "R";
-    SelectorType[SelectorType["S"] = 4] = "S";
-})(SelectorType || (SelectorType = {}));
+var SelectorVariable;
+(function (SelectorVariable) {
+    SelectorVariable[SelectorVariable["A"] = 0] = "A";
+    SelectorVariable[SelectorVariable["E"] = 1] = "E";
+    SelectorVariable[SelectorVariable["P"] = 2] = "P";
+    SelectorVariable[SelectorVariable["R"] = 3] = "R";
+    SelectorVariable[SelectorVariable["S"] = 4] = "S";
+})(SelectorVariable || (SelectorVariable = {}));
 class Range {
     getMin() {
         return this.min;
@@ -449,7 +737,7 @@ class Range {
             this.min = this.max = Number(arr[0]);
         }
     }
-    toString() {
+    get113() {
         let min = this.min;
         let max = this.max;
         if (min && max) {
@@ -467,7 +755,7 @@ class Range {
             return `..${max}`;
         }
         else {
-            throw `NullPointerException at Range: ${this}`;
+            return '';
         }
     }
 }
@@ -501,16 +789,25 @@ class SpuScript {
         let id = tokensMap.keys().next().value;
         let methods = tokensMap.get(id);
         let source = resultMap.get(`%${id}`);
+        let result = source;
         for (const name of methods.keys()) {
             const params = methods.get(name);
             switch (name) {
                 case 'adv':
+                    if (params.length === 1) {
+                        let sel = new selector_1.default();
+                    }
+                    else if (params.length === 2) {
+                    }
+                    else {
+                        throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`;
+                    }
                     break;
                 default:
                     break;
             }
         }
-        return source;
+        return result;
     }
     tokenize(arg) {
         let result = '';
@@ -638,10 +935,145 @@ Spuses.pairs = new Map([
         'advancement revoke %0 everything'
     ], [
         'advancement test %entity %string',
-        'execute if entity %0$adv%1'
+        'execute if entity %0$addAdvancement%1'
     ], [
         'advancement test %entity %string %string',
-        'execute if entity %0$adv%1%2'
+        'execute if entity %0$addAdvancement%1%2'
+    ], [
+        'ban %entity',
+        'ban %0'
+    ], [
+        'ban %entity %string',
+        'ban %0 %1'
+    ], [
+        'ban-ip %entity',
+        'ban-ip %0'
+    ], [
+        'ban-ip %entity %string',
+        'ban-ip %0 %1'
+    ], [
+        'ban-ip %string',
+        'ban-ip %0'
+    ], [
+        'ban-ip %string %string',
+        'ban-ip %0 %1'
+    ], [
+        'banlist %string',
+        'banlist %0'
+    ], [
+        'blockdata %position %nbt',
+        'data merge block %0 %1'
+    ], [
+        'clear',
+        'clear'
+    ], [
+        'clear %entity',
+        'clear %0'
+    ], [
+        'clear %entity %item',
+        'clear %0 %1'
+    ], [
+        'clear %entity %itemWithData',
+        'clear %0 %1'
+    ], [
+        'clear %entity %itemWithData %number',
+        'clear %0 %1 %2 %'
+    ], [
+        'clear %entity %itemWithData %number %nbt',
+        'clear %0$addNbt%3 %1 %2'
+    ], [
+        'clone %position %position %position',
+        'clone %0 %1 %2'
+    ], [
+        'clone %position %position %position %string',
+        'clone %0 %1 %2 %3'
+    ], [
+        'clone %position %position %position %string %string',
+        'clone %0 %1 %2 %3 %4'
+    ], [
+        'clone %position %position %position %string %string %block',
+        'clone %0 %1 %2 %3 %5 %4'
+    ], [
+        'clone %position %position %position %string %string %blockWithData',
+        'clone %0 %1 %2 %3 %5 %4'
+    ], [
+        'debug %string',
+        'debug %0'
+    ], [
+        'defaultgamemode %mode',
+        'defaultgamemode %0'
+    ], [
+        'deop %entity',
+        'deop %0'
+    ], [
+        'difficulty %difficulty',
+        'difficulty %0'
+    ], [
+        'effect %entity clear',
+        'effect clear %0'
+    ], [
+        'effect %entity %string',
+        'effect give %0 %1'
+    ], [
+        'effect %entity %string %int',
+        'effect give %0 %1 %2'
+    ], [
+        'effect %entity %string %int %int',
+        'effect give %0 %1 %2 %3'
+    ], [
+        'effect %entity %string %int %int %bool',
+        'effect give %0 %1 %2 %3 %4'
+    ], [
+        'enchant %entity %string',
+        'enchant %0 %1'
+    ], [
+        'enchant %entity %string %int',
+        'enchant %0 %1 %2'
+    ], [
+        'entitydata %entity %nbt',
+        'data merge entity %0$setLimitTo1 %1'
+    ], [
+        'execute %entity %position %command',
+        'execute as %0 at @s positioned %1 run %2'
+    ], [
+        'execute %entity %position detect %position %blockWithData %command',
+        'execute as %0 at @s positioned %1 if block %2 %3 run %4'
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
+    ], [
+        '',
+        ''
     ]
 ]);
 exports.default = Spuses;

@@ -1,7 +1,8 @@
 {
   "name": "spu",
   "version": "1.0.0",
-  "description": "A web that can help you convert minecraft commands from 1.12 to 1.13.",
+  "description":
+    "A web that can help you convert minecraft commands from 1.12 to 1.13.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
@@ -22,8 +23,8 @@
     "url": "git+https://github.com/SPGoding/spu.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "SPGoding",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/SPGoding/spu/issues"
   },

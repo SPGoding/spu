@@ -25,7 +25,7 @@ export default class Converter {
         while (spusArg !== '') {
             while (!SpuScript.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
-                    cmdArg += ' ' +  cmdReader.next()
+                    cmdArg += ' ' + cmdReader.next()
                 } else {
                     // Can't match this spus.
                     return null
@@ -50,12 +50,13 @@ export default class Converter {
         switch (spus.slice(1)) {
             case 'entity':
                 return Converter.cvtEntity(cmd)
+            // TODO: Add more.
             default:
                 return cmd
         }
     }
 
-   static cvtLine(input: string) {
+    static cvtLine(input: string) {
         if (input.charAt(0) === '#') {
             return input
         } else {
@@ -92,6 +93,29 @@ export default class Converter {
                 return 'spectator'
             default:
                 throw `Unknown gamemode: ${input}`
+        }
+    }
+
+    static cvtDifficulty(input: string) {
+        switch (input) {
+            case '0':
+            case 'p':
+            case 'peaceful':
+                return 'peaceful'
+            case '1':
+            case 'e':
+            case 'easy':
+                return 'easy'
+            case '2':
+            case 'n':
+            case 'normal':
+                return 'normal'
+            case '3':
+            case 'h':
+            case 'hard':
+                return 'hard'
+            default:
+                throw `Unknown difficulty: ${input}`
         }
     }
 

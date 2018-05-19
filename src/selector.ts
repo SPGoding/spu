@@ -8,7 +8,7 @@ import { isWhiteSpace } from './char_reader'
  * @author SPGoding
  */
 export default class TargetSelector {
-    private variable: SelectorType
+    private variable: SelectorVariable
     private dx: number
     private dy: number
     private dz: number
@@ -35,7 +35,7 @@ export default class TargetSelector {
      * Parses this selector according to a string in 1.12.
      * @param str An string representing a target selector.
      */
-    parse112(str: string) {
+    public parse112(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -45,32 +45,94 @@ export default class TargetSelector {
         }
 
         char = charReader.next()
+        this.parseVariable112(char, str)
+
+        char = charReader.next()
+        this.parseProperties112(char, charReader, str)
+    }
+
+    /**
+     * Parses this selector according to a string in 1.13.
+     * @param str An string representing a target selector.
+     */
+    public parse113(str: string) {
+        let charReader = new CharReader(str)
+        let char: string
+
+        char = charReader.next()
+        if (char !== '@') {
+            throw `First char should be '@': ${str}`
+        }
+
+        char = charReader.next()
+        this.parseVariable113(char, str)
+
+        char = charReader.next()
+        this.parseProperties113(char, charReader, str)
+    }
+
+    /**
+     * Gets a string that can represent this target selector in 1.13.
+     */
+    public get113() {
+        let result = '@'
+
+        result = this.getVariable113(result)
+
+        result += '['
+
+        result = this.getProperties113(result)
+
+        // Close the square brackets.
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + ']'
+        } else if (result.slice(-1) === '[') {
+            result = result.slice(0, -1)
+        }
+
+        return result
+    }
+
+    /**
+     * Returns if a target selector is valid.
+     * @param input a target selector.
+     */
+    public static isValid(input: string) {
+        try {
+            let sel = new TargetSelector()
+            sel.parse112(input)
+        } catch (ignored) {
+            return false
+        }
+        return true
+    }
+
+    private parseVariable112(char: string, str: string) {
         switch (char) {
             case 'a':
-                this.variable = SelectorType.A
+                this.variable = SelectorVariable.A
                 this.sort = 'nearest'
                 break
             case 'e':
-                this.variable = SelectorType.E
+                this.variable = SelectorVariable.E
                 this.sort = 'nearest'
                 break
             case 'p':
-                this.variable = SelectorType.P
+                this.variable = SelectorVariable.P
                 break
             case 'r':
-                this.variable = SelectorType.R
+                this.variable = SelectorVariable.R
                 break
             case 's':
-                this.variable = SelectorType.S
+                this.variable = SelectorVariable.S
                 break
             default:
                 throw `Unknown variable: ${char} in ${str}`
         }
+    }
 
-        char = charReader.next()
-        if (char === '') {
-            return
-        } else if (char === '[') {
+    private parseProperties112(char: string, charReader: CharReader, str: string) {
+        if (char === '[') {
             let key: string
             let val: string
             while (char !== ']') {
@@ -87,12 +149,12 @@ export default class TargetSelector {
                 }
 
                 char = charReader.next()
-                while (char !== ',' && char !== ']' ) {
+                while (char !== ',' && char !== ']') {
                     // Read value.
                     if (isWhiteSpace(char)) {
                         continue
                     }
-                    val += char 
+                    val += char
                     char = charReader.next()
                 }
 
@@ -102,11 +164,11 @@ export default class TargetSelector {
                     if (key.slice(-4) === '_min') {
                         // The min.
                         objective = key.slice(6, -4)
-                        this.setScoreMin(objective, val)
+                        this.setScore(objective, val, 'min')
                     } else {
                         // The max.
                         objective = key.slice(6)
-                        this.setScoreMax(objective, val)
+                        this.setScore(objective, val, 'max')
                     }
                 } else {
                     // Deal with normal properties.
@@ -146,25 +208,25 @@ export default class TargetSelector {
                         case 'l':
                             this.level.setMax(Number(val))
                             break
-                        case 'lm': 
+                        case 'lm':
                             this.level.setMax(Number(val))
                             break
-                        case 'r': 
+                        case 'r':
                             this.distance.setMax(Number(val))
                             break
-                        case 'rm': 
+                        case 'rm':
                             this.distance.setMin(Number(val))
                             break
-                        case 'rx': 
+                        case 'rx':
                             this.x_rotation.setMax(Number(val))
                             break
-                        case 'rxm': 
+                        case 'rxm':
                             this.x_rotation.setMin(Number(val))
                             break
-                        case 'ry': 
+                        case 'ry':
                             this.y_rotation.setMax(Number(val))
                             break
-                        case 'rym': 
+                        case 'rym':
                             this.y_rotation.setMin(Number(val))
                             break
                         case 'x':
@@ -197,42 +259,30 @@ export default class TargetSelector {
             throw `Unexpected token: ${str}`
         }
     }
-    
-    /**
-     * Parses this selector according to a string in 1.13.
-     * @param str An string representing a target selector.
-     */
-    parse113(str: string) {
-        let charReader = new CharReader(str)
-        let char: string
 
-        char = charReader.next()
-        if (char !== '@') {
-            throw `First char should be '@': ${str}`
-        }
-
-        char = charReader.next()
+    private parseVariable113(char: string, str: string) {
         switch (char) {
             case 'a':
-                this.variable = SelectorType.A
+                this.variable = SelectorVariable.A
                 break
             case 'e':
-                this.variable = SelectorType.E
+                this.variable = SelectorVariable.E
                 break
             case 'p':
-                this.variable = SelectorType.P
+                this.variable = SelectorVariable.P
                 break
             case 'r':
-                this.variable = SelectorType.R
+                this.variable = SelectorVariable.R
                 break
             case 's':
-                this.variable = SelectorType.S
+                this.variable = SelectorVariable.S
                 break
             default:
                 throw `Unknown variable: ${char} in ${str}`
         }
+    }
 
-        char = charReader.next()
+    private parseProperties113(char: string, charReader: CharReader, str: string) {
         if (char === '') {
             return
         } else if (char === '[') {
@@ -252,12 +302,12 @@ export default class TargetSelector {
                 }
 
                 char = charReader.next()
-                while (char !== ',' && char !== ']' ) {
+                while (char !== ',' && char !== ']') {
                     // Read value.
                     if (isWhiteSpace(char)) {
                         continue
                     }
-                    val += char 
+                    val += char
                     char = charReader.next()
                 }
 
@@ -295,17 +345,17 @@ export default class TargetSelector {
                         range.parse113(val)
                         this.level = range
                         break
-                    case 'distance': 
+                    case 'distance':
                         range = new Range(null, null)
                         range.parse113(val)
                         this.distance = range
                         break
-                    case 'x_rotation': 
+                    case 'x_rotation':
                         range = new Range(null, null)
                         range.parse113(val)
                         this.x_rotation = range
                         break
-                    case 'y_rotation': 
+                    case 'y_rotation':
                         range = new Range(null, null)
                         range.parse113(val)
                         this.y_rotation = range
@@ -321,7 +371,7 @@ export default class TargetSelector {
                         break
                     case 'scores':
                         this.setScores113(key)
-                        // TODO
+                    // TODO
                     case 'advancements':
                     case 'nbt':
                     default:
@@ -333,32 +383,28 @@ export default class TargetSelector {
         }
     }
 
-    /**
-     * Gets a string that can represent this target selector in 1.13.
-     */
-    get113() {
-        let result = '@'
-
+    private getVariable113(result: string) {
         switch (this.variable) {
-            case SelectorType.A:
+            case SelectorVariable.A:
                 result += 'a'
                 break
-            case SelectorType.E:
+            case SelectorVariable.E:
                 result += 'e'
                 break
-            case SelectorType.P:
+            case SelectorVariable.P:
                 result += 'p'
                 break
-            case SelectorType.R:
+            case SelectorVariable.R:
                 result += 'r'
                 break
-            case SelectorType.S:
+            case SelectorVariable.S:
                 result += 's'
                 break
         }
+        return result
+    }
 
-        result += '['
-
+    private getProperties113(result: string) {
         if (this.dx) {
             result += `dx=${this.dx},`
         }
@@ -383,91 +429,79 @@ export default class TargetSelector {
         if (this.sort) {
             result += `sort=${this.sort},`
         }
-        if (this.tag.length > 0) {
+        if (this.tag) {
             for (const i of this.tag) {
-                result += `tag=${i},`                
+                result += `tag=${i},`
             }
         }
-        if (this.team.length > 0) {
+        if (this.team) {
             for (const i of this.tag) {
-                result += `team=${i},`                
+                result += `team=${i},`
             }
         }
-        if (this.name.length > 0) {
+        if (this.name) {
             for (const i of this.tag) {
-                result += `name=${i},`                
+                result += `name=${i},`
             }
         }
-        if (this.type.length > 0) {
+        if (this.type) {
             for (const i of this.tag) {
-                result += `type=${i},`                
+                result += `type=${i},`
             }
         }
-        if (this.gamemode.length > 0) {
+        if (this.gamemode) {
             for (const i of this.tag) {
-                result += `gamemode=${i},`                
+                result += `gamemode=${i},`
             }
         }
-        if (this.level.get113()) {
+        if (this.level) {
             result += `level=${this.level.get113()},`
         }
-        if (this.distance.get113()) {
+        if (this.distance) {
             result += `distance=${this.distance.get113()},`
         }
-        if (this.x_rotation.get113()) {
+        if (this.x_rotation) {
             result += `x_rotation=${this.x_rotation.get113()},`
         }
-        if (this.y_rotation.get113()) {
+        if (this.y_rotation) {
             result += `y_rotation=${this.y_rotation.get113()},`
         }
-        if (this.getScores113()) {
+        if (this.scores) {
             result += `scores=${this.getScores113()},`
         }
-        if (this.getAdvancements113()) {
+        if (this.advancements) {
             result += `advancements=${this.getAdvancements113()},`
         }
-
-        // Close the square brackets.
-        if (result.slice(-1) === ',') {
-            result = result.slice(0, -1) + ']'
-        } else if (result.slice(-1) === '[') {
-            result = result.slice(0, -1)
-        }
-        
         return result
     }
 
-    /**
-     * Returns if a target selector is valid.
-     * @param input a target selector.
-     */
-    static isValid(input: string) {
-        try {
-            let sel = new TargetSelector()
-            sel.parse112(input)
-        } catch(ignored) {
-            return false
-        }
-        return true
-    }
-
-    private setScoreMin(objective: string, min: string) {
+    private setScore(objective: string, value: string, type: string) {
         if (this.scores.has(objective)) {
             // The 'scores' map has this objective, so complete it.
-            this.scores.get(objective).setMin(Number(min))
+            switch (type) {
+                case 'max':
+                    this.scores.get(objective).setMax(Number(value))
+                    break
+                case 'min':
+                    this.scores.get(objective).setMin(Number(value))
+                    break
+                default:
+                    throw `Unknown type: ${type}. Expected 'max' or 'min'`
+            }
         } else {
             // The 'scores' map doesn't have this objective, so create it.
-            this.scores.set(objective, new Range(Number(min), null))
-        }
-    }
-
-    private setScoreMax(objective: string, max: string) {
-        if (this.scores.has(objective)) {
-            // The 'scores' map has this objective, so complete it.
-            this.scores.get(objective).setMax(Number(max))
-        } else {
-            // The 'scores' map doesn't have this objective, so create it.
-            this.scores.set(objective, new Range(null, Number(max)))
+            let range: Range
+            switch (type) {
+                case 'max':
+                    range = new Range(null, Number(value))
+                    break
+                case 'min':
+                    range = new Range(Number(value), null)
+                    break
+                default:
+                    throw `Unknown type: ${type}. Expected 'max' or 'min'`
+            }
+            this.scores.set(objective, range)
         }
     }
 
@@ -500,16 +534,16 @@ export default class TargetSelector {
                 if (isWhiteSpace(char)) {
                     continue
                 }
-                objective += char                
+                objective += char
             }
-    
+
             char = charReader.next()
-    
+
             while (char && char !== ',' && char !== '}') {
                 if (isWhiteSpace(char)) {
                     continue
                 }
-                rangeStr += char                
+                rangeStr += char
             }
 
             char = charReader.next()
@@ -555,8 +589,12 @@ export default class TargetSelector {
     }
 }
 
-enum SelectorType {
-    A, E, P, R, S
+enum SelectorVariable {
+    A,
+    E,
+    P,
+    R,
+    S
 }
 
 /**
@@ -593,7 +631,7 @@ class Range {
             this.min = arr[0] ? Number(arr[0]) : null
             this.max = arr[1] ? Number(arr[1]) : null
         } else {
-            this.min = this.max = Number(arr[0]) 
+            this.min = this.max = Number(arr[0])
         }
     }
 
