@@ -24,9 +24,8 @@
         "ts-node": "^6.0.3"
     },
     "scripts": {
-        "test":
-            "./node_modules/.bin/mocha --require espower-typescript/guess \"src/tests/**/*.ts\"",
-        "build": "tsc && browserify ./dist/index.js > ./docs/bundle.js"
+        "build": "tsc && browserify ./dist/index.js > ./docs/bundle.js",
+        "test": "./node_modules/.bin/mocha --require espower-typescript/guess \"src/tests/**/*.ts\""
     },
     "repository": {
         "type": "git",
