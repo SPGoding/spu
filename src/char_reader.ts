@@ -34,6 +34,22 @@ export default class CharReader {
     hasMore() {
         return this.pos < this.length
     }
+
+    readUntil(until: string[]) {
+        let result = ''
+        let char = this.str.charAt(this.pos - 1)
+
+        while (char && until.indexOf(char) === -1) {
+            if (isWhiteSpace(char)) {
+                char = this.next()
+                continue
+            }
+            result += char
+            char = this.next()
+        }
+
+        return result
+    }
 }
 
 export function isWhiteSpace(char: string) {

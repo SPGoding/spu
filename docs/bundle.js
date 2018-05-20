@@ -55,6 +55,19 @@ class CharReader {
     hasMore() {
         return this.pos < this.length;
     }
+    readUntil(until) {
+        let result = '';
+        let char = this.str.charAt(this.pos - 1);
+        while (char && until.indexOf(char) === -1) {
+            if (isWhiteSpace(char)) {
+                char = this.next();
+                continue;
+            }
+            result += char;
+            char = this.next();
+        }
+        return result;
+    }
 }
 exports.default = CharReader;
 function isWhiteSpace(char) {
@@ -121,13 +134,15 @@ class Converter {
             let map = Converter.getResultMap(input, spusOld);
             if (map) {
                 let spusNew = spuses_1.default.pairs.get(spusOld);
-                let spus = new spu_script_1.default(spusNew);
-                let result = spus.compileWith(map);
-                if (positionCorrect) {
-                    return `execute positioned 0.0 0.0 0.0 run ${result}`;
-                }
-                else {
-                    return result;
+                if (spusNew) {
+                    let spus = new spu_script_1.default(spusNew);
+                    let result = spus.compileWith(map);
+                    if (positionCorrect) {
+                        return `execute positioned 0.0 0.0 0.0 run ${result}`;
+                    }
+                    else {
+                        return result;
+                    }
                 }
             }
         }
@@ -200,15 +215,15 @@ const converter_1 = require("./converter");
 $(document).ready(function () {
     $('#button').click(function () {
         let result = '';
-        let lines = $('#input')
-            .val()
-            .toString()
-            .split('\n');
-        for (let line of lines) {
-            line = converter_1.default.cvtLine(line);
-            result += line + '<br>';
+        let content = $('#input').val();
+        if (content) {
+            let lines = content.toString().split('\n');
+            for (let line of lines) {
+                line = converter_1.default.cvtLine(line);
+                result += line + '<br>';
+            }
+            $('#output').html(result);
         }
-        $('#output').html(result);
     });
 });
 
@@ -267,12 +282,16 @@ class TargetSelector {
         else if (result.slice(-1) === '[') {
             result = result.slice(0, -1);
         }
-        console.log(this);
         return result;
     }
     static isValid(input) {
-        let sel = new TargetSelector();
-        sel.parse112(input);
+        try {
+            let sel = new TargetSelector();
+            sel.parse112(input);
+        }
+        catch (ignored) {
+            return false;
+        }
         return true;
     }
     addFinishedAdvancement(adv, crit) {
@@ -283,6 +302,9 @@ class TargetSelector {
                     return;
                 }
                 else {
+                    if (!val) {
+                        val = new Map();
+                    }
                     val.set(crit, true);
                 }
             }
@@ -325,25 +347,12 @@ class TargetSelector {
         if (char === '[') {
             let key;
             let val;
-            while (char !== ']') {
-                key = '';
-                val = '';
+            while (char) {
                 char = charReader.next();
-                while (char !== '=') {
-                    if (char_reader_2.isWhiteSpace(char)) {
-                        continue;
-                    }
-                    key += char;
-                    char = charReader.next();
-                }
+                key = charReader.readUntil(['=']);
                 char = charReader.next();
-                while (char !== ',' && char !== ']') {
-                    if (char_reader_2.isWhiteSpace(char)) {
-                        continue;
-                    }
-                    val += char;
-                    char = charReader.next();
-                }
+                val = charReader.readUntil([',', ']']);
+                char = charReader.next();
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     this.parseScore112(key, val);
                 }
@@ -470,17 +479,12 @@ class TargetSelector {
                 key = '';
                 val = '';
                 char = charReader.next();
-                while (char !== '=') {
-                    if (char_reader_2.isWhiteSpace(char)) {
-                        continue;
-                    }
-                    key += char;
-                    char = charReader.next();
-                }
+                key = charReader.readUntil(['=']);
                 char = charReader.next();
                 let depth = 0;
                 while (depth !== 0 || (char !== ',' && char !== ']')) {
                     if (char_reader_2.isWhiteSpace(char)) {
+                        char = charReader.next();
                         continue;
                     }
                     if (char === '{' || char === '[') {
@@ -552,9 +556,12 @@ class TargetSelector {
                         break;
                     case 'scores':
                         this.parseScores113(val);
+                        break;
                     case 'advancements':
                         this.parseAdvancements113(val);
+                        break;
                     case 'nbt':
+                        break;
                     default:
                         break;
                 }
@@ -581,14 +588,7 @@ class TargetSelector {
         while (char) {
             adv = '';
             bool = '';
-            while (char !== '=') {
-                if (char_reader_2.isWhiteSpace(char)) {
-                    char = charReader.next();
-                    continue;
-                }
-                adv += char;
-                char = charReader.next();
-            }
+            adv = charReader.readUntil(['=']);
             char = charReader.next();
             if (char === '{') {
                 map = new Map();
@@ -596,35 +596,19 @@ class TargetSelector {
                     char = charReader.next();
                     crit = '';
                     bool = '';
-                    while (char !== '=') {
-                        if (char_reader_2.isWhiteSpace(char)) {
-                            char = charReader.next();
-                            continue;
-                        }
-                        crit += char;
-                        char = charReader.next();
-                    }
+                    crit = charReader.readUntil(['=']);
                     char = charReader.next();
-                    while (char !== '}' && char !== ',') {
-                        if (char_reader_2.isWhiteSpace(char)) {
-                            char = charReader.next();
-                            continue;
-                        }
-                        bool += char;
-                        char = charReader.next();
-                    }
+                    bool = charReader.readUntil(['}', ',']);
+                    charReader.back();
+                    char = charReader.next();
                     map.set(crit, Boolean(bool));
                 }
                 this.advancements.set(adv, map);
             }
             else {
-                while (char !== '}' && char !== ',') {
-                    if (char_reader_2.isWhiteSpace(char)) {
-                        char = charReader.next();
-                        continue;
-                    }
-                    bool += char;
-                }
+                bool = charReader.readUntil(['}', ',']);
+                charReader.back();
+                char = charReader.next();
             }
             char = charReader.next();
             this.advancements.set(adv, Boolean(bool));
@@ -717,31 +701,28 @@ class TargetSelector {
         return result;
     }
     setScore(objective, value, type) {
-        if (this.scores.has(objective)) {
-            switch (type) {
-                case 'max':
-                    this.scores.get(objective).setMax(Number(value));
-                    break;
-                case 'min':
-                    this.scores.get(objective).setMin(Number(value));
-                    break;
-                default:
-                    throw `Unknown type: ${type}. Expected 'max' or 'min'`;
-            }
-        }
-        else {
-            let range;
-            switch (type) {
-                case 'max':
+        let range = this.scores.get(objective);
+        switch (type) {
+            case 'max':
+                if (range) {
+                    range.setMax(Number(value));
+                }
+                else {
                     range = new Range(null, Number(value));
-                    break;
-                case 'min':
+                    this.scores.set(objective, range);
+                }
+                break;
+            case 'min':
+                if (range) {
+                    range.setMin(Number(value));
+                }
+                else {
                     range = new Range(Number(value), null);
-                    break;
-                default:
-                    throw `Unknown type: ${type}. Expected 'max' or 'min'`;
-            }
-            this.scores.set(objective, range);
+                    this.scores.set(objective, range);
+                }
+                break;
+            default:
+                throw `Unknown type: ${type}. Expected 'max' or 'min'`;
         }
     }
     parseScore112(key, val) {
@@ -769,23 +750,9 @@ class TargetSelector {
             objective = '';
             rangeStr = '';
             range = new Range(null, null);
-            while (char !== '=') {
-                if (char_reader_2.isWhiteSpace(char)) {
-                    char = charReader.next();
-                    continue;
-                }
-                objective += char;
-                char = charReader.next();
-            }
+            objective = charReader.readUntil(['=']);
             char = charReader.next();
-            while (char && char !== ',' && char !== '}') {
-                if (char_reader_2.isWhiteSpace(char)) {
-                    char = charReader.next();
-                    continue;
-                }
-                rangeStr += char;
-                char = charReader.next();
-            }
+            rangeStr = charReader.readUntil([',', '}']);
             char = charReader.next();
             range.parse113(rangeStr);
             this.scores.set(objective, range);
@@ -794,7 +761,10 @@ class TargetSelector {
     getScores113() {
         let result = '{';
         for (const i of this.scores.keys()) {
-            result += `${i}=${this.scores.get(i).get113()},`;
+            let score = this.scores.get(i);
+            if (score) {
+                result += `${i}=${score.get113()},`;
+            }
         }
         if (result.slice(-1) === ',') {
             result = result.slice(0, -1) + '}';
@@ -811,7 +781,7 @@ class TargetSelector {
             if (typeof val === 'boolean') {
                 result += `${i}=${val},`;
             }
-            else {
+            else if (val && typeof val === 'object') {
                 result += `${i}={`;
                 for (const j of val.keys()) {
                     result += `${j}=${val.get(j)},`;
@@ -912,36 +882,44 @@ class SpuScript {
         return result;
     }
     compileArgument(arg, resultMap) {
-        let tokensMap = this.tokenize(arg);
-        let id = tokensMap.keys().next().value;
-        let methods = tokensMap.get(id);
+        let patternMap = this.getPatternMap(arg);
+        let id = patternMap.keys().next().value;
+        let methods = patternMap.get(id);
         let source = resultMap.get(`%${id}`);
-        let result = source;
-        for (const name of methods.keys()) {
-            let params = methods.get(name);
-            params = params.map(x => resultMap.get(`%${x}`));
-            switch (name) {
-                case 'addAdvancement':
-                    let sel = new selector_1.default();
-                    sel.parse113(source);
-                    if (params.length === 1) {
-                        sel.addFinishedAdvancement(params[0]);
+        if (methods && source) {
+            let result = source;
+            for (const name of methods.keys()) {
+                let paramIds = methods.get(name);
+                if (paramIds) {
+                    let params = paramIds.map(x => {
+                        let result = resultMap.get(`%${x}`);
+                        return result ? result : '';
+                    });
+                    switch (name) {
+                        case 'addAdvancement':
+                            let sel = new selector_1.default();
+                            sel.parse113(source);
+                            if (params.length === 1) {
+                                sel.addFinishedAdvancement(params[0]);
+                            }
+                            else if (params.length === 2) {
+                                sel.addFinishedAdvancement(params[0], params[1]);
+                            }
+                            else {
+                                throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`;
+                            }
+                            result = sel.get113();
+                            break;
+                        default:
+                            break;
                     }
-                    else if (params.length === 2) {
-                        sel.addFinishedAdvancement(params[0], params[1]);
-                    }
-                    else {
-                        throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`;
-                    }
-                    result = sel.get113();
-                    break;
-                default:
-                    break;
+                }
             }
+            return result;
         }
-        return result;
+        return '';
     }
-    tokenize(arg) {
+    getPatternMap(arg) {
         let result = '';
         let charReader = new char_reader_1.default(arg);
         let char = charReader.next();

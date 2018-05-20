@@ -90,8 +90,6 @@ export default class TargetSelector {
             result = result.slice(0, -1)
         }
 
-        console.log(this)
-
         return result
     }
 
@@ -100,12 +98,12 @@ export default class TargetSelector {
      * @param input a target selector.
      */
     public static isValid(input: string) {
-        //try {
-        let sel = new TargetSelector()
-        sel.parse112(input)
-        //} catch (ignored) {
-        //    return false
-        //}
+        try {
+            let sel = new TargetSelector()
+            sel.parse112(input)
+        } catch (ignored) {
+            return false
+        }
         return true
     }
 
@@ -114,8 +112,12 @@ export default class TargetSelector {
             if (this.advancements.has(adv)) {
                 let val = this.advancements.get(adv)
                 if (typeof val === 'boolean') {
+                    // The adv has a boolean value, doesn't need to add a crit.
                     return
                 } else {
+                    if (!val) {
+                        val = new Map<string, boolean>()
+                    }
                     val.set(crit, true)
                 }
             } else {
@@ -140,6 +142,7 @@ export default class TargetSelector {
                 this.variable = SelectorVariable.P
                 break
             case 'r':
+                // In 1.13, @r doesn't support 'type', so I used '@e[sort=random]'.
                 this.variable = SelectorVariable.E
                 this.sort = 'random'
                 break
@@ -159,28 +162,12 @@ export default class TargetSelector {
         if (char === '[') {
             let key: string
             let val: string
-            while (char !== ']') {
-                key = ''
-                val = ''
+            while (char) {
                 char = charReader.next()
-                while (char !== '=') {
-                    // Read key.
-                    if (isWhiteSpace(char)) {
-                        continue
-                    }
-                    key += char
-                    char = charReader.next()
-                }
-
+                key = charReader.readUntil(['='])
                 char = charReader.next()
-                while (char !== ',' && char !== ']') {
-                    // Read value.
-                    if (isWhiteSpace(char)) {
-                        continue
-                    }
-                    val += char
-                    char = charReader.next()
-                }
+                val = charReader.readUntil([',', ']'])
+                char = charReader.next()
 
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
@@ -309,20 +296,13 @@ export default class TargetSelector {
                 key = ''
                 val = ''
                 char = charReader.next()
-                while (char !== '=') {
-                    // Read key.
-                    if (isWhiteSpace(char)) {
-                        continue
-                    }
-                    key += char
-                    char = charReader.next()
-                }
-
+                key = charReader.readUntil(['='])
                 char = charReader.next()
                 let depth = 0
                 while (depth !== 0 || (char !== ',' && char !== ']')) {
                     // Read value.
                     if (isWhiteSpace(char)) {
+                        char = charReader.next()
                         continue
                     }
                     if (char === '{' || char === '[') {
@@ -395,10 +375,13 @@ export default class TargetSelector {
                         break
                     case 'scores':
                         this.parseScores113(val)
+                        break
                     case 'advancements':
                         this.parseAdvancements113(val)
+                        break
                     case 'nbt':
                         // TODO:
+                        break
                     default:
                         break
                 }
@@ -425,19 +408,12 @@ export default class TargetSelector {
         if (char === '}') {
             return
         }
-        
+
         while (char) {
             adv = ''
             bool = ''
 
-            while (char !== '=') {
-                if (isWhiteSpace(char)) {
-                    char = charReader.next()
-                    continue
-                }
-                adv += char
-                char = charReader.next()
-            }
+            adv = charReader.readUntil(['='])
 
             char = charReader.next()
 
@@ -445,36 +421,25 @@ export default class TargetSelector {
                 map = new Map<string, boolean>()
                 while (char !== '}') {
                     char = charReader.next()
+
                     crit = ''
                     bool = ''
-                    while (char !== '=') {
-                        if (isWhiteSpace(char)) {
-                            char = charReader.next()
-                            continue
-                        }
-                        crit += char
-                        char = charReader.next()
-                    }
+
+                    crit = charReader.readUntil(['='])
                     char = charReader.next()
-                    while (char !== '}' && char !== ',') {
-                        if (isWhiteSpace(char)) {
-                            char = charReader.next()
-                            continue
-                        }
-                        bool += char
-                        char = charReader.next()
-                    }
+                    bool = charReader.readUntil(['}', ','])
+                    // Correct the char of 'char'. FIXME: Historical issues.
+                    charReader.back()
+                    char = charReader.next()
+
                     map.set(crit, Boolean(bool))
                 }
                 this.advancements.set(adv, map)
             } else {
-                while (char !== '}' && char !== ',') {
-                    if (isWhiteSpace(char)) {
-                        char = charReader.next()
-                        continue
-                    }
-                    bool += char
-                }
+                bool = charReader.readUntil(['}', ','])
+                // Correct the char of 'char'. FIXME: Historical issues.
+                charReader.back()
+                char = charReader.next()
             }
 
             char = charReader.next()
@@ -571,32 +536,28 @@ export default class TargetSelector {
     }
 
     private setScore(objective: string, value: string, type: string) {
-        if (this.scores.has(objective)) {
-            // The 'scores' map has this objective, so complete it.
-            switch (type) {
-                case 'max':
-                    this.scores.get(objective).setMax(Number(value))
-                    break
-                case 'min':
-                    this.scores.get(objective).setMin(Number(value))
-                    break
-                default:
-                    throw `Unknown type: ${type}. Expected 'max' or 'min'`
-            }
-        } else {
-            // The 'scores' map doesn't have this objective, so create it.
-            let range: Range
-            switch (type) {
-                case 'max':
+        let range = this.scores.get(objective)
+        switch (type) {
+            case 'max':
+                if (range) {
+                    // The 'scores' map has this objective, so complete it.
+                    range.setMax(Number(value))
+                } else {
+                    // The 'scores' map dosen't have this objective, so create it.
                     range = new Range(null, Number(value))
-                    break
-                case 'min':
+                    this.scores.set(objective, range)
+                }
+                break
+            case 'min':
+                if (range) {
+                    range.setMin(Number(value))
+                } else {
                     range = new Range(Number(value), null)
-                    break
-                default:
-                    throw `Unknown type: ${type}. Expected 'max' or 'min'`
-            }
-            this.scores.set(objective, range)
+                    this.scores.set(objective, range)
+                }
+                break
+            default:
+                throw `Unknown type: ${type}. Expected 'max' or 'min'`
         }
     }
 
@@ -639,25 +600,11 @@ export default class TargetSelector {
             rangeStr = ''
             range = new Range(null, null)
 
-            while (char !== '=') {
-                if (isWhiteSpace(char)) {
-                    char = charReader.next()
-                    continue
-                }
-                objective += char
-                char = charReader.next()
-            }
+            objective = charReader.readUntil(['='])
 
             char = charReader.next()
 
-            while (char && char !== ',' && char !== '}') {
-                if (isWhiteSpace(char)) {
-                    char = charReader.next()
-                    continue
-                }
-                rangeStr += char
-                char = charReader.next()
-            }
+            rangeStr = charReader.readUntil([',', '}'])
 
             char = charReader.next()
 
@@ -670,7 +617,10 @@ export default class TargetSelector {
         let result = '{'
 
         for (const i of this.scores.keys()) {
-            result += `${i}=${this.scores.get(i).get113()},`
+            let score = this.scores.get(i)
+            if (score) {
+                result += `${i}=${score.get113()},`
+            }
         }
 
         // Close the flower brackets.
@@ -690,7 +640,7 @@ export default class TargetSelector {
             const val = this.advancements.get(i)
             if (typeof val === 'boolean') {
                 result += `${i}=${val},`
-            } else {
+            } else if (val && typeof val === 'object') {
                 result += `${i}={`
                 for (const j of val.keys()) {
                     result += `${j}=${val.get(j)},`

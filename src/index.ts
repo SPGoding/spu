@@ -3,14 +3,14 @@ import Converter from './converter'
 $(document).ready(function() {
     $('#button').click(function() {
         let result = ''
-        let lines = $('#input')
-            .val()
-            .toString()
-            .split('\n')
-        for (let line of lines) {
-            line = Converter.cvtLine(line)
-            result += line + '<br>'
+        let content = $('#input').val()
+        if (content) {
+            let lines = content.toString().split('\n')
+            for (let line of lines) {
+                line = Converter.cvtLine(line)
+                result += line + '<br>'
+            }
+            $('#output').html(result)
         }
-        $('#output').html(result)
     })
 })

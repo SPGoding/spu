@@ -69,12 +69,14 @@ export default class Converter {
             let map = Converter.getResultMap(input, spusOld)
             if (map) {
                 let spusNew = Spuses.pairs.get(spusOld)
-                let spus = new SpuScript(spusNew)
-                let result = spus.compileWith(map)
-                if (positionCorrect) {
-                    return `execute positioned 0.0 0.0 0.0 run ${result}`
-                } else {
-                    return result
+                if (spusNew) {
+                    let spus = new SpuScript(spusNew)
+                    let result = spus.compileWith(map)
+                    if (positionCorrect) {
+                        return `execute positioned 0.0 0.0 0.0 run ${result}`
+                    } else {
+                        return result
+                    }
                 }
             }
         }

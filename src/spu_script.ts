@@ -44,34 +44,46 @@ export default class SpuScript {
     }
 
     private compileArgument(arg: string, resultMap: Map<string, string>) {
-        let tokensMap = this.tokenize(arg)
-        let id = tokensMap.keys().next().value
-        let methods = tokensMap.get(id)
+        let patternMap = this.getPatternMap(arg)
+        let id = patternMap.keys().next().value
+        let methods = patternMap.get(id)
         let source = resultMap.get(`%${id}`)
-        let result = source
 
-        for (const name of methods.keys()) {
-            let params = methods.get(name)
-            params = params.map(x => resultMap.get(`%${x}`))
-            switch (name) {
-                case 'addAdvancement':
-                    let sel = new TargetSelector()
-                    sel.parse113(source)
-                    if (params.length === 1) {
-                        sel.addFinishedAdvancement(params[0])
-                    } else if (params.length === 2) {
-                        sel.addFinishedAdvancement(params[0], params[1])
-                    } else {
-                        throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
+        if (methods && source) {
+            let result = source
+
+            for (const name of methods.keys()) {
+                let paramIds = methods.get(name)
+                if (paramIds) {
+                    let params = paramIds.map(x => {
+                        let result = resultMap.get(`%${x}`)
+                        return result ? result : ''
+                    })
+                    switch (name) {
+                        case 'addAdvancement':
+                            let sel = new TargetSelector()
+                            sel.parse113(source)
+                            if (params.length === 1) {
+                                sel.addFinishedAdvancement(params[0])
+                            } else if (params.length === 2) {
+                                sel.addFinishedAdvancement(params[0], params[1])
+                            } else {
+                                throw `Unexpected param count: ${
+                                    params.length
+                                } of ${name} in ${arg}.`
+                            }
+                            result = sel.get113()
+                            break
+                        default:
+                            break
                     }
-                    result = sel.get113()
-                    break
-                default:
-                    break
+                }
             }
+
+            return result
         }
 
-        return result
+        return ''
     }
 
     /**
@@ -79,10 +91,10 @@ export default class SpuScript {
      * @param arg A spu script arg.
      * @returns A map contains id and methods.
      * @example
-     * tokenize('%0') => {'0': {}}
-     * tokenize('%1$adv%0%2$nbt%3') => {'1': {adv: ['0', '2'], nbt: ['3']}}
+     * this.getPatternMap('%0') => {'0': {}}
+     * this.getPatternMap('%1$addAdvancement%0%2$addNbt%3') => {'1': {addAdvancement: ['0', '2'], addNbt: ['3']}}
      */
-    private tokenize(arg: string) {
+    private getPatternMap(arg: string) {
         let result = ''
         let charReader = new CharReader(arg)
         let char = charReader.next()
