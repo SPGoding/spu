@@ -5,7 +5,7 @@
         "target": "es2015",
         "rootDir": "src",
         "outDir": "dist",
-        "sourceMap": true,
+        "sourceMap": false,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,

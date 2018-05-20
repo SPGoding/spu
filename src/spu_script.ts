@@ -1,6 +1,6 @@
-import CharReader from './char_reader'
-import ArgumentReader from './argument_reader'
-import TargetSelector from './selector'
+import CharReader from './utils/char_reader'
+import ArgumentReader from './utils/argument_reader'
+import TargetSelector from './utils/selector'
 
 /**
  * Represents a spu script.

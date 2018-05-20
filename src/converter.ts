@@ -1,5 +1,5 @@
-import ArgumentReader from './argument_reader'
-import TargetSelector from './selector'
+import ArgumentReader from './utils/argument_reader'
+import TargetSelector from './utils/selector'
 import Spuses from './spuses'
 import SpuScript from './spu_script'
 
