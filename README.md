@@ -1,6 +1,6 @@
 # Sweet Pragmatics Updater
 
-Also called 'SPU'. A web that can help you convert minecraft commands from 1.12 to 1.13.
+Also called 'SPU'. An online tool that can help you convert minecraft commands from 1.12 to 1.13.
 
 ## How to Use
 
