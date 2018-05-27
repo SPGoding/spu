@@ -61,5 +61,5 @@ export default class CharReader {
 }
 
 export function isWhiteSpace(char: string) {
-    return char === ' ' || char === '\t' || char === '\n' || char === '\r'
+    return [' ', '\t', '\n', '\r'].indexOf(char) !== -1
 }

@@ -6,160 +6,81 @@ import CharReader, { isWhiteSpace } from '../char_reader'
  * @author SPGoding
  */
 export class Tokenizer {
-    private charReader: CharReader
+    public tokenize(nbt: string) {
+        let tokens: Token[] = []
 
-    constructor(nbt: string) {
-        this.charReader = new CharReader(nbt)
-    }
-
-    public tokenize() {
-        let result: Token[] = []
-        let char = this.skipWhiteSpace()
-
-        let token = this.readAToken(char)
-        while (token.getType() !== TokenType.EndOfDocument) {
-            token = this.readAToken(char)
-            result.push(token)
-            char = this.skipWhiteSpace()
+        let result = this.readAToken(nbt, 0)
+        tokens.push(result.token)
+        while (result.token.type !== 'EndOfDocument') {
+            result = this.readAToken(nbt, result.pos)
+            tokens.push(result.token)
         }
 
-        return result
+        return tokens
     }
 
-    private readAToken(char: string) {
-        switch (char) {
+    private readAToken(nbt: string, pos: number): Result {
+        pos = this.skipWhiteSpace(nbt, pos)
+        switch (nbt.substr(pos, 1)) {
             case '{':
-                this.charReader.next()
-                return new Token(TokenType.BeginCompound, '{')
+                return { token: { type: 'BeginCompound', value: '{' }, pos: pos + 1 }
             case '}':
-                this.charReader.next()
-                return new Token(TokenType.EndCompound, '}')
+                return { token: { type: 'EndCompound', value: '}' }, pos: pos + 1 }
             case '[':
-                if (this.isBeginByteArray()) {
-                    return this.readBeginByteArray()
-                } else if (this.isBeginIntArray()) {
-                    return this.readBeginIntArray()
-                } else if (this.isBeginLongArray()) {
-                    return this.readBeginLongArray()
-                } else {
-                    return new Token(TokenType.BeginList, '[')
+                switch (nbt.substr(pos, 3)) {
+                    case '[I;':
+                        return { token: { type: 'BeginIntArray', value: '[I;' }, pos: pos + 3 }
+                    case '[B;':
+                        return { token: { type: 'BeginByteArray', value: '[B;' }, pos: pos + 3 }
+                    case '[L;':
+                        return { token: { type: 'BeginLongArray', value: '[L;' }, pos: pos + 3 }
+                    default:
+                        return { token: { type: 'BeginList', value: '[' }, pos: pos + 1 }
                 }
             case ']':
-                return new Token(TokenType.EndListArray, ']')
+                return { token: { type: 'EndListArray', value: ']' }, pos: pos + 1 }
             case ':':
-                return new Token(TokenType.Colon, ':')
+                return { token: { type: 'Colon', value: ':' }, pos: pos + 1 }
             case ',':
-                return new Token(TokenType.Comma, ',')
+                return { token: { type: 'Comma', value: ',' }, pos: pos + 1 }
             case '':
-                return new Token(TokenType.EndOfDocument, '')
+                return { token: { type: 'EndOfDocument', value: '' }, pos: pos + 1 }
             default:
-                throw `Unexpected token at char '${char}'.`
+                throw `Unexpected token at pos '${pos}' in '${nbt}'.`
         }
     }
 
-    private skipWhiteSpace() {
-        let char = this.charReader.next()
-        while (char && isWhiteSpace(char)) {
-            char = this.charReader.next()
+    private skipWhiteSpace(nbt: string, pos: number) {
+        while (isWhiteSpace(nbt.substr(pos, 1))) {
+            pos += 1
         }
-        return char
-    }
-
-    private isBeginByteArray() {
-        let pos = this.charReader.getPos()
-        let result = false
-
-        if (this.charReader.next() === 'B' && this.charReader.next() === ';') {
-            result = true
-        }
-
-        this.charReader.setPos(pos)
-        return result
-    }
-
-    private readBeginByteArray() {
-        this.charReader.next()
-        this.charReader.next()
-        this.charReader.next()
-
-        return new Token(TokenType.BeginByteArray, '[B;')
-    }
-
-    private isBeginIntArray() {
-        let pos = this.charReader.getPos()
-        let result = false
-
-        if (this.charReader.next() === 'I' && this.charReader.next() === ';') {
-            result = true
-        }
-
-        this.charReader.setPos(pos)
-        return result
-    }
-
-    private readBeginIntArray() {
-        this.charReader.next()
-        this.charReader.next()
-        this.charReader.next()
-
-        return new Token(TokenType.BeginByteArray, '[I;')
-    }
-
-    private isBeginLongArray() {
-        let pos = this.charReader.getPos()
-        let result = false
-
-        if (this.charReader.next() === 'L' && this.charReader.next() === ';') {
-            result = true
-        }
-
-        this.charReader.setPos(pos)
-        return result
-    }
-
-    private readBeginLongArray() {
-        this.charReader.next()
-        this.charReader.next()
-        this.charReader.next()
-
-        return new Token(TokenType.BeginByteArray, '[L;')
+        return pos
     }
 }
 
-export class Token {
-    private type: TokenType
-    private value: any
-
-    constructor(type: TokenType, value: any) {
-        this.type = type
-        this.value = value
-    }
-
-    getType() {
-        return this.type
-    }
-
-    getValue() {
-        return this.value
-    }
+export interface Token {
+    type:
+        | 'BeginCompound'
+        | 'EndCompound'
+        | 'BeginList'
+        | 'BeginByteArray'
+        | 'BeginIntArray'
+        | 'BeginLongArray'
+        | 'EndListArray'
+        | 'Colon'
+        | 'Comma'
+        | 'Byte'
+        | 'Short'
+        | 'Int'
+        | 'Long'
+        | 'Float'
+        | 'Double'
+        | 'String'
+        | 'EndOfDocument'
+    value: string | number
 }
 
-export enum TokenType {
-    /*  {  */ BeginCompound,
-    /*  }  */ EndCompound,
-    /*  [  */ BeginList,
-    /* [B; */ BeginByteArray,
-    /* [I; */ BeginIntArray,
-    /* [L; */ BeginLongArray,
-    /*  ]  */ EndListArray,
-    /*  :  */ Colon,
-    /*  ,  */ Comma,
-    /*  b  */ Byte,
-    /*  s  */ Short,
-    /*  i  */ Int,
-    /*  l  */ Long,
-    /*  f  */ Float,
-    /*  d  */ Double,
-    /*  "  */ String,
-    /* NUL */ EndOfDocument
+export interface Result {
+    token: Token
+    pos: number
 }

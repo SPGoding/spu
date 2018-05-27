@@ -1,94 +1,113 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { Tokenizer, Token, TokenType } from '../../../utils/nbt/tokenizer'
+import { Tokenizer, Token } from '../../../utils/nbt/tokenizer'
 
 describe.only('Tokenizer tests', () => {
     describe('tokenize() tests', () => {
         describe('reading token tests', () => {
             it('should return Token(BeginCompound)', () => {
-                let tokenizer = new Tokenizer('{')
+                let tokenizer = new Tokenizer()
 
-                let result = tokenizer.tokenize()
+                let actual = tokenizer.tokenize('{')
 
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.BeginCompound, '{'),
-                    new Token(TokenType.EndOfDocument, '')
+                assert.deepStrictEqual(actual, [
+                    { type: 'BeginCompound', value: '{' },
+                    { type: 'EndOfDocument', value: '' }
                 ])
             })
             it('should return Token(EndCompound)', () => {
-                let tokenizer = new Tokenizer('}')
+                let tokenizer = new Tokenizer()
 
-                let result = tokenizer.tokenize()
+                let actual = tokenizer.tokenize('}')
 
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.EndCompound, '}'),
-                    new Token(TokenType.EndOfDocument, '')
-                ])
-            })
-            it('should return Token(BeginList)', () => {
-                let tokenizer = new Tokenizer('[')
-
-                let result = tokenizer.tokenize()
-
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.BeginList, '['),
-                    new Token(TokenType.EndOfDocument, '')
-                ])
-            })
-            it.only('should return Token(BeginByteArray)', () => {
-                let tokenizer = new Tokenizer('[B;')
-
-                let result = tokenizer.tokenize()
-
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.BeginByteArray, '[B;'),
-                    new Token(TokenType.EndOfDocument, '')
+                assert.deepStrictEqual(actual, [
+                    { type: 'EndCompound', value: '}' },
+                    { type: 'EndOfDocument', value: '' }
                 ])
             })
             it('should return Token(BeginIntArray)', () => {
-                let tokenizer = new Tokenizer('[I;')
+                let tokenizer = new Tokenizer()
 
-                let result = tokenizer.tokenize()
+                let actual = tokenizer.tokenize('[I;')
 
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.BeginIntArray, '[I;'),
-                    new Token(TokenType.EndOfDocument, '')
+                assert.deepStrictEqual(actual, [
+                    { type: 'BeginIntArray', value: '[I;' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(BeginByteArray)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('[B;')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'BeginByteArray', value: '[B;' },
+                    { type: 'EndOfDocument', value: '' }
                 ])
             })
             it('should return Token(BeginLongArray)', () => {
-                let tokenizer = new Tokenizer('[L;')
+                let tokenizer = new Tokenizer()
 
-                let result = tokenizer.tokenize()
+                let actual = tokenizer.tokenize('[L;')
 
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.BeginLongArray, '[L;'),
-                    new Token(TokenType.EndOfDocument, '')
+                assert.deepStrictEqual(actual, [
+                    { type: 'BeginLongArray', value: '[L;' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(BeginList)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('[')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'BeginList', value: '[' },
+                    { type: 'EndOfDocument', value: '' }
                 ])
             })
             it('should return Token(EndListArray)', () => {
-                let tokenizer = new Tokenizer(']')
+                let tokenizer = new Tokenizer()
 
-                let result = tokenizer.tokenize()
+                let actual = tokenizer.tokenize(']')
 
-                assert.deepStrictEqual(result, [
-                    new Token(TokenType.EndListArray, ']'),
-                    new Token(TokenType.EndOfDocument, '')
+                assert.deepStrictEqual(actual, [
+                    { type: 'EndListArray', value: ']' },
+                    { type: 'EndOfDocument', value: '' }
                 ])
             })
-            // it('should skip whitespace', () => {
-            //     let tokenizer = new Tokenizer('{ foo : bar }')
+            it('should return Token(Colon)', () => {
+                let tokenizer = new Tokenizer()
 
-            //     let result = tokenizer.tokenize()
+                let actual = tokenizer.tokenize(':')
 
-            //     assert.deepStrictEqual(result, [
-            //         new Token(TokenType.BeginCompound, '{'),
-            //         new Token(TokenType.String, 'foo'),
-            //         new Token(TokenType.Colon, ':'),
-            //         new Token(TokenType.String, 'bar'),
-            //         new Token(TokenType.EndCompound, '}')
-            //     ])
-            // })
+                assert.deepStrictEqual(actual, [
+                    { type: 'Colon', value: ':' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(Comma)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize(',')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Comma', value: ',' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should skip spaces', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('{ : }')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'BeginCompound', value: '{' },
+                    { type: 'Colon', value: ':' },
+                    { type: 'EndCompound', value: '}' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
         })
     })
 })
