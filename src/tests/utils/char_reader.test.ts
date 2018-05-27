@@ -21,7 +21,7 @@ describe('CharReader tests', () => {
             let first = charReader.next()
             let second = charReader.next()
 
-            assert(first === 'm' && second === 'b')
+            assert(first === 'm' && second === 'j')
         })
         it('should return "" when out of string', () => {
             let charReader = new CharReader('m')

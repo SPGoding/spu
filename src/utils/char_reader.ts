@@ -6,6 +6,14 @@ export default class CharReader {
     private pos: number
     private length: number
 
+    getPos() {
+        return this.pos
+    }
+
+    setPos(pos: number) {
+        this.pos = pos
+    }
+
     constructor(str: string) {
         this.str = str
         this.pos = 0
