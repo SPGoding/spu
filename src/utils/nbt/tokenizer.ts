@@ -43,6 +43,9 @@ export class Tokenizer {
                 return { token: { type: 'Colon', value: ':' }, pos: pos + 1 }
             case ',':
                 return { token: { type: 'Comma', value: ',' }, pos: pos + 1 }
+            case '"':
+                let result = this.readQuotedString(nbt, pos)
+                return { token: { type: 'String', value: result.str }, pos: result.pos + 1 }
             case '':
                 return { token: { type: 'EndOfDocument', value: '' }, pos: pos + 1 }
             default:
@@ -55,6 +58,44 @@ export class Tokenizer {
             pos += 1
         }
         return pos
+    }
+
+    private readQuotedString(nbt: string, pos: number): ReadQuotedStringResult {
+        let str = ''
+        let flag = false
+
+        pos += 1 // Skip the first quote.
+
+        while (nbt.substr(pos, 1) !== '"' || flag) {
+            if (nbt.substr(pos, 1) === '\\' && !flag) {
+                flag = true
+            } else {
+                str += nbt.substr(pos, 1)
+                flag = false
+            }
+            pos += 1
+        }
+
+        return { str: str, pos: pos }
+    }
+
+    private readUnquotedString(nbt: string, pos: number): ReadQuotedStringResult {
+        let str = ''
+        let flag = false
+
+        pos += 1 // Skip the first quote.
+
+        while (nbt.substr(pos, 1) !== '"' || flag) {
+            if (nbt.substr(pos, 1) === '\\' && !flag) {
+                flag = true
+            } else {
+                str += nbt.substr(pos, 1)
+                flag = false
+            }
+            pos += 1
+        }
+
+        return { str: str, pos: pos }
     }
 }
 
@@ -82,5 +123,10 @@ export interface Token {
 
 export interface Result {
     token: Token
+    pos: number
+}
+
+export interface ReadQuotedStringResult {
+    str: string
     pos: number
 }

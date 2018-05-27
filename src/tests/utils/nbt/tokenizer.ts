@@ -96,6 +96,16 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
+            it('should read quoted string', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('"\\\\foo \\"bar\\""')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'String', value: '\\foo "bar"' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
             it('should skip spaces', () => {
                 let tokenizer = new Tokenizer()
 
