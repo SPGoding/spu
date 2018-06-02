@@ -96,6 +96,66 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
+            it('should return Token(Byte)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('false')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Byte', value: 0 },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(Short)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('-32768S')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Short', value: -32768 },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(Int)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('233')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Int', value: 233 },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(Long)', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('233L')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Long', value: 233 },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(Float) ', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('1.2e3f')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Float', value: 1200 },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should return Token(Double) without suffix', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('123.1')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'Double', value: 123.1 },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
             it('should read quoted string', () => {
                 let tokenizer = new Tokenizer()
 
@@ -105,7 +165,7 @@ describe.only('Tokenizer tests', () => {
                     { type: 'String', value: '\\foo "bar"' },
                     { type: 'EndOfDocument', value: '' }
                 ])
-            })
+            }}
             it('should skip spaces', () => {
                 let tokenizer = new Tokenizer()
 

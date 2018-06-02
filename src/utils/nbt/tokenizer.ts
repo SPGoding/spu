@@ -49,7 +49,29 @@ export class Tokenizer {
             case '':
                 return { token: { type: 'EndOfDocument', value: '' }, pos: pos + 1 }
             default:
-                throw `Unexpected token at pos '${pos}' in '${nbt}'.`
+                // Unquoted.
+                let result = this.readUnquotedString(nbt, pos)
+                let str = result.str
+                let pos = result.pos
+                let num: number
+                switch (str.slice(-1)) {
+                    case 'b':
+                    case 'B':
+                        num = parseInt(str)
+                        if (num >= -128 && num <= 127) {
+                            return { token: { type: 'Byte', value: num }, pos: pos + 1}
+                        } else {
+                            throw `Byte ${num} out of range.`
+                        }
+                    case 's':
+                    case 'S':
+                        num = parseInt(str)
+                        if (num >= -32768 && num <= 32767) {
+                            return { token: { type: 'Short', value: num }, pos: pos + 1}
+                        } else {
+                            throw `Short ${num} out of range.`
+                        }
+                }
         }
     }
 
@@ -81,22 +103,22 @@ export class Tokenizer {
 
     private readUnquotedString(nbt: string, pos: number): ReadQuotedStringResult {
         let str = ''
-        let flag = false
 
-        pos += 1 // Skip the first quote.
-
-        while (nbt.substr(pos, 1) !== '"' || flag) {
-            if (nbt.substr(pos, 1) === '\\' && !flag) {
-                flag = true
+        while (![',', ']', '}', ' '].indexOf(nbt.substr(pos, 1))) {
+            if (charPattern.test(nbt.substr(pos, 1))) {
+                str += nbt.
             } else {
-                str += nbt.substr(pos, 1)
-                flag = false
+                throw `Illegal unquoted char at ${pos} in '${nbt}'.`
             }
             pos += 1
         }
 
+        pos -= 1 // Return to the char before ',', ']', '}' or ' '.
+
         return { str: str, pos: pos }
     }
+
+    private charPattern = /[a-zA-Z\._+\-]/
 }
 
 export interface Token {
@@ -130,3 +152,4 @@ export interface ReadQuotedStringResult {
     str: string
     pos: number
 }
+
