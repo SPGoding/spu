@@ -202,25 +202,27 @@ export class Tokenizer {
     private charPattern = /[a-zA-Z0-9\._+\-]/
 }
 
+export type TokenType =
+    | 'BeginCompound'
+    | 'EndCompound'
+    | 'BeginList'
+    | 'BeginByteArray'
+    | 'BeginIntArray'
+    | 'BeginLongArray'
+    | 'EndListOrArray'
+    | 'Colon'
+    | 'Comma'
+    | 'Byte'
+    | 'Short'
+    | 'Int'
+    | 'Long'
+    | 'Float'
+    | 'Double'
+    | 'String'
+    | 'EndOfDocument'
+
 export interface Token {
-    type:
-        | 'BeginCompound'
-        | 'EndCompound'
-        | 'BeginList'
-        | 'BeginByteArray'
-        | 'BeginIntArray'
-        | 'BeginLongArray'
-        | 'EndListOrArray'
-        | 'Colon'
-        | 'Comma'
-        | 'Byte'
-        | 'Short'
-        | 'Int'
-        | 'Long'
-        | 'Float'
-        | 'Double'
-        | 'String'
-        | 'EndOfDocument'
+    type: TokenType
     value: string | number
 }
 
