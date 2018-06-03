@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { Tokenizer, Token } from '../../../utils/nbt/tokenizer'
+import { Tokenizer, Token, TokenType } from '../../../utils/nbt/tokenizer'
 
 describe('Tokenizer tests', () => {
     describe('tokenize() tests', () => {
@@ -12,8 +12,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('{')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'BeginCompound', value: '{' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.BeginCompound, value: '{' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(EndCompound)', () => {
@@ -22,8 +22,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('}')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'EndCompound', value: '}' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.EndCompound, value: '}' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(BeginIntArray)', () => {
@@ -32,8 +32,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('[I;')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'BeginIntArray', value: '[I;' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.BeginIntArray, value: '[I;' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(BeginByteArray)', () => {
@@ -42,8 +42,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('[B;')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'BeginByteArray', value: '[B;' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.BeginByteArray, value: '[B;' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(BeginLongArray)', () => {
@@ -52,8 +52,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('[L;')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'BeginLongArray', value: '[L;' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.BeginLongArray, value: '[L;' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(BeginList)', () => {
@@ -62,8 +62,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('[')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'BeginList', value: '[' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.BeginList, value: '[' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(EndListOrArray)', () => {
@@ -72,8 +72,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize(']')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'EndListOrArray', value: ']' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.EndListOrArray, value: ']' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Colon)', () => {
@@ -82,8 +82,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize(':')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Colon', value: ':' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Colon, value: ':' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Comma)', () => {
@@ -92,8 +92,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize(',')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Comma', value: ',' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Comma, value: ',' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Byte) with boolean', () => {
@@ -102,8 +102,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('false')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Byte', value: 0 },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Byte, value: 0 },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Short)', () => {
@@ -112,8 +112,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('-32768S')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Short', value: -32768 },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Short, value: -32768 },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Int) without suffix', () => {
@@ -122,8 +122,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('233')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Int', value: 233 },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Int, value: 233 },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Long)', () => {
@@ -132,8 +132,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('233L')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Long', value: 233 },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Long, value: 233 },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Float) with scientific notation', () => {
@@ -142,8 +142,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('1.2e3f')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Float', value: 1200 },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Float, value: 1200 },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should return Token(Double) without suffix', () => {
@@ -152,8 +152,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('123.1')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'Double', value: 123.1 },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.Double, value: 123.1 },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should read unquoted string which is like a number with suffix', () => {
@@ -162,8 +162,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('123456A')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'String', value: '123456A' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.String, value: '123456A' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should read unquoted string which is like scientific notation', () => {
@@ -173,8 +173,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('123e3')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'String', value: '123e3' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.String, value: '123e3' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should read normal unquoted string', () => {
@@ -183,8 +183,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('sdfhjkhsdf')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'String', value: 'sdfhjkhsdf' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.String, value: 'sdfhjkhsdf' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should read quoted string', () => {
@@ -193,8 +193,8 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('"\\\\foo \\"bar\\""')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'String', value: '\\foo "bar"' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.String, value: '\\foo "bar"' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
             it('should skip spaces', () => {
@@ -203,10 +203,10 @@ describe('Tokenizer tests', () => {
                 let actual = tokenizer.tokenize('{ : }')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'BeginCompound', value: '{' },
-                    { type: 'Colon', value: ':' },
-                    { type: 'EndCompound', value: '}' },
-                    { type: 'EndOfDocument', value: '' }
+                    { type: TokenType.BeginCompound, value: '{' },
+                    { type: TokenType.Colon, value: ':' },
+                    { type: TokenType.EndCompound, value: '}' },
+                    { type: TokenType.EndOfDocument, value: '' }
                 ])
             })
         })
@@ -216,20 +216,20 @@ describe('Tokenizer tests', () => {
             let actual = tokenizer.tokenize('{ foo : 233e1 , bar : [I; 123F , 998. ] }')
 
             assert.deepStrictEqual(actual, [
-                { type: 'BeginCompound', value: '{' },
-                { type: 'String', value: 'foo' },
-                { type: 'Colon', value: ':' },
-                { type: 'String', value: '233e1' },
-                { type: 'Comma', value: ',' },
-                { type: 'String', value: 'bar' },
-                { type: 'Colon', value: ':' },
-                { type: 'BeginIntArray', value: '[I;' },
-                { type: 'Float', value: 123 },
-                { type: 'Comma', value: ',' },
-                { type: 'Double', value: 998 },
-                { type: 'EndListOrArray', value: ']' },
-                { type: 'EndCompound', value: '}' },
-                { type: 'EndOfDocument', value: '' }
+                { type: TokenType.BeginCompound, value: '{' },
+                { type: TokenType.String, value: 'foo' },
+                { type: TokenType.Colon, value: ':' },
+                { type: TokenType.String, value: '233e1' },
+                { type: TokenType.Comma, value: ',' },
+                { type: TokenType.String, value: 'bar' },
+                { type: TokenType.Colon, value: ':' },
+                { type: TokenType.BeginIntArray, value: '[I;' },
+                { type: TokenType.Float, value: 123 },
+                { type: TokenType.Comma, value: ',' },
+                { type: TokenType.Double, value: 998 },
+                { type: TokenType.EndListOrArray, value: ']' },
+                { type: TokenType.EndCompound, value: '}' },
+                { type: TokenType.EndOfDocument, value: '' }
             ])
         })
     })
