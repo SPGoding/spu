@@ -66,13 +66,13 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
-            it('should return Token(EndListArray)', () => {
+            it('should return Token(EndListOrArray)', () => {
                 let tokenizer = new Tokenizer()
 
                 let actual = tokenizer.tokenize(']')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'EndListArray', value: ']' },
+                    { type: 'EndListOrArray', value: ']' },
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
@@ -96,7 +96,7 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
-            it('should return Token(Byte)', () => {
+            it('should return Token(Byte) with boolean', () => {
                 let tokenizer = new Tokenizer()
 
                 let actual = tokenizer.tokenize('false')
@@ -116,7 +116,7 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
-            it('should return Token(Int)', () => {
+            it('should return Token(Int) without suffix', () => {
                 let tokenizer = new Tokenizer()
 
                 let actual = tokenizer.tokenize('233')
@@ -136,7 +136,7 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
-            it('should return Token(Float) ', () => {
+            it('should return Token(Float) with scientific notation', () => {
                 let tokenizer = new Tokenizer()
 
                 let actual = tokenizer.tokenize('1.2e3f')
@@ -156,6 +156,37 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
+            it('should read unquoted string which is like a number with suffix', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('123456A')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'String', value: '123456A' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should read unquoted string which is like scientific notation', () => {
+                // FUCK YOU, MOJANG!
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('123e3')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'String', value: '123e3' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
+            it('should read normal unquoted string', () => {
+                let tokenizer = new Tokenizer()
+
+                let actual = tokenizer.tokenize('sdfhjkhsdf')
+
+                assert.deepStrictEqual(actual, [
+                    { type: 'String', value: 'sdfhjkhsdf' },
+                    { type: 'EndOfDocument', value: '' }
+                ])
+            })
             it('should read quoted string', () => {
                 let tokenizer = new Tokenizer()
 
@@ -165,7 +196,7 @@ describe.only('Tokenizer tests', () => {
                     { type: 'String', value: '\\foo "bar"' },
                     { type: 'EndOfDocument', value: '' }
                 ])
-            }}
+            })
             it('should skip spaces', () => {
                 let tokenizer = new Tokenizer()
 
@@ -178,6 +209,28 @@ describe.only('Tokenizer tests', () => {
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
+        })
+        it('should read a full nbt', () => {
+            let tokenizer = new Tokenizer()
+
+            let actual = tokenizer.tokenize('{ foo : 233e1 , bar : [I; 123F , 998. ] }')
+
+            assert.deepStrictEqual(actual, [
+                { type: 'BeginCompound', value: '{' },
+                { type: 'String', value: 'foo' },
+                { type: 'Colon', value: ':' },
+                { type: 'String', value: '233e1' },
+                { type: 'Comma', value: ',' },
+                { type: 'String', value: 'bar' },
+                { type: 'Colon', value: ':' },
+                { type: 'BeginIntArray', value: '[I;' },
+                { type: 'Float', value: 123 },
+                { type: 'Comma', value: ',' },
+                { type: 'Double', value: 998 },
+                { type: 'EndListOrArray', value: ']' },
+                { type: 'EndCompound', value: '}' },
+                { type: 'EndOfDocument', value: '' }
+            ])
         })
     })
 })
