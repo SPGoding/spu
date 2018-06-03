@@ -1,6 +1,6 @@
 import CharReader from './char_reader'
 import Converter from '../converter'
-import { isWhiteSpace } from './char_reader'
+import { isWhiteSpace } from './utils'
 
 /**
  * Represent a target selector.

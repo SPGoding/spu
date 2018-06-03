@@ -1,5 +1,4 @@
-import CharReader, { isWhiteSpace } from '../char_reader'
-import { isNumeric } from '../utils'
+import { isWhiteSpace, isNumeric } from '../utils'
 
 /**
  * Provides methods to tokenize a nbt string.

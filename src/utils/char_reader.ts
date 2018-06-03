@@ -1,3 +1,5 @@
+import { isWhiteSpace } from './utils'
+
 /**
  * A reader that provides methods to read a string char by char.
  */
@@ -58,8 +60,4 @@ export default class CharReader {
 
         return result
     }
-}
-
-export function isWhiteSpace(char: string) {
-    return [' ', '\t', '\n', '\r'].indexOf(char) !== -1
 }
