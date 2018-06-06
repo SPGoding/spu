@@ -16,9 +16,15 @@ export class Parser {
         }
     }
 
+    /**
+     * @returns {pos: the index of the closed square, value: parsed Value object}
+     */
     private parseCompound(tokens: Token[], pos: number): ParseResult {
         let expectedType: TokenType
-        let state: 'key' | 'value' = 'key'
+        let state: 'key' | 'val' = 'key'
+        let key = ''
+        let val: string | number
+        let value: Value
 
         expectedType = TokenType.BeginCompound
 
@@ -29,21 +35,21 @@ export class Parser {
                 switch (token.type) {
                     case TokenType.BeginCompound:
                         expectedType = TokenType.EndCompound | TokenType.Key
+                        value = new Compound()
                         break
-                    case TokenType.Byte:
-                    case TokenType.Double:
-                    case TokenType.Float:
-                    case TokenType.Int:
-                    case TokenType.Long:
-                    case TokenType.Short:
-                    case TokenType.String:
+                    case TokenType.Value:
                         if (state === 'key') {
                             expectedType = TokenType.Comma
-                        } else if (state === 'value') {
+                            key = token.value.toString()
+                        } else if (state === 'val') {
+                            expectedType = TokenType.Clon | TokenType.EndCompound | TokenType.EndListOrArray
+                            val = new foo(token.value)
+                            value.set(key, val)
                         }
                         break
                     case TokenType.Comma:
                         expectedType = TokenType.Value
+                        state = 'val'
                         break
                     default:
                         break
