@@ -4,41 +4,21 @@ import * as assert from 'power-assert'
 import { Parser } from '../../../utils/nbt/parser'
 import { NbtCompound, NbtByte } from '../../../utils/nbt/nbt'
 
-describe('Parser tests', () => {
-    describe.only('parse() tests', () => {
-        it('should parse a key-value pair', () => {
+describe.only('Parser tests', () => {
+    describe('parse() tests', () => {
+        it('should parse "0.0" as "0d"', () => {
             let parser = new Parser()
 
             let actual = parser.parse([
                 { type: 'BeginCompound', value: '{' },
-                { type: 'String', value: 'foo' },
+                { type: 'Thing', value: '123' },
                 { type: 'Comma', value: ':' },
-                { type: 'Byte', value: 0 },
+                { type: 'Thing', value: '0.0' },
                 { type: 'EndCompound', value: '}' },
                 { type: 'EndOfDocument', value: '' }
             ])
 
-            assert(actual.toString() === '{foo:0b}')
-        })
-        it('should parse two key-value pairs', () => {
-            let parser = new Parser()
-
-            let actual = parser.parse([
-                { type: 'BeginCompound', value: '{' },
-                { type: 'String', value: 'foo' },
-                { type: 'Comma', value: ':' },
-                { type: 'Byte', value: 0 },
-                { type: 'Colon', value: ',' },
-                { type: 'Double', value: 500 },
-                { type: 'Comma', value: ':' },
-                { type: 'String', value: 'I love pca!' },
-                { type: 'EndCompound', value: '}' },
-                { type: 'EndOfDocument', value: '' }
-            ])
-            console.log('===')
-            console.log(actual.toString())
-            console.log('===')
-            assert(actual.toString() === '{foo:0b,500d:"I love pca!"}')
+            assert(actual.toString() === '{123:0d}')
         })
     })
 })

@@ -1,5 +1,5 @@
 /**
- * Returns if a thing is numeric. Scientific notation is NOT supported.
+ * Returns if a thing is numeric. Scientific notation IS supported.
  * @param num Any thing.
  */
 export function isNumeric(num: any) {

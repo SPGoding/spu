@@ -20,6 +20,11 @@ describe('Utils tests', () => {
 
             assert(!actual)
         })
+        it('scientific notation should return true', () => {
+            let actual = isNumeric('1.3e5')
+
+            assert(actual)
+        })
         it('null should return false', () => {
             let actual = isNumeric(null)
 

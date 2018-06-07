@@ -90,80 +90,17 @@ describe('Tokenizer tests', () => {
 
                 assert.deepStrictEqual(actual, [{ type: 'Comma', value: ',' }, { type: 'EndOfDocument', value: '' }])
             })
-            it('should return Token(Byte) with boolean', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('false')
-
-                assert.deepStrictEqual(actual, [{ type: 'Byte', value: 0 }, { type: 'EndOfDocument', value: '' }])
-            })
-            it('should return Token(Short)', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('-32768S')
-
-                assert.deepStrictEqual(actual, [{ type: 'Short', value: -32768 }, { type: 'EndOfDocument', value: '' }])
-            })
-            it('should return Token(Int) without suffix', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('233')
-
-                assert.deepStrictEqual(actual, [{ type: 'Int', value: 233 }, { type: 'EndOfDocument', value: '' }])
-            })
-            it('should return Token(Long)', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('233L')
-
-                assert.deepStrictEqual(actual, [{ type: 'Long', value: 233 }, { type: 'EndOfDocument', value: '' }])
-            })
-            it('should return Token(Float) with scientific notation', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('1.2e3f')
-
-                assert.deepStrictEqual(actual, [{ type: 'Float', value: 1200 }, { type: 'EndOfDocument', value: '' }])
-            })
-            it('should return Token(Double) without suffix', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('123.1')
-
-                assert.deepStrictEqual(actual, [{ type: 'Double', value: 123.1 }, { type: 'EndOfDocument', value: '' }])
-            })
-            it('should read unquoted string which is like a number with suffix', () => {
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('123456A')
-
-                assert.deepStrictEqual(actual, [
-                    { type: 'String', value: '123456A' },
-                    { type: 'EndOfDocument', value: '' }
-                ])
-            })
-            it('should read unquoted string which is like scientific notation', () => {
-                // FUCK YOU, MOJANG!
-                let tokenizer = new Tokenizer()
-
-                let actual = tokenizer.tokenize('123e3')
-
-                assert.deepStrictEqual(actual, [
-                    { type: 'String', value: '123e3' },
-                    { type: 'EndOfDocument', value: '' }
-                ])
-            })
-            it('should read normal unquoted string', () => {
+            it('should read normal unquoted thing', () => {
                 let tokenizer = new Tokenizer()
 
                 let actual = tokenizer.tokenize('sdfhjkhsdf')
 
                 assert.deepStrictEqual(actual, [
-                    { type: 'String', value: 'sdfhjkhsdf' },
+                    { type: 'Thing', value: 'sdfhjkhsdf' },
                     { type: 'EndOfDocument', value: '' }
                 ])
             })
-            it('should read quoted string', () => {
+            it('should read quoted thing', () => {
                 let tokenizer = new Tokenizer()
 
                 let actual = tokenizer.tokenize('"\\\\foo \\"bar\\""')
@@ -193,16 +130,16 @@ describe('Tokenizer tests', () => {
 
             assert.deepStrictEqual(actual, [
                 { type: 'BeginCompound', value: '{' },
-                { type: 'String', value: 'foo' },
+                { type: 'Thing', value: 'foo' },
                 { type: 'Colon', value: ':' },
-                { type: 'String', value: '233e1' },
+                { type: 'Thing', value: '233e1' },
                 { type: 'Comma', value: ',' },
-                { type: 'String', value: 'bar' },
+                { type: 'Thing', value: 'bar' },
                 { type: 'Colon', value: ':' },
                 { type: 'BeginIntArray', value: '[I;' },
-                { type: 'Float', value: 123 },
+                { type: 'Thing', value: '123F' },
                 { type: 'Comma', value: ',' },
-                { type: 'Double', value: 998 },
+                { type: 'Thing', value: '998.' },
                 { type: 'EndListOrArray', value: ']' },
                 { type: 'EndCompound', value: '}' },
                 { type: 'EndOfDocument', value: '' }
