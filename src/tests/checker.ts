@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import Checker from '../checker'
 
-describe.only('Checker tests', () => {
+describe('Checker tests', () => {
     describe('isUuid() tests', () => {
         it('should return true when put an uuid', () => {
             let actual = Checker.isUuid('fc96c9b6-69f7-11e8-adc0-fa7ae01bbebc')

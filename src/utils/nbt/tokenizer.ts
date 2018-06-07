@@ -11,7 +11,7 @@ export class Tokenizer {
 
         let result = this.readAToken(nbt, 0)
         tokens.push(result.token)
-        while (result.token.type !== TokenType.EndOfDocument) {
+        while (result.token.type !== 'EndOfDocument') {
             result = this.readAToken(nbt, result.pos)
             tokens.push(result.token)
         }
@@ -23,41 +23,41 @@ export class Tokenizer {
         pos = this.skipWhiteSpace(nbt, pos)
         switch (nbt.substr(pos, 1)) {
             case '{':
-                return { token: { type: TokenType.BeginCompound, value: '{' }, pos: pos + 1 }
+                return { token: { type: 'BeginCompound', value: '{' }, pos: pos + 1 }
             case '}':
-                return { token: { type: TokenType.EndCompound, value: '}' }, pos: pos + 1 }
+                return { token: { type: 'EndCompound', value: '}' }, pos: pos + 1 }
             case '[':
                 switch (nbt.substr(pos, 3)) {
                     case '[I;':
                         return {
-                            token: { type: TokenType.BeginIntArray, value: '[I;' },
+                            token: { type: 'BeginIntArray', value: '[I;' },
                             pos: pos + 3
                         }
                     case '[B;':
                         return {
-                            token: { type: TokenType.BeginByteArray, value: '[B;' },
+                            token: { type: 'BeginByteArray', value: '[B;' },
                             pos: pos + 3
                         }
                     case '[L;':
                         return {
-                            token: { type: TokenType.BeginLongArray, value: '[L;' },
+                            token: { type: 'BeginLongArray', value: '[L;' },
                             pos: pos + 3
                         }
                     default:
-                        return { token: { type: TokenType.BeginList, value: '[' }, pos: pos + 1 }
+                        return { token: { type: 'BeginList', value: '[' }, pos: pos + 1 }
                 }
             case ']':
-                return { token: { type: TokenType.EndListOrArray, value: ']' }, pos: pos + 1 }
+                return { token: { type: 'EndListOrArray', value: ']' }, pos: pos + 1 }
             case ':':
-                return { token: { type: TokenType.Colon, value: ':' }, pos: pos + 1 }
+                return { token: { type: 'Colon', value: ':' }, pos: pos + 1 }
             case ',':
-                return { token: { type: TokenType.Comma, value: ',' }, pos: pos + 1 }
+                return { token: { type: 'Comma', value: ',' }, pos: pos + 1 }
             case '"': {
                 const result = this.readQuotedString(nbt, pos)
-                return { token: { type: TokenType.String, value: result.str }, pos: result.pos + 1 }
+                return { token: { type: 'String', value: result.str }, pos: result.pos + 1 }
             }
             case '':
-                return { token: { type: TokenType.EndOfDocument, value: '' }, pos: pos + 1 }
+                return { token: { type: 'EndOfDocument', value: '' }, pos: pos + 1 }
             default: {
                 // Unquoted.
                 const result = this.readUnquoted(nbt, pos)
@@ -71,7 +71,7 @@ export class Tokenizer {
                             num = parseInt(result.str)
                             if (num >= -128 && num <= 127) {
                                 return {
-                                    token: { type: TokenType.Byte, value: num },
+                                    token: { type: 'Byte', value: num },
                                     pos: result.pos + 1
                                 }
                             } else {
@@ -83,7 +83,7 @@ export class Tokenizer {
                             num = parseInt(result.str)
                             if (num >= -32768 && num <= 32767) {
                                 return {
-                                    token: { type: TokenType.Short, value: num },
+                                    token: { type: 'Short', value: num },
                                     pos: result.pos + 1
                                 }
                             } else {
@@ -95,7 +95,7 @@ export class Tokenizer {
                             num = parseInt(result.str)
                             if (num >= -9223372036854775808 && num <= 9223372036854775807) {
                                 return {
-                                    token: { type: TokenType.Long, value: num },
+                                    token: { type: 'Long', value: num },
                                     pos: result.pos + 1
                                 }
                             } else {
@@ -107,7 +107,7 @@ export class Tokenizer {
                             num = parseFloat(result.str)
                             if (num >= -3.4e38 && num <= 3.4e38) {
                                 return {
-                                    token: { type: TokenType.Float, value: num },
+                                    token: { type: 'Float', value: num },
                                     pos: result.pos + 1
                                 }
                             } else {
@@ -119,7 +119,7 @@ export class Tokenizer {
                             num = parseFloat(result.str)
                             if (num >= -1.79e308 && num <= 1.79e308) {
                                 return {
-                                    token: { type: TokenType.Double, value: num },
+                                    token: { type: 'Double', value: num },
                                     pos: result.pos + 1
                                 }
                             } else {
@@ -129,20 +129,17 @@ export class Tokenizer {
                             // Int, [Double], [Unquoted String]
                             if (/[0-9\.]/.test(result.str.slice(-1))) {
                                 // Int, [Double]
-                                if (
-                                    parseInt(result.str) === parseFloat(result.str) &&
-                                    result.str.slice(-1) !== '.'
-                                ) {
+                                if (parseInt(result.str) === parseFloat(result.str) && result.str.slice(-1) !== '.') {
                                     // Int
                                     return {
-                                        token: { type: TokenType.Int, value: parseInt(result.str) },
+                                        token: { type: 'Int', value: parseInt(result.str) },
                                         pos: result.pos + 1
                                     }
                                 } else {
                                     // [Double]
                                     return {
                                         token: {
-                                            type: TokenType.Double,
+                                            type: 'Double',
                                             value: parseFloat(result.str)
                                         },
                                         pos: result.pos + 1
@@ -151,7 +148,7 @@ export class Tokenizer {
                             } else {
                                 // [Unquoted String]
                                 return {
-                                    token: { type: TokenType.String, value: result.str },
+                                    token: { type: 'String', value: result.str },
                                     pos: result.pos + 1
                                 }
                             }
@@ -159,12 +156,12 @@ export class Tokenizer {
                 } else {
                     // [Byte], [Unquoted String]
                     if (result.str === 'false') {
-                        return { token: { type: TokenType.Byte, value: 0 }, pos: result.pos + 1 }
+                        return { token: { type: 'Byte', value: 0 }, pos: result.pos + 1 }
                     } else if (result.str === 'true') {
-                        return { token: { type: TokenType.Byte, value: 1 }, pos: result.pos + 1 }
+                        return { token: { type: 'Byte', value: 1 }, pos: result.pos + 1 }
                     } else {
                         return {
-                            token: { type: TokenType.String, value: result.str },
+                            token: { type: 'String', value: result.str },
                             pos: result.pos + 1
                         }
                     }
@@ -220,44 +217,25 @@ export class Tokenizer {
     private charPattern = /[a-zA-Z0-9\._+\-]/
 }
 
-export enum TokenType {
-    BeginCompound = 2,
-    EndCompound = 4,
-    BeginList = 8,
-    BeginByteArray = 16,
-    BeginIntArray = 32,
-    BeginLongArray = 64,
-    EndListOrArray = 128,
-    Colon = 256,
-    Comma = 512,
-    Byte = 1024,
-    Short = 2048,
-    Int = 4096,
-    Long = 8192,
-    Float = 16384,
-    Double = 32768,
-    String = 65536,
-    EndOfDocument = 131072,
-    Key = TokenType.Byte |
-        TokenType.Double |
-        TokenType.Float |
-        TokenType.Int |
-        TokenType.Long |
-        TokenType.Short |
-        TokenType.String,
-    Value = TokenType.Byte |
-        TokenType.Double |
-        TokenType.Float |
-        TokenType.Int |
-        TokenType.Long |
-        TokenType.Short |
-        TokenType.String |
-        TokenType.BeginByteArray |
-        TokenType.BeginCompound |
-        TokenType.BeginIntArray |
-        TokenType.BeginList |
-        TokenType.BeginLongArray
-}
+export type TokenType =
+    | 'BeginCompound'
+    | 'EndCompound'
+    | 'BeginList'
+    | 'BeginByteArray'
+    | 'BeginIntArray'
+    | 'BeginLongArray'
+    | 'EndListOrArray'
+    | 'Colon'
+    | 'Comma'
+    | 'Byte'
+    | 'Short'
+    | 'Int'
+    | 'Long'
+    | 'Float'
+    | 'Double'
+    | 'String'
+    | 'EndOfDocument'
+
 export interface Token {
     type: TokenType
     value: string | number
