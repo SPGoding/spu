@@ -20,5 +20,20 @@ describe.only('Parser tests', () => {
 
             assert(actual.toString() === '{123:0d}')
         })
+        it('should parse compounds', () => {
+            let parser = new Parser()
+
+            let actual = parser.parse([
+                { type: 'BeginCompound', value: '{' },
+                { type: 'Thing', value: 'foo' },
+                { type: 'Comma', value: ':' },
+                { type: 'BeginCompound', value: '{' },
+                { type: 'EndCompound', value: '}' },
+                { type: 'EndOfDocument', value: '' }
+            ])
+            console.log('===')
+            console.log(actual.toString())
+            assert(actual.toString() === '{foo:{}}')
+        })
     })
 })

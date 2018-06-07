@@ -55,7 +55,7 @@ export class Parser {
                         } else if (state === 'val') {
                             const parseResult = this.parseCompound(tokens, pos)
                             val = parseResult.value
-                            pos = parseResult.pos + 1
+                            pos = parseResult.pos
                         }
                         break
                     case 'EndCompound':
@@ -115,7 +115,7 @@ export class Parser {
                         break
                 }
             } else {
-                throw `Expect '${expectedTypes}' but get '${token.type}' when parsing '${tokens}[${pos}]'.`
+                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
             }
         }
 
