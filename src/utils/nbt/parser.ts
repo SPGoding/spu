@@ -1,4 +1,19 @@
 import { Token, TokenType } from './tokenizer'
+import {
+    NbtValue,
+    NbtCompound,
+    NbtList,
+    NbtByteArray,
+    NbtIntArray,
+    NbtLongArray,
+    NbtByte,
+    NbtShort,
+    NbtInt,
+    NbtLong,
+    NbtFloat,
+    NbtDouble,
+    NbtString
+} from './nbt'
 
 /**
  * Provides methods to parse a NBT tokens list.
@@ -24,7 +39,7 @@ export class Parser {
         let state: 'key' | 'val' = 'key'
         let key = ''
         let val: string | number
-        let value: Value
+        let value: NbtValue
 
         expectedType = TokenType.BeginCompound
 
@@ -35,14 +50,15 @@ export class Parser {
                 switch (token.type) {
                     case TokenType.BeginCompound:
                         expectedType = TokenType.EndCompound | TokenType.Key
-                        value = new Compound()
+                        value = new NbtCompound()
                         break
                     case TokenType.Value:
                         if (state === 'key') {
                             expectedType = TokenType.Comma
                             key = token.value.toString()
                         } else if (state === 'val') {
-                            expectedType = TokenType.Clon | TokenType.EndCompound | TokenType.EndListOrArray
+                            expectedType =
+                                TokenType.Colon | TokenType.EndCompound | TokenType.EndListOrArray
                             val = new foo(token.value)
                             value.set(key, val)
                         }
@@ -66,163 +82,6 @@ export class Parser {
 }
 
 interface ParseResult {
-    value: Value
+    value: NbtValue
     pos: number
-}
-
-type Value =
-    | Compound
-    | List
-    | ByteArray
-    | IntArray
-    | LongArray
-    | Byte
-    | Short
-    | Int
-    | Long
-    | Float
-    | Double
-    | String
-
-class String {
-    private value: string
-
-    public get = () => this.value
-
-    public toString = () => `"${this.value}"`
-}
-
-class Byte {
-    private value: number
-
-    public get = () => this.value
-
-    public toString = () => `${this.value}b`
-}
-
-class Short {
-    private value: number
-
-    public get = () => this.value
-
-    public toString = () => `${this.value}s`
-}
-
-class Int {
-    private value: number
-
-    public get = () => this.value
-
-    public toString = () => `${this.value}`
-}
-
-class Long {
-    private value: number
-
-    public get = () => this.value
-
-    public toString = () => `${this.value}L`
-}
-
-class Float {
-    private value: number
-
-    public get = () => this.value
-
-    public toString = () => `${this.value}f`
-}
-
-class Double {
-    private value: number
-
-    public get = () => this.value
-
-    public toString = () => `${this.value}d`
-}
-
-class Compound {
-    private values: Map<string, Value>
-
-    public get = (key: string) => this.values.get(key)
-
-    public set(key: string, val: Value) {
-        this.values.set(key, val)
-    }
-
-    public toString() {
-        let result = '{'
-
-        for (const key of this.values.keys()) {
-            const val = this.get(key)
-            if (val) {
-                result += `${key}:${val.toString()},`
-            }
-        }
-
-        result = result.slice(0, -1) + '}'
-    }
-}
-
-class List {
-    private values: Value[]
-
-    public get = (index: number) => this.values[index]
-
-    public toString() {
-        let result = '['
-
-        for (const val of this.values) {
-            result += `${val.toString()},`
-        }
-
-        result = result.slice(0, -1) + ']'
-    }
-}
-
-class ByteArray {
-    private values: Byte[]
-
-    public get = (index: number) => this.values[index]
-
-    public toString() {
-        let result = '[B;'
-
-        for (const val of this.values) {
-            result += `${val.toString()},`
-        }
-
-        result = result.slice(0, -1) + ']'
-    }
-}
-
-class IntArray {
-    private values: Int[]
-
-    public get = (index: number) => this.values[index]
-
-    public toString() {
-        let result = '[I;'
-
-        for (const val of this.values) {
-            result += `${val.toString()},`
-        }
-
-        result = result.slice(0, -1) + ']'
-    }
-}
-
-class LongArray {
-    private values: Long[]
-
-    public get = (index: number) => this.values[index]
-
-    public toString() {
-        let result = '[L;'
-
-        for (const val of this.values) {
-            result += `${val.toString()},`
-        }
-
-        result = result.slice(0, -1) + ']'
-    }
 }

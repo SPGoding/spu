@@ -7,7 +7,7 @@ import { isWhiteSpace } from './utils'
  * Provides methods to operate it.
  * @author SPGoding
  */
-export default class TargetSelector {
+export default class Selector {
     private variable: SelectorVariable
     private dx: number
     private dy: number
@@ -99,7 +99,7 @@ export default class TargetSelector {
      */
     public static isValid(input: string) {
         try {
-            let sel = new TargetSelector()
+            let sel = new Selector()
             sel.parse112(input)
         } catch (ignored) {
             return false
@@ -207,7 +207,7 @@ export default class TargetSelector {
                             }
                             break
                         case 'm':
-                            this.gamemode.push(Converter.cvtGamemode(val))
+                            this.gamemode.push(Converter.cvtMode(val))
                             break
                         case 'l':
                             this.level.setMax(Number(val))

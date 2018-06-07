@@ -1,6 +1,7 @@
+import Checker from './checker'
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
-import TargetSelector from './utils/selector'
+import Selector from './utils/selector'
 
 /**
  * Represents a spu script.
@@ -60,19 +61,19 @@ export default class SpuScript {
                         return result ? result : ''
                     })
                     switch (name) {
-                        case 'addAdvancement':
-                            let sel = new TargetSelector()
-                            sel.parse113(source)
+                        case 'addAdv':
+                            let selector = new Selector()
+                            selector.parse113(source)
                             if (params.length === 1) {
-                                sel.addFinishedAdvancement(params[0])
+                                selector.addFinishedAdvancement(params[0])
                             } else if (params.length === 2) {
-                                sel.addFinishedAdvancement(params[0], params[1])
+                                selector.addFinishedAdvancement(params[0], params[1])
                             } else {
                                 throw `Unexpected param count: ${
                                     params.length
                                 } of ${name} in ${arg}.`
                             }
-                            result = sel.get113()
+                            result = selector.get113()
                             break
                         default:
                             break
@@ -92,7 +93,7 @@ export default class SpuScript {
      * @returns A map contains id and methods.
      * @example
      * this.getPatternMap('%0') => {'0': {}}
-     * this.getPatternMap('%1$addAdvancement%0%2$addNbt%3') => {'1': {addAdvancement: ['0', '2'], addNbt: ['3']}}
+     * this.getPatternMap('%1$addAdv%0%2$addNbt%3') => {'1': {addAdv: ['0', '2'], addNbt: ['3']}}
      */
     private getPatternMap(arg: string) {
         let result = ''
@@ -136,55 +137,5 @@ export default class SpuScript {
         }
 
         return new Map([[id, methods]])
-    }
-
-    static isArgumentMatch(cmdArg: string, spusArg: string) {
-        if (spusArg.charAt(0) === '%') {
-            switch (spusArg.slice(1)) {
-                case 'entity':
-                    return SpuScript.isEntity(cmdArg)
-                case 'string':
-                    return SpuScript.isString(cmdArg)
-                case 'word':
-                    return SpuScript.isWord(cmdArg)
-                case 'number':
-                    return SpuScript.isNumber(cmdArg)
-                case 'selector':
-                    return SpuScript.isTargetSelector(cmdArg)
-                case 'uuid':
-                    return SpuScript.isUuid(cmdArg)
-                default:
-                    throw `Unknown argument type: ${spusArg.slice(1)}`
-                // TODO:
-            }
-        } else {
-            return cmdArg.toLowerCase() === spusArg
-        }
-    }
-
-    static isEntity(input: string) {
-        return (
-            SpuScript.isTargetSelector(input) || SpuScript.isWord(input) || SpuScript.isUuid(input)
-        )
-    }
-
-    static isWord(input: string) {
-        return /^[\w:]*$/.test(input)
-    }
-
-    static isString(input: string) {
-        return /^.*$/.test(input)
-    }
-
-    static isUuid(input: string) {
-        return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
-    }
-
-    static isNumber(input: string) {
-        return /^[+-]?[0-9]+\.?[0-9]*$/.test(input)
-    }
-
-    static isTargetSelector(input: string) {
-        return TargetSelector.isValid(input)
     }
 }

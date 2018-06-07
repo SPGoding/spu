@@ -1,7 +1,8 @@
 import ArgumentReader from './utils/argument_reader'
-import TargetSelector from './utils/selector'
+import Selector from './utils/selector'
 import Spuses from './spuses'
 import SpuScript from './spu_script'
+import Checker from './checker'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -9,9 +10,9 @@ import SpuScript from './spu_script'
  */
 export default class Converter {
     /**
-     * Returns an result map from an old command and an old spus.
-     * @param cmd An old minecraft command.
-     * @param spus An old spus defined in spuses.ts.
+     * Returns an result map from an 1.12 command and an 1.12 spus.
+     * @param cmd An 1.12 minecraft command.
+     * @param spus An 1.12 spus defined in spuses.ts.
      * @returns NULLABLE. A map filled with converted value.
      * @example {'%0': 'converted value'}.
      */
@@ -23,7 +24,7 @@ export default class Converter {
         let map = new Map<string, string>()
         let cnt = 0
         while (spusArg !== '') {
-            while (!SpuScript.isArgumentMatch(cmdArg, spusArg)) {
+            while (!Checker.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdReader.hasMore()) {
                     cmdArg += ' ' + cmdReader.next()
                 } else {
@@ -46,25 +47,16 @@ export default class Converter {
         }
     }
 
-    private static cvtArgument(cmd: string, spus: string) {
-        switch (spus.slice(1)) {
-            case 'entity':
-                return Converter.cvtEntity(cmd)
-            // TODO: Add more.
-            default:
-                return cmd
-        }
-    }
-
-    static cvtLine(input: string) {
+    public static cvtLine(input: string) {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            return Converter.cvtCommand(input, true)
+            // TODO: Options for position correct.
+            return Converter.cvtCommand(input, false)
         }
     }
 
-    static cvtCommand(input: string, positionCorrect: boolean) {
+    public static cvtCommand(input: string, positionCorrect: boolean) {
         for (const spusOld of Spuses.pairs.keys()) {
             let map = Converter.getResultMap(input, spusOld)
             if (map) {
@@ -83,30 +75,21 @@ export default class Converter {
         throw `Unknown command: ${input}`
     }
 
-    static cvtGamemode(input: string) {
-        switch (input) {
-            case '0':
-            case 's':
-            case 'survival':
-                return 'survival'
-            case '1':
-            case 'c':
-            case 'creative':
-                return 'creative'
-            case '2':
-            case 'a':
-            case 'adventure':
-                return 'adventure'
-            case '3':
-            case 'sp':
-            case 'spectator':
-                return 'spectator'
+    private static cvtArgument(arg: string, spus: string) {
+        switch (spus.slice(1)) {
+            case 'entity':
+                return Converter.cvtEntity(arg)
+            case 'difficulty':
+                return Converter.cvtDifficulty(arg)
+            case 'mode':
+                return Converter.cvtMode(arg)
+            // TODO: Add more.
             default:
-                throw `Unknown gamemode: ${input}`
+                return arg
         }
     }
 
-    static cvtDifficulty(input: string) {
+    public static cvtDifficulty(input: string) {
         switch (input) {
             case '0':
             case 'p':
@@ -129,17 +112,38 @@ export default class Converter {
         }
     }
 
-    static cvtTargetSelector(input: string) {
-        let sel = new TargetSelector()
-        sel.parse112(input)
+    public static cvtEntity(input: string) {
+        let sel = new Selector()
+        if (Checker.isSelector(input)) {
+            sel.parse112(input)
+        } else if (Checker.isWord(input)) {
+            sel.parse112(`@p[name=${input}]`)
+        } else {
+            return input
+        }
         return sel.get113()
     }
 
-    static cvtEntity(input: string) {
-        if (SpuScript.isTargetSelector(input)) {
-            return Converter.cvtTargetSelector(input)
-        } else {
-            return input
+    public static cvtMode(input: string) {
+        switch (input) {
+            case '0':
+            case 's':
+            case 'survival':
+                return 'survival'
+            case '1':
+            case 'c':
+            case 'creative':
+                return 'creative'
+            case '2':
+            case 'a':
+            case 'adventure':
+                return 'adventure'
+            case '3':
+            case 'sp':
+            case 'spectator':
+                return 'spectator'
+            default:
+                throw `Unknown gamemode: ${input}`
         }
     }
 }

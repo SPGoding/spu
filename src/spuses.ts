@@ -4,9 +4,9 @@
 export default class Spuses {
     static pairs = new Map([
         ['advancement grant %entity only %adv', 'advancement grant %0 only %1'],
-        ['advancement grant %entity only %adv %adv_cri', 'advancement grant %0 only %1 %2'],
+        ['advancement grant %entity only %adv %adv_crit', 'advancement grant %0 only %1 %2'],
         ['advancement revoke %entity only %adv', 'advancement revoke %0 only %1'],
-        ['advancement revoke %entity only %adv %adv_cri', 'advancement revoke %0 only %1 %2'],
+        ['advancement revoke %entity only %adv %adv_crit', 'advancement revoke %0 only %1 %2'],
         ['advancement grant %entity until %adv', 'advancement grant %0 until %1'],
         ['advancement grant %entity from %adv', 'advancement grant %0 from %1'],
         ['advancement grant %entity through %adv', 'advancement grant %0 through %1'],
