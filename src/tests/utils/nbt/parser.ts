@@ -34,5 +34,24 @@ describe.only('Parser tests', () => {
 
             assert(actual.toString() === '{foo:{}}')
         })
+        it.only('should parse list', () => {
+            let parser = new Parser()
+
+            let actual = parser.parse([
+                { type: 'BeginCompound', value: '{' },
+                { type: 'Thing', value: 'foo' },
+                { type: 'Comma', value: ':' },
+                { type: 'BeginList', value: '[' },
+                { type: 'Thing', value: 'bar' },
+                { type: 'Colon', value: ',' },
+                { type: 'BeginList', value: '[' },
+                { type: 'EndListOrArray', value: ']' },
+                { type: 'EndListOrArray', value: ']' },
+                { type: 'EndCompound', value: '}' },
+                { type: 'EndOfDocument', value: '' }
+            ])
+
+            assert(actual.toString() === '{foo:["bar",[]]}')
+        })
     })
 })

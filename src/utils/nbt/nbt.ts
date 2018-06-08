@@ -141,7 +141,11 @@ export class NbtList {
             result += `${val.toString()},`
         }
 
-        result = result.slice(0, -1) + ']'
+        if (result.length === 1) {
+            result += ']'
+        } else {
+            result = result.slice(0, -1) + ']'
+        }
 
         return result
     }
@@ -163,7 +167,11 @@ export class NbtByteArray {
             result += `${val.toString()},`
         }
 
-        result = result.slice(0, -1) + ']'
+        if (result.length === 1) {
+            result += ']'
+        } else {
+            result = result.slice(0, -1) + ']'
+        }
 
         return result
     }
@@ -185,7 +193,11 @@ export class NbtIntArray {
             result += `${val.toString()},`
         }
 
-        result = result.slice(0, -1) + ']'
+        if (result.length === 1) {
+            result += ']'
+        } else {
+            result = result.slice(0, -1) + ']'
+        }
 
         return result
     }
@@ -207,7 +219,11 @@ export class NbtLongArray {
             result += `${val.toString()},`
         }
 
-        result = result.slice(0, -1) + ']'
+        if (result.length === 1) {
+            result += ']'
+        } else {
+            result = result.slice(0, -1) + ']'
+        }
 
         return result
     }

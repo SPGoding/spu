@@ -86,16 +86,15 @@ export class Parser {
                         }
                         break
                     case 'BeginByteArray':
-                        // TODO: val = this.parseByteArray
-                        break
                     case 'BeginIntArray':
-                        // TODO: val = this.parseIntArray
-                        break
                     case 'BeginList':
-                        // TODO: val = this.parseList
-                        break
                     case 'BeginLongArray':
-                        // TODO: val = this.parseLongArray
+                        expectedTypes = ['Colon', 'EndCompound']
+                        const parseResult = this.parseValue(tokens, pos)
+                        val = parseResult.value
+                        pos = parseResult.pos
+                        result.set(key, val)
+                        state = 'key'
                         break
                     case 'Comma':
                         expectedTypes = [
@@ -120,6 +119,127 @@ export class Parser {
         }
 
         throw 'Parsing compound error!'
+    }
+
+    private parseList(tokens: Token[], pos: number): ParseResult {
+        let expectedTypes: TokenType[]
+        let resultValue = new NbtList()
+        let state: 'begin' | 'value' = 'begin'
+        let val: NbtValue
+
+        expectedTypes = ['BeginList']
+
+        for (; pos < tokens.length; pos++) {
+            const token = tokens[pos]
+
+            if (expectedTypes.indexOf(token.type) !== -1) {
+                switch (token.type) {
+                    case 'BeginList':
+                        if (state === 'begin') {
+                            expectedTypes = [
+                                'EndListOrArray',
+                                'Thing',
+                                'String',
+                                'BeginByteArray',
+                                'BeginCompound',
+                                'BeginIntArray',
+                                'BeginList',
+                                'BeginLongArray'
+                            ]
+                            state = 'value'
+                        } else if (state === 'value') {
+                            expectedTypes = ['Colon', 'EndListOrArray']
+                            const parseResult = this.parseList(tokens, pos)
+                            val = parseResult.value
+                            pos = parseResult.pos
+
+                            resultValue.add(val)
+                        }
+                        break
+                    case 'EndListOrArray':
+                        return { value: resultValue, pos: pos }
+                    case 'Thing':
+                    case 'String':
+                    case 'BeginByteArray':
+                    case 'BeginIntArray':
+                    case 'BeginList':
+                    case 'BeginLongArray':
+                    case 'BeginCompound':
+                        expectedTypes = ['Colon', 'EndListOrArray']
+                        const parseResult = this.parseValue(tokens, pos)
+                        val = parseResult.value
+                        pos = parseResult.pos
+                        resultValue.add(val)
+                        break
+                    case 'Colon':
+                        expectedTypes = [
+                            'EndListOrArray',
+                            'Thing',
+                            'String',
+                            'BeginByteArray',
+                            'BeginCompound',
+                            'BeginIntArray',
+                            'BeginList',
+                            'BeginLongArray'
+                        ]
+                        break
+                    default:
+                        break
+                }
+            } else {
+                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+            }
+        }
+
+        throw 'Parsing compound error!'
+    }
+
+    /**
+     * Parses a set of tokens of a value object.
+     * Supports Thing, String, BeginCompound, BeginByteArray, BeginIntArray, BeginList and BeginLongArray.
+     * @param tokens A list of tokens.
+     * @param pos The beginning index.
+     */
+    private parseValue(tokens: Token[], pos: number): ParseResult {
+        let token = tokens[pos]
+        let val: NbtValue
+        let parseResult: ParseResult
+
+        switch (token.type) {
+            case 'Thing':
+            case 'String':
+                if (token.type === 'Thing') {
+                    val = this.parseThing(token)
+                } else {
+                    val = new NbtString()
+                    val.set(token.value.toString())
+                }
+                return { value: val, pos: pos }
+            case 'BeginCompound':
+                parseResult = this.parseCompound(tokens, pos)
+                break
+            case 'BeginByteArray':
+                throw '1'
+                //parseResult = this.parseByteArray(tokens, pos)
+                break
+            case 'BeginIntArray':
+                throw '2'
+                //parseResult = this.parseIntArray(tokens, pos)
+                break
+            case 'BeginList':
+                parseResult = this.parseList(tokens, pos)
+                break
+            case 'BeginLongArray':
+                throw '3'
+                //parseResult = this.parseLongArray(tokens, pos)
+                break
+            default:
+                throw `Token '${token.type}' is not a value!`
+        }
+        val = parseResult.value
+        pos = parseResult.pos
+
+        return { value: val, pos: pos }
     }
 
     private parseThing(token: Token) {
