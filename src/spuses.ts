@@ -35,10 +35,7 @@ export default class Spuses {
         ['clone %position %position %position %word', 'clone %0 %1 %2 %3'],
         ['clone %position %position %position %word %word', 'clone %0 %1 %2 %3 %4'],
         ['clone %position %position %position %word %word %block', 'clone %0 %1 %2 %3 %5 %4'],
-        [
-            'clone %position %position %position %word %word %block_with_data',
-            'clone %0 %1 %2 %3 %5 %4'
-        ],
+        ['clone %position %position %position %word %word %block_with_data', 'clone %0 %1 %2 %3 %5 %4'],
         ['debug %word', 'debug %0'],
         ['defaultgamemode %mode', 'defaultgamemode %0'],
         ['deop %entity', 'deop %0'],
@@ -56,11 +53,9 @@ export default class Spuses {
             'execute %entity %position detect %position %block_with_data %command',
             'execute as %0 at @s positioned %1 if block %2 %3 run %4'
         ],
-        [
-            // TODO: fill
-            '',
-            ''
-        ],
+        ['fill %position %position %block', 'fill %0 %1 %2'],
+        ['fill %position %position %block_with_data', 'fill %0 %1 %2'],
+        ['fill %position %position %block_with_data', 'fill %0 %1 %2'],
         ['', ''],
         ['', ''],
         ['', ''],

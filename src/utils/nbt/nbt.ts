@@ -1,3 +1,5 @@
+import { escape } from '../utils'
+
 export type NbtValue =
     | NbtCompound
     | NbtList
@@ -21,7 +23,7 @@ export class NbtString {
         this.value = value
     }
 
-    public toString = () => `"${this.value}"`
+    public toString = () => `"${escape(this.value)}"`
 }
 
 export class NbtByte {
