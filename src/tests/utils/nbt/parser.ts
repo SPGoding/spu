@@ -34,7 +34,7 @@ describe.only('Parser tests', () => {
 
             assert(actual.toString() === '{foo:{}}')
         })
-        it.only('should parse list', () => {
+        it('should parse list', () => {
             let parser = new Parser()
 
             let actual = parser.parse([
@@ -52,6 +52,36 @@ describe.only('Parser tests', () => {
             ])
 
             assert(actual.toString() === '{foo:["bar",[]]}')
+        })
+        it('should parse arrays', () => {
+            let parser = new Parser()
+
+            let actual = parser.parse([
+                { type: 'BeginCompound', value: '{' },
+                { type: 'Thing', value: 'byte' },
+                { type: 'Comma', value: ':' },
+                { type: 'BeginByteArray', value: '[B;' },
+                { type: 'Thing', value: 'true' },
+                { type: 'Colon', value: ',' },
+                { type: 'Thing', value: '0b' },
+                { type: 'EndListOrArray', value: ']' },
+                { type: 'Colon', value: ',' },
+                { type: 'Thing', value: 'int' },
+                { type: 'Comma', value: ':' },
+                { type: 'BeginIntArray', value: '[I;' },
+                { type: 'Thing', value: '233' },
+                { type: 'EndListOrArray', value: ']' },
+                { type: 'Colon', value: ',' },
+                { type: 'Thing', value: 'long' },
+                { type: 'Comma', value: ':' },
+                { type: 'BeginLongArray', value: '[L;' },
+                { type: 'Thing', value: '123456L' },
+                { type: 'EndListOrArray', value: ']' },
+                { type: 'EndCompound', value: '}' },
+                { type: 'EndOfDocument', value: '' }
+            ])
+
+            assert(actual.toString() === '{byte:[B;1b,0b],int:[I;233],long:[L;123456L]}')
         })
     })
 })

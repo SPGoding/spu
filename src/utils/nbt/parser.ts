@@ -191,7 +191,124 @@ export class Parser {
             }
         }
 
-        throw 'Parsing compound error!'
+        throw 'Parsing list error!'
+    }
+
+    private parseByteArray(tokens: Token[], pos: number): ParseResult {
+        let expectedTypes: TokenType[]
+        let resultValue = new NbtByteArray()
+        let val: NbtByte | null
+
+        expectedTypes = ['BeginByteArray']
+
+        for (; pos < tokens.length; pos++) {
+            const token = tokens[pos]
+
+            if (expectedTypes.indexOf(token.type) !== -1) {
+                switch (token.type) {
+                    case 'BeginByteArray':
+                        expectedTypes = ['EndListOrArray', 'Thing']
+                        break
+                    case 'EndListOrArray':
+                        return { value: resultValue, pos: pos }
+                    case 'Thing':
+                        expectedTypes = ['Colon', 'EndListOrArray']
+                        if ((val = this.parseByte(token)) !== null) {
+                            resultValue.add(val)
+                        } else {
+                            throw `Get a token at '${pos}' whoose type isn't 'Byte' when parsing byte array!`
+                        }
+                        break
+                    case 'Colon':
+                        expectedTypes = ['EndListOrArray', 'Thing']
+                        break
+                    default:
+                        break
+                }
+            } else {
+                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+            }
+        }
+
+        throw 'Parsing byte array error!'
+    }
+
+    private parseIntArray(tokens: Token[], pos: number): ParseResult {
+        let expectedTypes: TokenType[]
+        let resultValue = new NbtIntArray()
+        let val: NbtInt | null
+
+        expectedTypes = ['BeginIntArray']
+
+        for (; pos < tokens.length; pos++) {
+            const token = tokens[pos]
+
+            if (expectedTypes.indexOf(token.type) !== -1) {
+                switch (token.type) {
+                    case 'BeginIntArray':
+                        expectedTypes = ['EndListOrArray', 'Thing']
+                        break
+                    case 'EndListOrArray':
+                        return { value: resultValue, pos: pos }
+                    case 'Thing':
+                        expectedTypes = ['Colon', 'EndListOrArray']
+                        if ((val = this.parseInt(token)) !== null) {
+                            resultValue.add(val)
+                        } else {
+                            throw `Get a token at '${pos}' whoose type isn't 'Int' when parsing int array!`
+                        }
+                        break
+                    case 'Colon':
+                        expectedTypes = ['EndListOrArray', 'Thing']
+                        break
+                    default:
+                        break
+                }
+            } else {
+                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+            }
+        }
+
+        throw 'Parsing int array error!'
+    }
+
+    private parseLongArray(tokens: Token[], pos: number): ParseResult {
+        let expectedTypes: TokenType[]
+        let resultValue = new NbtLongArray()
+        let val: NbtLong | null
+
+        expectedTypes = ['BeginLongArray']
+
+        for (; pos < tokens.length; pos++) {
+            const token = tokens[pos]
+
+            if (expectedTypes.indexOf(token.type) !== -1) {
+                switch (token.type) {
+                    case 'BeginLongArray':
+                        expectedTypes = ['EndListOrArray', 'Thing']
+                        break
+                    case 'EndListOrArray':
+                        return { value: resultValue, pos: pos }
+                    case 'Thing':
+                        expectedTypes = ['Colon', 'EndListOrArray']
+                        if ((val = this.parseLong(token)) !== null) {
+                            resultValue.add(val)
+                        } else {
+                            throw `Get a token at '${pos}' whoose type isn't 'Long' when parsing long array!`
+                        }
+                        break
+                    case 'Colon':
+                        expectedTypes = ['EndListOrArray', 'Thing']
+                        break
+                    default:
+                        break
+                }
+            } else {
+                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+            }
+        }
+
+        throw 'Parsing long array error!'
     }
 
     /**
@@ -219,19 +336,16 @@ export class Parser {
                 parseResult = this.parseCompound(tokens, pos)
                 break
             case 'BeginByteArray':
-                throw '1'
-                //parseResult = this.parseByteArray(tokens, pos)
+                parseResult = this.parseByteArray(tokens, pos)
                 break
             case 'BeginIntArray':
-                throw '2'
-                //parseResult = this.parseIntArray(tokens, pos)
+                parseResult = this.parseIntArray(tokens, pos)
                 break
             case 'BeginList':
                 parseResult = this.parseList(tokens, pos)
                 break
             case 'BeginLongArray':
-                throw '3'
-                //parseResult = this.parseLongArray(tokens, pos)
+                parseResult = this.parseLongArray(tokens, pos)
                 break
             default:
                 throw `Token '${token.type}' is not a value!`
