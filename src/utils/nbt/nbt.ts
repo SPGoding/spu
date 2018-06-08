@@ -115,7 +115,11 @@ export class NbtCompound {
             }
         }
 
-        result = result.slice(0, -1) + '}'
+        if (result.length === 1) {
+            result += '}'
+        } else {
+            result = result.slice(0, -1) + '}'
+        }
 
         return result
     }

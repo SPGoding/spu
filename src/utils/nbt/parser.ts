@@ -53,9 +53,13 @@ export class Parser {
                         if (state === 'key') {
                             expectedTypes = ['EndCompound', 'Thing', 'String']
                         } else if (state === 'val') {
+                            expectedTypes = ['Colon', 'EndCompound']
                             const parseResult = this.parseCompound(tokens, pos)
                             val = parseResult.value
                             pos = parseResult.pos
+
+                            result.set(key, val)
+                            state = 'key'
                         }
                         break
                     case 'EndCompound':

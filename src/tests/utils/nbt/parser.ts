@@ -31,8 +31,7 @@ describe.only('Parser tests', () => {
                 { type: 'EndCompound', value: '}' },
                 { type: 'EndOfDocument', value: '' }
             ])
-            console.log('===')
-            console.log(actual.toString())
+
             assert(actual.toString() === '{foo:{}}')
         })
     })
