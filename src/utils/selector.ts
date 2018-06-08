@@ -1,6 +1,7 @@
 import CharReader from './char_reader'
 import Converter from '../converter'
 import { isWhiteSpace } from './utils'
+import { NbtCompound } from './nbt/nbt'
 
 /**
  * Represent a target selector.
@@ -28,6 +29,7 @@ export default class Selector {
     private y_rotation = new Range(null, null)
     private scores = new Map<string, Range>()
     private advancements = new Map<string, boolean | Map<string, boolean>>()
+    private nbt = new NbtCompound()
 
     constructor() {}
 
