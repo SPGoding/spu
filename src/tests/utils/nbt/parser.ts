@@ -2,7 +2,6 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { Parser } from '../../../utils/nbt/parser'
-import { NbtCompound, NbtByte } from '../../../utils/nbt/nbt'
 
 describe.only('Parser tests', () => {
     describe('parse() tests', () => {
@@ -28,6 +27,7 @@ describe.only('Parser tests', () => {
                 { type: 'Thing', value: 'foo' },
                 { type: 'Comma', value: ':' },
                 { type: 'BeginCompound', value: '{' },
+                { type: 'EndCompound', value: '}' },
                 { type: 'EndCompound', value: '}' },
                 { type: 'EndOfDocument', value: '' }
             ])

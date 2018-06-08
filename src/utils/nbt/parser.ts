@@ -62,15 +62,11 @@ export class Parser {
                         return { value: result, pos: pos }
                     case 'Thing':
                     case 'String':
-                        switch (token.type) {
-                            case 'Thing':
-                                val = this.parseThing(token, val)
-                                break
-                            case 'String':
-                            default:
-                                val = new NbtString()
-                                val.set(token.value.toString())
-                                break
+                        if (token.type === 'Thing') {
+                            val = this.parseThing(token)
+                        } else {
+                            val = new NbtString()
+                            val.set(token.value.toString())
                         }
                         if (state === 'key') {
                             expectedTypes = ['Comma']
@@ -122,95 +118,136 @@ export class Parser {
         throw 'Parsing compound error!'
     }
 
-    private parseThing(token: Token, val: NbtValue | undefined) {
-        let num: number | null
+    private parseThing(token: Token) {
+        let result: NbtValue | null
 
-        if ((num = this.parseByte(token)) !== null) {
-            val = new NbtByte()
-            val.set(num)
-        } else if ((num = this.getShort(token)) !== null) {
-            val = new NbtShort()
-            val.set(num)
-        } else if ((num = this.getInt(token)) !== null) {
-            val = new NbtInt()
-            val.set(num)
-        } else if ((num = this.getLong(token)) !== null) {
-            val = new NbtLong()
-            val.set(num)
-        } else if ((num = this.getFloat(token)) !== null) {
-            val = new NbtFloat()
-            val.set(num)
-        } else if ((num = this.getDouble(token)) !== null) {
-            val = new NbtDouble()
-            val.set(num)
+        if ((result = this.parseByte(token)) !== null) {
+            return result
+        } else if ((result = this.parseShort(token)) !== null) {
+            return result
+        } else if ((result = this.parseInt(token)) !== null) {
+            return result
+        } else if ((result = this.parseLong(token)) !== null) {
+            return result
+        } else if ((result = this.parseFloat(token)) !== null) {
+            return result
+        } else if ((result = this.parseDouble(token)) !== null) {
+            return result
         } else {
-            val = new NbtString()
-            val.set(token.value.toString())
+            return this.parseString(token)
         }
+    }
 
-        return val
+    private parseString(token: Token) {
+        let result = new NbtString()
+
+        result.set(token.value)
+
+        return result
     }
 
     private parseByte(token: Token) {
+        let num: number
+        let result = new NbtByte()
+
         if (token.value === 'true') {
-            return 1
+            num = 1
         } else if (token.value === 'false') {
-            return 0
+            num = 0
         } else if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 'b') {
-            return parseInt(token.value)
+            num = parseInt(token.value)
         } else {
             return null
         }
+
+        result.set(num)
+
+        return result
     }
 
-    private getShort(token: Token) {
+    private parseShort(token: Token) {
+        let num: number
+        let result = new NbtShort()
+
         if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 's') {
-            return parseInt(token.value)
+            num = parseInt(token.value)
         } else {
             return null
         }
+
+        result.set(num)
+
+        return result
     }
 
-    private getInt(token: Token) {
+    private parseInt(token: Token) {
+        let num: number
+        let result = new NbtInt()
+
         if (isNumeric(token.value)) {
             if (token.value.indexOf('.') === -1) {
-                return parseFloat(token.value)
+                num = parseFloat(token.value)
             } else {
                 return null
             }
         } else {
             return null
         }
+
+        result.set(num)
+
+        return result
     }
 
-    private getLong(token: Token) {
+    private parseLong(token: Token) {
+        let num: number
+        let result = new NbtLong()
+
         if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 'l') {
-            return parseInt(token.value)
+            num = parseInt(token.value)
         } else {
             return null
         }
+
+        result.set(num)
+
+        return result
     }
 
-    private getFloat(token: Token) {
+    private parseFloat(token: Token) {
+        let num: number
+        let result = new NbtFloat()
+
         if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 'l') {
-            return parseFloat(token.value)
+            num = parseFloat(token.value)
         } else {
             return null
         }
+
+        result.set(num)
+
+        return result
     }
 
-    private getDouble(token: Token) {
+    private parseDouble(token: Token) {
+        let num: number
+        let result = new NbtDouble()
+
         if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 'd') {
-            return parseFloat(token.value)
+            num = parseFloat(token.value)
         } else if (isNumeric(token.value)) {
             if (token.value.indexOf('.') !== -1) {
-                return parseFloat(token.value)
+                num = parseFloat(token.value)
             } else {
                 return null
             }
         } else {
             return null
         }
+
+        result.set(num)
+
+        return result
     }
 }
 
