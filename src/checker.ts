@@ -5,28 +5,24 @@ export default class Checker {
     public static isArgumentMatch(cmdArg: string, spusArg: string) {
         if (spusArg.charAt(0) === '%') {
             switch (spusArg.slice(1)) {
+                case 'adv':
+                    return Checker.isPath(cmdArg)
+                case 'adv_crit':
+                    return Checker.isWord(cmdArg)
                 case 'entity':
-                    return (
-                        Checker.isSelector(cmdArg) ||
-                        Checker.isWord(cmdArg) ||
-                        Checker.isUuid(cmdArg)
-                    )
+                    return Checker.isSelector(cmdArg) || Checker.isWord(cmdArg) || Checker.isUuid(cmdArg)
                 case 'string':
                     return Checker.isString(cmdArg)
                 case 'word':
-                case 'adv_crit':
                     return Checker.isWord(cmdArg)
                 case 'num':
                     return Checker.isNum(cmdArg)
-                case 'adv':
-                    return Checker.isPath(cmdArg)
                 case 'ip':
                     return Checker.isIP(cmdArg)
                 case 'nbt':
                     return Checker.isNbt(cmdArg)
                 default:
                     throw `Unknown argument type: ${spusArg.slice(1)}`
-                // TODO:
             }
         } else {
             return cmdArg.toLowerCase() === spusArg
@@ -69,9 +65,7 @@ export default class Checker {
         // This regex is coppied from
         // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
         // Dressed pca, I love you!!!
-        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){3}|(\^([+-]?(\d+(\.\d+)?|\.\d+))?(\s|$)){3})/.test(
-            input
-        )
+        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){3}|(\^([+-]?(\d+(\.\d+)?|\.\d+))?(\s|$)){3})/.test(input)
     }
 
     public static isNbt(input: string) {

@@ -4,56 +4,63 @@
 export default class Spuses {
     /**
      * =====TYPES=====
-     *
-     * %adv
-     * %adv_crit
-     * %block
-     * %block_dust_param
-     * %block_nbt
-     * %bool
-     * %command
-     * %command_name
-     * %data
-     * %data_or_state
-     * %difficulty
-     * %effect
-     * %ench
-     * %entity
-     * %entity_nbt
-     * %entity_type
-     * %func
-     * %gamemode
-     * %ip
-     * %item
-     * %item_dust_params
-     * %item_nbt
-     * %item_tag_nbt
-     * %json
-     * %literal
-     * %mode
-     * %num
-     * %pardon
-     * %particle
-     * %recipe
-     * %scb_crit
-     * %slot
-     * %sound
-     * %source
-     * %string
-     * %uuid
-     * %vec_
-     * %word
+     * Stages:
+     * [0] Uncheckable, unconvertable
+     * [1] Checkable, unconvertable
+     * [2] Checkbale, convertable
+     * ================
+     * [2]%adv
+     * [2]%adv_crit
+     * [0]%block
+     * [0]%block_dust_param
+     * [0]%block_nbt
+     * [0]%bool
+     * [0]%command
+     * [0]%command_name
+     * [0]%data
+     * [0]%data_or_state
+     * [0]%difficulty
+     * [0]%effect
+     * [0]%ench
+     * [0]%entity
+     * [0]%entity_nbt
+     * [0]%entity_type
+     * [0]%func
+     * [0]%gamemode
+     * [0]%ip
+     * [0]%item
+     * [0]%item_dust_params
+     * [0]%item_nbt
+     * [0]%item_tag_nbt
+     * [0]%json
+     * [0]%literal
+     * [0]%mode
+     * [0]%num
+     * [0]%pardon
+     * [0]%particle
+     * [0]%recipe
+     * [0]%scb_crit
+     * [0]%slot
+     * [0]%sound
+     * [0]%source
+     * [0]%string
+     * [0]%uuid
+     * [0]%vec_
+     * [0]%word
      *
      * =====FUNCS=====
-     *
-     * $addAdvToEntity
-     * $addDataOrStateToBlock
-     * $addDataToItem
-     * $addNbtToBlock
-     * $addNbtToEntity
-     * $addNbtToItem
-     * $addScbMaxToEntity
-     * $addScbMinToEntity
+     * Stages:
+     * [0] Unexecutable
+     * [1] Executable
+     * ===============
+     * [0]$addAdvToEntity
+     * [0]$addDataOrStateToBlock
+     * [0]$addDataToItem
+     * [0]$addNbtToBlock
+     * [0]$addNbtToEntity
+     * [0]$addNbtToItem
+     * [0]$addScbMaxToEntity
+     * [0]$addScbMinToEntity
      */
     static pairs = new Map([
         ['advancement test %entity %adv', 'execute if entity %0$addAdvToEntity%1'],

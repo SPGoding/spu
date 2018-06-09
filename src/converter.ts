@@ -1,6 +1,6 @@
 import ArgumentReader from './utils/argument_reader'
 import Selector from './utils/selector'
-import Spuses from './spuses'
+import Spuses from './maps/spuses'
 import SpuScript from './spu_script'
 import Checker from './checker'
 
@@ -47,12 +47,11 @@ export default class Converter {
         }
     }
 
-    public static cvtLine(input: string) {
+    public static cvtLine(input: string, positionCorrect: boolean) {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            // TODO: Options for position correct.
-            return Converter.cvtCommand(input, false)
+            return Converter.cvtCommand(input, positionCorrect)
         }
     }
 
@@ -65,6 +64,7 @@ export default class Converter {
                     let spus = new SpuScript(spusNew)
                     let result = spus.compileWith(map)
                     if (positionCorrect) {
+                        alert()
                         return `execute positioned 0.0 0.0 0.0 run ${result}`
                     } else {
                         return result
@@ -77,13 +77,15 @@ export default class Converter {
 
     private static cvtArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
+            case 'adv':
+            case 'adv_crit':
+                return arg
             case 'entity':
                 return Converter.cvtEntity(arg)
             case 'difficulty':
                 return Converter.cvtDifficulty(arg)
             case 'mode':
                 return Converter.cvtMode(arg)
-            // TODO: Add more.
             default:
                 return arg
         }
