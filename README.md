@@ -21,21 +21,21 @@ When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be c
     For example, a command
 
     ```
-    entitydata @e[type=armor_stand,r=5] {CustomName:"hhh"}
+    advancement test @p[score_foo=10] minecraft:story/root
     ```
 
     will be parsed according to a _spu script_
 
     ```
-    entitydata %entity %nbt
+    advancement test %entity %adv
     ```
 
     into an _result map_
 
     ```typescript
     {
-        '%0': '@e[sort=nearest,type=armor_stand,distance=..5]',
-        '%1': '{CustomName:"[\\"hhh\\"]"}'
+        '%0': '@p[scores={foo=..10}]',
+        '%1': 'minecraft:story/root'
     }
     ```
 
@@ -44,21 +44,21 @@ When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be c
     For example, the _result map_ in last step, will be combined with this spu script
 
     ```
-    data merge entity %0$setLimitTo1 %1
+    execute if entity %0$addAdvToEntity%1
     ```
 
     So we'll get this
 
     ```
-    data merge entity @e[type=armor_stand,distance=..5]$setLimitTo1 {CustomName:"[\"hhh\"]"}
+    execute if entity @p[scores={foo=..10}]$addAdvToEntityminecraft:story/root
     ```
 
-4.  Excute the _spu scrpt_.
+4.  Execute the _spu scrpt_.
 
-    For example, the result of last step contains `$setLimitTo1` which is called _spu script method_. We'll execute this method and get this
+    For example, the result of last step contains `$addAdvToEntity` which is called _spu script method_. We'll execute this method and get this
 
     ```
-    data merge entity @e[type=armor_stand,distance=..5,limit=1] {CustomName:"[\"hhh\"]"}
+    execute if entity @p[scores={foo=..10},advancements={minecraft:story/root=true}]
     ```
 
 5.  **Congratulations!**
