@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import { NbtString } from '../../../utils/nbt/nbt'
 
-describe.only('Nbt tests', () => {
+describe('Nbt tests', () => {
     describe('NbtString tests', () => {
         describe('toString() tests', () => {
             it('should escape', () => {
