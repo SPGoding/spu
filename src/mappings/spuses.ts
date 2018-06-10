@@ -30,7 +30,6 @@ export default class Spuses {
      * %json
      * %literal
      * %num
-     * %pardon
      * %particle
      * %recipe
      * %scb_crit
