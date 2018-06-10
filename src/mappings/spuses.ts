@@ -4,63 +4,54 @@
 export default class Spuses {
     /**
      * =====TYPES=====
-     * Stages:
-     * [0] Uncheckable, unconvertable
-     * [1] Checkable, unconvertable
-     * [2] Checkbale, convertable
-     * ================
-     * [2]%adv
-     * [2]%adv_crit
-     * [0]%block
-     * [0]%block_dust_param
-     * [0]%block_nbt
-     * [0]%bool
-     * [0]%command
-     * [0]%command_name
-     * [0]%data
-     * [0]%data_or_state
-     * [0]%difficulty
-     * [0]%effect
-     * [0]%ench
-     * [0]%entity
-     * [0]%entity_nbt
-     * [0]%entity_type
-     * [0]%func
-     * [0]%gamemode
-     * [0]%ip
-     * [0]%item
-     * [0]%item_dust_params
-     * [0]%item_nbt
-     * [0]%item_tag_nbt
-     * [0]%json
-     * [0]%literal
-     * [0]%mode
-     * [0]%num
-     * [0]%pardon
-     * [0]%particle
-     * [0]%recipe
-     * [0]%scb_crit
-     * [0]%slot
-     * [0]%sound
-     * [0]%source
-     * [0]%string
-     * [0]%uuid
-     * [0]%vec_
-     * [0]%word
+     * %adv
+     * %adv_crit
+     * %block
+     * %block_dust_param
+     * %block_metadata_or_state
+     * %block_nbt
+     * %bool
+     * %command
+     * %command_name
+     * %difficulty
+     * %effect
+     * %ench
+     * %entity
+     * %entity_nbt
+     * %entity_type
+     * %func
+     * %gamemode
+     * %ip
+     * %item
+     * %item_data
+     * %item_dust_params
+     * %item_nbt
+     * %item_tag_nbt
+     * %json
+     * %literal
+     * %num
+     * %pardon
+     * %particle
+     * %recipe
+     * %scb_crit
+     * %slot
+     * %sound
+     * %source
+     * %string
+     * %uuid
+     * %vec_2
+     * %vec_3
+     * %word
      *
      * =====FUNCS=====
-     * Stages:
-     * [0] Unexecutable
-     * [1] Executable
-     * ===============
-     * [0]$addAdvToEntity
-     * [0]$addDataOrStateToBlock
-     * [0]$addDataToItem
-     * [0]$addNbtToBlock
-     * [0]$addNbtToEntity
-     * [0]$addNbtToItem
-     * [0]$addScbMaxToEntity
-     * [0]$addScbMinToEntity
+     * $addAdvToEntity
+     * $addDataToItem
+     * $addMetadataOrStateToBlock
+     * $addNbtToBlock
+     * $addNbtToEntity
+     * $addNbtToItem
+     * $addScbMaxToEntity
+     * $addScbMinToEntity
      */
     static pairs = new Map([
         ['advancement test %entity %adv', 'execute if entity %0$addAdvToEntity%1'],
@@ -79,19 +70,19 @@ export default class Spuses {
         ['clear', 'clear'],
         ['clear %entity', 'clear %0'],
         ['clear %entity %item', 'clear %0 %1'],
-        ['clear %entity %item %data', 'clear %0 %1$addDataToItem%2'],
-        ['clear %entity %item %data %num', 'clear %0 %1$addDataToItem%2 %3'],
-        ['clear %entity %item %data %num %entity_nbt', 'clear %0 %1$addDataToItem%2$addNbtToItem%4'],
+        ['clear %entity %item %item_data', 'clear %0 %1$addDataToItem%2'],
+        ['clear %entity %item %item_data %num', 'clear %0 %1$addDataToItem%2 %3'],
+        ['clear %entity %item %item_data %num %entity_nbt', 'clear %0 %1$addDataToItem%2$addNbtToItem%4'],
         ['clone %vec_3 %vec_3 %vec_3', 'clone %0 %1 %2'],
         ['clone %vec_3 %vec_3 %vec_3 %literal', 'clone %0 %1 %2 %3'],
         ['clone %vec_3 %vec_3 %vec_3 %literal %literal', 'clone %0 %1 %2 %3 %4'],
         ['clone %vec_3 %vec_3 %vec_3 %literal %literal %block', 'clone %0 %1 %2 %3 %5 %4'],
         [
-            'clone %vec_3 %vec_3 %vec_3 %literal %literal %block %data_or_state',
-            'clone %0 %1 %2 %3 %5$addDataOrStateToBlock%6 %4'
+            'clone %vec_3 %vec_3 %vec_3 %literal %literal %block %block_metadata_or_state',
+            'clone %0 %1 %2 %3 %5$addMetadataOrStateToBlock%6 %4'
         ],
         ['debug %literal', 'debug %0'],
-        ['defaultgamemode %mode', 'defaultgamemode %0'],
+        ['defaultgamemode %gamemode', 'defaultgamemode %0'],
         ['deop %entity', 'deop %0'],
         ['difficulty %difficulty', 'difficulty %0'],
         ['effect %entity clear', 'effect clear %0'],
@@ -104,30 +95,30 @@ export default class Spuses {
         ['entitydata %entity %entity_nbt', 'execute as %0 run data merge entity @s %1'],
         ['execute %entity %vec_3 %command', 'execute as %0 at @s positioned %1 run %2'],
         [
-            'execute %entity %vec_3 detect %vec_3 %block %data_or_state %command',
-            'execute as %0 at @s positioned %1 if block %2 %3$addDataOrStateToBlock%4 run %5'
+            'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %command',
+            'execute as %0 at @s positioned %1 if block %2 %3$addMetadataOrStateToBlock%4 run %5'
         ],
         ['fill %vec_3 %vec_3 %block', 'fill %0 %1 %2'],
-        ['fill %vec_3 %vec_3 %block %data_or_state', 'fill %0 %1 %2$addDataOrStateToBlock%3'],
-        ['fill %vec_3 %vec_3 %block %data_or_state %literal', 'fill %0 %1 %2$addDataOrStateToBlock%3 %4'],
+        ['fill %vec_3 %vec_3 %block %block_metadata_or_state', 'fill %0 %1 %2$addMetadataOrStateToBlock%3'],
+        ['fill %vec_3 %vec_3 %block %block_metadata_or_state %literal', 'fill %0 %1 %2$addMetadataOrStateToBlock%3 %4'],
         [
-            'fill %vec_3 %vec_3 %block %data_or_state %literal %block_nbt',
-            'fill %0 %1 %2$addDataOrStateToBlock%3$addNbtToBlock%5 %4'
+            'fill %vec_3 %vec_3 %block %block_metadata_or_state %literal %block_nbt',
+            'fill %0 %1 %2$addMetadataOrStateToBlock%3$addNbtToBlock%5 %4'
         ],
         [
-            'fill %vec_3 %vec_3 %block %data_or_state replace %block %data_or_state',
-            'fill %0 %1 %2$addDataOrStateToBlock%3 replace %4$addDataOrStateToBlock%5'
+            'fill %vec_3 %vec_3 %block %block_metadata_or_state replace %block %block_metadata_or_state',
+            'fill %0 %1 %2$addMetadataOrStateToBlock%3 replace %4$addMetadataOrStateToBlock%5'
         ],
         ['function %func', 'function %0'],
         ['function %func %literal %entity', 'execute %1 entity %2 run function %0'],
-        ['gamemode %mode', 'gamemode %0'],
-        ['gamemode %mode %entity', '%gamemode %0 %1'],
+        ['gamemode %gamemode', 'gamemode %0'],
+        ['gamemode %gamemode %entity', 'gamemode %0 %1'],
         ['gamerule %word', 'gamerule %0'],
         ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'.|error"],
         ['gamerule %word %word', 'gamerule %0 %1'],
         ['give %entity %item', 'give %0 %1'],
-        ['give %entity %item %num %data', 'give %0 %1$addDataToItem%3 %2'],
-        ['give %entity %item %num %data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
+        ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
+        ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
         ['help %command_name', 'help %0'],
         ['? %command_name', '? %0'],
         ['kick %entity', 'kick %0'],
@@ -139,7 +130,7 @@ export default class Spuses {
         ['locate %word', 'locate %0'],
         ['me %string..', 'me %0'],
         ['op %entity', 'op %0'],
-        ['pardon %word', '%pardon %0'],
+        ['pardon %word', 'pardon %0'],
         ['pardon-ip %ip', 'pardon-ip %0'],
         ['particle %particle %vec_3 %vec_3 %num', 'particle %0 %1 %2 %3'],
         ['particle %particle %vec_3 %vec_3 %num %num', 'particle %0 %1 %2 %3 %4'],
@@ -159,16 +150,16 @@ export default class Spuses {
         ['reload', 'reload'],
         ['replaceitem block %vec_3 %slot %item', 'replaceitem block %0 %1 %2'],
         ['replaceitem block %vec_3 %slot %item %num', 'replaceitem block %0 %1 %2 %3'],
-        ['replaceitem block %vec_3 %slot %item %num %data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
+        ['replaceitem block %vec_3 %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
         [
-            'replaceitem block %vec_3 %slot %item %num %data %item_nbt',
+            'replaceitem block %vec_3 %slot %item %num %item_data %item_nbt',
             'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
         ],
         ['replaceitem entity %entity %slot %item', 'replaceitem block %0 %1 %2'],
         ['replaceitem entity %entity %slot %item %num', 'replaceitem block %0 %1 %2 %3'],
-        ['replaceitem entity %entity %slot %item %num %data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
+        ['replaceitem entity %entity %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
         [
-            'replaceitem entity %entity %slot %item %num %data %item_nbt',
+            'replaceitem entity %entity %slot %item %num %item_data %item_nbt',
             'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
         ],
         ['save-all', 'save-all'],
@@ -214,11 +205,11 @@ export default class Spuses {
         ['scoreboard teams option %word %word %word', 'team option %0 %1 %2'],
         ['seed', 'seed'],
         ['setblock %vec_3 %block', 'setblock %0 %1'],
-        ['setblock %vec_3 %block %data_or_state', 'setblock %0 %1$addDataOrStateToBlock%2'],
-        ['setblock %vec_3 %block %data_or_state %literal', 'setblock %0 %1$addDataOrStateToBlock%2 %3'],
+        ['setblock %vec_3 %block %block_metadata_or_state', 'setblock %0 %1$addMetadataOrStateToBlock%2'],
+        ['setblock %vec_3 %block %block_metadata_or_state %literal', 'setblock %0 %1$addMetadataOrStateToBlock%2 %3'],
         [
-            'setblock %vec_3 %block %data_or_state %literal %block_nbt',
-            'setblock %0 %1$addDataOrStateToBlock%2$addNbtToBlock%4 %3'
+            'setblock %vec_3 %block %block_metadata_or_state %literal %block_nbt',
+            'setblock %0 %1$addMetadataOrStateToBlock%2$addNbtToBlock%4 %3'
         ],
         ['setidletimeout %num', 'setidletimeout %0'],
         ['setworldspawn', 'setworldspawn'],
@@ -244,10 +235,10 @@ export default class Spuses {
         ['testfor %entity', 'execute if entity %0'],
         ['testfor %entity %entity_nbt', 'execute if entity %0$addNbtToEntity%1'],
         ['testforblock %vec_3 %block', 'execute if block %0 %1'],
-        ['testforblock %vec_3 %block %data_or_state', 'execute if block %0 %1$addDataOrStateToBlock%2'],
+        ['testforblock %vec_3 %block %block_metadata_or_state', 'execute if block %0 %1$addMetadataOrStateToBlock%2'],
         [
-            'testforblock %vec_3 %block %data_or_state %block_nbt',
-            'execute if block %0 %1$addDataOrStateToBlock%2$addNbtToBlock%3'
+            'testforblock %vec_3 %block %block_metadata_or_state %block_nbt',
+            'execute if block %0 %1$addMetadataOrStateToBlock%2$addNbtToBlock%3'
         ],
         ['testforblocks %vec_3 %vec_3 %vec_3', 'execute if blocks %0 %1 %2 all'],
         ['testforblocks %vec_3 %vec_3 %vec_3 %literal', 'execute if blocks %0 %1 %2 %3'],
