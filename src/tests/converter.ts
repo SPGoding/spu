@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import Converter from '../converter'
 
-describe.only('Converter tests', () => {
+describe.skip('Converter tests', () => {
     describe('cvtArgument() tests', () => {
         describe('%adv tests', () => {
             it('should convert', () => {

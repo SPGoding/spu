@@ -1,5 +1,6 @@
 import Selector from './utils/selector'
 import { isNumeric } from './utils/utils'
+import Blocks from './mappings/blocks'
 
 export default class Checker {
     public static isArgumentMatch(cmdArg: string, spusArg: string) {
@@ -9,6 +10,8 @@ export default class Checker {
                     return Checker.isPath(cmdArg)
                 case 'adv_crit':
                     return Checker.isWord(cmdArg)
+                case 'block':
+                    return Checker.isBlock(cmdArg)
                 case 'entity':
                     return Checker.isSelector(cmdArg) || Checker.isWord(cmdArg) || Checker.isUuid(cmdArg)
                 case 'string':
@@ -29,8 +32,12 @@ export default class Checker {
         }
     }
 
+    public static isBlock(input: string) {
+        //
+    }
+
     public static isWord(input: string) {
-        return /^\w*$/.test(input)
+        return /^\w+$/.test(input)
     }
 
     public static isString(input: string) {

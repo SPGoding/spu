@@ -7708,6 +7708,8 @@ export default class Blocks {
      * [
      *     [Numeric ID, MetaData, Normalize ID]
      * ]
+     * Thank MCEdit: https://github.com/mcedit/mcedit2/blob/master/src/mceditlib/blocktypes/idmapping_raw_1_12.json
+     * Thank pca for introducing it to me.
      */
     static NumericID_Metadata_NormalizeID: any[][] = [
         [0, 0, 'minecraft:air'],
