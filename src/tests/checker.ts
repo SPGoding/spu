@@ -3,93 +3,377 @@ import * as assert from 'power-assert'
 
 import Checker from '../checker'
 
-describe('Checker tests', () => {
-    describe('isUuid() tests', () => {
-        it('should return true when put an uuid', () => {
-            let actual = Checker.isUuid('fc96c9b6-69f7-11e8-adc0-fa7ae01bbebc')
-
-            assert(actual)
+describe.only('Checker tests', () => {
+    describe('isArgumentMatch() tests', () => {
+        describe('%adv tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('minecraft:story/root', '%adv')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('foo:bar:exm', '%adv')
+                assert(!actual)
+            })
         })
-    })
-    describe('isTargetSelector() tests', () => {
-        it('should return true when put a selector', () => {
-            let actual = Checker.isSelector('@e[c=1]')
-
-            assert(actual)
+        describe('%adv_crit tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('foo', '%adv_crit')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('假的', '%adv_crit')
+                assert(!actual)
+            })
         })
-    })
-    describe('isString() tests', () => {
-        it('should return true when put a set of special chars', () => {
-            let actual = Checker.isString('哈? @#$#^* hh')
-
-            assert(actual)
+        describe('%block tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('stone', '%block')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('123', '%block')
+                assert(!actual)
+            })
         })
-    })
-    describe('isWord() tests', () => {
-        it('should return true when put a set of letters', () => {
-            let actual = Checker.isWord('foo')
-
-            assert(actual)
+        describe('%block_dust_param tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('8193', '%block_dust_param')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('hh', '%block_dust_param')
+                assert(!actual)
+            })
         })
-        it('should return false when put a set of special chars', () => {
-            let actual = Checker.isWord('哈? @#$#^* hh')
-
-            assert(!actual)
+        describe('%block_metadata_or_state tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('foo=foo', '%block_metadata_or_state')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('wtf', '%')
+                assert(!actual)
+            })
         })
-    })
-    describe('isNum() tests', () => {
-        it('should return true when put a number', () => {
-            let actual = Checker.isNum('-.100')
-
-            assert(actual)
+        describe('%block_nbt tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('{Text1:"666"}', '%block_nbt')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('{Text1::}', '%block_nbt')
+                assert(!actual)
+            })
         })
-    })
-    describe('isPath() tests', () => {
-        it('should return true when put a location without namespace', () => {
-            let actual = Checker.isPath('mjsb/foo')
-
-            assert(actual)
+        describe('%bool tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('true', '%bool')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('ture', '%')
+                assert(!actual)
+            })
         })
-        it('should return true when put a location with namespace', () => {
-            let actual = Checker.isPath('spgoding:mjsb/foo')
-
-            assert(actual)
+        describe('%command tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('advancement grant @e only foo', '%command')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('advancement grant @e only', '%command')
+                assert(!actual)
+            })
         })
-    })
-    describe('isIP() tests', () => {
-        it('should return true when put an ip', () => {
-            let actual = Checker.isIP('192.168.0.1')
-
-            assert(actual)
+        describe('%command_name tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('testfor', '%command_name')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('fork', '%command_name')
+                assert(!actual)
+            })
         })
-        it('should return false when put an invalid ip', () => {
-            let actual = Checker.isIP('666.233.0.1')
-
-            assert(!actual)
+        describe('%difficulty tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('h', '%difficulty')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('m', '%difficulty')
+                assert(!actual)
+            })
         })
-    })
-    describe('isPosition() tests', () => {
-        it('should return true when put a relative coordinates', () => {
-            let actual = Checker.isPosition('~1 ~ ~-2.3')
-
-            assert(actual)
+        describe('%effect tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('1', '%effect')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('28', '%effect')
+                assert(!actual)
+            })
         })
-        it('should return true when put an absolute coordinates', () => {
-            let actual = Checker.isPosition('12.34 0.5 43.21')
-
-            assert(actual)
+        describe('%ench tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('0', '%ench')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('72', '%ench')
+                assert(!actual)
+            })
         })
-        it('should return false when put less than 3 doubles', () => {
-            let actual = Checker.isPosition('12.34 56')
-
-            assert(!actual)
+        describe('%entity tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('@e', '%entity')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('!', '%entity')
+                assert(!actual)
+            })
         })
-    })
-    describe('isNbt() tests', () => {
-        it('should return false', () => {
-            let actual = Checker.isNbt('{}')
-
-            assert(actual)
+        describe('%entity_nbt tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('{CustomName:"foo"}', '%entity_nbt')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('{CustomName:,:}', '%entity_nbt')
+                assert(!actual)
+            })
+        })
+        describe('%entity_type tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('minecraft:zombie', '%entity_type')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('123', '%entity_type')
+                assert(!actual)
+            })
+        })
+        describe('%func tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('minecraft:fuck', '%func')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('!', '%func')
+                assert(!actual)
+            })
+        })
+        describe('%gamemode tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('0', '%gamemode')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('4', '%gamemode')
+                assert(!actual)
+            })
+        })
+        describe('%ip tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('192.168.0.1', '%ip')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('192.666.233.789', '%ip')
+                assert(!actual)
+            })
+        })
+        describe('%item tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('minecraft:fuck', '%item')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch(':::', '%item')
+                assert(!actual)
+            })
+        })
+        describe('%item_data tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('0', '%item_data')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('+-', '%item_data')
+                assert(!actual)
+            })
+        })
+        describe('%item_dust_params tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('10 0', '%item_dust_params')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('998', '%item_dust_params')
+                assert(!actual)
+            })
+        })
+        describe('%item_nbt tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('{id:"minecraft:foo",Count:1b}', '%item_nbt')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('{::}', '%item_nbt')
+                assert(!actual)
+            })
+        })
+        describe('%item_tag_nbt tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('{display:{Name:"foo"}}', '%item_tag_nbt')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('{::}', '%item_tag_nbt')
+                assert(!actual)
+            })
+        })
+        describe('%json tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('{"text":"foo"}', '%json')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('{', '%json')
+                assert(!actual)
+            })
+        })
+        describe('%literal tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('AA', '%literal')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('1234', '%literal')
+                assert(!actual)
+            })
+        })
+        describe('%num tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('12', '%num')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('ab', '%num')
+                assert(!actual)
+            })
+        })
+        describe('%particle tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('minecraft:reddust', '%particle')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch(':', '%particle')
+                assert(!actual)
+            })
+        })
+        describe('%recipe tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('minecraft:a/b', '%recipe')
+                assert(actual)
+            })
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('*', '%recipe')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('!', '%recipe')
+                assert(!actual)
+            })
+        })
+        describe('%scb_crit tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('dummy', '%scb_crit')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('dmuuy', '%scb_crit')
+                assert(!actual)
+            })
+        })
+        describe('%slot tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('slot.horbar.1', '%slot')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('solt.fake', '%slot')
+                assert(!actual)
+            })
+        })
+        describe('%sound tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('block.anvil.fall', '%sound')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('!', '%sound')
+                assert(!actual)
+            })
+        })
+        describe('%source tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('master', '%source')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('a', '%source')
+                assert(!actual)
+            })
+        })
+        describe('%string tests', () => {
+            it('should always return true', () => {
+                let actual = Checker.isArgumentMatch('G$ 哇 3$ SD*a%e&dsf w$%eWA', '%string')
+                assert(actual)
+            })
+        })
+        describe('%uuid tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('170aa6d0-6c57-11e8-adc0-fa7ae01bbebc', '%uuid')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('170aa6d0-6c57-11e8-adc0-fa7ae01bbeb', '%uuid')
+                assert(!actual)
+            })
+        })
+        describe('%vec_2 tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('1 2', '%vec_2')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('1 2 3', '%vec_2')
+                assert(!actual)
+            })
+        })
+        describe('%vec_3 tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('1 2 3', '%vec_3')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('1 2', '%')
+                assert(!actual)
+            })
+        })
+        describe('%word tests', () => {
+            it('should return true', () => {
+                let actual = Checker.isArgumentMatch('aA_', '%word')
+                assert(actual)
+            })
+            it('should return false', () => {
+                let actual = Checker.isArgumentMatch('1', '%word')
+                assert(!actual)
+            })
         })
     })
 })
