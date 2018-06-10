@@ -61,7 +61,7 @@ export default class Checker {
         )
     }
 
-    public static isPosition(input: string) {
+    public static isVec_3(input: string) {
         // This regex is coppied from
         // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
         // Dressed pca, I love you!!!

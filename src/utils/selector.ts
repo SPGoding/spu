@@ -37,7 +37,7 @@ export default class Selector {
      * Parses this selector according to a string in 1.12.
      * @param str An string representing a target selector.
      */
-    public parse112(str: string) {
+    public parse1_12(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -47,17 +47,17 @@ export default class Selector {
         }
 
         char = charReader.next()
-        this.parseVariable112(char, str)
+        this.parseVariable1_12(char, str)
 
         char = charReader.next()
-        this.parseProperties112(char, charReader, str)
+        this.parseProperties1_12(char, charReader, str)
     }
 
     /**
      * Parses this selector according to a string in 1.13.
      * @param str An string representing a target selector.
      */
-    public parse113(str: string) {
+    public parse1_13(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -67,23 +67,23 @@ export default class Selector {
         }
 
         char = charReader.next()
-        this.parseVariable113(char, str)
+        this.parseVariable1_13(char, str)
 
         char = charReader.next()
-        this.parseProperties113(char, charReader, str)
+        this.parseProperties1_13(char, charReader, str)
     }
 
     /**
      * Gets a string that can represent this target selector in 1.13.
      */
-    public get113() {
+    public get1_13() {
         let result = '@'
 
-        result = this.getVariable113(result)
+        result = this.getVariable1_13(result)
 
         result += '['
 
-        result = this.getProperties113(result)
+        result = this.getProperties1_13(result)
 
         // Close the square brackets.
         if (result.slice(-1) === ',') {
@@ -102,7 +102,7 @@ export default class Selector {
     public static isValid(input: string) {
         try {
             let sel = new Selector()
-            sel.parse112(input)
+            sel.parse1_12(input)
         } catch (ignored) {
             return false
         }
@@ -130,7 +130,7 @@ export default class Selector {
         }
     }
 
-    private parseVariable112(char: string, str: string) {
+    private parseVariable1_12(char: string, str: string) {
         switch (char) {
             case 'a':
                 this.variable = SelectorVariable.A
@@ -156,7 +156,7 @@ export default class Selector {
         }
     }
 
-    private parseProperties112(char: string, charReader: CharReader, str: string) {
+    private parseProperties1_12(char: string, charReader: CharReader, str: string) {
         if (!char) {
             return
         }
@@ -173,7 +173,7 @@ export default class Selector {
 
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
-                    this.parseScore112(key, val)
+                    this.parseScore1_12(key, val)
                 } else {
                     // Deal with normal properties.
                     switch (key) {
@@ -266,7 +266,7 @@ export default class Selector {
         }
     }
 
-    private parseVariable113(char: string, str: string) {
+    private parseVariable1_13(char: string, str: string) {
         switch (char) {
             case 'a':
                 this.variable = SelectorVariable.A
@@ -288,7 +288,7 @@ export default class Selector {
         }
     }
 
-    private parseProperties113(char: string, charReader: CharReader, str: string) {
+    private parseProperties1_13(char: string, charReader: CharReader, str: string) {
         if (char === '') {
             return
         } else if (char === '[') {
@@ -348,22 +348,22 @@ export default class Selector {
                         break
                     case 'level':
                         range = new Range(null, null)
-                        range.parse113(val)
+                        range.parse1_13(val)
                         this.level = range
                         break
                     case 'distance':
                         range = new Range(null, null)
-                        range.parse113(val)
+                        range.parse1_13(val)
                         this.distance = range
                         break
                     case 'x_rotation':
                         range = new Range(null, null)
-                        range.parse113(val)
+                        range.parse1_13(val)
                         this.x_rotation = range
                         break
                     case 'y_rotation':
                         range = new Range(null, null)
-                        range.parse113(val)
+                        range.parse1_13(val)
                         this.y_rotation = range
                         break
                     case 'x':
@@ -376,10 +376,10 @@ export default class Selector {
                         this.z = Number(val)
                         break
                     case 'scores':
-                        this.parseScores113(val)
+                        this.parseScores1_13(val)
                         break
                     case 'advancements':
-                        this.parseAdvancements113(val)
+                        this.parseAdvancements1_13(val)
                         break
                     case 'nbt':
                         // TODO:
@@ -393,7 +393,7 @@ export default class Selector {
         }
     }
 
-    private parseAdvancements113(val: string) {
+    private parseAdvancements1_13(val: string) {
         let charReader = new CharReader(val)
         let char = charReader.next()
         let adv: string
@@ -449,7 +449,7 @@ export default class Selector {
         }
     }
 
-    private getVariable113(result: string) {
+    private getVariable1_13(result: string) {
         switch (this.variable) {
             case SelectorVariable.A:
                 result += 'a'
@@ -470,7 +470,7 @@ export default class Selector {
         return result
     }
 
-    private getProperties113(result: string) {
+    private getProperties1_13(result: string) {
         if (this.dx) {
             result += `dx=${this.dx},`
         }
@@ -510,27 +510,27 @@ export default class Selector {
         for (const i of this.gamemode) {
             result += `gamemode=${i},`
         }
-        let tmp = this.level.get113()
+        let tmp = this.level.get1_13()
         if (tmp) {
             result += `level=${tmp},`
         }
-        tmp = this.distance.get113()
-        if (this.distance.get113()) {
-            result += `distance=${this.distance.get113()},`
+        tmp = this.distance.get1_13()
+        if (this.distance.get1_13()) {
+            result += `distance=${this.distance.get1_13()},`
         }
-        tmp = this.x_rotation.get113()
+        tmp = this.x_rotation.get1_13()
         if (tmp) {
             result += `x_rotation=${tmp},`
         }
-        tmp = this.y_rotation.get113()
+        tmp = this.y_rotation.get1_13()
         if (tmp) {
             result += `y_rotation=${tmp},`
         }
-        tmp = this.getScores113()
+        tmp = this.getScores1_13()
         if (tmp) {
             result += `scores=${tmp},`
         }
-        tmp = this.getAdvancements113()
+        tmp = this.getAdvancements1_13()
         if (tmp) {
             result += `advancements=${tmp},`
         }
@@ -563,7 +563,7 @@ export default class Selector {
         }
     }
 
-    private parseScore112(key: string, val: string) {
+    private parseScore1_12(key: string, val: string) {
         // Deal with scores.
         let objective: string
         if (key.slice(-4) === '_min') {
@@ -581,10 +581,10 @@ export default class Selector {
      * Sets the 'scores' field with a string.
      * @param str The value of 'scores' in target selector in 1.13.
      * @example
-     * this.parseScores113('{}')
-     * this.parseScores113('{foo=1,bar=1..5,fuck=2..,me=..10}')
+     * this.parseScores1_13('{}')
+     * this.parseScores1_13('{foo=1,bar=1..5,fuck=2..,me=..10}')
      */
-    private parseScores113(str: string) {
+    private parseScores1_13(str: string) {
         let charReader = new CharReader(str)
         let char = charReader.next()
         let objective: string
@@ -610,18 +610,18 @@ export default class Selector {
 
             char = charReader.next()
 
-            range.parse113(rangeStr)
+            range.parse1_13(rangeStr)
             this.scores.set(objective, range)
         }
     }
 
-    private getScores113() {
+    private getScores1_13() {
         let result = '{'
 
         for (const i of this.scores.keys()) {
             let score = this.scores.get(i)
             if (score) {
-                result += `${i}=${score.get113()},`
+                result += `${i}=${score.get1_13()},`
             }
         }
 
@@ -635,7 +635,7 @@ export default class Selector {
         return result
     }
 
-    private getAdvancements113() {
+    private getAdvancements1_13() {
         let result = '{'
 
         for (const i of this.advancements.keys()) {
@@ -698,7 +698,7 @@ class Range {
         this.min = min
     }
 
-    parse113(str: string) {
+    parse1_13(str: string) {
         let arr = str.split('..')
         if (arr.length === 2) {
             this.min = arr[0] ? Number(arr[0]) : null
@@ -708,7 +708,7 @@ class Range {
         }
     }
 
-    get113() {
+    get1_13() {
         let min = this.min
         let max = this.max
         if (min && max) {

@@ -1,6 +1,6 @@
 import ArgumentReader from './utils/argument_reader'
 import Selector from './utils/selector'
-import Spuses from './maps/spuses'
+import Spuses from './mappings/spuses'
 import SpuScript from './spu_script'
 import Checker from './checker'
 
@@ -75,7 +75,7 @@ export default class Converter {
         throw `Unknown command: ${input}`
     }
 
-    private static cvtArgument(arg: string, spus: string) {
+    public static cvtArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
             case 'adv':
             case 'adv_crit':
@@ -117,13 +117,13 @@ export default class Converter {
     public static cvtEntity(input: string) {
         let sel = new Selector()
         if (Checker.isSelector(input)) {
-            sel.parse112(input)
+            sel.parse1_12(input)
         } else if (Checker.isWord(input)) {
-            sel.parse112(`@p[name=${input}]`)
+            sel.parse1_12(`@p[name=${input}]`)
         } else {
             return input
         }
-        return sel.get113()
+        return sel.get1_13()
     }
 
     public static cvtMode(input: string) {

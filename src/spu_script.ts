@@ -63,7 +63,7 @@ export default class SpuScript {
                     switch (name) {
                         case 'addAdv':
                             let selector = new Selector()
-                            selector.parse113(source)
+                            selector.parse1_13(source)
                             if (params.length === 1) {
                                 selector.addFinishedAdvancement(params[0])
                             } else if (params.length === 2) {
@@ -73,7 +73,7 @@ export default class SpuScript {
                                     params.length
                                 } of ${name} in ${arg}.`
                             }
-                            result = selector.get113()
+                            result = selector.get1_13()
                             break
                         default:
                             break
