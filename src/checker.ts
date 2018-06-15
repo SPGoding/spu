@@ -1,6 +1,10 @@
-import Selector from './utils/selector'
-import { isNumeric } from './utils/utils'
 import Blocks from './mappings/blocks'
+import Converter from './converter'
+import Selector from './utils/selector'
+import Spuses from './mappings/spuses'
+import { isNumeric } from './utils/utils'
+import { Tokenizer as NbtTokenizer } from './utils/nbt/tokenizer'
+import { Parser as NbtParser } from './utils/nbt/parser'
 
 export default class Checker {
     public static isArgumentMatch(cmdArg: string, spusArg: string) {
@@ -12,16 +16,44 @@ export default class Checker {
                     return Checker.isWord(cmdArg)
                 case 'block':
                     return Checker.isBlock(cmdArg)
+                case 'block_dust_param':
+                    return Checker.isBlockDustParam(cmdArg)
+                case 'block_metadata_or_state':
+                    return Checker.isBlockMetadataOrState(cmdArg)
+                case 'block_nbt':
+                    return Checker.isNbt(cmdArg)
+                case 'bool':
+                    return Checker.isBool(cmdArg)
+                case 'command':
+                    return Checker.isCommand(cmdArg)
+                case 'command_name':
+                    return Checker.isCommandName(cmdArg)
+                case 'difficulty':
+                    return Checker.isDifficulty(cmdArg)
+                case 'effect':
+                    return Checker.isEffectNumericID(cmdArg) || Checker.isStringID(cmdArg)
+                case 'ench':
+                    return Checker.isEnchNumericID(cmdArg) || Checker.isStringID(cmdArg)
                 case 'entity':
                     return Checker.isSelector(cmdArg) || Checker.isWord(cmdArg) || Checker.isUuid(cmdArg)
+                case 'entity_nbt':
+                    return Checker.isNbt(cmdArg)
+                case 'entity_type':
+                    return Checker.isStringID(cmdArg)
+                case 'func':
+                    return Checker.isPath(cmdArg)
+                case 'gamemode':
+                    return Checker.isGamemode(cmdArg)
+                case 'ip':
+                    return Checker.isIP(cmdArg)
+                case 'item':
+                    return Checker.isItem(cmdArg)
                 case 'string':
                     return Checker.isString(cmdArg)
                 case 'word':
                     return Checker.isWord(cmdArg)
                 case 'num':
                     return Checker.isNum(cmdArg)
-                case 'ip':
-                    return Checker.isIP(cmdArg)
                 case 'nbt':
                     return Checker.isNbt(cmdArg)
                 default:
@@ -33,7 +65,63 @@ export default class Checker {
     }
 
     public static isBlock(input: string) {
-        //
+        return Blocks.is1_12StringIDExist(input)
+    }
+
+    public static isBlockDustParam(input: string) {
+        const result = Blocks.get1_12NormalizeIDFrom1_12NumericID(Number(input))
+        return result ? true : false
+    }
+
+    public static isBlockMetadataOrState(input: string) {
+        if (isNumeric(input)) {
+            return Number(input) >= -1 && Number(input) <= 15 ? true : false
+        } else {
+            return /^(\w+=[\w0-9]+,?)+$/.test(input)
+        }
+    }
+
+    public static isBool(input: string) {
+        return ['true', 'false'].indexOf(input.toLowerCase()) !== -1
+    }
+
+    public static isCommand(input: string) {
+        for (const spusOld of Spuses.pairs.keys()) {
+            let map = Converter.getResultMap(input, spusOld)
+            if (map) {
+                return true
+            }
+        }
+        return false
+    }
+
+    public static isCommandName(input: string) {
+        // FIXME: If you want to be more serious.
+        return true
+    }
+
+    public static isDifficulty(input: string) {
+        return (
+            ['0', '1', '2', '3', 'p', 'e', 'n', 'h', 'peaceful', 'easy', 'normal', 'hard'].indexOf(
+                input.toLowerCase()
+            ) !== -1
+        )
+    }
+
+    public static isEffectNumericID(input: string) {
+        return Number(input) >= 1 && Number(input) <= 28
+    }
+
+    public static isEnchNumericID(input: string) {
+        return Number(input) >= 0 && Number(input) <= 72
+    }
+
+    public static isGamemode(input: string) {
+        return (
+            ['0', '1', '2', '3', 's', 'c', 'a', 'sp', 'survival', 'creative', 'adventure', 'spectator'].indexOf(
+                input.toLowerCase()
+            ) !== -1
+        )
     }
 
     public static isWord(input: string) {
@@ -50,6 +138,11 @@ export default class Checker {
 
     public static isUuid(input: string) {
         return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
+    }
+
+    public static isStringID(input: string) {
+        // FIXME: If you want.
+        return /^(\w+:)?\w+$/.test(input)
     }
 
     public static isPath(input: string) {
@@ -76,7 +169,14 @@ export default class Checker {
     }
 
     public static isNbt(input: string) {
-        // TODO: When finished nbt parser.
-        throw 'NO NBT PARSER SUPPORTS!!!'
+        try {
+            let tokenizer = new NbtTokenizer()
+            let parser = new NbtParser()
+            let tokens = tokenizer.tokenize(input)
+            parser.parse(tokens)
+            return true
+        } catch (ignored) {
+            return false
+        }
     }
 }

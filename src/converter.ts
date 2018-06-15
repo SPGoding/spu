@@ -16,7 +16,7 @@ export default class Converter {
      * @returns NULLABLE. A map filled with converted value.
      * @example {'%0': 'converted value'}.
      */
-    private static getResultMap(cmd: string, spus: string) {
+    public static getResultMap(cmd: string, spus: string) {
         let spusReader = new ArgumentReader(spus)
         let spusArg = spusReader.next()
         let cmdReader = new ArgumentReader(cmd)

@@ -2,6 +2,14 @@
  * Providing a map storing old block IDs and new block IDs.
  */
 export default class Blocks {
+    static is1_12StringIDExist(id: string) {
+        if (id.slice(0, 11) !== 'minecraft:') {
+            id = `minecraft:${id}`
+        }
+        const arr = Blocks.NumericID_Metadata_NormalizeID.find(v => v[2].toString().split('[')[0] === id)
+        return arr ? true : false
+    }
+
     static get1_12NormalizeIDFrom1_12NumericID(id: number) {
         let metadata = 0
 
@@ -14,7 +22,7 @@ export default class Blocks {
         if (arr) {
             return arr[2]
         } else {
-            throw `Unknown block numeric id: '${id}:${metadata}'`
+            return null
         }
     }
 
@@ -23,7 +31,7 @@ export default class Blocks {
         if (arr) {
             return arr[0]
         } else {
-            throw `Unknown block normalize id: '${old}'`
+            return null
         }
     }
 
@@ -7711,7 +7719,7 @@ export default class Blocks {
      * Thank MCEdit: https://github.com/mcedit/mcedit2/blob/master/src/mceditlib/blocktypes/idmapping_raw_1_12.json
      * Thank pca for introducing it to me.
      */
-    static NumericID_Metadata_NormalizeID: any[][] = [
+    static NumericID_Metadata_NormalizeID: (string | number)[][] = [
         [0, 0, 'minecraft:air'],
         [1, 0, 'minecraft:stone[variant=stone]'],
         [1, 1, 'minecraft:stone[variant=granite]'],
