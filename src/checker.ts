@@ -1,5 +1,6 @@
 import Blocks from './mappings/blocks'
 import Converter from './converter'
+import Items from './mappings/items'
 import Selector from './utils/selector'
 import Spuses from './mappings/spuses'
 import { isNumeric } from './utils/utils'
@@ -35,7 +36,9 @@ export default class Checker {
                 case 'ench':
                     return Checker.isEnchNumericID(cmdArg) || Checker.isStringID(cmdArg)
                 case 'entity':
-                    return Checker.isSelector(cmdArg) || Checker.isWord(cmdArg) || Checker.isUuid(cmdArg)
+                    return (
+                        Checker.isSelector(cmdArg) || Checker.isWord(cmdArg) || Checker.isUuid(cmdArg) || cmdArg === '*'
+                    )
                 case 'entity_nbt':
                     return Checker.isNbt(cmdArg)
                 case 'entity_type':
@@ -48,14 +51,41 @@ export default class Checker {
                     return Checker.isIP(cmdArg)
                 case 'item':
                     return Checker.isItem(cmdArg)
-                case 'string':
-                    return Checker.isString(cmdArg)
-                case 'word':
-                    return Checker.isWord(cmdArg)
+                case 'item_data':
+                    return Checker.isItemData(cmdArg)
+                case 'item_dust_params':
+                    return Checker.isItemDustParams(cmdArg)
+                case 'item_nbt':
+                case 'item_tag_nbt':
+                    return Checker.isNbt(cmdArg)
+                case 'json':
+                    return Checker.isJson(cmdArg)
+                case 'literal':
+                    return Checker.isLiteral(cmdArg)
                 case 'num':
                     return Checker.isNum(cmdArg)
-                case 'nbt':
-                    return Checker.isNbt(cmdArg)
+                case 'particle':
+                    return Checker.isStringID(cmdArg)
+                case 'recipe':
+                    return Checker.isPath(cmdArg) || cmdArg === '*'
+                case 'scb_crit':
+                    return Checker.isWord(cmdArg)
+                case 'slot':
+                    return Checker.isSlot(cmdArg)
+                case 'sound':
+                    return Checker.isSound(cmdArg)
+                case 'source':
+                    return Checker.isSource(cmdArg)
+                case 'string':
+                    return Checker.isString(cmdArg)
+                case 'uuid':
+                    return Checker.isUuid(cmdArg)
+                case 'vec_2':
+                    return Checker.isVec_2(cmdArg)
+                case 'vec_3':
+                    return Checker.isVec_3(cmdArg)
+                case 'word':
+                    return Checker.isWord(cmdArg)
                 default:
                     throw `Unknown argument type: ${spusArg.slice(1)}`
             }
@@ -124,8 +154,45 @@ export default class Checker {
         )
     }
 
+    public static isItem(input: string) {
+        return Items.is1_12NormalizeIDWExist(input)
+    }
+
+    public static isItemData(input: string) {
+        if (isNumeric(input)) {
+            return Number(input) >= -1 && Number(input) <= 32767 ? true : false
+        } else {
+            return false
+        }
+    }
+
+    public static isItemDustParams(input: string) {
+        const arr = input.split(' ')
+        if (arr.length === 2 && isNumeric(arr[0]) && isNumeric(arr[1])) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    public static isJson(input: string) {
+        try {
+            if (typeof JSON.parse(input) === 'object') {
+                return true
+            } else {
+                return false
+            }
+        } catch (ignored) {
+            return false
+        }
+    }
+
+    public static isLiteral(input: string) {
+        return /^[a-zA-Z_]+$/.test(input)
+    }
+
     public static isWord(input: string) {
-        return /^\w+$/.test(input)
+        return /^[\w0-9]+$/.test(input)
     }
 
     public static isString(input: string) {
@@ -138,6 +205,31 @@ export default class Checker {
 
     public static isUuid(input: string) {
         return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
+    }
+
+    public static isSlot(input: string) {
+        return input.slice(0, 5) === 'slot.'
+    }
+
+    public static isSound(input: string) {
+        return /^\w(\.\w)*$/.test(input)
+    }
+
+    public static isSource(input: string) {
+        return (
+            [
+                'master',
+                'music',
+                'record',
+                'weather',
+                'block',
+                'hostile',
+                'neutral',
+                'player',
+                'ambient',
+                'voice'
+            ].indexOf(input.toLowerCase()) !== -1
+        )
     }
 
     public static isStringID(input: string) {
@@ -159,6 +251,10 @@ export default class Checker {
         return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
             input
         )
+    }
+
+    public static isVec_2(input: string) {
+        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){2})/.test(input)
     }
 
     public static isVec_3(input: string) {
