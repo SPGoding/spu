@@ -2,11 +2,14 @@
  * Providing a map storing old item IDs and new item IDs.
  */
 export default class Items {
-    static is1_12NormalizeIDWExist(id: string) {
-        if (id.slice(0, 11) !== 'minecraft:') {
+    static is1_12NormalizeIDExist(id: string) {
+        console.log(id)
+        if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`
         }
+        console.log(id)
         const arr = Items.StringIDWithDataValue_NormalizeID.find(v => v[0].split('.')[0] === id)
+        console.log(arr)
         return arr ? true : false
     }
 

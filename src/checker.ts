@@ -67,7 +67,7 @@ export default class Checker {
                 case 'recipe':
                     return Checker.isPath(cmdArg) || cmdArg === '*'
                 case 'scb_crit':
-                    return Checker.isWord(cmdArg)
+                    return Checker.isScbCrit(cmdArg)
                 case 'slot':
                     return Checker.isSlot(cmdArg)
                 case 'sound':
@@ -148,7 +148,7 @@ export default class Checker {
     }
 
     public static isItem(input: string) {
-        return Items.is1_12NormalizeIDWExist(input)
+        return Items.is1_12NormalizeIDExist(input)
     }
 
     public static isItemData(input: string) {
@@ -198,6 +198,14 @@ export default class Checker {
 
     public static isUuid(input: string) {
         return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input)
+    }
+
+    public static isScbCrit(input: string) {
+        if (input.slice(0, 5) === 'stat.') {
+            return true
+        } else {
+            return ['dummy', 'trigger', 'health', 'xp', 'level', 'food', 'air', 'armor', 'teamkill', 'killedByTeam', 'deathCount', 'playerKillCount', 'totalKillCount'].indexOf(input) !== -1
+        }
     }
 
     public static isSlot(input: string) {
