@@ -78,16 +78,25 @@ export default class Converter {
     public static cvtArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
             case 'adv':
+                return arg
             case 'adv_crit':
                 return arg
-            case 'entity':
-                return Converter.cvtEntity(arg)
+            case 'bool':
+                return arg
+            case 'command':
+                return Converter.cvtCommand(arg)
             case 'difficulty':
                 return Converter.cvtDifficulty(arg)
-            case 'mode':
-                return Converter.cvtMode(arg)
-            default:
+            case 'entity':
+                return Converter.cvtEntity(arg)
+            case 'func':
                 return arg
+            case 'gamemode':
+                return Converter.cvtMode(arg)
+            case 'recipe':
+                return arg
+            default:
+                throw `Unknown arg type: '${spus}'`
         }
     }
 

@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import Checker from '../checker'
 
-describe.only('Checker tests', () => {
+describe('Checker tests', () => {
     describe('isArgumentMatch() tests', () => {
         describe('%adv tests', () => {
             it('should return true', () => {

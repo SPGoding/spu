@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import Converter from '../converter'
 
-describe.skip('Converter tests', () => {
+describe.only('Converter tests', () => {
     describe('cvtArgument() tests', () => {
         describe('%adv tests', () => {
             it('should convert', () => {
@@ -45,12 +45,6 @@ describe.skip('Converter tests', () => {
             it('should convert', () => {
                 let actual = Converter.cvtArgument('advancement grant @e only foo', '%command')
                 assert(actual === 'advancement grant @e[sort=neareset] only foo')
-            })
-        })
-        describe('%command_name tests', () => {
-            it('should convert', () => {
-                let actual = Converter.cvtArgument('testfor', '%command_name')
-                assert(actual === 'execute if entity')
             })
         })
         describe('%block_metadata_or_state tests', () => {

@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import { Parser } from '../../../utils/nbt/parser'
 
-describe.only('Parser tests', () => {
+describe('Parser tests', () => {
     describe('parse() tests', () => {
         it('should parse "0.0" as "0d"', () => {
             let parser = new Parser()
