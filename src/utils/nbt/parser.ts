@@ -53,7 +53,7 @@ export class Parser {
                         if (state === 'key') {
                             expectedTypes = ['EndCompound', 'Thing', 'String']
                         } else if (state === 'val') {
-                            expectedTypes = ['Colon', 'EndCompound']
+                            expectedTypes = ['Comma', 'EndCompound']
                             const parseResult = this.parseCompound(tokens, pos)
                             val = parseResult.value
                             pos = parseResult.pos
@@ -73,11 +73,11 @@ export class Parser {
                             val.set(token.value.toString())
                         }
                         if (state === 'key') {
-                            expectedTypes = ['Comma']
+                            expectedTypes = ['Colon']
                             key = token.value
                             state = 'val'
                         } else if (state === 'val') {
-                            expectedTypes = ['Colon', 'EndCompound']
+                            expectedTypes = ['Comma', 'EndCompound']
 
                             if (val) {
                                 result.set(key, val)
@@ -89,14 +89,14 @@ export class Parser {
                     case 'BeginIntArray':
                     case 'BeginList':
                     case 'BeginLongArray':
-                        expectedTypes = ['Colon', 'EndCompound']
+                        expectedTypes = ['Comma', 'EndCompound']
                         const parseResult = this.parseValue(tokens, pos)
                         val = parseResult.value
                         pos = parseResult.pos
                         result.set(key, val)
                         state = 'key'
                         break
-                    case 'Comma':
+                    case 'Colon':
                         expectedTypes = [
                             'Thing',
                             'String',
@@ -107,7 +107,7 @@ export class Parser {
                             'BeginLongArray'
                         ]
                         break
-                    case 'Colon':
+                    case 'Comma':
                         expectedTypes = ['EndCompound', 'Thing', 'String']
                         break
                     default:
@@ -148,7 +148,7 @@ export class Parser {
                             ]
                             state = 'value'
                         } else if (state === 'value') {
-                            expectedTypes = ['Colon', 'EndListOrArray']
+                            expectedTypes = ['Comma', 'EndListOrArray']
                             const parseResult = this.parseList(tokens, pos)
                             val = parseResult.value
                             pos = parseResult.pos
@@ -165,13 +165,13 @@ export class Parser {
                     case 'BeginList':
                     case 'BeginLongArray':
                     case 'BeginCompound':
-                        expectedTypes = ['Colon', 'EndListOrArray']
+                        expectedTypes = ['Comma', 'EndListOrArray']
                         const parseResult = this.parseValue(tokens, pos)
                         val = parseResult.value
                         pos = parseResult.pos
                         resultValue.add(val)
                         break
-                    case 'Colon':
+                    case 'Comma':
                         expectedTypes = [
                             'EndListOrArray',
                             'Thing',
@@ -212,14 +212,14 @@ export class Parser {
                     case 'EndListOrArray':
                         return { value: resultValue, pos: pos }
                     case 'Thing':
-                        expectedTypes = ['Colon', 'EndListOrArray']
+                        expectedTypes = ['Comma', 'EndListOrArray']
                         if ((val = this.parseByte(token)) !== null) {
                             resultValue.add(val)
                         } else {
                             throw `Get a token at '${pos}' whoose type isn't 'Byte' when parsing byte array!`
                         }
                         break
-                    case 'Colon':
+                    case 'Comma':
                         expectedTypes = ['EndListOrArray', 'Thing']
                         break
                     default:
@@ -251,14 +251,14 @@ export class Parser {
                     case 'EndListOrArray':
                         return { value: resultValue, pos: pos }
                     case 'Thing':
-                        expectedTypes = ['Colon', 'EndListOrArray']
+                        expectedTypes = ['Comma', 'EndListOrArray']
                         if ((val = this.parseInt(token)) !== null) {
                             resultValue.add(val)
                         } else {
                             throw `Get a token at '${pos}' whoose type isn't 'Int' when parsing int array!`
                         }
                         break
-                    case 'Colon':
+                    case 'Comma':
                         expectedTypes = ['EndListOrArray', 'Thing']
                         break
                     default:
@@ -290,14 +290,14 @@ export class Parser {
                     case 'EndListOrArray':
                         return { value: resultValue, pos: pos }
                     case 'Thing':
-                        expectedTypes = ['Colon', 'EndListOrArray']
+                        expectedTypes = ['Comma', 'EndListOrArray']
                         if ((val = this.parseLong(token)) !== null) {
                             resultValue.add(val)
                         } else {
                             throw `Get a token at '${pos}' whoose type isn't 'Long' when parsing long array!`
                         }
                         break
-                    case 'Colon':
+                    case 'Comma':
                         expectedTypes = ['EndListOrArray', 'Thing']
                         break
                     default:

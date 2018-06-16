@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import { Parser } from '../../../utils/nbt/parser'
 
-describe('Parser tests', () => {
+describe.only('Parser tests', () => {
     describe('parse() tests', () => {
         it('should parse "0.0" as "0d"', () => {
             let parser = new Parser()
@@ -11,7 +11,7 @@ describe('Parser tests', () => {
             let actual = parser.parse([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: '123' },
-                { type: 'Comma', value: ':' },
+                { type: 'Colon', value: ':' },
                 { type: 'Thing', value: '0.0' },
                 { type: 'EndCompound', value: '}' },
                 { type: 'EndOfDocument', value: '' }
@@ -25,7 +25,7 @@ describe('Parser tests', () => {
             let actual = parser.parse([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: 'foo' },
-                { type: 'Comma', value: ':' },
+                { type: 'Colon', value: ':' },
                 { type: 'BeginCompound', value: '{' },
                 { type: 'EndCompound', value: '}' },
                 { type: 'EndCompound', value: '}' },
@@ -40,10 +40,10 @@ describe('Parser tests', () => {
             let actual = parser.parse([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: 'foo' },
-                { type: 'Comma', value: ':' },
+                { type: 'Colon', value: ':' },
                 { type: 'BeginList', value: '[' },
                 { type: 'Thing', value: 'bar' },
-                { type: 'Colon', value: ',' },
+                { type: 'Comma', value: ',' },
                 { type: 'BeginList', value: '[' },
                 { type: 'EndListOrArray', value: ']' },
                 { type: 'EndListOrArray', value: ']' },
@@ -59,21 +59,21 @@ describe('Parser tests', () => {
             let actual = parser.parse([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: 'byte' },
-                { type: 'Comma', value: ':' },
+                { type: 'Colon', value: ':' },
                 { type: 'BeginByteArray', value: '[B;' },
                 { type: 'Thing', value: 'true' },
-                { type: 'Colon', value: ',' },
+                { type: 'Comma', value: ',' },
                 { type: 'Thing', value: '0b' },
                 { type: 'EndListOrArray', value: ']' },
-                { type: 'Colon', value: ',' },
+                { type: 'Comma', value: ',' },
                 { type: 'Thing', value: 'int' },
-                { type: 'Comma', value: ':' },
+                { type: 'Colon', value: ':' },
                 { type: 'BeginIntArray', value: '[I;' },
                 { type: 'Thing', value: '233' },
                 { type: 'EndListOrArray', value: ']' },
-                { type: 'Colon', value: ',' },
+                { type: 'Comma', value: ',' },
                 { type: 'Thing', value: 'long' },
-                { type: 'Comma', value: ':' },
+                { type: 'Colon', value: ':' },
                 { type: 'BeginLongArray', value: '[L;' },
                 { type: 'Thing', value: '123456L' },
                 { type: 'EndListOrArray', value: ']' },

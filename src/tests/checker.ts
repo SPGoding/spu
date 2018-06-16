@@ -51,7 +51,7 @@ describe.only('Checker tests', () => {
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch('wtf', '%')
+                let actual = Checker.isArgumentMatch('wtf', '%block_metadata_or_state')
                 assert(!actual)
             })
         })
@@ -71,7 +71,7 @@ describe.only('Checker tests', () => {
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch('ture', '%')
+                let actual = Checker.isArgumentMatch('ture', '%bool')
                 assert(!actual)
             })
         })
@@ -361,7 +361,7 @@ describe.only('Checker tests', () => {
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch('1 2', '%')
+                let actual = Checker.isArgumentMatch('1 2', '%vec_3')
                 assert(!actual)
             })
         })

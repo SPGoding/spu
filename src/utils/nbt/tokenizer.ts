@@ -99,7 +99,7 @@ export class Tokenizer {
     private readUnquoted(nbt: string, pos: number): ReadStringResult {
         let str = ''
 
-        while ([',', ']', '}', ' ', ''].indexOf(nbt.substr(pos, 1)) === -1) {
+        while ([',', ']', '}', ' ', ':', ''].indexOf(nbt.substr(pos, 1)) === -1) {
             const char = nbt.substr(pos, 1)
             if (this.charPattern.test(char)) {
                 str += char
