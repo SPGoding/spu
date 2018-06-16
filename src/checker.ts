@@ -27,8 +27,6 @@ export default class Checker {
                     return Checker.isBool(cmdArg)
                 case 'command':
                     return Checker.isCommand(cmdArg)
-                case 'command_name':
-                    return Checker.isCommandName(cmdArg)
                 case 'difficulty':
                     return Checker.isDifficulty(cmdArg)
                 case 'effect':
@@ -125,11 +123,6 @@ export default class Checker {
         return false
     }
 
-    public static isCommandName(input: string) {
-        // FIXME: If you want to be more serious.
-        return true
-    }
-
     public static isDifficulty(input: string) {
         return (
             ['0', '1', '2', '3', 'p', 'e', 'n', 'h', 'peaceful', 'easy', 'normal', 'hard'].indexOf(
@@ -139,11 +132,11 @@ export default class Checker {
     }
 
     public static isEffectNumericID(input: string) {
-        return Number(input) >= 1 && Number(input) <= 28
+        return Number(input) >= 1 && Number(input) <= 27
     }
 
     public static isEnchNumericID(input: string) {
-        return Number(input) >= 0 && Number(input) <= 72
+        return Number(input) >= 0 && Number(input) <= 71
     }
 
     public static isGamemode(input: string) {
@@ -212,7 +205,7 @@ export default class Checker {
     }
 
     public static isSound(input: string) {
-        return /^\w(\.\w)*$/.test(input)
+        return /^[a-z]+(\.[a-z]+)*$/.test(input)
     }
 
     public static isSource(input: string) {
@@ -234,7 +227,7 @@ export default class Checker {
 
     public static isStringID(input: string) {
         // FIXME: If you want.
-        return /^(\w+:)?\w+$/.test(input)
+        return /^(\w+:)?[a-z]+$/.test(input)
     }
 
     public static isPath(input: string) {
@@ -254,14 +247,14 @@ export default class Checker {
     }
 
     public static isVec_2(input: string) {
-        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){2})/.test(input)
+        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){2})$/.test(input)
     }
 
     public static isVec_3(input: string) {
         // This regex is coppied from
         // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
         // Dressed pca, I love you!!!
-        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){3}|(\^([+-]?(\d+(\.\d+)?|\.\d+))?(\s|$)){3})/.test(input)
+        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){3}|(\^([+-]?(\d+(\.\d+)?|\.\d+))?(\s|$)){3})$/.test(input)
     }
 
     public static isNbt(input: string) {

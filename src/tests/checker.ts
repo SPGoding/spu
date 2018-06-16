@@ -85,16 +85,6 @@ describe.only('Checker tests', () => {
                 assert(!actual)
             })
         })
-        describe('%command_name tests', () => {
-            it('should return true', () => {
-                let actual = Checker.isArgumentMatch('testfor', '%command_name')
-                assert(actual)
-            })
-            it('should return false', () => {
-                let actual = Checker.isArgumentMatch('fork', '%command_name')
-                assert(!actual)
-            })
-        })
         describe('%difficulty tests', () => {
             it('should return true', () => {
                 let actual = Checker.isArgumentMatch('h', '%difficulty')
@@ -187,11 +177,11 @@ describe.only('Checker tests', () => {
         })
         describe('%item tests', () => {
             it('should return true', () => {
-                let actual = Checker.isArgumentMatch('minecraft:fuck', '%item')
+                let actual = Checker.isArgumentMatch('minecraft:stone', '%item')
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch(':::', '%item')
+                let actual = Checker.isArgumentMatch('minecraft:fuck', '%item')
                 assert(!actual)
             })
         })
@@ -367,11 +357,11 @@ describe.only('Checker tests', () => {
         })
         describe('%word tests', () => {
             it('should return true', () => {
-                let actual = Checker.isArgumentMatch('aA_', '%word')
+                let actual = Checker.isArgumentMatch('1aA_', '%word')
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch('1', '%word')
+                let actual = Checker.isArgumentMatch('!', '%word')
                 assert(!actual)
             })
         })
