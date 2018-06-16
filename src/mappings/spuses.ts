@@ -12,7 +12,6 @@ export default class Spuses {
      * %block_nbt
      * %bool
      * %command
-     * %command_name
      * %difficulty
      * %effect
      * %ench
@@ -118,8 +117,6 @@ export default class Spuses {
         ['give %entity %item', 'give %0 %1'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
         ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
-        ['help %command_name', 'help %0'],
-        ['? %command_name', '? %0'],
         ['kick %entity', 'kick %0'],
         ['kick %entity %string..', 'kick %0 %1'],
         ['kill %entity', 'kill %0'],
