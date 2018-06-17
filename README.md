@@ -4,7 +4,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/SPGoding/spu.svg)
 ![license](https://img.shields.io/github/license/SPGoding/spu.svg)
 
-Also called 'SPU'. An online tool that can help you convert minecraft commands from 1.12 to 1.13.
+Also called 'spu'. An online tool that can help you convert minecraft commands from 1.12 to 1.13.
 
 ## How to Use
 
