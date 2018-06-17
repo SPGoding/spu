@@ -83,7 +83,6 @@ describe.only('Converter tests', () => {
                 assert(actual === '{CustomName:"{\\"text\\":\\"foo\\"}"}')
             })
         })
-        // https://minecraft.gamepedia.com/1.13/Flattening#Entity_IDs.5B2.5D
         describe('%entity_type tests', () => {
             it('should convert', () => {
                 const actual = Converter.cvtArgument('minecraft:ender_crystal', '%entity_type')

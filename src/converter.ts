@@ -7,6 +7,8 @@ import Blocks from './mappings/blocks'
 import Entities from './mappings/entities'
 import Items from './mappings/items'
 import { isNumeric } from './utils/utils'
+import { Parser as NbtParser } from './utils/nbt/parser'
+import { Tokenizer as NbtTokenizer } from './utils/nbt/tokenizer'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -90,6 +92,8 @@ export default class Converter {
                 return Converter.cvtBlockDustParam(arg)
             case 'block_metadata_or_state':
                 return arg
+            case 'block_nbt':
+                return Converter.cvtBlockNbt(arg)
             case 'bool':
                 return arg
             case 'command':
@@ -104,6 +108,14 @@ export default class Converter {
                 return arg
             case 'gamemode':
                 return Converter.cvtGamemode(arg)
+            case 'ip':
+                return arg
+            case 'item':
+                return arg
+            case 'item_data':
+                return arg
+            case 'item_dust_params':
+                return Converter.cvtItemDustParams(arg)
             case 'json':
                 return Converter.cvtJson(arg)
             case 'literal':
@@ -139,6 +151,15 @@ export default class Converter {
         const num = Number(input)
         const id = Blocks.get1_13NormalizeIDFrom1_12NumericID(num)
         return id.toString()
+    }
+
+    public static cvtBlockNbt(input: string) {
+        const tokenizer = new NbtTokenizer()
+        const tokens = tokenizer.tokenize(input)
+        const parser = new NbtParser()
+        const nbt = parser.parse(tokens)
+
+        throw 'UNFINISHED'
     }
 
     public static cvtDifficulty(input: string) {
@@ -202,6 +223,8 @@ export default class Converter {
                 throw `Unknown gamemode: ${input}`
         }
     }
+
+    public static cvtItemDustParams(input: string) {}
 
     public static cvtJson(input: string) {
         if (input.slice(0, 1) === '"') {

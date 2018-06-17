@@ -50,6 +50,8 @@ export default class Spuses {
      * $addNbtToItem
      * $addScbMaxToEntity
      * $addScbMinToEntity
+     * $fuckItemItself
+     * $fuckBlockItself
      */
     static pairs = new Map([
         ['advancement test %entity %adv', 'execute if entity %0$addAdvToEntity%1'],
@@ -67,14 +69,14 @@ export default class Spuses {
         ['blockdata %vec_3 %block_nbt', 'data merge block %0 %1'],
         ['clear', 'clear'],
         ['clear %entity', 'clear %0'],
-        ['clear %entity %item', 'clear %0 %1'],
+        ['clear %entity %item', 'clear %0 %1$fuckItemItself'],
         ['clear %entity %item %item_data', 'clear %0 %1$addDataToItem%2'],
         ['clear %entity %item %item_data %num', 'clear %0 %1$addDataToItem%2 %3'],
         ['clear %entity %item %item_data %num %entity_nbt', 'clear %0 %1$addDataToItem%2$addNbtToItem%4'],
         ['clone %vec_3 %vec_3 %vec_3', 'clone %0 %1 %2'],
         ['clone %vec_3 %vec_3 %vec_3 %literal', 'clone %0 %1 %2 %3'],
         ['clone %vec_3 %vec_3 %vec_3 %literal %literal', 'clone %0 %1 %2 %3 %4'],
-        ['clone %vec_3 %vec_3 %vec_3 %literal %literal %block', 'clone %0 %1 %2 %3 %5 %4'],
+        ['clone %vec_3 %vec_3 %vec_3 %literal %literal %block', 'clone %0 %1 %2 %3 %5$fuckBlockItself %4'],
         [
             'clone %vec_3 %vec_3 %vec_3 %literal %literal %block %block_metadata_or_state',
             'clone %0 %1 %2 %3 %5$addMetadataOrStateToBlock%6 %4'
@@ -96,7 +98,7 @@ export default class Spuses {
             'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %command',
             'execute as %0 at @s positioned %1 if block %2 %3$addMetadataOrStateToBlock%4 run %5'
         ],
-        ['fill %vec_3 %vec_3 %block', 'fill %0 %1 %2'],
+        ['fill %vec_3 %vec_3 %block', 'fill %0 %1 %2$fuckBlockItself'],
         ['fill %vec_3 %vec_3 %block %block_metadata_or_state', 'fill %0 %1 %2$addMetadataOrStateToBlock%3'],
         ['fill %vec_3 %vec_3 %block %block_metadata_or_state %literal', 'fill %0 %1 %2$addMetadataOrStateToBlock%3 %4'],
         [
@@ -114,7 +116,7 @@ export default class Spuses {
         ['gamerule %word', 'gamerule %0'],
         ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'.|error"],
         ['gamerule %word %word', 'gamerule %0 %1'],
-        ['give %entity %item', 'give %0 %1'],
+        ['give %entity %item', 'give %0 %1$fuckItemItself'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
         ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
         ['kick %entity', 'kick %0'],
@@ -144,15 +146,15 @@ export default class Spuses {
         ['recipe %literal %recipe', 'recipe %0 %1'],
         ['recipe %literal %entity %recipe', 'recipe %0 %1 %2'],
         ['reload', 'reload'],
-        ['replaceitem block %vec_3 %slot %item', 'replaceitem block %0 %1 %2'],
-        ['replaceitem block %vec_3 %slot %item %num', 'replaceitem block %0 %1 %2 %3'],
+        ['replaceitem block %vec_3 %slot %item', 'replaceitem block %0 %1 %2$fuckItemItself'],
+        ['replaceitem block %vec_3 %slot %item %num', 'replaceitem block %0 %1 %2$fuckItemItself %3'],
         ['replaceitem block %vec_3 %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
         [
             'replaceitem block %vec_3 %slot %item %num %item_data %item_nbt',
             'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
         ],
-        ['replaceitem entity %entity %slot %item', 'replaceitem block %0 %1 %2'],
-        ['replaceitem entity %entity %slot %item %num', 'replaceitem block %0 %1 %2 %3'],
+        ['replaceitem entity %entity %slot %item', 'replaceitem block %0 %1 %2$fuckItemItself'],
+        ['replaceitem entity %entity %slot %item %num', 'replaceitem block %0 %1 %2$fuckItemItself %3'],
         ['replaceitem entity %entity %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
         [
             'replaceitem entity %entity %slot %item %num %item_data %item_nbt',
@@ -200,7 +202,7 @@ export default class Spuses {
         ['scoreboard teams leave %entity..', 'team leave %0'],
         ['scoreboard teams option %word %word %word', 'team option %0 %1 %2'],
         ['seed', 'seed'],
-        ['setblock %vec_3 %block', 'setblock %0 %1'],
+        ['setblock %vec_3 %block', 'setblock %0 %1$fuckBlockItself'],
         ['setblock %vec_3 %block %block_metadata_or_state', 'setblock %0 %1$addMetadataOrStateToBlock%2'],
         ['setblock %vec_3 %block %block_metadata_or_state %literal', 'setblock %0 %1$addMetadataOrStateToBlock%2 %3'],
         [
@@ -230,7 +232,7 @@ export default class Spuses {
         ['tellraw %entity %json..', 'tellraw %0 %1'],
         ['testfor %entity', 'execute if entity %0'],
         ['testfor %entity %entity_nbt', 'execute if entity %0$addNbtToEntity%1'],
-        ['testforblock %vec_3 %block', 'execute if block %0 %1'],
+        ['testforblock %vec_3 %block', 'execute if block %0 %1$fuckBlockItself'],
         ['testforblock %vec_3 %block %block_metadata_or_state', 'execute if block %0 %1$addMetadataOrStateToBlock%2'],
         [
             'testforblock %vec_3 %block %block_metadata_or_state %block_nbt',

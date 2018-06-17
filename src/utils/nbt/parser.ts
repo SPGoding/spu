@@ -26,7 +26,7 @@ export class Parser {
         const result = this.parseCompound(tokens, 0)
 
         if (tokens[result.pos + 1].type === 'EndOfDocument') {
-            return result.value
+            return <NbtCompound>result.value
         } else {
             throw `Unsymmetrical squares.`
         }
