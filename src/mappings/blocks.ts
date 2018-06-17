@@ -6,42 +6,106 @@ export default class Blocks {
         if (id.slice(0, 11) !== 'minecraft:') {
             id = `minecraft:${id}`
         }
-        const arr = Blocks.NumericID_Metadata_NormalizeID.find(v => v[2].toString().split('[')[0] === id)
+        const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[2].toString().split('[')[0] === id)
         return arr ? true : false
     }
 
-    static get1_12NormalizeIDFrom1_12NumericID(id: number) {
-        let metadata = 0
-
-        while (id > 255) {
-            metadata += 1
-            id -= 4096
+    static get1_12NominalIDFrom1_12NumericID(id: number, metadata?: number) {
+        if (!metadata) {
+            metadata = 0
+            while (id > 255) {
+                metadata += 1
+                id -= 4096
+            }
         }
-
-        const arr = Blocks.NumericID_Metadata_NormalizeID.find(v => v[0] === id && v[1] === metadata)
+        const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[0] === id && v[1] === metadata)
         if (arr) {
-            return arr[2]
+            return arr[2].toString()
         } else {
             return null
         }
     }
 
-    static get1_13NormalizeIDFrom1_12NormalizeID(old: string) {
-        const arr = Blocks.NormalizeID_NormalizeIDs.find(v => v.indexOf(old, 1) >= 1) // Should be >=1. Cuz 0 is 4 1.12.
+    static get1_13NominalIDFrom1_12NominalID(input: string) {
+        const arr = Blocks.NominalID_NominalID.find(v => v.indexOf(input, 1) >= 1) // Should be >=1. Cuz 0 is 4 1.12.
         if (arr) {
             return arr[0]
         } else {
-            return null
+            return input
         }
     }
+
+    static get1_13NominalIDFrom1_12NumericID(id: number, metadata?: number) {
+        const nominalID1_12 = Blocks.get1_12NominalIDFrom1_12NumericID(id, metadata)
+        if (nominalID1_12) {
+            return Blocks.get1_13NominalIDFrom1_12NominalID(nominalID1_12)
+        } else {
+            throw `Unknown 1.12 numeric ID: '${id}:${metadata}'`
+        }
+    }
+
+    static get1_12NominalIDFrom1_12StringID(input: string) {
+        const arr = Blocks.NumericID_Metadata_NominalID.find(
+            v => v[2].toString().split('[')[0] === input.split('[')[0] && v[1] === 0
+        )
+
+        if (arr) {
+            let defaultStates = Blocks.getStatesFromStringID(arr[1].toString())
+            let customStates = Blocks.getStatesFromStringID(input)
+            let resultStates = Blocks.sortStates(Blocks.combineStates(defaultStates, customStates))
+            return `${input.split('[')[0]}[${resultStates}]`
+        } else {
+            throw `Unknwon 1.12 string ID: '${input}'`
+        }
+    }
+
+    private static getStatesFromStringID(input: string) {
+        let arr = input.split('[')
+        if (arr.length === 2) {
+            return arr[1].slice(0, -1)
+        } else {
+            return ''
+        }
+    }
+
+    private static sortStates(input: string) {
+        let arr = input.split(',')
+        arr.sort()
+        return arr.join()
+    }
+
+    private static combineStates(defaultStates: string, customStates: string) {
+        let drr = defaultStates.split(',')
+        let crr = customStates.split(',')
+        let rrr: string[] = []
+
+        for (const i of drr) {
+            const str = crr.find(v => v.split('=')[0] === i)
+            if (str) {
+                rrr.push(str)
+            } else {
+                rrr.push(i)
+            }
+        }
+
+        return rrr.join()
+    }
+    
+    // static get1_13NominalIDFrom1_12(old: string | number) {
+    //     if (typeof old === 'number') {
+    //         return Blocks.get1_13NominalIDFrom1_12NumericID(old)
+    //     } else {
+    //         return Blocks.get1_13NominalIDFrom1_12StringID(old)
+    //     }
+    // }
 
     /**
      * @example
      * [
-     *     ['1.13 Normalize ID', ..'1.12 Normlaize ID']
+     *     ['1.13 Nominal ID', ..'1.12 Normlaize ID']
      * ]
      */
-    static NormalizeID_NormalizeIDs: string[][] = [
+    static NominalID_NominalID: string[][] = [
         ['minecraft:air', 'minecraft:air'],
         ['minecraft:stone', 'minecraft:stone[variant=stone]'],
         ['minecraft:granite', 'minecraft:stone[variant=granite]'],
@@ -7714,12 +7778,12 @@ export default class Blocks {
     /**
      * @example
      * [
-     *     [Numeric ID, MetaData, Normalize ID]
+     *     [Numeric ID, MetaData, Nominal ID]
      * ]
      * Thank MCEdit: https://github.com/mcedit/mcedit2/blob/master/src/mceditlib/blocktypes/idmapping_raw_1_12.json
      * Thank pca for introducing it to me.
      */
-    static NumericID_Metadata_NormalizeID: (string | number)[][] = [
+    static NumericID_Metadata_NominalID: (string | number)[][] = [
         [0, 0, 'minecraft:air'],
         [1, 0, 'minecraft:stone[variant=stone]'],
         [1, 1, 'minecraft:stone[variant=granite]'],

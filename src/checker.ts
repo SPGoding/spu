@@ -181,7 +181,7 @@ export default class Checker {
     }
 
     public static isLiteral(input: string) {
-        return /^[a-zA-Z_]+$/.test(input)
+        return /^[a-zA-Z]+$/.test(input)
     }
 
     public static isWord(input: string) {
@@ -204,7 +204,23 @@ export default class Checker {
         if (input.slice(0, 5) === 'stat.') {
             return true
         } else {
-            return ['dummy', 'trigger', 'health', 'xp', 'level', 'food', 'air', 'armor', 'teamkill', 'killedByTeam', 'deathCount', 'playerKillCount', 'totalKillCount'].indexOf(input) !== -1
+            return (
+                [
+                    'dummy',
+                    'trigger',
+                    'health',
+                    'xp',
+                    'level',
+                    'food',
+                    'air',
+                    'armor',
+                    'teamkill',
+                    'killedByTeam',
+                    'deathCount',
+                    'playerKillCount',
+                    'totalKillCount'
+                ].indexOf(input) !== -1
+            )
         }
     }
 

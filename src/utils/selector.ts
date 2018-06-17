@@ -209,7 +209,7 @@ export default class Selector {
                             }
                             break
                         case 'm':
-                            this.gamemode.push(Converter.cvtMode(val))
+                            this.gamemode.push(Converter.cvtGamemode(val))
                             break
                         case 'l':
                             this.level.setMax(Number(val))

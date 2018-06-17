@@ -3,6 +3,10 @@ import Selector from './utils/selector'
 import Spuses from './mappings/spuses'
 import SpuScript from './spu_script'
 import Checker from './checker'
+import Blocks from './mappings/blocks'
+import Entities from './mappings/entities'
+import Items from './mappings/items'
+import { isNumeric } from './utils/utils'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -64,7 +68,6 @@ export default class Converter {
                     let spus = new SpuScript(spusNew)
                     let result = spus.compileWith(map)
                     if (positionCorrect) {
-                        alert()
                         return `execute positioned 0.0 0.0 0.0 run ${result}`
                     } else {
                         return result
@@ -81,23 +84,61 @@ export default class Converter {
                 return arg
             case 'adv_crit':
                 return arg
+            case 'block':
+                return arg
+            case 'block_dust_param':
+                return Converter.cvtBlockDustParam(arg)
+            case 'block_metadata_or_state':
+                return arg
             case 'bool':
                 return arg
             case 'command':
-                return Converter.cvtCommand(arg)
+                return Converter.cvtCommand(arg, false)
             case 'difficulty':
                 return Converter.cvtDifficulty(arg)
             case 'entity':
                 return Converter.cvtEntity(arg)
+            case 'entity_type':
+                return Converter.cvtEntityType(arg)
             case 'func':
                 return arg
             case 'gamemode':
-                return Converter.cvtMode(arg)
+                return Converter.cvtGamemode(arg)
+            case 'json':
+                return Converter.cvtJson(arg)
+            case 'literal':
+                return arg.toLowerCase()
+            case 'num':
+                return arg
             case 'recipe':
+                return arg
+            case 'scb_crit':
+                return Converter.cvtScbCrit(arg)
+            case 'slot':
+                return Converter.cvtSlot(arg)
+            case 'sound':
+                return arg
+            case 'source':
+                return arg
+            case 'string':
+                return arg
+            case 'uuid':
+                return arg
+            case 'vec_2':
+                return arg
+            case 'vec_3':
+                return arg
+            case 'word':
                 return arg
             default:
                 throw `Unknown arg type: '${spus}'`
         }
+    }
+
+    public static cvtBlockDustParam(input: string) {
+        const num = Number(input)
+        const id = Blocks.get1_13NormalizeIDFrom1_12NumericID(num)
+        return id.toString()
     }
 
     public static cvtDifficulty(input: string) {
@@ -135,7 +176,11 @@ export default class Converter {
         return sel.get1_13()
     }
 
-    public static cvtMode(input: string) {
+    public static cvtEntityType(input: string) {
+        return Entities.get1_13NominalIDFrom1_12NominalID(input)
+    }
+
+    public static cvtGamemode(input: string) {
         switch (input) {
             case '0':
             case 's':
@@ -156,5 +201,71 @@ export default class Converter {
             default:
                 throw `Unknown gamemode: ${input}`
         }
+    }
+
+    public static cvtJson(input: string) {
+        if (input.slice(0, 1) === '"') {
+            return input
+        } else if (input.slice(0, 1) === '[') {
+            let json = JSON.parse(input)
+            let result: string[] = []
+            for (const i of json) {
+                result.push(Converter.cvtJson(JSON.stringify(i)))
+            }
+            return `[${result.join()}]`
+        } else {
+            let json = JSON.parse(input)
+            if (json.selector) {
+                let sel = new Selector()
+                sel.parse1_12(json.selector)
+                json.selector = sel.get1_13()
+            }
+
+            if (
+                json.clickEvent &&
+                json.clickEvent.action &&
+                (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
+                json.clickEvent.value
+            ) {
+                json.clickEvent.value = Converter.cvtCommand(json.clickEvent.value, false)
+            }
+
+            if (json.extra) {
+                json.extra = JSON.parse(Converter.cvtJson(JSON.stringify(json.extra)))
+            }
+
+            return JSON.stringify(json)
+        }
+    }
+
+    public static cvtScbCrit(input: string) {
+        if (input.slice(0, 5) === 'stat.') {
+            const subs = input.split(/\./g)
+            switch (subs[1]) {
+                case 'mineBlock':
+                    if (isNumeric(subs[2])) {
+                        return `minecraft.mined:${Blocks.get1_13NormalizeIDFrom1_12NumericID(Number(subs[2]))
+                            .replace(/:/g, '.')
+                            .replace(/\[.*$/g, '')}`
+                    } else {
+                        return `minecraft.mined:${Blocks.get1_12NormalizeIDFrom1_12StringID(subs[2])
+                            .replace(/:/g, '.')
+                            .replace(/\[.*$/g, '')}`
+                    }
+                case 'craftItem':
+                case 'useItem':
+                case 'breakItem':
+                case 'pickup':
+                case 'drop':
+                default:
+                    return `minecraft.custom:minecraft.${subs[1]}`
+            }
+        } else {
+            return input
+        }
+    }
+
+    public static cvtSlot(input: string) {
+        return input.slice(5)
     }
 }

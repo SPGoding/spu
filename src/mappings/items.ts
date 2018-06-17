@@ -2,22 +2,22 @@
  * Providing a map storing old item IDs and new item IDs.
  */
 export default class Items {
-    static is1_12NormalizeIDExist(id: string) {
+    static is1_12NominalIDExist(id: string) {
         console.log(id)
         if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`
         }
         console.log(id)
-        const arr = Items.StringIDWithDataValue_NormalizeID.find(v => v[0].split('.')[0] === id)
+        const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0].split('.')[0] === id)
         console.log(arr)
         return arr ? true : false
     }
 
-    static get1_13NormalizeIDFrom1_12StringIDWithDataValue(str: string, data?: number) {
+    static get1_13NominalIDFrom1_12StringIDWithDataValue(str: string, data?: number) {
         if (data) {
             str = `${str}.${data}`
         }
-        const arr = Items.StringIDWithDataValue_NormalizeID.find(v => v[0] === str)
+        const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0] === str)
         if (arr) {
             return arr[1]
         } else {
@@ -25,7 +25,7 @@ export default class Items {
         }
     }
 
-    static StringIDWithDataValue_NormalizeID: string[][] = [
+    static StringIDWithDataValue_NominalID: string[][] = [
         ['minecraft:stone.0', 'minecraft:stone'],
         ['minecraft:stone.1', 'minecraft:granite'],
         ['minecraft:stone.2', 'minecraft:polished_granite'],
