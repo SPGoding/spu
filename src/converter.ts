@@ -149,7 +149,7 @@ export default class Converter {
 
     public static cvtBlockDustParam(input: string) {
         const num = Number(input)
-        const id = Blocks.get1_13NormalizeIDFrom1_12NumericID(num)
+        const id = Blocks.get1_13NominalIDFrom1_12NumericID(num)
         return id.toString()
     }
 
@@ -159,7 +159,8 @@ export default class Converter {
         const parser = new NbtParser()
         const nbt = parser.parse(tokens)
 
-        throw 'UNFINISHED'
+        // TODO:
+        return input
     }
 
     public static cvtDifficulty(input: string) {
@@ -224,7 +225,9 @@ export default class Converter {
         }
     }
 
-    public static cvtItemDustParams(input: string) {}
+    public static cvtItemDustParams(input: string) {
+        return input
+    }
 
     public static cvtJson(input: string) {
         if (input.slice(0, 1) === '"') {
@@ -267,11 +270,11 @@ export default class Converter {
             switch (subs[1]) {
                 case 'mineBlock':
                     if (isNumeric(subs[2])) {
-                        return `minecraft.mined:${Blocks.get1_13NormalizeIDFrom1_12NumericID(Number(subs[2]))
+                        return `minecraft.mined:${Blocks.get1_13NominalIDFrom1_12NumericID(Number(subs[2]))
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')}`
                     } else {
-                        return `minecraft.mined:${Blocks.get1_12NormalizeIDFrom1_12StringID(subs[2])
+                        return `minecraft.mined:${Blocks.get1_12NominalIDFrom1_12StringID(subs[2])
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')}`
                     }

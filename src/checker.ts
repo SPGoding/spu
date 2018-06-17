@@ -97,7 +97,7 @@ export default class Checker {
     }
 
     public static isBlockDustParam(input: string) {
-        const result = Blocks.get1_12NormalizeIDFrom1_12NumericID(Number(input))
+        const result = Blocks.get1_12NominalIDFrom1_12NumericID(Number(input))
         return result ? true : false
     }
 
@@ -148,7 +148,7 @@ export default class Checker {
     }
 
     public static isItem(input: string) {
-        return Items.is1_12NormalizeIDExist(input)
+        return Items.is1_12NominalIDExist(input)
     }
 
     public static isItemData(input: string) {
