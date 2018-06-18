@@ -763,6 +763,7 @@ class Blocks {
         for (const i of drr) {
             const str = crr.find(v => v.split('=')[0] === i.split('=')[0]);
             if (str) {
+                rrr.push(str);
             }
             else {
                 rrr.push(i);
