@@ -10,30 +10,29 @@
 </head>
 
 <body>
-    <p>
-        <pre style="font-family:Consolas,monaco,monospace;">
-      _______..______    __    __  
-     /       ||   _  \  |  |  |  | 
-    |   (----`|  |_)  | |  |  |  | 
-     \   \    |   ___/  |  |  |  | 
- .----)   |   |  |      |  `--'  | 
- |_______/    | _|       \______/  
-        </pre> 注意事项：
-        <br /> 1. stat命令不作转换。
-        <br /> 2. execute命令的转换不完全等效，如有需要请手动改为多层function。
-        <br /> 3. 本网页为静态页面，可直接Ctrl + S保存并在离线时使用。</p>
-    1.12函数：
-    <br />
-    <textarea rows="20" cols="80" id="input"></textarea>
-    <br />
-    <input type="submit" value="转换" id="button" />
+    <div class="container-fluid">
+        <p>
+            注意事项：
+            <br /> 1. stat命令不作转换。
+            <br /> 2. execute命令的转换不完全等效，如有需要请手动改为多层function。
+            <br /> 3. 本网页为静态页面，可直接Ctrl + S保存并在离线时使用。</p>
+        <div class="row-fluid">
+            <div class="span5 offset1">1.12函数：
+                <br />
+                <textarea rows="20" cols="80" id="input"></textarea>
+            </div>
+            <div class="span5 offset-1">1.13函数：
+                <p id="output"></p>
+            </div>
+        </div>
+    </div>
+
+    <input type="submit" value="转换" id="button" class="btn btn-primary" />
     <input type="checkbox" id="position-correct">坐标矫正
-    <br />
-    <br /> 1.13函数：
-    <p id="output"></p>
-    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="bundle.js"></script>
+
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js "></script>
+    <script src="js/bootstrap.min.js "></script>
+    <script src="bundle.js "></script>
 </body>
 
 </html>
