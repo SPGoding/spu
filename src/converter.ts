@@ -7,11 +7,13 @@ import Blocks from './mappings/blocks'
 import Effects from './mappings/effects'
 import Entities from './mappings/entities'
 import Items from './mappings/items'
-import { isNumeric } from './utils/utils'
+import { isNumeric, getNbt } from './utils/utils'
 import { Parser as NbtParser } from './utils/nbt/parser'
 import { Tokenizer as NbtTokenizer } from './utils/nbt/tokenizer'
 import Enches from './mappings/enches'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
+import Particles from './mappings/particles'
+import { NbtString, NbtCompound, NbtShort, NbtValue, NbtList } from './utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -107,6 +109,8 @@ export default class Converter {
                 return Converter.cvtEffect(arg)
             case 'entity':
                 return Converter.cvtEntity(arg)
+            case 'entity_nbt':
+                return Converter.cvtEntityNbt(arg)
             case 'ench':
                 return Converter.cvtEnch(arg)
             case 'entity_type':
@@ -123,12 +127,18 @@ export default class Converter {
                 return arg
             case 'item_dust_params':
                 return Converter.cvtItemDustParams(arg)
+            case 'item_nbt':
+                return Converter.cvtItemNbt(arg)
+            case 'item_tag_nbt':
+                return Converter.cvtItemTagNbt(arg)
             case 'json':
                 return Converter.cvtJson(arg)
             case 'literal':
                 return arg.toLowerCase()
             case 'num':
                 return arg
+            case 'particle':
+                return Converter.cvtParticle(arg)
             case 'recipe':
                 return arg
             case 'scb_crit':
@@ -160,14 +170,20 @@ export default class Converter {
         return id.toString()
     }
 
+    // FIXME: https://minecraft.gamepedia.com/Block_entity
     public static cvtBlockNbt(input: string) {
-        const tokenizer = new NbtTokenizer()
-        const tokens = tokenizer.tokenize(input)
-        const parser = new NbtParser()
-        const nbt = parser.parse(tokens)
+        const root = getNbt(input)
+        const items = root.get('Items')
+        if (items instanceof NbtList) {
+            for (let i = 0; i < items.length; i++) {
+                let item = items.get(i)
+                item = getNbt(Converter.cvtItemNbt(item.toString()))
+                items.set(i, item)
+            }
+            root.set('Items', items)
+        }
 
-        // TODO:
-        return input
+        return root.toString()
     }
 
     public static cvtDifficulty(input: string) {
@@ -221,6 +237,18 @@ export default class Converter {
         return sel.get1_13()
     }
 
+    public static cvtEntityNbt(input: string) {
+        const root = getNbt(input)
+
+        const value = root.get('CustomName')
+        if (value instanceof NbtString) {
+            value.set(`{"text":"${value.get()}"}`)
+            root.set('CustomName', value)
+        }
+
+        return root.toString()
+    }
+
     public static cvtEntityType(input: string) {
         return Entities.get1_13NominalIDFrom1_12NominalID(input)
     }
@@ -252,6 +280,51 @@ export default class Converter {
         const params = input.split(' ').map(x => Number(x))
         const nominal = Items.get1_12NominalIDFrom1_12NumericID(params[0])
         return Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(nominal, params[1])
+    }
+
+    public static cvtItemNbt(input: string) {
+        const root = getNbt(input)
+        const id = root.get('id')
+        const damage = root.get('Damage')
+        let tag = root.get('tag')
+
+        if (id instanceof NbtString && damage instanceof NbtShort) {
+            if (tag instanceof NbtCompound) {
+                tag = getNbt(Converter.cvtItemTagNbt(tag.toString()))
+            }
+            if (Items.shouldDamageMoveToTagItem(id.get())) {
+                if (!(tag instanceof NbtCompound)) {
+                    tag = new NbtCompound()
+                }
+                tag.set('Damage', damage)
+            } else {
+                const newID = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(id.get(), damage.get())
+                id.set(newID)
+                root.set('id', id)
+            }
+            root.del('Damage')
+            if (tag instanceof NbtCompound) {
+                root.set('tag', tag)
+            }
+        }
+
+        return root.toString()
+    }
+
+    public static cvtItemTagNbt(input: string) {
+        const root = getNbt(input)
+
+        const display = root.get('display')
+        if (display instanceof NbtCompound) {
+            const name = display.get('Name')
+            if (name instanceof NbtString) {
+                name.set(`{"text":"${name.get()}"}`)
+                display.set('Name', name)
+            }
+            root.set('display', display)
+        }
+
+        return root.toString()
     }
 
     public static cvtJson(input: string) {
@@ -287,6 +360,10 @@ export default class Converter {
 
             return JSON.stringify(json)
         }
+    }
+
+    public static cvtParticle(input: string) {
+        return Particles.get1_13NominalIDFrom1_12NominalID(input)
     }
 
     public static cvtScbCrit(input: string) {

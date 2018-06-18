@@ -2,6 +2,9 @@ export default class Particles {
     public static get1_13NominalIDFrom1_12NominalID(input: string) {
         const arr = Particles.NominalID_NominalID.find(v => v[0] === input)
         if (arr) {
+            if (arr[1] === 'removed') {
+                throw `Removed particle: '${input}'`
+            }
             return arr[1]
         } else {
             return input

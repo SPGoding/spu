@@ -103,6 +103,8 @@ export class NbtCompound {
 
     public get = (key: string) => this.value.get(key)
 
+    public del = (key: string) => this.value.delete(key)
+
     public set(key: string, val: NbtValue) {
         this.value.set(key, val)
     }
@@ -130,7 +132,15 @@ export class NbtCompound {
 export class NbtList {
     private value: NbtValue[] = []
 
+    public get length() {
+        return this.value.length
+    }
+
     public get = (index: number) => this.value[index]
+
+    public set(index: number, val: NbtValue) {
+        this.value[index] = val
+    }
 
     public add(val: NbtValue) {
         this.value.push(val)

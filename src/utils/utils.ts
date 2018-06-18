@@ -1,5 +1,8 @@
+import { Tokenizer as NbtTokenizer } from './nbt/tokenizer'
+import { Parser as NbtParser } from './nbt/parser'
+
 /**
- * Returns if a thing is numeric. Scientific notation IS supported.
+ * Return if a thing is numeric. Scientific notation IS supported.
  * @param num Any thing.
  */
 export function isNumeric(num: any) {
@@ -8,6 +11,17 @@ export function isNumeric(num: any) {
 
 export function isWhiteSpace(char: string) {
     return [' ', '\t', '\n', '\r'].indexOf(char) !== -1
+}
+
+/**
+ * Get an NbtCompound object from a string.
+ */
+export function getNbt(str: string) {
+    const tokenizer = new NbtTokenizer()
+    const tokens = tokenizer.tokenize(str)
+    const parser = new NbtParser()
+    const nbt = parser.parse(tokens)
+    return nbt
 }
 
 /**

@@ -32,6 +32,15 @@ export default class Items {
         }
     }
 
+    static shouldDamageMoveToTagItem(input: string) {
+        const arr = Items.DamageMoveToTagNominalIDs.find(v => v === input)
+        if (arr) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     static NumericID_NominalID: NumericID_NominalID[] = [
         [0, 'minecraft:air'],
         [1, 'minecraft:stone'],
@@ -818,6 +827,61 @@ export default class Items {
         ['minecraft:record_strad.0', 'minecraft:music_disc_strad'],
         ['minecraft:record_wait.0', 'minecraft:music_disc_wait'],
         ['minecraft:record_ward.0', 'minecraft:music_disc_ward']
+    ]
+
+    static DamageMoveToTagNominalIDs: string[] = [
+        'minecraft:bow',
+        'minecraft:carrot_on_a_stick',
+        'minecraft:chainmail_boots',
+        'minecraft:chainmail_chestplate',
+        'minecraft:chainmail_helmet',
+        'minecraft:chainmail_leggings',
+        'minecraft:diamond_axe',
+        'minecraft:diamond_boots',
+        'minecraft:diamond_chestplate',
+        'minecraft:diamond_helmet',
+        'minecraft:diamond_hoe',
+        'minecraft:diamond_leggings',
+        'minecraft:diamond_pickaxe',
+        'minecraft:diamond_shovel',
+        'minecraft:diamond_sword',
+        'minecraft:elytra',
+        'minecraft:fishing_rod',
+        'minecraft:flint_and_steel',
+        'minecraft:golden_axe',
+        'minecraft:golden_boots',
+        'minecraft:golden_chestplate',
+        'minecraft:golden_helmet',
+        'minecraft:golden_hoe',
+        'minecraft:golden_leggings',
+        'minecraft:golden_pickaxe',
+        'minecraft:golden_shovel',
+        'minecraft:golden_sword',
+        'minecraft:iron_axe',
+        'minecraft:iron_boots',
+        'minecraft:iron_chestplate',
+        'minecraft:iron_helmet',
+        'minecraft:iron_hoe',
+        'minecraft:iron_leggings',
+        'minecraft:iron_pickaxe',
+        'minecraft:iron_shovel',
+        'minecraft:iron_sword',
+        'minecraft:leather_boots',
+        'minecraft:leather_chestplate',
+        'minecraft:leather_helmet',
+        'minecraft:leather_leggings',
+        'minecraft:shears',
+        'minecraft:shield',
+        'minecraft:stone_axe',
+        'minecraft:stone_hoe',
+        'minecraft:stone_pickaxe',
+        'minecraft:stone_shovel',
+        'minecraft:stone_sword',
+        'minecraft:wooden_axe',
+        'minecraft:wooden_hoe',
+        'minecraft:wooden_pickaxe',
+        'minecraft:wooden_shovel',
+        'minecraft:wooden_sword'
     ]
 }
 

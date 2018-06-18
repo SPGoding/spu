@@ -37,8 +37,11 @@ describe.only('Converter tests', () => {
         })
         describe('%block_nbt tests', () => {
             it('should convert', () => {
-                const actual = Converter.cvtArgument('{Text1:"hh"}', '%block_nbt')
-                assert(actual === '{Text1:"{\\"text\\":\\"hh\\}"}')
+                const actual = Converter.cvtArgument(
+                    '{Items:[{Count:1b,id:"minecraft:wooden_sword",Damage:998s}]}',
+                    '%block_nbt'
+                )
+                assert(actual === '{Items:[{Count:1b,id:"minecraft:wooden_sword",tag:{Damage:998s}}]}')
             })
         })
         describe('%bool tests', () => {
@@ -74,7 +77,7 @@ describe.only('Converter tests', () => {
         describe('%entity tests', () => {
             it('should convert', () => {
                 const actual = Converter.cvtArgument('@r', '%entity')
-                assert(actual === '@e[sort=random]')
+                assert(actual === '@e[sort=random,type=player]')
             })
         })
         describe('%entity_nbt tests', () => {
@@ -158,7 +161,6 @@ describe.only('Converter tests', () => {
                 assert(actual === '12')
             })
         })
-        // https://minecraft.gamepedia.com/1.13 Changes: particle -- rename
         describe('%particle tests', () => {
             it('should convert', () => {
                 const actual = Converter.cvtArgument('blockdust', '%particle')
