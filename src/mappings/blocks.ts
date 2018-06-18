@@ -20,7 +20,7 @@ export default class Blocks {
         }
         const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[0] === id && v[1] === metadata)
         if (arr) {
-            return arr[2].toString()
+            return arr[2]
         } else {
             return null
         }
@@ -90,7 +90,7 @@ export default class Blocks {
 
         return rrr.join()
     }
-    
+
     // static get1_13NominalIDFrom1_12(old: string | number) {
     //     if (typeof old === 'number') {
     //         return Blocks.get1_13NominalIDFrom1_12NumericID(old)
@@ -7783,7 +7783,7 @@ export default class Blocks {
      * Thank MCEdit: https://github.com/mcedit/mcedit2/blob/master/src/mceditlib/blocktypes/idmapping_raw_1_12.json
      * Thank pca for introducing it to me.
      */
-    static NumericID_Metadata_NominalID: (string | number)[][] = [
+    static NumericID_Metadata_NominalID: NumericID_Metadata_NominalID[] = [
         [0, 0, 'minecraft:air'],
         [1, 0, 'minecraft:stone[variant=stone]'],
         [1, 1, 'minecraft:stone[variant=granite]'],
@@ -9475,4 +9475,10 @@ export default class Blocks {
         [255, 2, 'minecraft:structure_block[mode=corner]'],
         [255, 3, 'minecraft:structure_block[mode=data]']
     ]
+}
+
+interface NumericID_Metadata_NominalID {
+    0: number
+    1: number
+    2: string
 }

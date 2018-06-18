@@ -110,7 +110,7 @@ describe.only('Converter tests', () => {
         describe('%item tests', () => {
             it('should convert', () => {
                 const actual = Converter.cvtArgument('minecraft:record_13', '%item')
-                assert(actual === 'minecraft:music_disc_13')
+                assert(actual === 'minecraft:record_13')
             })
         })
         describe('%item_data tests', () => {
@@ -121,8 +121,8 @@ describe.only('Converter tests', () => {
         })
         describe('%item_dust_params tests', () => {
             it('should convert', () => {
-                const actual = Converter.cvtArgument('10 0', '%item_dust_params')
-                assert(actual === 'minecraft:flowing_lava[level=0]')
+                const actual = Converter.cvtArgument('17 2', '%item_dust_params')
+                assert(actual === 'minecraft:birch_log')
             })
         })
         describe('%item_nbt tests', () => {
@@ -171,10 +171,9 @@ describe.only('Converter tests', () => {
                 assert(actual === 'orginal')
             })
         })
-        // http://www.mcbbs.net/thread-775727-1-1.html
         describe('%scb_crit tests', () => {
             it('should convert', () => {
-                const actual = Converter.cvtArgument('stat.craftItem.stone', '%scb_crit')
+                const actual = Converter.cvtArgument('stat.craftItem.minecraft.stone', '%scb_crit')
                 assert(actual === 'minecraft.crafted:minecraft.stone')
             })
         })

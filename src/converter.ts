@@ -4,11 +4,14 @@ import Spuses from './mappings/spuses'
 import SpuScript from './spu_script'
 import Checker from './checker'
 import Blocks from './mappings/blocks'
+import Effects from './mappings/effects'
 import Entities from './mappings/entities'
 import Items from './mappings/items'
 import { isNumeric } from './utils/utils'
 import { Parser as NbtParser } from './utils/nbt/parser'
 import { Tokenizer as NbtTokenizer } from './utils/nbt/tokenizer'
+import Enches from './mappings/enches'
+import ScoreboardCriterias from './mappings/scoreboard_criterias'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -100,8 +103,12 @@ export default class Converter {
                 return Converter.cvtCommand(arg, false)
             case 'difficulty':
                 return Converter.cvtDifficulty(arg)
+            case 'effect':
+                return Converter.cvtEffect(arg)
             case 'entity':
                 return Converter.cvtEntity(arg)
+            case 'ench':
+                return Converter.cvtEnch(arg)
             case 'entity_type':
                 return Converter.cvtEntityType(arg)
             case 'func':
@@ -186,6 +193,22 @@ export default class Converter {
         }
     }
 
+    public static cvtEffect(input: string) {
+        if (isNumeric(input)) {
+            return Effects.get1_12NominalIDFrom1_12NumericID(Number(input))
+        } else {
+            return input
+        }
+    }
+
+    public static cvtEnch(input: string) {
+        if (isNumeric(input)) {
+            return Enches.get1_12NominalIDFrom1_12NumericID(Number(input))
+        } else {
+            return input
+        }
+    }
+
     public static cvtEntity(input: string) {
         let sel = new Selector()
         if (Checker.isSelector(input)) {
@@ -226,7 +249,9 @@ export default class Converter {
     }
 
     public static cvtItemDustParams(input: string) {
-        return input
+        const params = input.split(' ').map(x => Number(x))
+        const nominal = Items.get1_12NominalIDFrom1_12NumericID(params[0])
+        return Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(nominal, params[1])
     }
 
     public static cvtJson(input: string) {
@@ -267,22 +292,46 @@ export default class Converter {
     public static cvtScbCrit(input: string) {
         if (input.slice(0, 5) === 'stat.') {
             const subs = input.split(/\./g)
+            const newCrit = ScoreboardCriterias.get1_13From1_12(subs[1])
             switch (subs[1]) {
                 case 'mineBlock':
+                    let block = ''
                     if (isNumeric(subs[2])) {
-                        return `minecraft.mined:${Blocks.get1_13NominalIDFrom1_12NumericID(Number(subs[2]))
+                        block = Blocks.get1_13NominalIDFrom1_12NumericID(Number(subs[2]))
                             .replace(/:/g, '.')
-                            .replace(/\[.*$/g, '')}`
+                            .replace(/\[.*$/g, '')
                     } else {
-                        return `minecraft.mined:${Blocks.get1_12NominalIDFrom1_12StringID(subs[2])
+                        block = Blocks.get1_13NominalIDFrom1_12NominalID(
+                            Blocks.get1_12NominalIDFrom1_12StringID(`${subs[2]}:${subs[3]}`)
+                        )
                             .replace(/:/g, '.')
-                            .replace(/\[.*$/g, '')}`
+                            .replace(/\[.*$/g, '')
                     }
+                    return `minecraft.${newCrit}:${block}`
                 case 'craftItem':
                 case 'useItem':
                 case 'breakItem':
                 case 'pickup':
                 case 'drop':
+                    let item = ''
+                    if (isNumeric(subs[2])) {
+                        item = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(
+                            Items.get1_12NominalIDFrom1_12NumericID(Number(subs[2]))
+                        )
+                            .replace(/:/g, '.')
+                            .replace(/\[.*$/g, '')
+                    } else {
+                        item = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(`${subs[2]}:${subs[3]}`)
+                            .replace(/:/g, '.')
+                            .replace(/\[.*$/g, '')
+                    }
+                    return `minecraft.${newCrit}:${item}`
+                case 'killEntity':
+                case 'entityKilledBy':
+                    const entity = Entities.get1_13NominalIDFrom1_12NominalID(
+                        Entities.get1_12NominalIDFrom1_10FuckingID(subs[2])
+                    ).replace(/:/g, '.')
+                    return `minecraft.${newCrit}:${entity}`
                 default:
                     return `minecraft.custom:minecraft.${subs[1]}`
             }
