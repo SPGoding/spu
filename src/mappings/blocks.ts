@@ -3,11 +3,23 @@
  */
 export default class Blocks {
     static is1_12StringIDExist(id: string) {
-        if (id.slice(0, 11) !== 'minecraft:') {
+        if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`
         }
         const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[2].toString().split('[')[0] === id)
         return arr ? true : false
+    }
+
+    static get1_12NominalIDFrom1_12StringIDWithMetadata(id: string, metadata: number) {
+        if (id.slice(0, 10) !== 'minecraft:') {
+            id = `minecraft:${id}`
+        }
+        const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[1] === metadata && v[2].split('[')[0] === id)
+        if (arr) {
+            return arr[2]
+        } else {
+            throw `Unknown 1.12 string ID: '${id}:${metadata}'`
+        }
     }
 
     static get1_12NominalIDFrom1_12NumericID(id: number, metadata?: number) {
@@ -27,6 +39,9 @@ export default class Blocks {
     }
 
     static get1_13NominalIDFrom1_12NominalID(input: string) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = `minecraft:${input}`
+        }
         const arr = Blocks.NominalID_NominalID.find(v => v.indexOf(input, 1) >= 1) // Should be >=1. Cuz 0 is 4 1.12.
         if (arr) {
             return arr[0]
@@ -45,17 +60,19 @@ export default class Blocks {
     }
 
     static get1_12NominalIDFrom1_12StringID(input: string) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = `minecraft:${input}`
+        }
         const arr = Blocks.NumericID_Metadata_NominalID.find(
             v => v[2].toString().split('[')[0] === input.split('[')[0] && v[1] === 0
         )
-
         if (arr) {
-            let defaultStates = Blocks.getStatesFromStringID(arr[1].toString())
+            let defaultStates = Blocks.getStatesFromStringID(arr[2])
             let customStates = Blocks.getStatesFromStringID(input)
             let resultStates = Blocks.sortStates(Blocks.combineStates(defaultStates, customStates))
             return `${input.split('[')[0]}[${resultStates}]`
         } else {
-            throw `Unknwon 1.12 string ID: '${input}'`
+            throw `Unknown 1.12 string ID: '${input}'`
         }
     }
 
@@ -78,11 +95,9 @@ export default class Blocks {
         let drr = defaultStates.split(',')
         let crr = customStates.split(',')
         let rrr: string[] = []
-
         for (const i of drr) {
-            const str = crr.find(v => v.split('=')[0] === i)
+            const str = crr.find(v => v.split('=')[0] === i.split('=')[0])
             if (str) {
-                rrr.push(str)
             } else {
                 rrr.push(i)
             }
@@ -90,14 +105,6 @@ export default class Blocks {
 
         return rrr.join()
     }
-
-    // static get1_13NominalIDFrom1_12(old: string | number) {
-    //     if (typeof old === 'number') {
-    //         return Blocks.get1_13NominalIDFrom1_12NumericID(old)
-    //     } else {
-    //         return Blocks.get1_13NominalIDFrom1_12StringID(old)
-    //     }
-    // }
 
     /**
      * @example

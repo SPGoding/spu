@@ -254,7 +254,7 @@ class Checker {
 }
 exports.default = Checker;
 
-},{"./converter":2,"./mappings/blocks":4,"./mappings/items":6,"./mappings/spuses":7,"./utils/nbt/parser":12,"./utils/nbt/tokenizer":13,"./utils/selector":14,"./utils/utils":15}],2:[function(require,module,exports){
+},{"./converter":2,"./mappings/blocks":4,"./mappings/items":8,"./mappings/spuses":11,"./utils/nbt/parser":16,"./utils/nbt/tokenizer":17,"./utils/selector":18,"./utils/utils":19}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const argument_reader_1 = require("./utils/argument_reader");
@@ -263,10 +263,14 @@ const spuses_1 = require("./mappings/spuses");
 const spu_script_1 = require("./spu_script");
 const checker_1 = require("./checker");
 const blocks_1 = require("./mappings/blocks");
+const effects_1 = require("./mappings/effects");
 const entities_1 = require("./mappings/entities");
+const items_1 = require("./mappings/items");
 const utils_1 = require("./utils/utils");
-const parser_1 = require("./utils/nbt/parser");
-const tokenizer_1 = require("./utils/nbt/tokenizer");
+const enches_1 = require("./mappings/enches");
+const scoreboard_criterias_1 = require("./mappings/scoreboard_criterias");
+const particles_1 = require("./mappings/particles");
+const nbt_1 = require("./utils/nbt/nbt");
 class Converter {
     static getResultMap(cmd, spus) {
         let spusReader = new argument_reader_1.default(spus);
@@ -345,8 +349,14 @@ class Converter {
                 return Converter.cvtCommand(arg, false);
             case 'difficulty':
                 return Converter.cvtDifficulty(arg);
+            case 'effect':
+                return Converter.cvtEffect(arg);
             case 'entity':
                 return Converter.cvtEntity(arg);
+            case 'entity_nbt':
+                return Converter.cvtEntityNbt(arg);
+            case 'ench':
+                return Converter.cvtEnch(arg);
             case 'entity_type':
                 return Converter.cvtEntityType(arg);
             case 'func':
@@ -361,12 +371,18 @@ class Converter {
                 return arg;
             case 'item_dust_params':
                 return Converter.cvtItemDustParams(arg);
+            case 'item_nbt':
+                return Converter.cvtItemNbt(arg);
+            case 'item_tag_nbt':
+                return Converter.cvtItemTagNbt(arg);
             case 'json':
                 return Converter.cvtJson(arg);
             case 'literal':
                 return arg.toLowerCase();
             case 'num':
                 return arg;
+            case 'particle':
+                return Converter.cvtParticle(arg);
             case 'recipe':
                 return arg;
             case 'scb_crit':
@@ -397,11 +413,17 @@ class Converter {
         return id.toString();
     }
     static cvtBlockNbt(input) {
-        const tokenizer = new tokenizer_1.Tokenizer();
-        const tokens = tokenizer.tokenize(input);
-        const parser = new parser_1.Parser();
-        const nbt = parser.parse(tokens);
-        return input;
+        const root = utils_1.getNbt(input);
+        const items = root.get('Items');
+        if (items instanceof nbt_1.NbtList) {
+            for (let i = 0; i < items.length; i++) {
+                let item = items.get(i);
+                item = utils_1.getNbt(Converter.cvtItemNbt(item.toString()));
+                items.set(i, item);
+            }
+            root.set('Items', items);
+        }
+        return root.toString();
     }
     static cvtDifficulty(input) {
         switch (input) {
@@ -425,6 +447,22 @@ class Converter {
                 throw `Unknown difficulty: ${input}`;
         }
     }
+    static cvtEffect(input) {
+        if (utils_1.isNumeric(input)) {
+            return effects_1.default.get1_12NominalIDFrom1_12NumericID(Number(input));
+        }
+        else {
+            return input;
+        }
+    }
+    static cvtEnch(input) {
+        if (utils_1.isNumeric(input)) {
+            return enches_1.default.get1_12NominalIDFrom1_12NumericID(Number(input));
+        }
+        else {
+            return input;
+        }
+    }
     static cvtEntity(input) {
         let sel = new selector_1.default();
         if (checker_1.default.isSelector(input)) {
@@ -437,6 +475,15 @@ class Converter {
             return input;
         }
         return sel.get1_13();
+    }
+    static cvtEntityNbt(input) {
+        const root = utils_1.getNbt(input);
+        const value = root.get('CustomName');
+        if (value instanceof nbt_1.NbtString) {
+            value.set(`{"text":"${value.get()}"}`);
+            root.set('CustomName', value);
+        }
+        return root.toString();
     }
     static cvtEntityType(input) {
         return entities_1.default.get1_13NominalIDFrom1_12NominalID(input);
@@ -464,7 +511,49 @@ class Converter {
         }
     }
     static cvtItemDustParams(input) {
-        return input;
+        const params = input.split(' ').map(x => Number(x));
+        const nominal = items_1.default.get1_12NominalIDFrom1_12NumericID(params[0]);
+        return items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(nominal, params[1]);
+    }
+    static cvtItemNbt(input) {
+        const root = utils_1.getNbt(input);
+        const id = root.get('id');
+        const damage = root.get('Damage');
+        let tag = root.get('tag');
+        if (id instanceof nbt_1.NbtString && damage instanceof nbt_1.NbtShort) {
+            if (tag instanceof nbt_1.NbtCompound) {
+                tag = utils_1.getNbt(Converter.cvtItemTagNbt(tag.toString()));
+            }
+            if (items_1.default.shouldDamageMoveToTagItem(id.get())) {
+                if (!(tag instanceof nbt_1.NbtCompound)) {
+                    tag = new nbt_1.NbtCompound();
+                }
+                tag.set('Damage', damage);
+            }
+            else {
+                const newID = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(id.get(), damage.get());
+                id.set(newID);
+                root.set('id', id);
+            }
+            root.del('Damage');
+            if (tag instanceof nbt_1.NbtCompound) {
+                root.set('tag', tag);
+            }
+        }
+        return root.toString();
+    }
+    static cvtItemTagNbt(input) {
+        const root = utils_1.getNbt(input);
+        const display = root.get('display');
+        if (display instanceof nbt_1.NbtCompound) {
+            const name = display.get('Name');
+            if (name instanceof nbt_1.NbtString) {
+                name.set(`{"text":"${name.get()}"}`);
+                display.set('Name', name);
+            }
+            root.set('display', display);
+        }
+        return root.toString();
     }
     static cvtJson(input) {
         if (input.slice(0, 1) === '"') {
@@ -497,26 +586,48 @@ class Converter {
             return JSON.stringify(json);
         }
     }
+    static cvtParticle(input) {
+        return particles_1.default.get1_13NominalIDFrom1_12NominalID(input);
+    }
     static cvtScbCrit(input) {
         if (input.slice(0, 5) === 'stat.') {
             const subs = input.split(/\./g);
+            const newCrit = scoreboard_criterias_1.default.get1_13From1_12(subs[1]);
             switch (subs[1]) {
                 case 'mineBlock':
+                    let block = '';
                     if (utils_1.isNumeric(subs[2])) {
-                        return `minecraft.mined:${blocks_1.default.get1_13NominalIDFrom1_12NumericID(Number(subs[2]))
+                        block = blocks_1.default.get1_13NominalIDFrom1_12NumericID(Number(subs[2]))
                             .replace(/:/g, '.')
-                            .replace(/\[.*$/g, '')}`;
+                            .replace(/\[.*$/g, '');
                     }
                     else {
-                        return `minecraft.mined:${blocks_1.default.get1_12NominalIDFrom1_12StringID(subs[2])
+                        block = blocks_1.default.get1_13NominalIDFrom1_12NominalID(blocks_1.default.get1_12NominalIDFrom1_12StringID(`${subs[2]}:${subs[3]}`))
                             .replace(/:/g, '.')
-                            .replace(/\[.*$/g, '')}`;
+                            .replace(/\[.*$/g, '');
                     }
+                    return `minecraft.${newCrit}:${block}`;
                 case 'craftItem':
                 case 'useItem':
                 case 'breakItem':
                 case 'pickup':
                 case 'drop':
+                    let item = '';
+                    if (utils_1.isNumeric(subs[2])) {
+                        item = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(items_1.default.get1_12NominalIDFrom1_12NumericID(Number(subs[2])))
+                            .replace(/:/g, '.')
+                            .replace(/\[.*$/g, '');
+                    }
+                    else {
+                        item = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(`${subs[2]}:${subs[3]}`)
+                            .replace(/:/g, '.')
+                            .replace(/\[.*$/g, '');
+                    }
+                    return `minecraft.${newCrit}:${item}`;
+                case 'killEntity':
+                case 'entityKilledBy':
+                    const entity = entities_1.default.get1_13NominalIDFrom1_12NominalID(entities_1.default.get1_12NominalIDFrom1_10FuckingID(subs[2])).replace(/:/g, '.');
+                    return `minecraft.${newCrit}:${entity}`;
                 default:
                     return `minecraft.custom:minecraft.${subs[1]}`;
             }
@@ -531,7 +642,7 @@ class Converter {
 }
 exports.default = Converter;
 
-},{"./checker":1,"./mappings/blocks":4,"./mappings/entities":5,"./mappings/spuses":7,"./spu_script":8,"./utils/argument_reader":9,"./utils/nbt/parser":12,"./utils/nbt/tokenizer":13,"./utils/selector":14,"./utils/utils":15}],3:[function(require,module,exports){
+},{"./checker":1,"./mappings/blocks":4,"./mappings/effects":5,"./mappings/enches":6,"./mappings/entities":7,"./mappings/items":8,"./mappings/particles":9,"./mappings/scoreboard_criterias":10,"./mappings/spuses":11,"./spu_script":12,"./utils/argument_reader":13,"./utils/nbt/nbt":15,"./utils/selector":18,"./utils/utils":19}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const converter_1 = require("./converter");
@@ -561,11 +672,23 @@ $(document).ready(function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 class Blocks {
     static is1_12StringIDExist(id) {
-        if (id.slice(0, 11) !== 'minecraft:') {
+        if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`;
         }
         const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[2].toString().split('[')[0] === id);
         return arr ? true : false;
+    }
+    static get1_12NominalIDFrom1_12StringIDWithMetadata(id, metadata) {
+        if (id.slice(0, 10) !== 'minecraft:') {
+            id = `minecraft:${id}`;
+        }
+        const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[1] === metadata && v[2].split('[')[0] === id);
+        if (arr) {
+            return arr[2];
+        }
+        else {
+            throw `Unknown 1.12 string ID: '${id}:${metadata}'`;
+        }
     }
     static get1_12NominalIDFrom1_12NumericID(id, metadata) {
         if (!metadata) {
@@ -577,13 +700,16 @@ class Blocks {
         }
         const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[0] === id && v[1] === metadata);
         if (arr) {
-            return arr[2].toString();
+            return arr[2];
         }
         else {
             return null;
         }
     }
     static get1_13NominalIDFrom1_12NominalID(input) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = `minecraft:${input}`;
+        }
         const arr = Blocks.NominalID_NominalID.find(v => v.indexOf(input, 1) >= 1);
         if (arr) {
             return arr[0];
@@ -602,15 +728,18 @@ class Blocks {
         }
     }
     static get1_12NominalIDFrom1_12StringID(input) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = `minecraft:${input}`;
+        }
         const arr = Blocks.NumericID_Metadata_NominalID.find(v => v[2].toString().split('[')[0] === input.split('[')[0] && v[1] === 0);
         if (arr) {
-            let defaultStates = Blocks.getStatesFromStringID(arr[1].toString());
+            let defaultStates = Blocks.getStatesFromStringID(arr[2]);
             let customStates = Blocks.getStatesFromStringID(input);
             let resultStates = Blocks.sortStates(Blocks.combineStates(defaultStates, customStates));
             return `${input.split('[')[0]}[${resultStates}]`;
         }
         else {
-            throw `Unknwon 1.12 string ID: '${input}'`;
+            throw `Unknown 1.12 string ID: '${input}'`;
         }
     }
     static getStatesFromStringID(input) {
@@ -632,9 +761,8 @@ class Blocks {
         let crr = customStates.split(',');
         let rrr = [];
         for (const i of drr) {
-            const str = crr.find(v => v.split('=')[0] === i);
+            const str = crr.find(v => v.split('=')[0] === i.split('=')[0]);
             if (str) {
-                rrr.push(str);
             }
             else {
                 rrr.push(i);
@@ -10009,6 +10137,99 @@ exports.default = Blocks;
 },{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+class Effects {
+    static get1_12NominalIDFrom1_12NumericID(input) {
+        const arr = Effects.NumericID_NominalID.find(v => v[0] === input);
+        if (arr) {
+            return arr[1];
+        }
+        else {
+            throw `Unknwon ench ID: '${input}'`;
+        }
+    }
+}
+Effects.NumericID_NominalID = [
+    [1, 'minecraft:speed'],
+    [2, 'minecraft:slowness'],
+    [3, 'minecraft:haste'],
+    [4, 'minecraft:mining_fatigue'],
+    [5, 'minecraft:strength'],
+    [6, 'minecraft:instant_health'],
+    [7, 'minecraft:instant_damage'],
+    [8, 'minecraft:jump_boost'],
+    [9, 'minecraft:nausea'],
+    [10, 'minecraft:regeneration'],
+    [11, 'minecraft:resistance'],
+    [12, 'minecraft:fire_resistance'],
+    [13, 'minecraft:water_breathing'],
+    [14, 'minecraft:invisibility'],
+    [15, 'minecraft:blindness'],
+    [16, 'minecraft:night_vision'],
+    [17, 'minecraft:hunger'],
+    [18, 'minecraft:weakness'],
+    [19, 'minecraft:poison'],
+    [20, 'minecraft:wither'],
+    [21, 'minecraft:health_boost'],
+    [22, 'minecraft:absorption'],
+    [23, 'minecraft:saturation'],
+    [24, 'minecraft:glowing'],
+    [25, 'minecraft:levitation'],
+    [26, 'minecraft:luck'],
+    [27, 'minecraft:unluck']
+];
+exports.default = Effects;
+
+},{}],6:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Enches {
+    static get1_12NominalIDFrom1_12NumericID(input) {
+        const arr = Enches.NumericID_NominalID.find(v => v[0] === input);
+        if (arr) {
+            return arr[1];
+        }
+        else {
+            throw `Unknwon ench ID: '${input}'`;
+        }
+    }
+}
+Enches.NumericID_NominalID = [
+    [0, 'minecraft:protection'],
+    [1, 'minecraft:fire_protection'],
+    [2, 'minecraft:feather_falling'],
+    [3, 'minecraft:blast_protection'],
+    [4, 'minecraft:projectile_protection'],
+    [5, 'minecraft:respiration'],
+    [6, 'minecraft:aqua_affinity'],
+    [7, 'minecraft:thorns'],
+    [8, 'minecraft:depth_strider'],
+    [9, 'minecraft:frost_walker'],
+    [10, 'minecraft:binding_curse'],
+    [16, 'minecraft:sharpness'],
+    [17, 'minecraft:smite'],
+    [18, 'minecraft:bane_of_arthropods'],
+    [19, 'minecraft:knockback'],
+    [20, 'minecraft:fire_aspect'],
+    [21, 'minecraft:looting'],
+    [22, 'minecraft:sweeping'],
+    [32, 'minecraft:efficiency'],
+    [33, 'minecraft:silk_touch'],
+    [34, 'minecraft:unbreaking'],
+    [35, 'minecraft:fortune'],
+    [48, 'minecraft:power'],
+    [49, 'minecraft:punch'],
+    [50, 'minecraft:flame'],
+    [51, 'minecraft:infinity'],
+    [61, 'minecraft:luck_of_the_sea'],
+    [62, 'minecraft:lure'],
+    [70, 'minecraft:mending'],
+    [71, 'minecraft:vanishing_curse']
+];
+exports.default = Enches;
+
+},{}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class Entities {
     static get1_13NominalIDFrom1_12NominalID(input) {
         const arr = Entities.NominalID_NominalID.find(v => v[0] === input);
@@ -10017,6 +10238,15 @@ class Entities {
         }
         else {
             return input;
+        }
+    }
+    static get1_12NominalIDFrom1_10FuckingID(input) {
+        const arr = Entities.FuckingID_NominalID.find(v => v[0] === input);
+        if (arr) {
+            return arr[1];
+        }
+        else {
+            return `Unknown fucking 1.10 entity ID: '${input}'`;
         }
     }
 }
@@ -10032,9 +10262,61 @@ Entities.NominalID_NominalID = [
     ['minecraft:evocation_illager', 'minecraft:evoker'],
     ['minecraft:illusion_illager', 'minecraft:illusioner']
 ];
+Entities.FuckingID_NominalID = [
+    ['AreaEffectCloud', 'area_effect_cloud'],
+    ['ArmorStand', 'armor_stand'],
+    ['Cauldron', 'brewing_stand'],
+    ['CaveSpider', 'cave_spider'],
+    ['MinecartChest', 'chest_minecart'],
+    ['Control', 'command_block'],
+    ['MinecartCommandBlock', 'commandblock_minecart'],
+    ['DLDetector', 'daylight_detector'],
+    ['Trap', 'dispenser'],
+    ['DragonFireball', 'dragon_fireball'],
+    ['ThrownEgg', 'egg'],
+    ['EnchantTable', 'enchanting_table'],
+    ['EndGateway', 'end_gateway'],
+    ['AirPortal', 'end_portal'],
+    ['EnderChest', 'ender_chest'],
+    ['EnderCrystal', 'ender_crystal'],
+    ['EnderDragon', 'ender_dragon'],
+    ['ThrownEnderpearl', 'ender_pearl'],
+    ['EyeOfEnderSignal', 'eye_of_ender_signal'],
+    ['FallingSand', 'falling_block'],
+    ['FireworksRocketEntity', 'fireworks_rocket'],
+    ['FlowerPot', 'flower_pot'],
+    ['MinecartFurnace', 'furnace_minecart'],
+    ['MinecartHopper', 'hopper_minecart'],
+    ['EntityHorse', 'horse'],
+    ['ItemFrame', 'item_frame'],
+    ['RecordPlayer', 'jukebox'],
+    ['LeashKnot', 'leash_knot'],
+    ['LightningBolt', 'lightning_bolt'],
+    ['LavaSlime', 'magma_cube'],
+    ['MinecartRideable', 'minecart'],
+    ['MobSpawner', 'mob_spawner'],
+    ['MushroomCow', 'mooshroom'],
+    ['Music', 'noteblock'],
+    ['Ozelot', 'ocelot'],
+    ['PolarBear', 'polar_bear'],
+    ['ShulkerBullet', 'shulker_bullet'],
+    ['SmallFireball', 'small_fireball'],
+    ['SpectralArrow', 'spectral_arrow'],
+    ['ThrownPotion', 'potion'],
+    ['MinecartSpawner', 'spawner_minecart'],
+    ['Structure', 'structure_block'],
+    ['PrimedTnt', 'tnt'],
+    ['MinecartTNT', 'tnt_minecart'],
+    ['VillagerGolem', 'villager_golem'],
+    ['WitherBoss', 'wither'],
+    ['WitherSkull', 'wither_skull'],
+    ['ThrownExpBottle', 'xp_bottle'],
+    ['XPOrb', 'xp_orb'],
+    ['PigZombie', 'zombie_pigman']
+];
 exports.default = Entities;
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Items {
@@ -10045,232 +10327,505 @@ class Items {
         const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0].split('.')[0] === id);
         return arr ? true : false;
     }
-    static get1_13NominalIDFrom1_12StringIDWithDataValue(str, data) {
-        if (data) {
-            str = `${str}.${data}`;
-            const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0] === str);
-            if (arr) {
-                return arr[1];
-            }
-            else {
-                return str;
-            }
+    static get1_13NominalIDFrom1_12NominalIDWithDataValue(str, data = 0) {
+        if (data === -1) {
+            data = 0;
+        }
+        if (str.slice(0, 10) !== 'minecraft:') {
+            str = 'minecraft:' + str;
+        }
+        str = `${str}.${data}`;
+        const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0] === str);
+        if (arr) {
+            return arr[1];
         }
         else {
-            return str;
+            return str.split('.')[0];
+        }
+    }
+    static get1_12NominalIDFrom1_12NumericID(input) {
+        const arr = Items.NumericID_NominalID.find(v => v[0] === input);
+        if (arr) {
+            return arr[1];
+        }
+        else {
+            throw `Unknown item numeric ID: '${input}'`;
+        }
+    }
+    static shouldDamageMoveToTagItem(input) {
+        const arr = Items.DamageMoveToTagNominalIDs.find(v => v === input);
+        if (arr) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 }
 Items.NumericID_NominalID = [
-    [256, 'iron_shovel'],
-    [257, 'iron_pickaxe'],
-    [258, 'iron_axe'],
-    [259, 'flint_and_steel'],
-    [260, 'apple'],
-    [261, 'bow'],
-    [262, 'arrow'],
-    [263, 'coal'],
-    [264, 'diamond'],
-    [265, 'iron_ingot'],
-    [266, 'gold_ingot'],
-    [267, 'iron_sword'],
-    [268, 'wooden_sword'],
-    [269, 'wooden_shovel'],
-    [270, 'wooden_pickaxe'],
-    [271, 'wooden_axe'],
-    [272, 'stone_sword'],
-    [273, 'stone_shovel'],
-    [274, 'stone_pickaxe'],
-    [275, 'stone_axe'],
-    [276, 'diamond_sword'],
-    [277, 'diamond_shovel'],
-    [278, 'diamond_pickaxe'],
-    [279, 'diamond_axe'],
-    [280, 'stick'],
-    [281, 'bowl'],
-    [282, 'mushroom_stew'],
-    [283, 'golden_sword'],
-    [284, 'golden_shovel'],
-    [285, 'golden_pickaxe'],
-    [286, 'golden_axe'],
-    [287, 'string'],
-    [288, 'feather'],
-    [289, 'gunpowder'],
-    [290, 'wooden_hoe'],
-    [291, 'stone_hoe'],
-    [292, 'iron_hoe'],
-    [293, 'diamond_hoe'],
-    [294, 'golden_hoe'],
-    [295, 'wheat_seeds'],
-    [296, 'wheat'],
-    [297, 'bread'],
-    [298, 'leather_helmet'],
-    [299, 'leather_chestplate'],
-    [300, 'leather_leggings'],
-    [301, 'leather_boots'],
-    [302, 'chainmail_helmet'],
-    [303, 'chainmail_chestplate'],
-    [304, 'chainmail_leggings'],
-    [305, 'chainmail_boots'],
-    [306, 'iron_helmet'],
-    [307, 'iron_chestplate'],
-    [308, 'iron_leggings'],
-    [309, 'iron_boots'],
-    [310, 'diamond_helmet'],
-    [311, 'diamond_chestplate'],
-    [312, 'diamond_leggings'],
-    [313, 'diamond_boots'],
-    [314, 'golden_helmet'],
-    [315, 'golden_chestplate'],
-    [316, 'golden_leggings'],
-    [317, 'golden_boots'],
-    [318, 'flint'],
-    [319, 'porkchop'],
-    [320, 'cooked_porkchop'],
-    [321, 'painting'],
-    [322, 'golden_apple'],
-    [323, 'sign'],
-    [324, 'wooden_door'],
-    [325, 'bucket'],
-    [326, 'water_bucket'],
-    [327, 'lava_bucket'],
-    [328, 'minecart'],
-    [329, 'saddle'],
-    [330, 'iron_door'],
-    [331, 'redstone'],
-    [332, 'snowball'],
-    [333, 'boat'],
-    [334, 'leather'],
-    [335, 'milk_bucket'],
-    [336, 'brick'],
-    [337, 'clay_ball'],
-    [338, 'reeds'],
-    [339, 'paper'],
-    [340, 'book'],
-    [341, 'slime_ball'],
-    [342, 'chest_minecart'],
-    [343, 'furnace_minecart'],
-    [344, 'egg'],
-    [345, 'compass'],
-    [346, 'fishing_rod'],
-    [347, 'clock'],
-    [348, 'glowstone_dust'],
-    [349, 'fish'],
-    [350, 'cooked_fish'],
-    [351, 'dye'],
-    [352, 'bone'],
-    [353, 'sugar'],
-    [354, 'cake'],
-    [355, 'bed'],
-    [356, 'repeater'],
-    [357, 'cookie'],
-    [358, 'filled_map'],
-    [359, 'shears'],
-    [360, 'melon'],
-    [361, 'pumpkin_seeds'],
-    [362, 'melon_seeds'],
-    [363, 'beef'],
-    [364, 'cooked_beef'],
-    [365, 'chicken'],
-    [366, 'cooked_chicken'],
-    [367, 'rotten_flesh'],
-    [368, 'ender_pearl'],
-    [369, 'blaze_rod'],
-    [370, 'ghast_tear'],
-    [371, 'gold_nugget'],
-    [372, 'nether_wart'],
-    [373, 'potion'],
-    [374, 'glass_bottle'],
-    [375, 'spider_eye'],
-    [376, 'fermented_spider_eye'],
-    [377, 'blaze_powder'],
-    [378, 'magma_cream'],
-    [379, 'brewing_stand'],
-    [380, 'cauldron'],
-    [381, 'ender_eye'],
-    [382, 'speckled_melon'],
-    [383, 'spawn_egg'],
-    [384, 'experience_bottle'],
-    [385, 'fire_charge'],
-    [386, 'writable_book'],
-    [387, 'written_book'],
-    [388, 'emerald'],
-    [389, 'item_frame'],
-    [390, 'flower_pot'],
-    [391, 'carrot'],
-    [392, 'potato'],
-    [393, 'baked_potato'],
-    [394, 'poisonous_potato'],
-    [395, 'map'],
-    [396, 'golden_carrot'],
-    [397, 'skull'],
-    [398, 'carrot_on_a_stick'],
-    [399, 'nether_star'],
-    [400, 'pumpkin_pie'],
-    [401, 'fireworks'],
-    [402, 'firework_charge'],
-    [403, 'enchanted_book'],
-    [404, 'comparator'],
-    [405, 'netherbrick'],
-    [406, 'quartz'],
-    [407, 'tnt_minecart'],
-    [408, 'hopper_minecart'],
-    [409, 'prismarine_shard'],
-    [410, 'prismarine_crystals'],
-    [411, 'rabbit'],
-    [412, 'cooked_rabbit'],
-    [413, 'rabbit_stew'],
-    [414, 'rabbit_foot'],
-    [415, 'rabbit_hide'],
-    [416, 'armor_stand'],
-    [417, 'iron_horse_armor'],
-    [418, 'golden_horse_armor'],
-    [419, 'diamond_horse_armor'],
-    [420, 'lead'],
-    [421, 'name_tag'],
-    [422, 'command_block_minecart'],
-    [423, 'mutton'],
-    [424, 'cooked_mutton'],
-    [425, 'banner'],
-    [426, 'end_crystal'],
-    [427, 'spruce_door'],
-    [428, 'birch_door'],
-    [429, 'jungle_door'],
-    [430, 'acacia_door'],
-    [431, 'dark_oak_door'],
-    [432, 'chorus_fruit'],
-    [433, 'chorus_fruit_popped'],
-    [434, 'beetroot'],
-    [435, 'beetroot_seeds'],
-    [436, 'beetroot_soup'],
-    [437, 'dragon_breath'],
-    [438, 'splash_potion'],
-    [439, 'spectral_arrow'],
-    [440, 'tipped_arrow'],
-    [441, 'lingering_potion'],
-    [442, 'shield'],
-    [443, 'elytra'],
-    [444, 'spruce_boat'],
-    [445, 'birch_boat'],
-    [446, 'jungle_boat'],
-    [447, 'acacia_boat'],
-    [448, 'dark_oak_boat'],
-    [449, 'totem_of_undying'],
-    [450, 'shulker_shell'],
-    [452, 'iron_nugget'],
-    [453, 'knowledge_book'],
-    [2256, 'record_13'],
-    [2257, 'record_cat'],
-    [2258, 'record_blocks'],
-    [2259, 'record_chirp'],
-    [2260, 'record_far'],
-    [2261, 'record_mall'],
-    [2262, 'record_mellohi'],
-    [2263, 'record_stal'],
-    [2264, 'record_strad'],
-    [2265, 'record_ward'],
-    [2266, 'record_11'],
-    [2267, 'record_wait']
+    [0, 'minecraft:air'],
+    [1, 'minecraft:stone'],
+    [2, 'minecraft:grass'],
+    [3, 'minecraft:dirt'],
+    [4, 'minecraft:cobblestone'],
+    [5, 'minecraft:planks'],
+    [6, 'minecraft:sapling'],
+    [7, 'minecraft:bedrock'],
+    [8, 'minecraft:flowing_water'],
+    [9, 'minecraft:water'],
+    [10, 'minecraft:flowing_lava'],
+    [11, 'minecraft:lava'],
+    [12, 'minecraft:sand'],
+    [13, 'minecraft:gravel'],
+    [14, 'minecraft:gold_ore'],
+    [15, 'minecraft:iron_ore'],
+    [16, 'minecraft:coal_ore'],
+    [17, 'minecraft:log'],
+    [18, 'minecraft:leaves'],
+    [19, 'minecraft:sponge'],
+    [20, 'minecraft:glass'],
+    [21, 'minecraft:lapis_ore'],
+    [22, 'minecraft:lapis_block'],
+    [23, 'minecraft:dispenser'],
+    [24, 'minecraft:sandstone'],
+    [25, 'minecraft:noteblock'],
+    [26, 'minecraft:bed'],
+    [27, 'minecraft:golden_rail'],
+    [28, 'minecraft:detector_rail'],
+    [29, 'minecraft:sticky_piston'],
+    [30, 'minecraft:web'],
+    [31, 'minecraft:tallgrass'],
+    [32, 'minecraft:deadbush'],
+    [33, 'minecraft:piston'],
+    [34, 'minecraft:piston_head'],
+    [35, 'minecraft:wool'],
+    [36, 'minecraft:piston_extension'],
+    [37, 'minecraft:yellow_flower'],
+    [38, 'minecraft:red_flower'],
+    [39, 'minecraft:brown_mushroom'],
+    [40, 'minecraft:red_mushroom'],
+    [41, 'minecraft:gold_block'],
+    [42, 'minecraft:iron_block'],
+    [43, 'minecraft:double_stone_slab'],
+    [44, 'minecraft:stone_slab'],
+    [45, 'minecraft:brick_block'],
+    [46, 'minecraft:tnt'],
+    [47, 'minecraft:bookshelf'],
+    [48, 'minecraft:mossy_cobblestone'],
+    [49, 'minecraft:obsidian'],
+    [50, 'minecraft:torch'],
+    [51, 'minecraft:fire'],
+    [52, 'minecraft:mob_spawner'],
+    [53, 'minecraft:oak_stairs'],
+    [54, 'minecraft:chest'],
+    [55, 'minecraft:redstone_wire'],
+    [56, 'minecraft:diamond_ore'],
+    [57, 'minecraft:diamond_block'],
+    [58, 'minecraft:crafting_table'],
+    [59, 'minecraft:wheat'],
+    [60, 'minecraft:farmland'],
+    [61, 'minecraft:furnace'],
+    [62, 'minecraft:lit_furnace'],
+    [63, 'minecraft:standing_sign'],
+    [64, 'minecraft:wooden_door'],
+    [65, 'minecraft:ladder'],
+    [66, 'minecraft:rail'],
+    [67, 'minecraft:stone_stairs'],
+    [68, 'minecraft:wall_sign'],
+    [69, 'minecraft:lever'],
+    [70, 'minecraft:stone_pressure_plate'],
+    [71, 'minecraft:iron_door'],
+    [72, 'minecraft:wooden_pressure_plate'],
+    [73, 'minecraft:redstone_ore'],
+    [74, 'minecraft:lit_redstone_ore'],
+    [75, 'minecraft:unlit_redstone_torch'],
+    [76, 'minecraft:redstone_torch'],
+    [77, 'minecraft:stone_button'],
+    [78, 'minecraft:snow_layer'],
+    [79, 'minecraft:ice'],
+    [80, 'minecraft:snow'],
+    [81, 'minecraft:cactus'],
+    [82, 'minecraft:clay'],
+    [83, 'minecraft:reeds'],
+    [84, 'minecraft:jukebox'],
+    [85, 'minecraft:fence'],
+    [86, 'minecraft:pumpkin'],
+    [87, 'minecraft:netherrack'],
+    [88, 'minecraft:soul_sand'],
+    [89, 'minecraft:glowstone'],
+    [90, 'minecraft:portal'],
+    [91, 'minecraft:lit_pumpkin'],
+    [92, 'minecraft:cake'],
+    [93, 'minecraft:unpowered_repeater'],
+    [94, 'minecraft:powered_repeater'],
+    [95, 'minecraft:stained_glass'],
+    [96, 'minecraft:trapdoor'],
+    [97, 'minecraft:monster_egg'],
+    [98, 'minecraft:stonebrick'],
+    [99, 'minecraft:brown_mushroom_block'],
+    [100, 'minecraft:red_mushroom_block'],
+    [101, 'minecraft:iron_bars'],
+    [102, 'minecraft:glass_pane'],
+    [103, 'minecraft:melon_block'],
+    [104, 'minecraft:pumpkin_stem'],
+    [105, 'minecraft:melon_stem'],
+    [106, 'minecraft:vine'],
+    [107, 'minecraft:fence_gate'],
+    [108, 'minecraft:brick_stairs'],
+    [109, 'minecraft:stone_brick_stairs'],
+    [110, 'minecraft:mycelium'],
+    [111, 'minecraft:waterlily'],
+    [112, 'minecraft:nether_brick'],
+    [113, 'minecraft:nether_brick_fence'],
+    [114, 'minecraft:nether_brick_stairs'],
+    [115, 'minecraft:nether_wart'],
+    [116, 'minecraft:enchanting_table'],
+    [117, 'minecraft:brewing_stand'],
+    [118, 'minecraft:cauldron'],
+    [119, 'minecraft:end_portal'],
+    [120, 'minecraft:end_portal_frame'],
+    [121, 'minecraft:end_stone'],
+    [122, 'minecraft:dragon_egg'],
+    [123, 'minecraft:redstone_lamp'],
+    [124, 'minecraft:lit_redstone_lamp'],
+    [125, 'minecraft:double_wooden_slab'],
+    [126, 'minecraft:wooden_slab'],
+    [127, 'minecraft:cocoa'],
+    [128, 'minecraft:sandstone_stairs'],
+    [129, 'minecraft:emerald_ore'],
+    [130, 'minecraft:ender_chest'],
+    [131, 'minecraft:tripwire_hook'],
+    [132, 'minecraft:tripwire'],
+    [133, 'minecraft:emerald_block'],
+    [134, 'minecraft:spruce_stairs'],
+    [135, 'minecraft:birch_stairs'],
+    [136, 'minecraft:jungle_stairs'],
+    [137, 'minecraft:command_block'],
+    [138, 'minecraft:beacon'],
+    [139, 'minecraft:cobblestone_wall'],
+    [140, 'minecraft:flower_pot'],
+    [141, 'minecraft:carrots'],
+    [142, 'minecraft:potatoes'],
+    [143, 'minecraft:wooden_button'],
+    [144, 'minecraft:skull'],
+    [145, 'minecraft:anvil'],
+    [146, 'minecraft:trapped_chest'],
+    [147, 'minecraft:light_weighted_pressure_plate'],
+    [148, 'minecraft:heavy_weighted_pressure_plate'],
+    [149, 'minecraft:unpowered_comparator'],
+    [150, 'minecraft:powered_comparator'],
+    [151, 'minecraft:daylight_detector'],
+    [152, 'minecraft:redstone_block'],
+    [153, 'minecraft:quartz_ore'],
+    [154, 'minecraft:hopper'],
+    [155, 'minecraft:quartz_block'],
+    [156, 'minecraft:quartz_stairs'],
+    [157, 'minecraft:activator_rail'],
+    [158, 'minecraft:dropper'],
+    [159, 'minecraft:stained_hardened_clay'],
+    [160, 'minecraft:stained_glass_pane'],
+    [161, 'minecraft:leaves2'],
+    [162, 'minecraft:log2'],
+    [163, 'minecraft:acacia_stairs'],
+    [164, 'minecraft:dark_oak_stairs'],
+    [165, 'minecraft:slime'],
+    [166, 'minecraft:barrier'],
+    [167, 'minecraft:iron_trapdoor'],
+    [168, 'minecraft:prismarine'],
+    [169, 'minecraft:sea_lantern'],
+    [170, 'minecraft:hay_block'],
+    [171, 'minecraft:carpet'],
+    [172, 'minecraft:hardened_clay'],
+    [173, 'minecraft:coal_block'],
+    [174, 'minecraft:packed_ice'],
+    [175, 'minecraft:double_plant'],
+    [176, 'minecraft:standing_banner'],
+    [177, 'minecraft:wall_banner'],
+    [178, 'minecraft:daylight_detector_inverted'],
+    [179, 'minecraft:red_sandstone'],
+    [180, 'minecraft:red_sandstone_stairs'],
+    [181, 'minecraft:double_stone_slab2'],
+    [182, 'minecraft:stone_slab2'],
+    [183, 'minecraft:spruce_fence_gate'],
+    [184, 'minecraft:birch_fence_gate'],
+    [185, 'minecraft:jungle_fence_gate'],
+    [186, 'minecraft:dark_oak_fence_gate'],
+    [187, 'minecraft:acacia_fence_gate'],
+    [188, 'minecraft:spruce_fence'],
+    [189, 'minecraft:birch_fence'],
+    [190, 'minecraft:jungle_fence'],
+    [191, 'minecraft:dark_oak_fence'],
+    [192, 'minecraft:acacia_fence'],
+    [193, 'minecraft:spruce_door'],
+    [194, 'minecraft:birch_door'],
+    [195, 'minecraft:jungle_door'],
+    [196, 'minecraft:acacia_door'],
+    [197, 'minecraft:dark_oak_door'],
+    [198, 'minecraft:end_rod'],
+    [199, 'minecraft:chorus_plant'],
+    [200, 'minecraft:chorus_flower'],
+    [201, 'minecraft:purpur_block'],
+    [202, 'minecraft:purpur_pillar'],
+    [203, 'minecraft:purpur_stairs'],
+    [204, 'minecraft:purpur_double_slab'],
+    [205, 'minecraft:purpur_slab'],
+    [206, 'minecraft:end_bricks'],
+    [207, 'minecraft:beetroots'],
+    [208, 'minecraft:grass_path'],
+    [209, 'minecraft:end_gateway'],
+    [210, 'minecraft:repeating_command_block'],
+    [211, 'minecraft:chain_command_block'],
+    [212, 'minecraft:frosted_ice'],
+    [213, 'minecraft:magma'],
+    [214, 'minecraft:nether_wart_block'],
+    [215, 'minecraft:red_nether_brick'],
+    [216, 'minecraft:bone_block'],
+    [217, 'minecraft:structure_void'],
+    [218, 'minecraft:observer'],
+    [219, 'minecraft:white_shulker_box'],
+    [220, 'minecraft:orange_shulker_box'],
+    [221, 'minecraft:magenta_shulker_box'],
+    [222, 'minecraft:light_blue_shulker_box'],
+    [223, 'minecraft:yellow_shulker_box'],
+    [224, 'minecraft:lime_shulker_box'],
+    [225, 'minecraft:pink_shulker_box'],
+    [226, 'minecraft:gray_shulker_box'],
+    [227, 'minecraft:silver_shulker_box'],
+    [228, 'minecraft:cyan_shulker_box'],
+    [229, 'minecraft:purple_shulker_box'],
+    [230, 'minecraft:blue_shulker_box'],
+    [231, 'minecraft:brown_shulker_box'],
+    [232, 'minecraft:green_shulker_box'],
+    [233, 'minecraft:red_shulker_box'],
+    [234, 'minecraft:black_shulker_box'],
+    [235, 'minecraft:white_glazed_terracotta'],
+    [236, 'minecraft:orange_glazed_terracotta'],
+    [237, 'minecraft:magenta_glazed_terracotta'],
+    [238, 'minecraft:light_blue_glazed_terracotta'],
+    [239, 'minecraft:yellow_glazed_terracotta'],
+    [240, 'minecraft:lime_glazed_terracotta'],
+    [241, 'minecraft:pink_glazed_terracotta'],
+    [242, 'minecraft:gray_glazed_terracotta'],
+    [243, 'minecraft:silver_glazed_terracotta'],
+    [244, 'minecraft:cyan_glazed_terracotta'],
+    [245, 'minecraft:purple_glazed_terracotta'],
+    [246, 'minecraft:blue_glazed_terracotta'],
+    [247, 'minecraft:brown_glazed_terracotta'],
+    [248, 'minecraft:green_glazed_terracotta'],
+    [249, 'minecraft:red_glazed_terracotta'],
+    [250, 'minecraft:black_glazed_terracotta'],
+    [251, 'minecraft:concrete'],
+    [252, 'minecraft:concrete_powder'],
+    [255, 'minecraft:structure_block'],
+    [256, 'minecraft:iron_shovel'],
+    [257, 'minecraft:iron_pickaxe'],
+    [258, 'minecraft:iron_axe'],
+    [259, 'minecraft:flint_and_steel'],
+    [260, 'minecraft:apple'],
+    [261, 'minecraft:bow'],
+    [262, 'minecraft:arrow'],
+    [263, 'minecraft:coal'],
+    [264, 'minecraft:diamond'],
+    [265, 'minecraft:iron_ingot'],
+    [266, 'minecraft:gold_ingot'],
+    [267, 'minecraft:iron_sword'],
+    [268, 'minecraft:wooden_sword'],
+    [269, 'minecraft:wooden_shovel'],
+    [270, 'minecraft:wooden_pickaxe'],
+    [271, 'minecraft:wooden_axe'],
+    [272, 'minecraft:stone_sword'],
+    [273, 'minecraft:stone_shovel'],
+    [274, 'minecraft:stone_pickaxe'],
+    [275, 'minecraft:stone_axe'],
+    [276, 'minecraft:diamond_sword'],
+    [277, 'minecraft:diamond_shovel'],
+    [278, 'minecraft:diamond_pickaxe'],
+    [279, 'minecraft:diamond_axe'],
+    [280, 'minecraft:stick'],
+    [281, 'minecraft:bowl'],
+    [282, 'minecraft:mushroom_stew'],
+    [283, 'minecraft:golden_sword'],
+    [284, 'minecraft:golden_shovel'],
+    [285, 'minecraft:golden_pickaxe'],
+    [286, 'minecraft:golden_axe'],
+    [287, 'minecraft:string'],
+    [288, 'minecraft:feather'],
+    [289, 'minecraft:gunpowder'],
+    [290, 'minecraft:wooden_hoe'],
+    [291, 'minecraft:stone_hoe'],
+    [292, 'minecraft:iron_hoe'],
+    [293, 'minecraft:diamond_hoe'],
+    [294, 'minecraft:golden_hoe'],
+    [295, 'minecraft:wheat_seeds'],
+    [296, 'minecraft:wheat'],
+    [297, 'minecraft:bread'],
+    [298, 'minecraft:leather_helmet'],
+    [299, 'minecraft:leather_chestplate'],
+    [300, 'minecraft:leather_leggings'],
+    [301, 'minecraft:leather_boots'],
+    [302, 'minecraft:chainmail_helmet'],
+    [303, 'minecraft:chainmail_chestplate'],
+    [304, 'minecraft:chainmail_leggings'],
+    [305, 'minecraft:chainmail_boots'],
+    [306, 'minecraft:iron_helmet'],
+    [307, 'minecraft:iron_chestplate'],
+    [308, 'minecraft:iron_leggings'],
+    [309, 'minecraft:iron_boots'],
+    [310, 'minecraft:diamond_helmet'],
+    [311, 'minecraft:diamond_chestplate'],
+    [312, 'minecraft:diamond_leggings'],
+    [313, 'minecraft:diamond_boots'],
+    [314, 'minecraft:golden_helmet'],
+    [315, 'minecraft:golden_chestplate'],
+    [316, 'minecraft:golden_leggings'],
+    [317, 'minecraft:golden_boots'],
+    [318, 'minecraft:flint'],
+    [319, 'minecraft:porkchop'],
+    [320, 'minecraft:cooked_porkchop'],
+    [321, 'minecraft:painting'],
+    [322, 'minecraft:golden_apple'],
+    [323, 'minecraft:sign'],
+    [324, 'minecraft:wooden_door'],
+    [325, 'minecraft:bucket'],
+    [326, 'minecraft:water_bucket'],
+    [327, 'minecraft:lava_bucket'],
+    [328, 'minecraft:minecart'],
+    [329, 'minecraft:saddle'],
+    [330, 'minecraft:iron_door'],
+    [331, 'minecraft:redstone'],
+    [332, 'minecraft:snowball'],
+    [333, 'minecraft:boat'],
+    [334, 'minecraft:leather'],
+    [335, 'minecraft:milk_bucket'],
+    [336, 'minecraft:brick'],
+    [337, 'minecraft:clay_ball'],
+    [338, 'minecraft:reeds'],
+    [339, 'minecraft:paper'],
+    [340, 'minecraft:book'],
+    [341, 'minecraft:slime_ball'],
+    [342, 'minecraft:chest_minecart'],
+    [343, 'minecraft:furnace_minecart'],
+    [344, 'minecraft:egg'],
+    [345, 'minecraft:compass'],
+    [346, 'minecraft:fishing_rod'],
+    [347, 'minecraft:clock'],
+    [348, 'minecraft:glowstone_dust'],
+    [349, 'minecraft:fish'],
+    [350, 'minecraft:cooked_fish'],
+    [351, 'minecraft:dye'],
+    [352, 'minecraft:bone'],
+    [353, 'minecraft:sugar'],
+    [354, 'minecraft:cake'],
+    [355, 'minecraft:bed'],
+    [356, 'minecraft:repeater'],
+    [357, 'minecraft:cookie'],
+    [358, 'minecraft:filled_map'],
+    [359, 'minecraft:shears'],
+    [360, 'minecraft:melon'],
+    [361, 'minecraft:pumpkin_seeds'],
+    [362, 'minecraft:melon_seeds'],
+    [363, 'minecraft:beef'],
+    [364, 'minecraft:cooked_beef'],
+    [365, 'minecraft:chicken'],
+    [366, 'minecraft:cooked_chicken'],
+    [367, 'minecraft:rotten_flesh'],
+    [368, 'minecraft:ender_pearl'],
+    [369, 'minecraft:blaze_rod'],
+    [370, 'minecraft:ghast_tear'],
+    [371, 'minecraft:gold_nugget'],
+    [372, 'minecraft:nether_wart'],
+    [373, 'minecraft:potion'],
+    [374, 'minecraft:glass_bottle'],
+    [375, 'minecraft:spider_eye'],
+    [376, 'minecraft:fermented_spider_eye'],
+    [377, 'minecraft:blaze_powder'],
+    [378, 'minecraft:magma_cream'],
+    [379, 'minecraft:brewing_stand'],
+    [380, 'minecraft:cauldron'],
+    [381, 'minecraft:ender_eye'],
+    [382, 'minecraft:speckled_melon'],
+    [383, 'minecraft:spawn_egg'],
+    [384, 'minecraft:experience_bottle'],
+    [385, 'minecraft:fire_charge'],
+    [386, 'minecraft:writable_book'],
+    [387, 'minecraft:written_book'],
+    [388, 'minecraft:emerald'],
+    [389, 'minecraft:item_frame'],
+    [390, 'minecraft:flower_pot'],
+    [391, 'minecraft:carrot'],
+    [392, 'minecraft:potato'],
+    [393, 'minecraft:baked_potato'],
+    [394, 'minecraft:poisonous_potato'],
+    [395, 'minecraft:map'],
+    [396, 'minecraft:golden_carrot'],
+    [397, 'minecraft:skull'],
+    [398, 'minecraft:carrot_on_a_stick'],
+    [399, 'minecraft:nether_star'],
+    [400, 'minecraft:pumpkin_pie'],
+    [401, 'minecraft:fireworks'],
+    [402, 'minecraft:firework_charge'],
+    [403, 'minecraft:enchanted_book'],
+    [404, 'minecraft:comparator'],
+    [405, 'minecraft:netherbrick'],
+    [406, 'minecraft:quartz'],
+    [407, 'minecraft:tnt_minecart'],
+    [408, 'minecraft:hopper_minecart'],
+    [409, 'minecraft:prismarine_shard'],
+    [410, 'minecraft:prismarine_crystals'],
+    [411, 'minecraft:rabbit'],
+    [412, 'minecraft:cooked_rabbit'],
+    [413, 'minecraft:rabbit_stew'],
+    [414, 'minecraft:rabbit_foot'],
+    [415, 'minecraft:rabbit_hide'],
+    [416, 'minecraft:armor_stand'],
+    [417, 'minecraft:iron_horse_armor'],
+    [418, 'minecraft:golden_horse_armor'],
+    [419, 'minecraft:diamond_horse_armor'],
+    [420, 'minecraft:lead'],
+    [421, 'minecraft:name_tag'],
+    [422, 'minecraft:command_block_minecart'],
+    [423, 'minecraft:mutton'],
+    [424, 'minecraft:cooked_mutton'],
+    [425, 'minecraft:banner'],
+    [426, 'minecraft:end_crystal'],
+    [427, 'minecraft:spruce_door'],
+    [428, 'minecraft:birch_door'],
+    [429, 'minecraft:jungle_door'],
+    [430, 'minecraft:acacia_door'],
+    [431, 'minecraft:dark_oak_door'],
+    [432, 'minecraft:chorus_fruit'],
+    [433, 'minecraft:chorus_fruit_popped'],
+    [434, 'minecraft:beetroot'],
+    [435, 'minecraft:beetroot_seeds'],
+    [436, 'minecraft:beetroot_soup'],
+    [437, 'minecraft:dragon_breath'],
+    [438, 'minecraft:splash_potion'],
+    [439, 'minecraft:spectral_arrow'],
+    [440, 'minecraft:tipped_arrow'],
+    [441, 'minecraft:lingering_potion'],
+    [442, 'minecraft:shield'],
+    [443, 'minecraft:elytra'],
+    [444, 'minecraft:spruce_boat'],
+    [445, 'minecraft:birch_boat'],
+    [446, 'minecraft:jungle_boat'],
+    [447, 'minecraft:acacia_boat'],
+    [448, 'minecraft:dark_oak_boat'],
+    [449, 'minecraft:totem_of_undying'],
+    [450, 'minecraft:shulker_shell'],
+    [452, 'minecraft:iron_nugget'],
+    [453, 'minecraft:knowledge_book'],
+    [2256, 'minecraft:record_13'],
+    [2257, 'minecraft:record_cat'],
+    [2258, 'minecraft:record_blocks'],
+    [2259, 'minecraft:record_chirp'],
+    [2260, 'minecraft:record_far'],
+    [2261, 'minecraft:record_mall'],
+    [2262, 'minecraft:record_mellohi'],
+    [2263, 'minecraft:record_stal'],
+    [2264, 'minecraft:record_strad'],
+    [2265, 'minecraft:record_ward'],
+    [2266, 'minecraft:record_11'],
+    [2267, 'minecraft:record_wait']
 ];
 Items.StringIDWithDataValue_NominalID = [
     ['minecraft:stone.0', 'minecraft:stone'],
@@ -10593,9 +11148,147 @@ Items.StringIDWithDataValue_NominalID = [
     ['minecraft:record_wait.0', 'minecraft:music_disc_wait'],
     ['minecraft:record_ward.0', 'minecraft:music_disc_ward']
 ];
+Items.DamageMoveToTagNominalIDs = [
+    'minecraft:bow',
+    'minecraft:carrot_on_a_stick',
+    'minecraft:chainmail_boots',
+    'minecraft:chainmail_chestplate',
+    'minecraft:chainmail_helmet',
+    'minecraft:chainmail_leggings',
+    'minecraft:diamond_axe',
+    'minecraft:diamond_boots',
+    'minecraft:diamond_chestplate',
+    'minecraft:diamond_helmet',
+    'minecraft:diamond_hoe',
+    'minecraft:diamond_leggings',
+    'minecraft:diamond_pickaxe',
+    'minecraft:diamond_shovel',
+    'minecraft:diamond_sword',
+    'minecraft:elytra',
+    'minecraft:fishing_rod',
+    'minecraft:flint_and_steel',
+    'minecraft:golden_axe',
+    'minecraft:golden_boots',
+    'minecraft:golden_chestplate',
+    'minecraft:golden_helmet',
+    'minecraft:golden_hoe',
+    'minecraft:golden_leggings',
+    'minecraft:golden_pickaxe',
+    'minecraft:golden_shovel',
+    'minecraft:golden_sword',
+    'minecraft:iron_axe',
+    'minecraft:iron_boots',
+    'minecraft:iron_chestplate',
+    'minecraft:iron_helmet',
+    'minecraft:iron_hoe',
+    'minecraft:iron_leggings',
+    'minecraft:iron_pickaxe',
+    'minecraft:iron_shovel',
+    'minecraft:iron_sword',
+    'minecraft:leather_boots',
+    'minecraft:leather_chestplate',
+    'minecraft:leather_helmet',
+    'minecraft:leather_leggings',
+    'minecraft:shears',
+    'minecraft:shield',
+    'minecraft:stone_axe',
+    'minecraft:stone_hoe',
+    'minecraft:stone_pickaxe',
+    'minecraft:stone_shovel',
+    'minecraft:stone_sword',
+    'minecraft:wooden_axe',
+    'minecraft:wooden_hoe',
+    'minecraft:wooden_pickaxe',
+    'minecraft:wooden_shovel',
+    'minecraft:wooden_sword'
+];
 exports.default = Items;
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Particles {
+    static get1_13NominalIDFrom1_12NominalID(input) {
+        const arr = Particles.NominalID_NominalID.find(v => v[0] === input);
+        if (arr) {
+            if (arr[1] === 'removed') {
+                throw `Removed particle: '${input}'`;
+            }
+            return arr[1];
+        }
+        else {
+            return input;
+        }
+    }
+}
+Particles.NominalID_NominalID = [
+    ['mobSpellAmbient', 'ambient_entity_effect'],
+    ['angryVillager', 'angry_villager'],
+    ['blockcrack', 'block'],
+    ['blockdust', 'block'],
+    ['damageIndicator', 'damage_indicator'],
+    ['dragonbreath', 'dragon_breath'],
+    ['dripLava', 'dripping_lava'],
+    ['dripWater', 'dripping_water'],
+    ['reddust', 'dust'],
+    ['spell', 'effect'],
+    ['mobappearance', 'elder_guardian'],
+    ['enchantmenttable', 'enchant'],
+    ['magicCrit', 'enchanted_hit'],
+    ['endRod', 'end_rod'],
+    ['mobSpell', 'entity_effect'],
+    ['largeexplosion', 'explosion'],
+    ['hugeexplosion', 'explosion_emitter'],
+    ['fallingdust', 'falling_dust'],
+    ['fireworksSpark', 'firework'],
+    ['wake', 'fishing'],
+    ['happyVillager', 'happy_villager'],
+    ['instantSpell', 'instant_effect'],
+    ['iconcrack', 'item'],
+    ['slime', 'item_slime'],
+    ['snowballpoof', 'item_snowball'],
+    ['largesmoke', 'large_smoke'],
+    ['townaura', 'mycelium'],
+    ['explode', 'poof'],
+    ['snowshovel', 'poof'],
+    ['droplet', 'rain'],
+    ['sweepAttack', 'sweep_attack'],
+    ['totem', 'totem_of_undying'],
+    ['suspended', 'underwater'],
+    ['witchMagic', 'witch'],
+    ['take', 'removed'],
+    ['footstep', 'removed'],
+    ['depthsuspend', 'removed']
+];
+exports.default = Particles;
+
+},{}],10:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class ScoreboardCriterias {
+    static get1_13From1_12(input) {
+        const arr = ScoreboardCriterias.Criteria_Criteria.find(v => v[0] === input);
+        if (arr) {
+            return arr[1];
+        }
+        else {
+            return input;
+        }
+    }
+}
+ScoreboardCriterias.Criteria_Criteria = [
+    ['craftItem', 'crafted'],
+    ['useItem', 'used'],
+    ['breakItem', 'broken'],
+    ['mineBlock', 'mined'],
+    ['killEntity', 'killed'],
+    ['pickup', 'picked_up'],
+    ['drop', 'dropped'],
+    ['entityKilledBy', 'killed_by']
+];
+exports.default = ScoreboardCriterias;
+
+},{}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Spuses {
@@ -10607,11 +11300,11 @@ Spuses.pairs = new Map([
     ['advancement %literal %entity only %adv %adv_crit', 'advancement %0 %1 only %2 %3'],
     ['advancement %literal %entity everything', 'advancement %0 %1 everything'],
     ['ban %entity', 'ban %0'],
-    ['ban %entity %string..', 'ban %0 %1'],
+    ['ban %entity %string', 'ban %0 %1'],
     ['ban-ip %entity', 'ban-ip %0'],
-    ['ban-ip %entity %string..', 'ban-ip %0 %1'],
+    ['ban-ip %entity %string', 'ban-ip %0 %1'],
     ['ban-ip %ip', 'ban-ip %0'],
-    ['ban-ip %ip %string..', 'ban-ip %0 %1'],
+    ['ban-ip %ip %string', 'ban-ip %0 %1'],
     ['banlist %literal', 'banlist %0'],
     ['blockdata %vec_3 %block_nbt', 'data merge block %0 %1'],
     ['clear', 'clear'],
@@ -10667,13 +11360,13 @@ Spuses.pairs = new Map([
     ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
     ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
     ['kick %entity', 'kick %0'],
-    ['kick %entity %string..', 'kick %0 %1'],
+    ['kick %entity %string', 'kick %0 %1'],
     ['kill %entity', 'kill %0'],
     ['list', 'list'],
-    ['list %uuid..', 'list %0'],
+    ['list %uuid', 'list %0'],
     ['locate Temple', 'locate Desert_Pyramid\nlocate Igloo\nlocate Jungle_Pyramid\nlocate Swamp_hut'],
     ['locate %word', 'locate %0'],
-    ['me %string..', 'me %0'],
+    ['me %string', 'me %0'],
     ['op %entity', 'op %0'],
     ['pardon %word', 'pardon %0'],
     ['pardon-ip %ip', 'pardon-ip %0'],
@@ -10710,7 +11403,7 @@ Spuses.pairs = new Map([
     ['save-all %literal', 'save-all %0'],
     ['save-off', 'save-off'],
     ['save-on', 'save-on'],
-    ['say %string..', 'say %0'],
+    ['say %string', 'say %0'],
     ['scoreboard objectives list', 'scoreboard objectives list'],
     ['scoreboard objectives add %word %scb_crit', 'scoreboard objectives add %0 %1'],
     ['scoreboard objectives add %word %scb_crit %string', 'scoreboard objectives add %0 %1 %2'],
@@ -10736,13 +11429,13 @@ Spuses.pairs = new Map([
     ['scoreboard teams list', 'team list'],
     ['scoreboard teams list %word', 'team list %0'],
     ['scoreboard teams add %word', 'team add %0'],
-    ['scoreboard teams add %word %string..', 'team add %0 %1'],
+    ['scoreboard teams add %word %string', 'team add %0 %1'],
     ['scoreboard teams remove %word', 'team remove %0'],
     ['scoreboard teams empty %word', 'team empty %0'],
     ['scoreboard teams join %word', 'team join %0'],
-    ['scoreboard teams join %word %entity..', 'team join %0 %1'],
+    ['scoreboard teams join %word %entity', 'team join %0 %1'],
     ['scoreboard teams leave', 'team leave'],
-    ['scoreboard teams leave %entity..', 'team leave %0'],
+    ['scoreboard teams leave %entity', 'team leave %0'],
     ['scoreboard teams option %word %word %word', 'team option %0 %1 %2'],
     ['seed', 'seed'],
     ['setblock %vec_3 %block', 'setblock %0 %1$fuckBlockItself'],
@@ -10758,8 +11451,8 @@ Spuses.pairs = new Map([
     ['spawnpoint', 'spawnpoint'],
     ['spawnpoint %entity', 'spawnpoint %0'],
     ['spawnpoint %entity %vec_3', 'spawnpoint %0 %1'],
-    ['spreadplayers %vec_2 %num %num %bool %entity..', 'spreadplayers %0 %1 %2 %3 %4'],
-    ['stats %string..', "# Couldn't convert 'stat' commands. Use 'execute store ...'!|error"],
+    ['spreadplayers %vec_2 %num %num %bool %entity', 'spreadplayers %0 %1 %2 %3 %4'],
+    ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'!|error"],
     ['stop', 'stop'],
     ['stopsound %entity', 'stopsound %0'],
     ['stopsound %entity %source', 'stopsound %0 %1'],
@@ -10769,10 +11462,10 @@ Spuses.pairs = new Map([
     ['summon %entity_type %vec_3 %entity_nbt', 'summon %0 %1 %2'],
     ['teleport %entity %vec_3', 'teleport %0 %1'],
     ['teleport %entity %vec_3 %vec_2', 'teleport %0 %1 %2'],
-    ['tell %entity %string..', 'tell %0 %1'],
-    ['msg %entity %string..', 'msg %0 %1'],
-    ['w %entity %string..', 'w %0 %1'],
-    ['tellraw %entity %json..', 'tellraw %0 %1'],
+    ['tell %entity %string', 'tell %0 %1'],
+    ['msg %entity %string', 'msg %0 %1'],
+    ['w %entity %string', 'w %0 %1'],
+    ['tellraw %entity %json', 'tellraw %0 %1'],
     ['testfor %entity', 'execute if entity %0'],
     ['testfor %entity %entity_nbt', 'execute if entity %0$addNbtToEntity%1'],
     ['testforblock %vec_3 %block', 'execute if block %0 %1$fuckBlockItself'],
@@ -10785,7 +11478,7 @@ Spuses.pairs = new Map([
     ['testforblocks %vec_3 %vec_3 %vec_3 %literal', 'execute if blocks %0 %1 %2 %3'],
     ['time %literal %word', 'time %0 %1'],
     ['title %entity %word', 'title %0 %1'],
-    ['title %entity %word %json..', 'title %0 %1 %2'],
+    ['title %entity %word %json', 'title %0 %1 %2'],
     ['title %entity times %num %num %num', 'title %0 times %1 %2 %3'],
     ['toggledownfall', 'weather clear|warn'],
     ['tp %entity', 'teleport %0'],
@@ -10809,12 +11502,15 @@ Spuses.pairs = new Map([
 ]);
 exports.default = Spuses;
 
-},{}],8:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const char_reader_1 = require("./utils/char_reader");
 const argument_reader_1 = require("./utils/argument_reader");
 const selector_1 = require("./utils/selector");
+const items_1 = require("./mappings/items");
+const utils_1 = require("./utils/utils");
+const blocks_1 = require("./mappings/blocks");
 class SpuScript {
     constructor(spus) {
         this.spus = spus;
@@ -10834,12 +11530,11 @@ class SpuScript {
         return result;
     }
     compileArgument(arg, resultMap) {
-        let patternMap = this.getPatternMap(arg);
-        let id = patternMap.keys().next().value;
-        let methods = patternMap.get(id);
+        let ast = this.getAst(arg);
+        let id = ast.keys().next().value;
+        let methods = ast.get(id);
         let source = resultMap.get(`%${id}`);
         if (methods && source) {
-            let result = source;
             for (const name of methods.keys()) {
                 let paramIds = methods.get(name);
                 if (paramIds) {
@@ -10848,30 +11543,75 @@ class SpuScript {
                         return result ? result : '';
                     });
                     switch (name) {
-                        case 'addAdv':
-                            let selector = new selector_1.default();
-                            selector.parse1_13(source);
+                        case 'addAdvToEntity': {
+                            let sel = new selector_1.default();
+                            sel.parse1_13(source);
                             if (params.length === 1) {
-                                selector.addFinishedAdvancement(params[0]);
+                                sel.addFinishedAdvancement(params[0]);
                             }
                             else if (params.length === 2) {
-                                selector.addFinishedAdvancement(params[0], params[1]);
+                                sel.addFinishedAdvancement(params[0], params[1]);
                             }
                             else {
                                 throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`;
                             }
-                            result = selector.get1_13();
+                            source = sel.get1_13();
+                            break;
+                        }
+                        case 'addDataToItem':
+                            source = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]));
+                            break;
+                        case 'addMetadataOrStateToBlock':
+                            if (utils_1.isNumeric(params[0])) {
+                                source = blocks_1.default.get1_13NominalIDFrom1_12NominalID(blocks_1.default.get1_12NominalIDFrom1_12StringIDWithMetadata(source, Number(params[0])));
+                            }
+                            else {
+                                source = blocks_1.default.get1_13NominalIDFrom1_12NominalID(blocks_1.default.get1_12NominalIDFrom1_12StringID(`${source}[${params[0]}]`));
+                            }
+                            break;
+                        case 'addNbtToBlock':
+                            source += params[0];
+                            break;
+                        case 'addNbtToEntity': {
+                            let sel = new selector_1.default();
+                            sel.parse1_13(source);
+                            sel.setNbt(params[0]);
+                            source = sel.get1_13();
+                            break;
+                        }
+                        case 'addNbtToItems':
+                            source += params[0];
+                            break;
+                        case 'addScbMaxToEntity': {
+                            let sel = new selector_1.default();
+                            sel.parse1_13(source);
+                            sel.setScore(params[0], params[1], 'max');
+                            source = sel.get1_13();
+                            break;
+                        }
+                        case 'addScbMinToEntity': {
+                            let sel = new selector_1.default();
+                            sel.parse1_13(source);
+                            sel.setScore(params[0], params[1], 'min');
+                            source = sel.get1_13();
+                            break;
+                        }
+                        case 'fuckItemItself':
+                            source = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(source);
+                            break;
+                        case 'fuckBlockItself':
+                            source = blocks_1.default.get1_13NominalIDFrom1_12NominalID(blocks_1.default.get1_12NominalIDFrom1_12StringIDWithMetadata(source, 0));
                             break;
                         default:
-                            break;
+                            throw `Unknwon spu script method: '${name}'`;
                     }
                 }
             }
-            return result;
+            return source;
         }
-        return '';
+        throw 'Spu Script execute error!';
     }
-    getPatternMap(arg) {
+    getAst(arg) {
         let result = '';
         let charReader = new char_reader_1.default(arg);
         let char = charReader.next();
@@ -10915,7 +11655,7 @@ class SpuScript {
 }
 exports.default = SpuScript;
 
-},{"./utils/argument_reader":9,"./utils/char_reader":10,"./utils/selector":14}],9:[function(require,module,exports){
+},{"./mappings/blocks":4,"./mappings/items":8,"./utils/argument_reader":13,"./utils/char_reader":14,"./utils/selector":18,"./utils/utils":19}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class ArgumentReader {
@@ -10945,7 +11685,7 @@ class ArgumentReader {
 }
 exports.default = ArgumentReader;
 
-},{}],10:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
@@ -10995,7 +11735,7 @@ class CharReader {
 }
 exports.default = CharReader;
 
-},{"./utils":15}],11:[function(require,module,exports){
+},{"./utils":19}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
@@ -11073,6 +11813,7 @@ class NbtCompound {
     constructor() {
         this.value = new Map();
         this.get = (key) => this.value.get(key);
+        this.del = (key) => this.value.delete(key);
     }
     set(key, val) {
         this.value.set(key, val);
@@ -11099,6 +11840,12 @@ class NbtList {
     constructor() {
         this.value = [];
         this.get = (index) => this.value[index];
+    }
+    get length() {
+        return this.value.length;
+    }
+    set(index, val) {
+        this.value[index] = val;
     }
     add(val) {
         this.value.push(val);
@@ -11188,7 +11935,7 @@ class NbtLongArray {
 }
 exports.NbtLongArray = NbtLongArray;
 
-},{"../utils":15}],12:[function(require,module,exports){
+},{"../utils":19}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
@@ -11623,7 +12370,7 @@ class Parser {
 }
 exports.Parser = Parser;
 
-},{"../utils":15,"./nbt":11}],13:[function(require,module,exports){
+},{"../utils":19,"./nbt":15}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
@@ -11729,7 +12476,7 @@ class Tokenizer {
 }
 exports.Tokenizer = Tokenizer;
 
-},{"../utils":15}],14:[function(require,module,exports){
+},{"../utils":19}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const char_reader_1 = require("./char_reader");
@@ -11742,6 +12489,7 @@ class Selector {
         this.team = [];
         this.name = [];
         this.type = [];
+        this.isTypeAutoGenerated = false;
         this.gamemode = [];
         this.level = new Range(null, null);
         this.distance = new Range(null, null);
@@ -11820,6 +12568,9 @@ class Selector {
             this.advancements.set(adv, true);
         }
     }
+    setNbt(nbt) {
+        this.nbt = utils_1.getNbt(nbt);
+    }
     parseVariable1_12(char, str) {
         switch (char) {
             case 'a':
@@ -11836,6 +12587,8 @@ class Selector {
             case 'r':
                 this.variable = SelectorVariable.E;
                 this.sort = 'random';
+                this.type.push('player');
+                this.isTypeAutoGenerated = true;
                 break;
             case 's':
                 this.variable = SelectorVariable.S;
@@ -11881,6 +12634,10 @@ class Selector {
                             this.name.push(val);
                             break;
                         case 'type':
+                            if (this.isTypeAutoGenerated) {
+                                this.type.pop();
+                                this.isTypeAutoGenerated = false;
+                            }
                             this.type.push(val);
                             break;
                         case 'c':
@@ -12065,6 +12822,7 @@ class Selector {
                         this.parseAdvancements1_13(val);
                         break;
                     case 'nbt':
+                        this.nbt = utils_1.getNbt(val);
                         break;
                     default:
                         break;
@@ -12217,6 +12975,7 @@ class Selector {
                 }
                 break;
             case 'min':
+            default:
                 if (range) {
                     range.setMin(Number(value));
                 }
@@ -12225,8 +12984,6 @@ class Selector {
                     this.scores.set(objective, range);
                 }
                 break;
-            default:
-                throw `Unknown type: ${type}. Expected 'max' or 'min'`;
         }
     }
     parseScore1_12(key, val) {
@@ -12361,9 +13118,11 @@ class Range {
     }
 }
 
-},{"../converter":2,"./char_reader":10,"./nbt/nbt":11,"./utils":15}],15:[function(require,module,exports){
+},{"../converter":2,"./char_reader":14,"./nbt/nbt":15,"./utils":19}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tokenizer_1 = require("./nbt/tokenizer");
+const parser_1 = require("./nbt/parser");
 function isNumeric(num) {
     return !isNaN(parseFloat(num)) && isFinite(num);
 }
@@ -12372,9 +13131,17 @@ function isWhiteSpace(char) {
     return [' ', '\t', '\n', '\r'].indexOf(char) !== -1;
 }
 exports.isWhiteSpace = isWhiteSpace;
+function getNbt(str) {
+    const tokenizer = new tokenizer_1.Tokenizer();
+    const tokens = tokenizer.tokenize(str);
+    const parser = new parser_1.Parser();
+    const nbt = parser.parse(tokens);
+    return nbt;
+}
+exports.getNbt = getNbt;
 const EscapePattern = /([\\"])/g;
 const UnescapePattern = /\\([\\"])/g;
 exports.escape = (s) => s.replace(EscapePattern, '\\$1');
 exports.unescape = (s) => s.replace(UnescapePattern, '$1');
 
-},{}]},{},[3]);
+},{"./nbt/parser":16,"./nbt/tokenizer":17}]},{},[3]);

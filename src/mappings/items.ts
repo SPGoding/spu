@@ -11,6 +11,9 @@ export default class Items {
     }
 
     static get1_13NominalIDFrom1_12NominalIDWithDataValue(str: string, data: number = 0) {
+        if (data === -1) {
+            data = 0
+        }
         if (str.slice(0, 10) !== 'minecraft:') {
             str = 'minecraft:' + str
         }

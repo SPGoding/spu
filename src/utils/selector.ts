@@ -1,6 +1,6 @@
 import CharReader from './char_reader'
 import Converter from '../converter'
-import { isWhiteSpace } from './utils'
+import { isWhiteSpace, getNbt } from './utils'
 import { NbtCompound } from './nbt/nbt'
 
 /**
@@ -129,6 +129,10 @@ export default class Selector {
         } else {
             this.advancements.set(adv, true)
         }
+    }
+
+    public setNbt(nbt: string) {
+        this.nbt = getNbt(nbt)
     }
 
     private parseVariable1_12(char: string, str: string) {
@@ -389,7 +393,8 @@ export default class Selector {
                         this.parseAdvancements1_13(val)
                         break
                     case 'nbt':
-                        // TODO:
+                        // FIXME: NBT reading error, for , .
+                        this.nbt = getNbt(val)
                         break
                     default:
                         break
@@ -544,7 +549,7 @@ export default class Selector {
         return result
     }
 
-    private setScore(objective: string, value: string, type: string) {
+    public setScore(objective: string, value: string, type: 'max' | 'min') {
         let range = this.scores.get(objective)
         switch (type) {
             case 'max':
@@ -558,6 +563,7 @@ export default class Selector {
                 }
                 break
             case 'min':
+            default:
                 if (range) {
                     range.setMin(Number(value))
                 } else {
@@ -565,8 +571,6 @@ export default class Selector {
                     this.scores.set(objective, range)
                 }
                 break
-            default:
-                throw `Unknown type: ${type}. Expected 'max' or 'min'`
         }
     }
 

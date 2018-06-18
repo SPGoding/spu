@@ -2,6 +2,9 @@ import Checker from './checker'
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
 import Selector from './utils/selector'
+import Items from './mappings/items'
+import { isNumeric } from './utils/utils'
+import Blocks from './mappings/blocks'
 
 /**
  * Represents a spu script.
@@ -45,14 +48,12 @@ export default class SpuScript {
     }
 
     private compileArgument(arg: string, resultMap: Map<string, string>) {
-        let patternMap = this.getPatternMap(arg)
-        let id = patternMap.keys().next().value
-        let methods = patternMap.get(id)
+        let ast = this.getAst(arg)
+        let id = ast.keys().next().value
+        let methods = ast.get(id)
         let source = resultMap.get(`%${id}`)
 
         if (methods && source) {
-            let result = source
-
             for (const name of methods.keys()) {
                 let paramIds = methods.get(name)
                 if (paramIds) {
@@ -61,30 +62,78 @@ export default class SpuScript {
                         return result ? result : ''
                     })
                     switch (name) {
-                        case 'addAdv':
-                            let selector = new Selector()
-                            selector.parse1_13(source)
+                        case 'addAdvToEntity': {
+                            let sel = new Selector()
+                            sel.parse1_13(source)
                             if (params.length === 1) {
-                                selector.addFinishedAdvancement(params[0])
+                                sel.addFinishedAdvancement(params[0])
                             } else if (params.length === 2) {
-                                selector.addFinishedAdvancement(params[0], params[1])
+                                sel.addFinishedAdvancement(params[0], params[1])
                             } else {
-                                throw `Unexpected param count: ${
-                                    params.length
-                                } of ${name} in ${arg}.`
+                                throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
                             }
-                            result = selector.get1_13()
+                            source = sel.get1_13()
+                            break
+                        }
+                        case 'addDataToItem':
+                            source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]))
+                            break
+                        case 'addMetadataOrStateToBlock':
+                            if (isNumeric(params[0])) {
+                                source = Blocks.get1_13NominalIDFrom1_12NominalID(
+                                    Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(source, Number(params[0]))
+                                )
+                            } else {
+                                source = Blocks.get1_13NominalIDFrom1_12NominalID(
+                                    Blocks.get1_12NominalIDFrom1_12StringID(`${source}[${params[0]}]`)
+                                )
+                            }
+                            break
+                        case 'addNbtToBlock':
+                            source += params[0]
+                            break
+                        case 'addNbtToEntity': {
+                            let sel = new Selector()
+                            sel.parse1_13(source)
+                            sel.setNbt(params[0])
+                            source = sel.get1_13()
+                            break
+                        }
+                        case 'addNbtToItems':
+                            source += params[0]
+                            break
+                        case 'addScbMaxToEntity': {
+                            let sel = new Selector()
+                            sel.parse1_13(source)
+                            sel.setScore(params[0], params[1], 'max')
+                            source = sel.get1_13()
+                            break
+                        }
+                        case 'addScbMinToEntity': {
+                            let sel = new Selector()
+                            sel.parse1_13(source)
+                            sel.setScore(params[0], params[1], 'min')
+                            source = sel.get1_13()
+                            break
+                        }
+                        case 'fuckItemItself':
+                            source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source)
+                            break
+                        case 'fuckBlockItself':
+                            source = Blocks.get1_13NominalIDFrom1_12NominalID(
+                                Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(source, 0)
+                            )
                             break
                         default:
-                            break
+                            throw `Unknwon spu script method: '${name}'`
                     }
                 }
             }
 
-            return result
+            return source
         }
 
-        return ''
+        throw 'Spu Script execute error!'
     }
 
     /**
@@ -95,7 +144,7 @@ export default class SpuScript {
      * this.getPatternMap('%0') => {'0': {}}
      * this.getPatternMap('%1$addAdv%0%2$addNbt%3') => {'1': {addAdv: ['0', '2'], addNbt: ['3']}}
      */
-    private getPatternMap(arg: string) {
+    private getAst(arg: string) {
         let result = ''
         let charReader = new CharReader(arg)
         let char = charReader.next()
