@@ -220,7 +220,11 @@ export default class Selector {
                             }
                             break
                         case 'm':
-                            this.gamemode.push(Converter.cvtGamemode(val))
+                            if (val.slice(0, 1) !== '!') {
+                                this.gamemode.push(Converter.cvtGamemode(val))
+                            } else {
+                                this.gamemode.push('!' + Converter.cvtGamemode(val.slice(1)))
+                            }
                             break
                         case 'l':
                             this.level.setMax(Number(val))

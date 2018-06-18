@@ -11613,7 +11613,6 @@ class SpuScript {
         throw 'Spu Script execute error!';
     }
     getAst(arg) {
-        let result = '';
         let charReader = new char_reader_1.default(arg);
         let char = charReader.next();
         let id = '';
@@ -12653,7 +12652,12 @@ class Selector {
                             }
                             break;
                         case 'm':
-                            this.gamemode.push(converter_1.default.cvtGamemode(val));
+                            if (val.slice(0, 1) !== '!') {
+                                this.gamemode.push(converter_1.default.cvtGamemode(val));
+                            }
+                            else {
+                                this.gamemode.push('!' + converter_1.default.cvtGamemode(val.slice(1)));
+                            }
                             break;
                         case 'l':
                             this.level.setMax(Number(val));

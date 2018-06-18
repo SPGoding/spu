@@ -145,7 +145,6 @@ export default class SpuScript {
      * this.getPatternMap('%1$addAdv%0%2$addNbt%3') => {'1': {addAdv: ['0', '2'], addNbt: ['3']}}
      */
     private getAst(arg: string) {
-        let result = ''
         let charReader = new CharReader(arg)
         let char = charReader.next()
         let id = ''
