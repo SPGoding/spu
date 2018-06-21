@@ -6,7 +6,7 @@ export default class Items {
         if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`
         }
-        const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0].split('.')[0] === id)
+        const arr = Items.NumericID_NominalID.find(v => v[1] === id)
         return arr ? true : false
     }
 
