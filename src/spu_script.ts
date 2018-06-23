@@ -76,7 +76,12 @@ export default class SpuScript {
                             break
                         }
                         case 'addDataToItem':
-                            source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]))
+                            if (Items.isDamageItem(source)) {
+                                source += `{Damage:${params[0]}s}`
+                                // FIXME: Conflints with addNbtToItem
+                            } else {
+                                source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]))
+                            }
                             break
                         case 'addMetadataOrStateToBlock':
                             if (isNumeric(params[0])) {
