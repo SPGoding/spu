@@ -180,6 +180,10 @@ export default class Updater {
     public static upBlockNbt(nbt: string, block: string) {
         const root = getNbt(nbt)
 
+        if (block.slice(0, 10) !== 'minecraft:') {
+            block = 'minecraft:' + block
+        }
+
         switch (block) {
             case 'minecraft:white_banner': {
                 /* CustomName */ {
@@ -271,6 +275,7 @@ export default class Updater {
                 break
             }
             case 'minecraft:command_block': {
+                //TODO: Other kinds of command block.
                 /* CustomName */ {
                     const value = root.get('CustomName')
                     if (value instanceof NbtString) {
@@ -525,6 +530,13 @@ export default class Updater {
                 root.set('Item', item)
             }
         }
+        /* SelectedItem */ {
+            let selectedItem = root.get('SelectedItem')
+            if (selectedItem instanceof NbtCompound) {
+                selectedItem = getNbt(Updater.upItemNbt(selectedItem.toString()))
+                root.set('SelectedItem', selectedItem)
+            }
+        }
         /* Command */ {
             const command = root.get('Command')
             if (command instanceof NbtString) {
@@ -601,10 +613,10 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                                ' ' +
-                                Updater.upItemDustParams(
-                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                                )
+                            ' ' +
+                            Updater.upItemDustParams(
+                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                            )
                         )
                     }
                 }
@@ -623,7 +635,7 @@ export default class Updater {
         name.set(nominal.split('[')[0])
         if (nominal.indexOf('[') !== -1) {
             nominal
-                .slice(nominal.indexOf('['), -1)
+                .slice(nominal.indexOf('[') + 1, -1)
                 .split(',')
                 .forEach(v => {
                     const val = new NbtString()
@@ -638,7 +650,7 @@ export default class Updater {
     }
 
     private static upBlockStringIDToBlockState(block: NbtString, data?: NbtByte | NbtInt) {
-        const carriedBlockState = new NbtCompound()
+        const blockState = new NbtCompound()
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
@@ -656,10 +668,11 @@ export default class Updater {
                     val.set(pairs[1])
                     properties.set(pairs[0], val)
                 })
-            carriedBlockState.set('Properties', properties)
+            blockState.set('Properties', properties)
         }
-        carriedBlockState.set('Name', name)
-        return carriedBlockState
+        blockState.set('Name', name)
+        console.log(blockState.toString())
+        return blockState
     }
 
     public static upEntityType(input: string) {

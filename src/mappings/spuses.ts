@@ -55,6 +55,7 @@ export default class Spuses {
      * $fuckBlockItself
      */
     static pairs = new Map([
+        ['', ''],
         ['advancement test %entity %adv', 'execute if entity %0$addAdvToEntity%1'],
         ['advancement test %entity %adv %adv_crit', 'execute if entity %0$addAdvToEntity%1%2'],
         ['advancement %literal %entity %literal %adv', 'advancement %0 %1 %2 %3'],

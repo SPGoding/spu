@@ -10952,6 +10952,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Spuses {
 }
 Spuses.pairs = new Map([
+    ['', ''],
     ['advancement test %entity %adv', 'execute if entity %0$addAdvToEntity%1'],
     ['advancement test %entity %adv %adv_crit', 'execute if entity %0$addAdvToEntity%1%2'],
     ['advancement %literal %entity %literal %adv', 'advancement %0 %1 %2 %3'],
@@ -11515,6 +11516,9 @@ class Updater {
     }
     static upBlockNbt(nbt, block) {
         const root = utils_1.getNbt(nbt);
+        if (block.slice(0, 10) !== 'minecraft:') {
+            block = 'minecraft:' + block;
+        }
         switch (block) {
             case 'minecraft:white_banner': {
                 {
@@ -11849,6 +11853,13 @@ class Updater {
             }
         }
         {
+            let selectedItem = root.get('SelectedItem');
+            if (selectedItem instanceof nbt_1.NbtCompound) {
+                selectedItem = utils_1.getNbt(Updater.upItemNbt(selectedItem.toString()));
+                root.set('SelectedItem', selectedItem);
+            }
+        }
+        {
             const command = root.get('Command');
             if (command instanceof nbt_1.NbtString) {
                 command.set(Updater.upCommand(command.get(), false));
@@ -11936,7 +11947,7 @@ class Updater {
         name.set(nominal.split('[')[0]);
         if (nominal.indexOf('[') !== -1) {
             nominal
-                .slice(nominal.indexOf('['), -1)
+                .slice(nominal.indexOf('[') + 1, -1)
                 .split(',')
                 .forEach(v => {
                 const val = new nbt_1.NbtString();
@@ -11950,7 +11961,7 @@ class Updater {
         return carriedBlockState;
     }
     static upBlockStringIDToBlockState(block, data) {
-        const carriedBlockState = new nbt_1.NbtCompound();
+        const blockState = new nbt_1.NbtCompound();
         const name = new nbt_1.NbtString();
         const properties = new nbt_1.NbtCompound();
         const metadata = data ? data.get() : 0;
@@ -11966,10 +11977,11 @@ class Updater {
                 val.set(pairs[1]);
                 properties.set(pairs[0], val);
             });
-            carriedBlockState.set('Properties', properties);
+            blockState.set('Properties', properties);
         }
-        carriedBlockState.set('Name', name);
-        return carriedBlockState;
+        blockState.set('Name', name);
+        console.log(blockState.toString());
+        return blockState;
     }
     static upEntityType(input) {
         return entities_1.default.get1_13NominalIDFrom1_12NominalID(input);
