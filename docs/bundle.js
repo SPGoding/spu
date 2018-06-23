@@ -272,8 +272,9 @@ $(document).ready(function () {
                 let lines = content.toString().split('\n');
                 for (let line of lines) {
                     line = updater_1.default.upLine(line, $('#position-correct').is(':checked'));
-                    result += line + '<br>';
+                    result += line + '\n';
                 }
+                result = result.slice(0, -1);
                 $('#output').html(result);
             }
         }
@@ -10952,7 +10953,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Spuses {
 }
 Spuses.pairs = new Map([
-    ['', ''],
     ['advancement test %entity %adv', 'execute if entity %0$addAdvToEntity%1'],
     ['advancement test %entity %adv %adv_crit', 'execute if entity %0$addAdvToEntity%1%2'],
     ['advancement %literal %entity %literal %adv', 'advancement %0 %1 %2 %3'],
@@ -11403,7 +11403,7 @@ class Updater {
         }
     }
     static upLine(input, positionCorrect) {
-        if (input.charAt(0) === '#') {
+        if (input.charAt(0) === '#' || /^\s*$/.test(input)) {
             return input;
         }
         else {
@@ -11980,7 +11980,6 @@ class Updater {
             blockState.set('Properties', properties);
         }
         blockState.set('Name', name);
-        console.log(blockState.toString());
         return blockState;
     }
     static upEntityType(input) {

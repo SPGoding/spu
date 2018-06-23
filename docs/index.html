@@ -6,33 +6,68 @@
 
 <head>
     <title>[CBL|SPGoding]spu</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="https://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 </head>
 
 <body>
-    <div class="container-fluid">
-        <p>
-            注意事项：
-            <br /> 1. stat命令不作转换。
-            <br /> 2. execute命令的转换不完全等效，如有需要请手动改为多层function。
-            <br /> 3. 本网页为静态页面，可直接Ctrl + S保存并在离线时使用。
-            <br /> 4. 请确保1.12的命令能够正确执行，否则可能造成网页未响应。</p>
-        <div class="row-fluid">
-            <div class="span5 offset1">1.12函数：
-                <br />
-                <textarea rows="20" cols="80" id="input"></textarea>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Sweet Pragmatic Updater</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="#">spu</a>
+                </li>
+                <li>
+                    <a href="https://github.com/SPGoding/spu" target="_blank">Github</a>
+                </li>
+                <li class="">
+                    <a href="#">MCBBS</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-active">1.12</button>
+                </div>
+                <div class="pull-right">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="position-correct">坐标矫正
+                    </label>
+                    <button type="button" id="button" class="btn btn-primary">转换</button>
+                </div>
+                <textarea rows="10" class="form-control" id="input" placeholder="请输入函数或命令(不带斜杠'/')" style="resize: none;"></textarea>
             </div>
-            <div class="span5 offset-1">1.13函数：
-                <p id="output"></p>
+            <div class="col-md-6">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-active">1.13</button>
+                </div>
+                <textarea rows="10" class="form-control" id="output" style="resize: none;"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <p>
+                    注意事项：
+                    <br /> 1. stat命令不作转换。
+                    <br /> 2. execute命令的转换不完全等效，如有需要请手动改为多层function。
+                    <br /> 3. 本网页为静态页面，可直接Ctrl + S保存并在离线时使用。
+                    <br /> 4. 请确保1.12的命令能够正确执行，否则可能造成网页未响应。</p>
             </div>
         </div>
     </div>
+    </div>
 
-    <input type="submit" value="转换" id="button" class="btn btn-primary" />
-    <input type="checkbox" id="position-correct">坐标矫正
+
 
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js "></script>
-    <script src="js/bootstrap.min.js "></script>
+    <script src="https://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script src="bundle.js "></script>
 </body>
 

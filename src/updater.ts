@@ -64,7 +64,7 @@ export default class Updater {
     }
 
     public static upLine(input: string, positionCorrect: boolean) {
-        if (input.charAt(0) === '#') {
+        if (input.charAt(0) === '#' || /^\s*$/.test(input)) {
             return input
         } else {
             return Updater.upCommand(input, positionCorrect)
@@ -671,7 +671,6 @@ export default class Updater {
             blockState.set('Properties', properties)
         }
         blockState.set('Name', name)
-        console.log(blockState.toString())
         return blockState
     }
 
@@ -739,8 +738,6 @@ export default class Updater {
 
     public static upItemTagNbt(nbt: string, item: string) {
         // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
-
-        // TODO: map added for maps.
 
         const root = getNbt(nbt)
         /* CanDestroy */ {

@@ -19,8 +19,9 @@ $(document).ready(function() {
                 let lines = content.toString().split('\n')
                 for (let line of lines) {
                     line = Updater.upLine(line, $('#position-correct').is(':checked'))
-                    result += line + '<br>'
+                    result += line + '\n'
                 }
+                result = result.slice(0, -1) // Remove the last line.
                 $('#output').html(result)
             }
         } catch (ex) {
