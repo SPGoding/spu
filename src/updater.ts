@@ -179,14 +179,150 @@ export default class Updater {
 
     public static upBlockNbt(nbt: string, block: string) {
         const root = getNbt(nbt)
-        const items = root.get('Items')
-        if (items instanceof NbtList) {
-            for (let i = 0; i < items.length; i++) {
-                let item = items.get(i)
-                item = getNbt(Updater.upItemNbt(item.toString()))
-                items.set(i, item)
+
+        switch (block) {
+            case 'minecraft:banner':
+            // TODO: Base for banner removed.
+            case 'minecraft:enchanting_table': {
+                /* CustomName */ {
+                    const value = root.get('CustomName')
+                    if (value instanceof NbtString) {
+                        value.set(`{"text":"${escape(value.get())}"}`)
+                    }
+                }
+                break
             }
-            root.set('Items', items)
+            case 'minecraft:bed': {
+                /* color */ {
+                    const color = root.get('color')
+                    root.del('color')
+                    if (color instanceof NbtInt) {
+                        return `$ID>${Items.getBedIDFromColorValue(color.get())}`
+                    }
+                }
+                break
+            }
+            case 'minecraft:cauldron': {
+                /* Items */ {
+                    const items = root.get('Items')
+                    if (items instanceof NbtList) {
+                        for (let i = 0; i < items.length; i++) {
+                            let item = items.get(i)
+                            item = getNbt(Updater.upItemNbt(item.toString()))
+                            items.set(i, item)
+                        }
+                    }
+                }
+                break
+            }
+            case 'minecraft:brewing_stand':
+            case 'minecraft:chest':
+            case 'minecraft:dispenser':
+            case 'minecraft:dropper':
+            case 'minecraft:furnance':
+            case 'minecraft:hopper':
+            case 'minecraft:shulker_box': {
+                /* CustomName */ {
+                    const value = root.get('CustomName')
+                    if (value instanceof NbtString) {
+                        value.set(`{"text":"${escape(value.get())}"}`)
+                    }
+                }
+                /* Items */ {
+                    const items = root.get('Items')
+                    if (items instanceof NbtList) {
+                        for (let i = 0; i < items.length; i++) {
+                            let item = items.get(i)
+                            item = getNbt(Updater.upItemNbt(item.toString()))
+                            items.set(i, item)
+                        }
+                    }
+                }
+                break
+            }
+            case 'minecraft:command_block': {
+                /* CustomName */ {
+                    const value = root.get('CustomName')
+                    if (value instanceof NbtString) {
+                        value.set(`{"text":"${escape(value.get())}"}`)
+                    }
+                }
+                /* Command */ {
+                    const command = root.get('Command')
+                    if (command instanceof NbtString) {
+                        command.set(Updater.upCommand(command.get(), false))
+                    }
+                }
+                break
+            }
+            case 'minecraft:flower_pot': {
+                // TODO: https://minecraft.gamepedia.com/1.13/Flattening flower pot
+                break
+            }
+            case 'minecraft:jukebox': {
+                /* Record */ {
+                    root.del('Record')
+                }
+                /* RecordItem */ {
+                    let item = root.get('RecordItem')
+                    if (item instanceof NbtString) {
+                        item = getNbt(Updater.upItemNbt(item.toString()))
+                        root.set('RecordItem', item)
+                    }
+                }
+                break
+            }
+            case 'minecraft:mob_spawner': {
+                /* SpawnPotentials */ {
+                    const spawnPotentials = root.get('SpawnPotentials')
+                    if (spawnPotentials instanceof NbtList) {
+                        for (let i = 0; i < spawnPotentials.length; i++) {
+                            const potential = spawnPotentials.get(i)
+                            if (potential instanceof NbtCompound) {
+                                let entity = potential.get('Entity')
+                                if (entity instanceof NbtCompound) {
+                                    entity = getNbt(Updater.upEntityNbt(entity.toString()))
+                                    potential.set('Entity', entity)
+                                }
+                            }
+                        }
+                    }
+                }
+                /* SpawnData */ {
+                    let spawnData = root.get('SpawnData')
+                    if (spawnData instanceof NbtCompound) {
+                        spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+                        root.set('SpawnData', spawnData)
+                    }
+                }
+                break
+            }
+            case 'minecraft:note_block': {
+                // TODO: Removed.
+                break
+            }
+            case 'minecraft:piston': {
+                /* blockId & blockData */ {
+                    const blockID = root.get('blockId')
+                    const blockData = root.get('blockData')
+                    root.del('blockId')
+                    root.del('blockData')
+                    if (
+                        blockID instanceof NbtInt &&
+                        (blockData instanceof NbtInt || typeof blockData === 'undefined')
+                    ) {
+                        const blockState = Updater.upBlockNumericIDToBlockState(blockID, blockData)
+                        root.set('blockState', blockState)
+                    }
+                }
+                break
+            }
+            case 'minecraft:skull': {
+                // TODO: Removed SkullType & Rot
+                break
+            }
+            default:
+                break
         }
 
         return root.toString()
@@ -406,6 +542,44 @@ export default class Updater {
                 root.set('TileEntityData', tileEntityData)
             }
         }
+        /* DisplayTile & DisplayData */ {
+            const displayTile = root.get('DisplayTile')
+            const displayData = root.get('DisplayData')
+            root.del('DisplayTile')
+            root.del('DisplayData')
+            if (
+                displayTile instanceof NbtString &&
+                (displayData instanceof NbtInt || typeof displayData === 'undefined')
+            ) {
+                const displayState = Updater.upBlockStringIDToBlockState(displayTile, displayData)
+                root.set('DisplayState', displayState)
+            }
+        }
+        /* Particle & ParticleParam1 & ParticleParam2 */ {
+            const particle = root.get('Particle')
+            const particleParam1 = root.get('ParticleParam1')
+            const particleParam2 = root.get('ParticleParam2')
+            root.del('ParticleParam1')
+            root.del('ParticleParam2')
+            if (particle instanceof NbtString) {
+                particle.set(Updater.upParticle(particle.get()))
+                if (particle.get() === 'block') {
+                    if (particleParam1 instanceof NbtInt) {
+                        particle.set(particle.get() + ' ' + Updater.upBlockDustParam(particleParam1.get().toString()))
+                    }
+                } else if (particle.get() === 'item') {
+                    if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
+                        particle.set(
+                            particle.get() +
+                                ' ' +
+                                Updater.upItemDustParams(
+                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                                )
+                        )
+                    }
+                }
+            }
+        }
 
         return root.toString()
     }
@@ -522,6 +696,8 @@ export default class Updater {
 
     public static upItemTagNbt(nbt: string, item: string) {
         // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
+
+        // TODO: map added for maps.
 
         const root = getNbt(nbt)
         /* CanDestroy */ {

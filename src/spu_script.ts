@@ -90,7 +90,13 @@ export default class SpuScript {
                             }
                             break
                         case 'addNbtToBlock':
-                            source += params[0]
+                            params[0] = Updater.upBlockNbt(params[0], source.split('[')[0])
+                            if (params[0].slice(0, 4) === '$ID>') {
+                                const states: string = '[' + source.split('[')[1]
+                                source = params[0].slice(4) + (states !== '[' ? states : '')
+                            } else {
+                                source += params[0]
+                            }
                             break
                         case 'addNbtToEntity': {
                             let sel = new Selector()
