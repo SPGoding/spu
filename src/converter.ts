@@ -5,14 +5,12 @@ import SpuScript from './spu_script'
 import Checker from './checker'
 import Blocks from './mappings/blocks'
 import Effects from './mappings/effects'
+import Enches from './mappings/enches'
 import Entities from './mappings/entities'
 import Items from './mappings/items'
-import { isNumeric, getNbt } from './utils/utils'
-import { Parser as NbtParser } from './utils/nbt/parser'
-import { Tokenizer as NbtTokenizer } from './utils/nbt/tokenizer'
-import Enches from './mappings/enches'
-import ScoreboardCriterias from './mappings/scoreboard_criterias'
 import Particles from './mappings/particles'
+import ScoreboardCriterias from './mappings/scoreboard_criterias'
+import { isNumeric, getNbt } from './utils/utils'
 import { NbtString, NbtCompound, NbtShort, NbtValue, NbtList } from './utils/nbt/nbt'
 
 /**
@@ -51,6 +49,7 @@ export default class Converter {
             cmdArg = cmdReader.next()
         }
         if (cmdArg === '') {
+            console.log(spus)
             // Match successfully.
             return map
         } else {
@@ -98,7 +97,7 @@ export default class Converter {
             case 'block_metadata_or_state':
                 return arg
             case 'block_nbt':
-                return Converter.cvtBlockNbt(arg)
+                return arg
             case 'bool':
                 return arg
             case 'command':
@@ -130,7 +129,7 @@ export default class Converter {
             case 'item_nbt':
                 return Converter.cvtItemNbt(arg)
             case 'item_tag_nbt':
-                return Converter.cvtItemTagNbt(arg)
+                return arg
             case 'json':
                 return Converter.cvtJson(arg)
             case 'literal':
@@ -170,8 +169,7 @@ export default class Converter {
         return id.toString()
     }
 
-    // FIXME: https://minecraft.gamepedia.com/Block_entity
-    public static cvtBlockNbt(input: string) {
+    public static cvtBlock(input: string) {
         const root = getNbt(input)
         const items = root.get('Items')
         if (items instanceof NbtList) {

@@ -264,12 +264,12 @@ const spu_script_1 = require("./spu_script");
 const checker_1 = require("./checker");
 const blocks_1 = require("./mappings/blocks");
 const effects_1 = require("./mappings/effects");
+const enches_1 = require("./mappings/enches");
 const entities_1 = require("./mappings/entities");
 const items_1 = require("./mappings/items");
-const utils_1 = require("./utils/utils");
-const enches_1 = require("./mappings/enches");
-const scoreboard_criterias_1 = require("./mappings/scoreboard_criterias");
 const particles_1 = require("./mappings/particles");
+const scoreboard_criterias_1 = require("./mappings/scoreboard_criterias");
+const utils_1 = require("./utils/utils");
 const nbt_1 = require("./utils/nbt/nbt");
 class Converter {
     static getResultMap(cmd, spus) {
@@ -296,6 +296,7 @@ class Converter {
             cmdArg = cmdReader.next();
         }
         if (cmdArg === '') {
+            console.log(spus);
             return map;
         }
         else {
@@ -342,7 +343,7 @@ class Converter {
             case 'block_metadata_or_state':
                 return arg;
             case 'block_nbt':
-                return Converter.cvtBlockNbt(arg);
+                return arg;
             case 'bool':
                 return arg;
             case 'command':
@@ -374,7 +375,7 @@ class Converter {
             case 'item_nbt':
                 return Converter.cvtItemNbt(arg);
             case 'item_tag_nbt':
-                return Converter.cvtItemTagNbt(arg);
+                return arg;
             case 'json':
                 return Converter.cvtJson(arg);
             case 'literal':
@@ -412,7 +413,7 @@ class Converter {
         const id = blocks_1.default.get1_13NominalIDFrom1_12NumericID(num);
         return id.toString();
     }
-    static cvtBlockNbt(input) {
+    static cvtBlock(input) {
         const root = utils_1.getNbt(input);
         const items = root.get('Items');
         if (items instanceof nbt_1.NbtList) {
@@ -11534,9 +11535,11 @@ class SpuScript {
         let ast = this.getAst(arg);
         let id = ast.keys().next().value;
         let methods = ast.get(id);
+        console.log(methods);
         let source = resultMap.get(`%${id}`);
         if (methods && source) {
             for (const name of methods.keys()) {
+                console.log(name);
                 let paramIds = methods.get(name);
                 if (paramIds) {
                     let params = paramIds.map(x => {
@@ -11627,15 +11630,15 @@ class SpuScript {
             id += char;
             char = charReader.next();
         }
-        let name;
+        let method;
         let param;
         let params;
         while (char) {
-            name = '';
+            method = '';
             params = [];
             char = charReader.next();
             while (char && char !== '%' && char !== '$') {
-                name += char;
+                method += char;
                 char = charReader.next();
             }
             char = charReader.next();
@@ -11646,9 +11649,11 @@ class SpuScript {
                     char = charReader.next();
                 }
                 params.push(param);
-                char = charReader.next();
+                if (char !== '$') {
+                    char = charReader.next();
+                }
             }
-            methods.set(name, params);
+            methods.set(method, params);
         }
         return new Map([[id, methods]]);
     }

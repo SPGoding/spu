@@ -160,15 +160,15 @@ export default class SpuScript {
             id += char
             char = charReader.next()
         }
-        let name: string
+        let method: string
         let param: string
         let params: string[]
         while (char) {
-            name = ''
+            method = ''
             params = []
             char = charReader.next()
             while (char && char !== '%' && char !== '$') {
-                name += char
+                method += char
                 char = charReader.next()
             }
             char = charReader.next()
@@ -179,9 +179,11 @@ export default class SpuScript {
                     char = charReader.next()
                 }
                 params.push(param)
-                char = charReader.next()
+                if (char !== '$') {
+                    char = charReader.next()
+                }
             }
-            methods.set(name, params)
+            methods.set(method, params)
         }
 
         return new Map([[id, methods]])

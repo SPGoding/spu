@@ -41,7 +41,7 @@ describe.only('Converter tests', () => {
                     '{Items:[{Count:1b,id:"minecraft:wooden_sword",Damage:998s}]}',
                     '%block_nbt'
                 )
-                assert(actual === '{Items:[{Count:1b,id:"minecraft:wooden_sword",tag:{Damage:998s}}]}')
+                assert(actual === '{Items:[{Count:1b,id:"minecraft:wooden_sword",Damage:998s}]}')
             })
         })
         describe('%bool tests', () => {
@@ -137,7 +137,7 @@ describe.only('Converter tests', () => {
         describe('%item_tag_nbt tests', () => {
             it('should convert', () => {
                 const actual = Converter.cvtArgument('{display:{Name:"foo"}}', '%item_tag_nbt')
-                assert(actual === '{display:{Name:"{\\"text\\":\\"foo\\"}"}}')
+                assert(actual === '{display:{Name:"foo"}}')
             })
         })
         describe('%json tests', () => {
