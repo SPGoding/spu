@@ -43,8 +43,17 @@ export default class Items {
     }
 
     static isDamageItem(input: string) {
-        const arr = Items.DamageItemIDs.find(v => v === input)
-        return arr ? true : false
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = 'minecraft:' + input
+        }
+        return Items.DamageItemIDs.indexOf(input) !== -1
+    }
+
+    static isMapItem(input: string) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = 'minecraft:' + input
+        }
+        return Items.MapItemIDs.indexOf(input) !== -1
     }
 
     static getNominalColorFromNumericColor(input: number, suffix: string) {
@@ -897,6 +906,11 @@ export default class Items {
         'minecraft:wooden_pickaxe',
         'minecraft:wooden_shovel',
         'minecraft:wooden_sword'
+    ]
+
+    static MapItemIDs: string[] = [
+        'minecraft:map',
+        'minecraft:filled_map'
     ]
 
     static NumericColor_NominalColor: string[][] = [

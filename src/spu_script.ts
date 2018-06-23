@@ -78,7 +78,8 @@ export default class SpuScript {
                         case 'addDataToItem':
                             if (Items.isDamageItem(source)) {
                                 source += `{Damage:${params[0]}s}`
-                                // FIXME: Conflints with addNbtToItem
+                            } else if (Items.isMapItem(source)) {
+                                source += `{map:${params[0]}}`
                             } else {
                                 source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]))
                             }
@@ -111,8 +112,16 @@ export default class SpuScript {
                             break
                         }
                         case 'addNbtToItem':
+                            let data: string | undefined
+                            if (source.indexOf('{') !== -1) {
+                                data = source.slice(source.indexOf('{') + 1)
+                                source = source.slice(0, source.indexOf('{'))
+                            }
                             params[0] = Updater.upItemTagNbt(params[0], source)
                             source += params[0]
+                            if (data) {
+                                source = source.slice(0, -1) + ',' + data
+                            }
                             break
                         case 'addScbMaxToEntity': {
                             if (params[1] !== '*') {

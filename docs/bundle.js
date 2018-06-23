@@ -9977,8 +9977,16 @@ class Items {
         }
     }
     static isDamageItem(input) {
-        const arr = Items.DamageItemIDs.find(v => v === input);
-        return arr ? true : false;
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = 'minecraft:' + input;
+        }
+        return Items.DamageItemIDs.indexOf(input) !== -1;
+    }
+    static isMapItem(input) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = 'minecraft:' + input;
+        }
+        return Items.MapItemIDs.indexOf(input) !== -1;
     }
     static getNominalColorFromNumericColor(input, suffix) {
         const arr = Items.NumericColor_NominalColor.find(v => v[0] === input.toString());
@@ -10830,6 +10838,10 @@ Items.DamageItemIDs = [
     'minecraft:wooden_shovel',
     'minecraft:wooden_sword'
 ];
+Items.MapItemIDs = [
+    'minecraft:map',
+    'minecraft:filled_map'
+];
 Items.NumericColor_NominalColor = [
     ['0', 'minecraft:white_'],
     ['1', 'minecraft:orange_'],
@@ -11212,7 +11224,15 @@ class SpuScript {
                             break;
                         }
                         case 'addDataToItem':
-                            source = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]));
+                            if (items_1.default.isDamageItem(source)) {
+                                source += `{Damage:${params[0]}s}`;
+                            }
+                            else if (items_1.default.isMapItem(source)) {
+                                source += `{map:${params[0]}}`;
+                            }
+                            else {
+                                source = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]));
+                            }
                             break;
                         case 'addMetadataOrStateToBlock':
                             if (utils_1.isNumeric(params[0])) {
@@ -11240,8 +11260,16 @@ class SpuScript {
                             break;
                         }
                         case 'addNbtToItem':
+                            let data;
+                            if (source.indexOf('{') !== -1) {
+                                data = source.slice(source.indexOf('{') + 1);
+                                source = source.slice(0, source.indexOf('{'));
+                            }
                             params[0] = updater_1.default.upItemTagNbt(params[0], source);
                             source += params[0];
+                            if (data) {
+                                source = source.slice(0, -1) + ',' + data;
+                            }
                             break;
                         case 'addScbMaxToEntity': {
                             if (params[1] !== '*') {
