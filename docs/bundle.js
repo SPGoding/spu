@@ -12520,6 +12520,7 @@ class Selector {
         this.scores = new Map();
         this.advancements = new Map();
         this.nbt = new nbt_1.NbtCompound();
+        this.getVariable1_13 = (result) => (result += this.variable);
     }
     parse1_12(str) {
         let charReader = new char_reader_1.default(str);
@@ -12596,21 +12597,14 @@ class Selector {
     parseVariable1_12(char, str) {
         switch (char) {
             case 'a':
-                this.variable = 'a';
-                this.sort = 'nearest';
-                break;
             case 'e':
-                this.variable = 'e';
                 this.sort = 'nearest';
+                this.variable = char;
                 break;
             case 'p':
-                this.variable = 'p';
-                break;
             case 'r':
-                this.variable = 'r';
-                break;
             case 's':
-                this.variable = 's';
+                this.variable = char;
                 break;
             default:
                 throw `Unknown variable: ${char} in ${str}`;
@@ -12629,7 +12623,6 @@ class Selector {
                 char = charReader.next();
                 val = charReader.readUntil([',', ']']);
                 char = charReader.next();
-                console.log(`${key}=${val}`);
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     this.parseScore1_12(key, val);
                 }
@@ -12658,6 +12651,7 @@ class Selector {
                                 this.variable = 'e';
                                 this.sort = 'random';
                             }
+                            console.log(this.sort);
                             this.type.push(val);
                             break;
                         case 'c':
@@ -12736,19 +12730,11 @@ class Selector {
     parseVariable1_13(char, str) {
         switch (char) {
             case 'a':
-                this.variable = 'a';
-                break;
             case 'e':
-                this.variable = 'e';
-                break;
             case 'p':
-                this.variable = 'p';
-                break;
             case 'r':
-                this.variable = 'r';
-                break;
             case 's':
-                this.variable = 's';
+                this.variable = char;
                 break;
             default:
                 throw `Unknown variable: ${char} in ${str}`;
@@ -12784,6 +12770,9 @@ class Selector {
                 }
                 let range;
                 switch (key) {
+                    case 'sort':
+                        this.sort = val;
+                        break;
                     case 'dx':
                         this.dx = Number(val);
                         break;
@@ -12901,26 +12890,6 @@ class Selector {
             this.advancements.set(adv, Boolean(bool));
         }
     }
-    getVariable1_13(result) {
-        switch (this.variable) {
-            case 'a':
-                result += 'a';
-                break;
-            case 'e':
-                result += 'e';
-                break;
-            case 'p':
-                result += 'p';
-                break;
-            case 'r':
-                result += 'r';
-                break;
-            case 's':
-                result += 's';
-                break;
-        }
-        return result;
-    }
     getProperties1_13(result) {
         if (this.dx) {
             result += `dx=${this.dx},`;
@@ -12943,6 +12912,7 @@ class Selector {
         if (this.z) {
             result += `z=${this.z},`;
         }
+        console.log(this.sort);
         if (this.sort) {
             result += `sort=${this.sort},`;
         }

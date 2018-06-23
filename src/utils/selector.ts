@@ -137,21 +137,14 @@ export default class Selector {
     private parseVariable1_12(char: string, str: string) {
         switch (char) {
             case 'a':
-                this.variable = 'a'
-                this.sort = 'nearest'
-                break
             case 'e':
-                this.variable = 'e'
                 this.sort = 'nearest'
+                this.variable = char
                 break
             case 'p':
-                this.variable = 'p'
-                break
             case 'r':
-                this.variable = 'r'
-                break
             case 's':
-                this.variable = 's'
+                this.variable = char
                 break
             default:
                 throw `Unknown variable: ${char} in ${str}`
@@ -172,8 +165,6 @@ export default class Selector {
                 char = charReader.next()
                 val = charReader.readUntil([',', ']'])
                 char = charReader.next()
-
-                console.log(`${key}=${val}`)
 
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
@@ -204,6 +195,7 @@ export default class Selector {
                                 this.variable = 'e'
                                 this.sort = 'random'
                             }
+                            console.log(this.sort)
                             this.type.push(val)
                             break
                         case 'c':
@@ -281,19 +273,11 @@ export default class Selector {
     private parseVariable1_13(char: string, str: string) {
         switch (char) {
             case 'a':
-                this.variable = 'a'
-                break
             case 'e':
-                this.variable = 'e'
-                break
             case 'p':
-                this.variable = 'p'
-                break
             case 'r':
-                this.variable = 'r'
-                break
             case 's':
-                this.variable = 's'
+                this.variable = char
                 break
             default:
                 throw `Unknown variable: ${char} in ${str}`
@@ -331,6 +315,9 @@ export default class Selector {
                 // Deal with normal properties.
                 let range: Range
                 switch (key) {
+                    case 'sort':
+                        this.sort = val
+                        break
                     case 'dx':
                         this.dx = Number(val)
                         break
@@ -462,26 +449,7 @@ export default class Selector {
         }
     }
 
-    private getVariable1_13(result: string) {
-        switch (this.variable) {
-            case 'a':
-                result += 'a'
-                break
-            case 'e':
-                result += 'e'
-                break
-            case 'p':
-                result += 'p'
-                break
-            case 'r':
-                result += 'r'
-                break
-            case 's':
-                result += 's'
-                break
-        }
-        return result
-    }
+    private getVariable1_13 = (result: string) => (result += this.variable)
 
     private getProperties1_13(result: string) {
         if (this.dx) {
@@ -505,6 +473,7 @@ export default class Selector {
         if (this.z) {
             result += `z=${this.z},`
         }
+        console.log(this.sort)
         if (this.sort) {
             result += `sort=${this.sort},`
         }
