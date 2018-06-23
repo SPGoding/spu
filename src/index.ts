@@ -24,7 +24,7 @@ $(document).ready(function() {
                 $('#output').html(result)
             }
         } catch (ex) {
-            console.error(`Converted error: ${ex}`)
+            console.error(`Updated error: ${ex}`)
             alert(ex)
         }
     })

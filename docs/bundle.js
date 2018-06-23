@@ -227,7 +227,7 @@ class Checker {
         ].indexOf(input.toLowerCase()) !== -1);
     }
     static isStringID(input) {
-        return /^(\w+:)?[a-z]+$/.test(input);
+        return /^(\w+:)?[a-z_]+$/.test(input);
     }
     static isPath(input) {
         return /^(\w+:)?\w+(\/\w+)*$/.test(input);
@@ -271,14 +271,14 @@ $(document).ready(function () {
             if (content) {
                 let lines = content.toString().split('\n');
                 for (let line of lines) {
-                    line = updater_1.default.cvtLine(line, $('#position-correct').is(':checked'));
+                    line = updater_1.default.upLine(line, $('#position-correct').is(':checked'));
                     result += line + '<br>';
                 }
                 $('#output').html(result);
             }
         }
         catch (ex) {
-            console.error(`Converted error: ${ex}`);
+            console.error(`Updated error: ${ex}`);
             alert(ex);
         }
     });
@@ -9945,6 +9945,12 @@ class Items {
         const arr = Items.NumericID_NominalID.find(v => v[1] === id);
         return arr ? true : false;
     }
+    static hasEntityTag(id) {
+        if (id.slice(0, 10) !== 'minecraft:') {
+            id = `minecraft:${id}`;
+        }
+        return ['armor_stand', 'spawn_egg'].indexOf(id) !== -1;
+    }
     static get1_13NominalIDFrom1_12NominalIDWithDataValue(str, data = 0) {
         if (data === -1) {
             data = 0;
@@ -11008,14 +11014,14 @@ Spuses.pairs = new Map([
     ['replaceitem block %vec_3 %slot %item %num', 'replaceitem block %0 %1 %2$fuckItemItself %3'],
     ['replaceitem block %vec_3 %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
     [
-        'replaceitem block %vec_3 %slot %item %num %item_data %item_nbt',
+        'replaceitem block %vec_3 %slot %item %num %item_data %item_tag_nbt',
         'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
     ],
     ['replaceitem entity %entity %slot %item', 'replaceitem block %0 %1 %2$fuckItemItself'],
     ['replaceitem entity %entity %slot %item %num', 'replaceitem block %0 %1 %2$fuckItemItself %3'],
     ['replaceitem entity %entity %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
     [
-        'replaceitem entity %entity %slot %item %num %item_data %item_nbt',
+        'replaceitem entity %entity %slot %item %num %item_data %item_tag_nbt',
         'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
     ],
     ['save-all', 'save-all'],
@@ -11200,7 +11206,7 @@ class SpuScript {
                             break;
                         }
                         case 'addNbtToItem':
-                            params[0] = updater_1.default.cvtItemTagNbt(params[0], source);
+                            params[0] = updater_1.default.upItemTagNbt(params[0], source);
                             source += params[0];
                             break;
                         case 'addScbMaxToEntity': {
@@ -11321,7 +11327,7 @@ class Updater {
             begin = end;
             end = cmdSplited.length;
             if (spusArg.charAt(0) === '%') {
-                map.set(`%${cnt++}`, Updater.cvtArgument(cmdArg, spusArg));
+                map.set(`%${cnt++}`, Updater.upArgument(cmdArg, spusArg));
             }
             spusArg = spusReader.next();
             cmdArg = cmdSplited.slice(begin, end).join(' ');
@@ -11333,15 +11339,15 @@ class Updater {
             return null;
         }
     }
-    static cvtLine(input, positionCorrect) {
+    static upLine(input, positionCorrect) {
         if (input.charAt(0) === '#') {
             return input;
         }
         else {
-            return Updater.cvtCommand(input, positionCorrect);
+            return Updater.upCommand(input, positionCorrect);
         }
     }
-    static cvtCommand(input, positionCorrect) {
+    static upCommand(input, positionCorrect) {
         for (const spusOld of spuses_1.default.pairs.keys()) {
             let map = Updater.getResultMap(input, spusOld);
             if (map) {
@@ -11360,7 +11366,7 @@ class Updater {
         }
         throw `Unknown command: ${input}`;
     }
-    static cvtArgument(arg, spus) {
+    static upArgument(arg, spus) {
         switch (spus.slice(1)) {
             case 'adv':
                 return arg;
@@ -11369,7 +11375,7 @@ class Updater {
             case 'block':
                 return arg;
             case 'block_dust_param':
-                return Updater.cvtBlockDustParam(arg);
+                return Updater.upBlockDustParam(arg);
             case 'block_metadata_or_state':
                 return arg;
             case 'block_nbt':
@@ -11377,23 +11383,23 @@ class Updater {
             case 'bool':
                 return arg;
             case 'command':
-                return Updater.cvtCommand(arg, false);
+                return Updater.upCommand(arg, false);
             case 'difficulty':
-                return Updater.cvtDifficulty(arg);
+                return Updater.upDifficulty(arg);
             case 'effect':
-                return Updater.cvtEffect(arg);
+                return Updater.upEffect(arg);
             case 'entity':
-                return Updater.cvtEntity(arg);
+                return Updater.upEntity(arg);
             case 'entity_nbt':
-                return Updater.cvtEntityNbt(arg);
+                return Updater.upEntityNbt(arg);
             case 'ench':
-                return Updater.cvtEnch(arg);
+                return Updater.upEnch(arg);
             case 'entity_type':
-                return Updater.cvtEntityType(arg);
+                return Updater.upEntityType(arg);
             case 'func':
                 return arg;
             case 'gamemode':
-                return Updater.cvtGamemode(arg);
+                return Updater.upGamemode(arg);
             case 'ip':
                 return arg;
             case 'item':
@@ -11401,13 +11407,13 @@ class Updater {
             case 'item_data':
                 return arg;
             case 'item_dust_params':
-                return Updater.cvtItemDustParams(arg);
+                return Updater.upItemDustParams(arg);
             case 'item_nbt':
-                return Updater.cvtItemNbt(arg);
+                return Updater.upItemNbt(arg);
             case 'item_tag_nbt':
                 return arg;
             case 'json':
-                return Updater.cvtJson(arg);
+                return Updater.upJson(arg);
             case 'literal':
                 return arg.toLowerCase();
             case 'num':
@@ -11415,13 +11421,13 @@ class Updater {
             case 'num_or_star':
                 return arg;
             case 'particle':
-                return Updater.cvtParticle(arg);
+                return Updater.upParticle(arg);
             case 'recipe':
                 return arg;
             case 'scb_crit':
-                return Updater.cvtScbCrit(arg);
+                return Updater.upScbCrit(arg);
             case 'slot':
-                return Updater.cvtSlot(arg);
+                return Updater.upSlot(arg);
             case 'sound':
                 return arg;
             case 'source':
@@ -11440,25 +11446,25 @@ class Updater {
                 throw `Unknown arg type: '${spus}'`;
         }
     }
-    static cvtBlockDustParam(input) {
+    static upBlockDustParam(input) {
         const num = Number(input);
         const id = blocks_1.default.get1_13NominalIDFrom1_12NumericID(num);
         return id.toString();
     }
-    static cvtBlockNbt(nbt, item) {
+    static upBlockNbt(nbt, block) {
         const root = utils_1.getNbt(nbt);
         const items = root.get('Items');
         if (items instanceof nbt_1.NbtList) {
             for (let i = 0; i < items.length; i++) {
                 let item = items.get(i);
-                item = utils_1.getNbt(Updater.cvtItemNbt(item.toString()));
+                item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
                 items.set(i, item);
             }
             root.set('Items', items);
         }
         return root.toString();
     }
-    static cvtDifficulty(input) {
+    static upDifficulty(input) {
         switch (input) {
             case '0':
             case 'p':
@@ -11480,7 +11486,7 @@ class Updater {
                 throw `Unknown difficulty: ${input}`;
         }
     }
-    static cvtEffect(input) {
+    static upEffect(input) {
         if (utils_1.isNumeric(input)) {
             return effects_1.default.get1_12NominalIDFrom1_12NumericID(Number(input));
         }
@@ -11488,7 +11494,7 @@ class Updater {
             return input;
         }
     }
-    static cvtEnch(input) {
+    static upEnch(input) {
         if (utils_1.isNumeric(input)) {
             return enchantments_1.default.get1_12NominalIDFrom1_12NumericID(Number(input));
         }
@@ -11496,7 +11502,7 @@ class Updater {
             return input;
         }
     }
-    static cvtEntity(input) {
+    static upEntity(input) {
         let sel = new selector_1.default();
         if (checker_1.default.isSelector(input)) {
             sel.parse1_12(input);
@@ -11509,19 +11515,211 @@ class Updater {
         }
         return sel.get1_13();
     }
-    static cvtEntityNbt(input) {
+    static upEntityNbt(input) {
         const root = utils_1.getNbt(input);
-        const value = root.get('CustomName');
-        if (value instanceof nbt_1.NbtString) {
-            value.set(`{"text":"${value.get()}"}`);
-            root.set('CustomName', value);
+        {
+            const id = root.get('id');
+            if (id instanceof nbt_1.NbtString) {
+                id.set(entities_1.default.get1_13NominalIDFrom1_12NominalID(id.get()));
+            }
+        }
+        {
+            const value = root.get('CustomName');
+            if (value instanceof nbt_1.NbtString) {
+                value.set(`{"text":"${utils_1.escape(value.get())}"}`);
+            }
+        }
+        {
+            const passengers = root.get('Passengers');
+            if (passengers instanceof nbt_1.NbtList) {
+                for (let i = 0; i < passengers.length; i++) {
+                    let passenger = passengers.get(i);
+                    passenger = utils_1.getNbt(Updater.upEntityNbt(passenger.toString()));
+                    passengers.set(i, passenger);
+                }
+            }
+        }
+        {
+            const handItems = root.get('HandItems');
+            if (handItems instanceof nbt_1.NbtList) {
+                for (let i = 0; i < handItems.length; i++) {
+                    let item = handItems.get(i);
+                    item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                    handItems.set(i, item);
+                }
+            }
+        }
+        {
+            const armorItems = root.get('ArmorItems');
+            if (armorItems instanceof nbt_1.NbtList) {
+                for (let i = 0; i < armorItems.length; i++) {
+                    let item = armorItems.get(i);
+                    item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                    armorItems.set(i, item);
+                }
+            }
+        }
+        {
+            let armorItem = root.get('ArmorItem');
+            if (armorItem instanceof nbt_1.NbtCompound) {
+                armorItem = utils_1.getNbt(Updater.upItemNbt(armorItem.toString()));
+                root.set('ArmorItem', armorItem);
+            }
+        }
+        {
+            let saddleItem = root.get('SaddleItem');
+            if (saddleItem instanceof nbt_1.NbtCompound) {
+                saddleItem = utils_1.getNbt(Updater.upItemNbt(saddleItem.toString()));
+                root.set('SaddleItem', saddleItem);
+            }
+        }
+        {
+            const items = root.get('Items');
+            if (items instanceof nbt_1.NbtList) {
+                for (let i = 0; i < items.length; i++) {
+                    let item = items.get(i);
+                    item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                    items.set(i, item);
+                }
+            }
+        }
+        {
+            const carried = root.get('carried');
+            const carriedData = root.get('carriedData');
+            root.del('carried');
+            root.del('carriedData');
+            if ((carried instanceof nbt_1.NbtShort || carried instanceof nbt_1.NbtInt) &&
+                (carriedData instanceof nbt_1.NbtShort || carriedData instanceof nbt_1.NbtInt || typeof carriedData === 'undefined')) {
+                const carriedBlockState = Updater.upBlockNumericIDToBlockState(carried, carriedData);
+                root.set('carriedBlockState', carriedBlockState);
+            }
+        }
+        {
+            let decorItem = root.get('DecorItem');
+            if (decorItem instanceof nbt_1.NbtCompound) {
+                decorItem = utils_1.getNbt(Updater.upItemNbt(decorItem.toString()));
+                root.set('DecorItem', decorItem);
+            }
+        }
+        {
+            const inventory = root.get('Inventory');
+            if (inventory instanceof nbt_1.NbtList) {
+                for (let i = 0; i < inventory.length; i++) {
+                    let item = inventory.get(i);
+                    item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                    inventory.set(i, item);
+                }
+            }
+        }
+        {
+            const inTile = root.get('inTile');
+            root.del('inTile');
+            if (inTile instanceof nbt_1.NbtString) {
+                const inBlockState = Updater.upBlockStringIDToBlockState(inTile);
+                root.set('inBlockState', inBlockState);
+            }
+        }
+        {
+            let item = root.get('Item');
+            if (item instanceof nbt_1.NbtCompound) {
+                item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                root.set('Item', item);
+            }
+        }
+        {
+            const command = root.get('Command');
+            if (command instanceof nbt_1.NbtString) {
+                command.set(Updater.upCommand(command.get(), false));
+            }
+        }
+        {
+            const spawnPotentials = root.get('SpawnPotentials');
+            if (spawnPotentials instanceof nbt_1.NbtList) {
+                for (let i = 0; i < spawnPotentials.length; i++) {
+                    const potential = spawnPotentials.get(i);
+                    if (potential instanceof nbt_1.NbtCompound) {
+                        let entity = potential.get('Entity');
+                        if (entity instanceof nbt_1.NbtCompound) {
+                            entity = utils_1.getNbt(Updater.upEntityNbt(entity.toString()));
+                            potential.set('Entity', entity);
+                        }
+                    }
+                }
+            }
+        }
+        {
+            let spawnData = root.get('SpawnData');
+            if (spawnData instanceof nbt_1.NbtCompound) {
+                spawnData = utils_1.getNbt(Updater.upEntityNbt(spawnData.toString()));
+                root.set('SpawnData', spawnData);
+            }
+        }
+        {
+            const block = root.get('Block');
+            const data = root.get('Data');
+            root.del('Block');
+            root.del('Data');
+            if (block instanceof nbt_1.NbtString &&
+                (data instanceof nbt_1.NbtByte || data instanceof nbt_1.NbtInt || typeof data === 'undefined')) {
+                const blockState = Updater.upBlockStringIDToBlockState(block, data);
+                root.set('BlockState', blockState);
+            }
+            let tileEntityData = root.get('TileEntityData');
+            if (block instanceof nbt_1.NbtString && tileEntityData instanceof nbt_1.NbtCompound) {
+                tileEntityData = utils_1.getNbt(Updater.upBlockNbt(tileEntityData.toString(), block.get()));
+                root.set('TileEntityData', tileEntityData);
+            }
         }
         return root.toString();
     }
-    static cvtEntityType(input) {
+    static upBlockNumericIDToBlockState(id, data) {
+        const carriedBlockState = new nbt_1.NbtCompound();
+        const name = new nbt_1.NbtString();
+        const properties = new nbt_1.NbtCompound();
+        const metadata = data ? data.get() : 0;
+        const nominal = blocks_1.default.get1_13NominalIDFrom1_12NumericID(id.get(), metadata);
+        name.set(nominal.split('[')[0]);
+        if (nominal.indexOf('[') !== -1) {
+            nominal
+                .slice(nominal.indexOf('['), -1)
+                .split(',')
+                .forEach(v => {
+                const val = new nbt_1.NbtString();
+                const pairs = v.split('=');
+                val.set(pairs[1]);
+                properties.set(pairs[0], val);
+            });
+            carriedBlockState.set('Properties', properties);
+        }
+        carriedBlockState.set('Name', name);
+        return carriedBlockState;
+    }
+    static upBlockStringIDToBlockState(block, data) {
+        const carriedBlockState = new nbt_1.NbtCompound();
+        const name = new nbt_1.NbtString();
+        const properties = new nbt_1.NbtCompound();
+        const metadata = data ? data.get() : 0;
+        const nominal = blocks_1.default.get1_13NominalIDFrom1_12NominalID(blocks_1.default.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), metadata));
+        name.set(nominal.split('[')[0]);
+        if (nominal.indexOf('[') !== -1) {
+            nominal
+                .slice(nominal.indexOf('['), -1)
+                .split(',')
+                .forEach(v => {
+                const val = new nbt_1.NbtString();
+                const pairs = v.split('=');
+                val.set(pairs[1]);
+                properties.set(pairs[0], val);
+            });
+            carriedBlockState.set('Properties', properties);
+        }
+        carriedBlockState.set('Name', name);
+        return carriedBlockState;
+    }
+    static upEntityType(input) {
         return entities_1.default.get1_13NominalIDFrom1_12NominalID(input);
     }
-    static cvtGamemode(input) {
+    static upGamemode(input) {
         switch (input) {
             case '0':
             case 's':
@@ -11543,19 +11741,19 @@ class Updater {
                 throw `Unknown gamemode: ${input}`;
         }
     }
-    static cvtItemDustParams(input) {
+    static upItemDustParams(input) {
         const params = input.split(' ').map(x => Number(x));
         const nominal = items_1.default.get1_12NominalIDFrom1_12NumericID(params[0]);
         return items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(nominal, params[1]);
     }
-    static cvtItemNbt(input) {
+    static upItemNbt(input) {
         const root = utils_1.getNbt(input);
         const id = root.get('id');
         const damage = root.get('Damage');
         let tag = root.get('tag');
         if (id instanceof nbt_1.NbtString && damage instanceof nbt_1.NbtShort) {
             if (tag instanceof nbt_1.NbtCompound) {
-                tag = utils_1.getNbt(Updater.cvtItemTagNbt(tag.toString(), id.get()));
+                tag = utils_1.getNbt(Updater.upItemTagNbt(tag.toString(), id.get()));
             }
             if (items_1.default.isDamageItem(id.get())) {
                 if (!(tag instanceof nbt_1.NbtCompound)) {
@@ -11575,9 +11773,8 @@ class Updater {
         }
         return root.toString();
     }
-    static cvtItemTagNbt(nbt, item) {
+    static upItemTagNbt(nbt, item) {
         const root = utils_1.getNbt(nbt);
-        console.log('executed');
         {
             const canDestroy = root.get('CanDestroy');
             if (canDestroy instanceof nbt_1.NbtList) {
@@ -11605,10 +11802,12 @@ class Updater {
             }
         }
         {
-            let blockEntityTag = root.get('BlockEntityTag');
-            if (blockEntityTag instanceof nbt_1.NbtCompound) {
-                blockEntityTag = utils_1.getNbt(Updater.cvtBlockNbt(blockEntityTag.toString(), item));
-                root.set('BlockEntityTag', blockEntityTag);
+            if (blocks_1.default.is1_12StringID(item)) {
+                let blockEntityTag = root.get('BlockEntityTag');
+                if (blockEntityTag instanceof nbt_1.NbtCompound) {
+                    blockEntityTag = utils_1.getNbt(Updater.upBlockNbt(blockEntityTag.toString(), item));
+                    root.set('BlockEntityTag', blockEntityTag);
+                }
             }
         }
         {
@@ -11667,9 +11866,18 @@ class Updater {
                 root.set('display', display);
             }
         }
+        {
+            if (items_1.default.hasEntityTag(item)) {
+                let entityTag = root.get('EntityTag');
+                if (entityTag instanceof nbt_1.NbtCompound) {
+                    entityTag = utils_1.getNbt(Updater.upEntityNbt(entityTag.toString()));
+                    root.set('EntityTag', entityTag);
+                }
+            }
+        }
         return root.toString();
     }
-    static cvtJson(input) {
+    static upJson(input) {
         if (input.slice(0, 1) === '"') {
             return input;
         }
@@ -11677,7 +11885,7 @@ class Updater {
             let json = JSON.parse(input);
             let result = [];
             for (const i of json) {
-                result.push(Updater.cvtJson(JSON.stringify(i)));
+                result.push(Updater.upJson(JSON.stringify(i)));
             }
             return `[${result.join()}]`;
         }
@@ -11692,18 +11900,18 @@ class Updater {
                 json.clickEvent.action &&
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
                 json.clickEvent.value) {
-                json.clickEvent.value = Updater.cvtCommand(json.clickEvent.value, false);
+                json.clickEvent.value = Updater.upCommand(json.clickEvent.value, false);
             }
             if (json.extra) {
-                json.extra = JSON.parse(Updater.cvtJson(JSON.stringify(json.extra)));
+                json.extra = JSON.parse(Updater.upJson(JSON.stringify(json.extra)));
             }
             return JSON.stringify(json);
         }
     }
-    static cvtParticle(input) {
+    static upParticle(input) {
         return particles_1.default.get1_13NominalIDFrom1_12NominalID(input);
     }
-    static cvtScbCrit(input) {
+    static upScbCrit(input) {
         if (input.slice(0, 5) === 'stat.') {
             const subs = input.split(/\./g);
             const newCrit = scoreboard_criterias_1.default.get1_13From1_12(subs[1]);
@@ -11750,7 +11958,7 @@ class Updater {
             return input;
         }
     }
-    static cvtSlot(input) {
+    static upSlot(input) {
         return input.slice(5);
     }
 }
@@ -12744,10 +12952,10 @@ class Selector {
                             break;
                         case 'm':
                             if (val.slice(0, 1) !== '!') {
-                                this.gamemode.push(updater_1.default.cvtGamemode(val));
+                                this.gamemode.push(updater_1.default.upGamemode(val));
                             }
                             else {
-                                this.gamemode.push('!' + updater_1.default.cvtGamemode(val.slice(1)));
+                                this.gamemode.push('!' + updater_1.default.upGamemode(val.slice(1)));
                             }
                             break;
                         case 'l':

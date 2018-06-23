@@ -257,7 +257,7 @@ export default class Checker {
 
     public static isStringID(input: string) {
         // FIXME: If you want.
-        return /^(\w+:)?[a-z]+$/.test(input)
+        return /^(\w+:)?[a-z_]+$/.test(input)
     }
 
     public static isPath(input: string) {

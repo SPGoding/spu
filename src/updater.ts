@@ -11,7 +11,7 @@ import Items from './mappings/items'
 import Particles from './mappings/particles'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
 import { isNumeric, getNbt, escape } from './utils/utils'
-import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt } from './utils/nbt/nbt'
+import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte } from './utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -177,7 +177,7 @@ export default class Updater {
         return id.toString()
     }
 
-    public static upBlockNbt(nbt: string, item: string) {
+    public static upBlockNbt(nbt: string, block: string) {
         const root = getNbt(nbt)
         const items = root.get('Items')
         if (items instanceof NbtList) {
@@ -244,15 +244,218 @@ export default class Updater {
     }
 
     public static upEntityNbt(input: string) {
+        // https://minecraft.gamepedia.com/Chunk_format#Entity_format
+
         const root = getNbt(input)
 
-        const value = root.get('CustomName')
-        if (value instanceof NbtString) {
-            value.set(`{"text":"${value.get()}"}`)
-            root.set('CustomName', value)
+        /* id */ {
+            const id = root.get('id')
+            if (id instanceof NbtString) {
+                id.set(Entities.get1_13NominalIDFrom1_12NominalID(id.get()))
+            }
+        }
+        /* CustomName */ {
+            const value = root.get('CustomName')
+            if (value instanceof NbtString) {
+                value.set(`{"text":"${escape(value.get())}"}`)
+            }
+        }
+        /* Passengers */ {
+            const passengers = root.get('Passengers')
+            if (passengers instanceof NbtList) {
+                for (let i = 0; i < passengers.length; i++) {
+                    let passenger = passengers.get(i)
+                    passenger = getNbt(Updater.upEntityNbt(passenger.toString()))
+                    passengers.set(i, passenger)
+                }
+            }
+        }
+        /* HandItems */ {
+            const handItems = root.get('HandItems')
+            if (handItems instanceof NbtList) {
+                for (let i = 0; i < handItems.length; i++) {
+                    let item = handItems.get(i)
+                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    handItems.set(i, item)
+                }
+            }
+        }
+        /* ArmorItems */ {
+            const armorItems = root.get('ArmorItems')
+            if (armorItems instanceof NbtList) {
+                for (let i = 0; i < armorItems.length; i++) {
+                    let item = armorItems.get(i)
+                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    armorItems.set(i, item)
+                }
+            }
+        }
+        /* ArmorItem */ {
+            let armorItem = root.get('ArmorItem')
+            if (armorItem instanceof NbtCompound) {
+                armorItem = getNbt(Updater.upItemNbt(armorItem.toString()))
+                root.set('ArmorItem', armorItem)
+            }
+        }
+        /* SaddleItem */ {
+            let saddleItem = root.get('SaddleItem')
+            if (saddleItem instanceof NbtCompound) {
+                saddleItem = getNbt(Updater.upItemNbt(saddleItem.toString()))
+                root.set('SaddleItem', saddleItem)
+            }
+        }
+        /* Items */ {
+            const items = root.get('Items')
+            if (items instanceof NbtList) {
+                for (let i = 0; i < items.length; i++) {
+                    let item = items.get(i)
+                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    items.set(i, item)
+                }
+            }
+        }
+        /* carried & carriedData */ {
+            const carried = root.get('carried')
+            const carriedData = root.get('carriedData')
+            root.del('carried')
+            root.del('carriedData')
+            if (
+                (carried instanceof NbtShort || carried instanceof NbtInt) &&
+                (carriedData instanceof NbtShort || carriedData instanceof NbtInt || typeof carriedData === 'undefined')
+            ) {
+                const carriedBlockState = Updater.upBlockNumericIDToBlockState(carried, carriedData)
+                root.set('carriedBlockState', carriedBlockState)
+            }
+        }
+        /* DecorItem */ {
+            let decorItem = root.get('DecorItem')
+            if (decorItem instanceof NbtCompound) {
+                decorItem = getNbt(Updater.upItemNbt(decorItem.toString()))
+                root.set('DecorItem', decorItem)
+            }
+        }
+        /* Inventory */ {
+            const inventory = root.get('Inventory')
+            if (inventory instanceof NbtList) {
+                for (let i = 0; i < inventory.length; i++) {
+                    let item = inventory.get(i)
+                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    inventory.set(i, item)
+                }
+            }
+        }
+        /* inTile */ {
+            const inTile = root.get('inTile')
+            root.del('inTile')
+            if (inTile instanceof NbtString) {
+                const inBlockState = Updater.upBlockStringIDToBlockState(inTile)
+                root.set('inBlockState', inBlockState)
+            }
+        }
+        /* Item */ {
+            let item = root.get('Item')
+            if (item instanceof NbtCompound) {
+                item = getNbt(Updater.upItemNbt(item.toString()))
+                root.set('Item', item)
+            }
+        }
+        /* Command */ {
+            const command = root.get('Command')
+            if (command instanceof NbtString) {
+                command.set(Updater.upCommand(command.get(), false))
+            }
+        }
+        /* SpawnPotentials */ {
+            const spawnPotentials = root.get('SpawnPotentials')
+            if (spawnPotentials instanceof NbtList) {
+                for (let i = 0; i < spawnPotentials.length; i++) {
+                    const potential = spawnPotentials.get(i)
+                    if (potential instanceof NbtCompound) {
+                        let entity = potential.get('Entity')
+                        if (entity instanceof NbtCompound) {
+                            entity = getNbt(Updater.upEntityNbt(entity.toString()))
+                            potential.set('Entity', entity)
+                        }
+                    }
+                }
+            }
+        }
+        /* SpawnData */ {
+            let spawnData = root.get('SpawnData')
+            if (spawnData instanceof NbtCompound) {
+                spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+                root.set('SpawnData', spawnData)
+            }
+        }
+        /* Block & Data & TileEntityData */ {
+            const block = root.get('Block')
+            const data = root.get('Data')
+            root.del('Block')
+            root.del('Data')
+            if (
+                block instanceof NbtString &&
+                (data instanceof NbtByte || data instanceof NbtInt || typeof data === 'undefined')
+            ) {
+                const blockState = Updater.upBlockStringIDToBlockState(block, data)
+                root.set('BlockState', blockState)
+            }
+
+            let tileEntityData = root.get('TileEntityData')
+            if (block instanceof NbtString && tileEntityData instanceof NbtCompound) {
+                tileEntityData = getNbt(Updater.upBlockNbt(tileEntityData.toString(), block.get()))
+                root.set('TileEntityData', tileEntityData)
+            }
         }
 
         return root.toString()
+    }
+
+    private static upBlockNumericIDToBlockState(id: NbtShort | NbtInt, data?: NbtShort | NbtInt) {
+        const carriedBlockState = new NbtCompound()
+        const name = new NbtString()
+        const properties = new NbtCompound()
+        const metadata = data ? data.get() : 0
+        const nominal = Blocks.get1_13NominalIDFrom1_12NumericID(id.get(), metadata)
+        name.set(nominal.split('[')[0])
+        if (nominal.indexOf('[') !== -1) {
+            nominal
+                .slice(nominal.indexOf('['), -1)
+                .split(',')
+                .forEach(v => {
+                    const val = new NbtString()
+                    const pairs = v.split('=')
+                    val.set(pairs[1])
+                    properties.set(pairs[0], val)
+                })
+            carriedBlockState.set('Properties', properties)
+        }
+        carriedBlockState.set('Name', name)
+        return carriedBlockState
+    }
+
+    private static upBlockStringIDToBlockState(block: NbtString, data?: NbtByte | NbtInt) {
+        const carriedBlockState = new NbtCompound()
+        const name = new NbtString()
+        const properties = new NbtCompound()
+        const metadata = data ? data.get() : 0
+        const nominal = Blocks.get1_13NominalIDFrom1_12NominalID(
+            Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), metadata)
+        )
+        name.set(nominal.split('[')[0])
+        if (nominal.indexOf('[') !== -1) {
+            nominal
+                .slice(nominal.indexOf('['), -1)
+                .split(',')
+                .forEach(v => {
+                    const val = new NbtString()
+                    const pairs = v.split('=')
+                    val.set(pairs[1])
+                    properties.set(pairs[0], val)
+                })
+            carriedBlockState.set('Properties', properties)
+        }
+        carriedBlockState.set('Name', name)
+        return carriedBlockState
     }
 
     public static upEntityType(input: string) {
