@@ -189,7 +189,7 @@ export default class Spuses {
         ['scoreboard players %literal %entity %word %num', 'scoreboard players set %0 %1 %2'],
         [
             'scoreboard players %literal %entity %word %num %entity_nbt',
-            'scoreboard players set %0$addNbtToEntity%3 %1 %2'
+            'scoreboard players %0 %1$addNbtToEntity%4 %2 %3'
         ],
         ['scoreboard players tag %entity list', 'tag %0 list'],
         ['scoreboard players tag %entity %literal %num', 'tag %0 %1 %2'],

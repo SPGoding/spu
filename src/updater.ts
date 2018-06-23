@@ -5,19 +5,19 @@ import SpuScript from './spu_script'
 import Checker from './checker'
 import Blocks from './mappings/blocks'
 import Effects from './mappings/effects'
-import Enches from './mappings/enches'
+import Enchantments from './mappings/enchantments'
 import Entities from './mappings/entities'
 import Items from './mappings/items'
 import Particles from './mappings/particles'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
-import { isNumeric, getNbt } from './utils/utils'
-import { NbtString, NbtCompound, NbtShort, NbtValue, NbtList } from './utils/nbt/nbt'
+import { isNumeric, getNbt, escape } from './utils/utils'
+import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt } from './utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
  * @author SPGoding
  */
-export default class Converter {
+export default class Updater {
     /**
      * Returns an result map from an 1.12 command and an 1.12 spus.
      * @param cmd An 1.12 minecraft command.
@@ -50,7 +50,7 @@ export default class Converter {
             end = cmdSplited.length
 
             if (spusArg.charAt(0) === '%') {
-                map.set(`%${cnt++}`, Converter.cvtArgument(cmdArg, spusArg))
+                map.set(`%${cnt++}`, Updater.cvtArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
@@ -67,13 +67,13 @@ export default class Converter {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            return Converter.cvtCommand(input, positionCorrect)
+            return Updater.cvtCommand(input, positionCorrect)
         }
     }
 
     public static cvtCommand(input: string, positionCorrect: boolean) {
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Converter.getResultMap(input, spusOld)
+            let map = Updater.getResultMap(input, spusOld)
             if (map) {
                 let spusNew = Spuses.pairs.get(spusOld)
                 if (spusNew) {
@@ -99,7 +99,7 @@ export default class Converter {
             case 'block':
                 return arg
             case 'block_dust_param':
-                return Converter.cvtBlockDustParam(arg)
+                return Updater.cvtBlockDustParam(arg)
             case 'block_metadata_or_state':
                 return arg
             case 'block_nbt':
@@ -107,23 +107,23 @@ export default class Converter {
             case 'bool':
                 return arg
             case 'command':
-                return Converter.cvtCommand(arg, false)
+                return Updater.cvtCommand(arg, false)
             case 'difficulty':
-                return Converter.cvtDifficulty(arg)
+                return Updater.cvtDifficulty(arg)
             case 'effect':
-                return Converter.cvtEffect(arg)
+                return Updater.cvtEffect(arg)
             case 'entity':
-                return Converter.cvtEntity(arg)
+                return Updater.cvtEntity(arg)
             case 'entity_nbt':
-                return Converter.cvtEntityNbt(arg)
+                return Updater.cvtEntityNbt(arg)
             case 'ench':
-                return Converter.cvtEnch(arg)
+                return Updater.cvtEnch(arg)
             case 'entity_type':
-                return Converter.cvtEntityType(arg)
+                return Updater.cvtEntityType(arg)
             case 'func':
                 return arg
             case 'gamemode':
-                return Converter.cvtGamemode(arg)
+                return Updater.cvtGamemode(arg)
             case 'ip':
                 return arg
             case 'item':
@@ -131,13 +131,13 @@ export default class Converter {
             case 'item_data':
                 return arg
             case 'item_dust_params':
-                return Converter.cvtItemDustParams(arg)
+                return Updater.cvtItemDustParams(arg)
             case 'item_nbt':
-                return Converter.cvtItemNbt(arg)
+                return Updater.cvtItemNbt(arg)
             case 'item_tag_nbt':
                 return arg
             case 'json':
-                return Converter.cvtJson(arg)
+                return Updater.cvtJson(arg)
             case 'literal':
                 return arg.toLowerCase()
             case 'num':
@@ -145,13 +145,13 @@ export default class Converter {
             case 'num_or_star':
                 return arg
             case 'particle':
-                return Converter.cvtParticle(arg)
+                return Updater.cvtParticle(arg)
             case 'recipe':
                 return arg
             case 'scb_crit':
-                return Converter.cvtScbCrit(arg)
+                return Updater.cvtScbCrit(arg)
             case 'slot':
-                return Converter.cvtSlot(arg)
+                return Updater.cvtSlot(arg)
             case 'sound':
                 return arg
             case 'source':
@@ -177,13 +177,13 @@ export default class Converter {
         return id.toString()
     }
 
-    public static cvtBlock(input: string) {
-        const root = getNbt(input)
+    public static cvtBlockNbt(nbt: string, item: string) {
+        const root = getNbt(nbt)
         const items = root.get('Items')
         if (items instanceof NbtList) {
             for (let i = 0; i < items.length; i++) {
                 let item = items.get(i)
-                item = getNbt(Converter.cvtItemNbt(item.toString()))
+                item = getNbt(Updater.cvtItemNbt(item.toString()))
                 items.set(i, item)
             }
             root.set('Items', items)
@@ -225,7 +225,7 @@ export default class Converter {
 
     public static cvtEnch(input: string) {
         if (isNumeric(input)) {
-            return Enches.get1_12NominalIDFrom1_12NumericID(Number(input))
+            return Enchantments.get1_12NominalIDFrom1_12NumericID(Number(input))
         } else {
             return input
         }
@@ -296,9 +296,9 @@ export default class Converter {
 
         if (id instanceof NbtString && damage instanceof NbtShort) {
             if (tag instanceof NbtCompound) {
-                tag = getNbt(Converter.cvtItemTagNbt(tag.toString()))
+                tag = getNbt(Updater.cvtItemTagNbt(tag.toString(), id.get()))
             }
-            if (Items.shouldDamageMoveToTagItem(id.get())) {
+            if (Items.isDamageItem(id.get())) {
                 if (!(tag instanceof NbtCompound)) {
                     tag = new NbtCompound()
                 }
@@ -317,17 +317,106 @@ export default class Converter {
         return root.toString()
     }
 
-    public static cvtItemTagNbt(input: string) {
-        const root = getNbt(input)
-
-        const display = root.get('display')
-        if (display instanceof NbtCompound) {
-            const name = display.get('Name')
-            if (name instanceof NbtString) {
-                name.set(`{"text":"${name.get()}"}`)
-                display.set('Name', name)
+    // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
+    public static cvtItemTagNbt(nbt: string, item: string) {
+        const root = getNbt(nbt)
+        console.log('executed')
+        /* CanDestroy */ {
+            const canDestroy = root.get('CanDestroy')
+            if (canDestroy instanceof NbtList) {
+                for (let i = 0; i < canDestroy.length; i++) {
+                    const block = canDestroy.get(i)
+                    if (block instanceof NbtString) {
+                        block.set(
+                            Blocks.get1_13NominalIDFrom1_12NominalID(
+                                Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), 0)
+                            ).split('[')[0]
+                        )
+                        canDestroy.set(i, block)
+                    }
+                }
+                root.set('CanDestroy', canDestroy)
             }
-            root.set('display', display)
+        }
+        /* CanPlaceOn */ {
+            const canPlaceOn = root.get('CanPlaceOn')
+            if (canPlaceOn instanceof NbtList) {
+                for (let i = 0; i < canPlaceOn.length; i++) {
+                    const block = canPlaceOn.get(i)
+                    if (block instanceof NbtString) {
+                        block.set(
+                            Blocks.get1_13NominalIDFrom1_12NominalID(
+                                Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), 0)
+                            ).split('[')[0]
+                        )
+                    }
+                    canPlaceOn.set(i, block)
+                }
+                root.set('CanPlaceOn', canPlaceOn)
+            }
+        }
+        /* BlockEntityTag */ {
+            let blockEntityTag = root.get('BlockEntityTag')
+            if (blockEntityTag instanceof NbtCompound) {
+                blockEntityTag = getNbt(Updater.cvtBlockNbt(blockEntityTag.toString(), item))
+                root.set('BlockEntityTag', blockEntityTag)
+            }
+        }
+        /* ench */ {
+            const enchantments = root.get('ench')
+            root.del('ench')
+            if (enchantments instanceof NbtList) {
+                for (let i = 0; i < enchantments.length; i++) {
+                    const enchantment = enchantments.get(i)
+                    if (enchantment instanceof NbtCompound) {
+                        let id = enchantment.get('id')
+                        if (id instanceof NbtShort || id instanceof NbtInt) {
+                            const strID = Enchantments.get1_12NominalIDFrom1_12NumericID(id.get())
+                            id = new NbtString()
+                            id.set(strID)
+                            enchantment.set('id', id)
+                        }
+                        enchantments.set(i, enchantment)
+                    }
+                }
+                root.set('Enchantments', enchantments)
+            }
+        }
+        /* StoredEnchantments */ {
+            const storedEnchantments = root.get('StoredEnchantments')
+            if (storedEnchantments instanceof NbtList) {
+                for (let i = 0; i < storedEnchantments.length; i++) {
+                    const enchantment = storedEnchantments.get(i)
+                    if (enchantment instanceof NbtCompound) {
+                        let id = enchantment.get('id')
+                        if (id instanceof NbtShort || id instanceof NbtInt) {
+                            const strID = Enchantments.get1_12NominalIDFrom1_12NumericID(id.get())
+                            id = new NbtString()
+                            id.set(strID)
+                            enchantment.set('id', id)
+                        }
+                        storedEnchantments.set(i, enchantment)
+                    }
+                }
+                root.set('Enchantments', storedEnchantments)
+            }
+        }
+        /* display.(Name|LocName) */ {
+            const display = root.get('display')
+            if (display instanceof NbtCompound) {
+                const name = display.get('Name')
+                if (name instanceof NbtString) {
+                    name.set(`{"text": "${escape(name.get())}"}`)
+                    display.set('Name', name)
+                }
+                const locName = display.get('LocName')
+                display.del('LocName')
+                if (locName instanceof NbtString) {
+                    locName.set(`{"translate": "${locName.get()}"}`)
+                    display.set('Name', locName)
+                }
+                root.set('display', display)
+            }
         }
 
         return root.toString()
@@ -340,7 +429,7 @@ export default class Converter {
             let json = JSON.parse(input)
             let result: string[] = []
             for (const i of json) {
-                result.push(Converter.cvtJson(JSON.stringify(i)))
+                result.push(Updater.cvtJson(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
@@ -357,11 +446,11 @@ export default class Converter {
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
                 json.clickEvent.value
             ) {
-                json.clickEvent.value = Converter.cvtCommand(json.clickEvent.value, false)
+                json.clickEvent.value = Updater.cvtCommand(json.clickEvent.value, false)
             }
 
             if (json.extra) {
-                json.extra = JSON.parse(Converter.cvtJson(JSON.stringify(json.extra)))
+                json.extra = JSON.parse(Updater.cvtJson(JSON.stringify(json.extra)))
             }
 
             return JSON.stringify(json)

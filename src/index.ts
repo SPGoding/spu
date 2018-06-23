@@ -8,7 +8,7 @@
  *
  */
 
-import Converter from './converter'
+import Updater from './updater'
 
 $(document).ready(function() {
     $('#button').click(function() {
@@ -18,7 +18,7 @@ $(document).ready(function() {
             if (content) {
                 let lines = content.toString().split('\n')
                 for (let line of lines) {
-                    line = Converter.cvtLine(line, $('#position-correct').is(':checked'))
+                    line = Updater.cvtLine(line, $('#position-correct').is(':checked'))
                     result += line + '<br>'
                 }
                 $('#output').html(result)

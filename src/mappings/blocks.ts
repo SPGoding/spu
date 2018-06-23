@@ -2,7 +2,7 @@
  * Providing a map storing old block IDs and new block IDs.
  */
 export default class Blocks {
-    static is1_12StringIDExist(id: string) {
+    static is1_12StringID(id: string) {
         if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`
         }

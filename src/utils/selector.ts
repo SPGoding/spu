@@ -1,5 +1,5 @@
 import CharReader from './char_reader'
-import Converter from '../converter'
+import Updater from '../updater'
 import { isWhiteSpace, getNbt } from './utils'
 import { NbtCompound } from './nbt/nbt'
 
@@ -195,7 +195,6 @@ export default class Selector {
                                 this.variable = 'e'
                                 this.sort = 'random'
                             }
-                            console.log(this.sort)
                             this.type.push(val)
                             break
                         case 'c':
@@ -210,9 +209,9 @@ export default class Selector {
                             break
                         case 'm':
                             if (val.slice(0, 1) !== '!') {
-                                this.gamemode.push(Converter.cvtGamemode(val))
+                                this.gamemode.push(Updater.cvtGamemode(val))
                             } else {
-                                this.gamemode.push('!' + Converter.cvtGamemode(val.slice(1)))
+                                this.gamemode.push('!' + Updater.cvtGamemode(val.slice(1)))
                             }
                             break
                         case 'l':
@@ -473,7 +472,6 @@ export default class Selector {
         if (this.z) {
             result += `z=${this.z},`
         }
-        console.log(this.sort)
         if (this.sort) {
             result += `sort=${this.sort},`
         }

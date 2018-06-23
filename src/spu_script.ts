@@ -4,6 +4,7 @@ import Selector from './utils/selector'
 import Items from './mappings/items'
 import { isNumeric } from './utils/utils'
 import Blocks from './mappings/blocks'
+import Updater from './updater'
 
 /**
  * Represents a spu script.
@@ -98,7 +99,8 @@ export default class SpuScript {
                             source = sel.get1_13()
                             break
                         }
-                        case 'addNbtToItems':
+                        case 'addNbtToItem':
+                            params[0] = Updater.cvtItemTagNbt(params[0], source)
                             source += params[0]
                             break
                         case 'addScbMaxToEntity': {

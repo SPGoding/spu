@@ -35,13 +35,9 @@ export default class Items {
         }
     }
 
-    static shouldDamageMoveToTagItem(input: string) {
-        const arr = Items.DamageMoveToTagNominalIDs.find(v => v === input)
-        if (arr) {
-            return true
-        } else {
-            return false
-        }
+    static isDamageItem(input: string) {
+        const arr = Items.DamageItemIDs.find(v => v === input)
+        return arr ? true : false
     }
 
     static NumericID_NominalID: NumericID_NominalID[] = [
@@ -832,7 +828,7 @@ export default class Items {
         ['minecraft:record_ward.0', 'minecraft:music_disc_ward']
     ]
 
-    static DamageMoveToTagNominalIDs: string[] = [
+    static DamageItemIDs: string[] = [
         'minecraft:bow',
         'minecraft:carrot_on_a_stick',
         'minecraft:chainmail_boots',

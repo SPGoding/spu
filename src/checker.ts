@@ -1,5 +1,5 @@
 import Blocks from './mappings/blocks'
-import Converter from './converter'
+import Updater from './updater'
 import Items from './mappings/items'
 import Selector from './utils/selector'
 import Spuses from './mappings/spuses'
@@ -95,7 +95,7 @@ export default class Checker {
     }
 
     public static isBlock(input: string) {
-        return Blocks.is1_12StringIDExist(input)
+        return Blocks.is1_12StringID(input)
     }
 
     public static isBlockDustParam(input: string) {
@@ -117,7 +117,7 @@ export default class Checker {
 
     public static isCommand(input: string) {
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Converter.getResultMap(input, spusOld)
+            let map = Updater.getResultMap(input, spusOld)
             if (map) {
                 return true
             }
