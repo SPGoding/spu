@@ -9,7 +9,7 @@ import { NbtCompound } from './nbt/nbt'
  * @author SPGoding
  */
 export default class Selector {
-    private variable: SelectorVariable
+    private variable: 'a' | 'e' | 'p' | 'r' | 's'
     private dx: number
     private dy: number
     private dz: number
@@ -137,22 +137,21 @@ export default class Selector {
     private parseVariable1_12(char: string, str: string) {
         switch (char) {
             case 'a':
-                this.variable = SelectorVariable.A
+                this.variable = 'a'
                 this.sort = 'nearest'
                 break
             case 'e':
-                this.variable = SelectorVariable.E
+                this.variable = 'e'
                 this.sort = 'nearest'
                 break
             case 'p':
-                this.variable = SelectorVariable.P
+                this.variable = 'p'
                 break
             case 'r':
-                // In 1.13, @r doesn't support 'type', so I used '@e[sort=random]'.
-                this.variable = SelectorVariable.R
+                this.variable = 'r'
                 break
             case 's':
-                this.variable = SelectorVariable.S
+                this.variable = 's'
                 break
             default:
                 throw `Unknown variable: ${char} in ${str}`
@@ -173,6 +172,8 @@ export default class Selector {
                 char = charReader.next()
                 val = charReader.readUntil([',', ']'])
                 char = charReader.next()
+
+                console.log(`${key}=${val}`)
 
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
@@ -199,8 +200,8 @@ export default class Selector {
                             this.name.push(val)
                             break
                         case 'type':
-                            if (this.variable === SelectorVariable.R) {
-                                this.variable = SelectorVariable.E
+                            if (this.variable === 'r') {
+                                this.variable = 'e'
                                 this.sort = 'random'
                             }
                             this.type.push(val)
@@ -268,7 +269,7 @@ export default class Selector {
                             }
                             break
                         default:
-                            break
+                            throw `Unknown selector key: ${key}`
                     }
                 }
             }
@@ -280,19 +281,19 @@ export default class Selector {
     private parseVariable1_13(char: string, str: string) {
         switch (char) {
             case 'a':
-                this.variable = SelectorVariable.A
+                this.variable = 'a'
                 break
             case 'e':
-                this.variable = SelectorVariable.E
+                this.variable = 'e'
                 break
             case 'p':
-                this.variable = SelectorVariable.P
+                this.variable = 'p'
                 break
             case 'r':
-                this.variable = SelectorVariable.R
+                this.variable = 'r'
                 break
             case 's':
-                this.variable = SelectorVariable.S
+                this.variable = 's'
                 break
             default:
                 throw `Unknown variable: ${char} in ${str}`
@@ -463,19 +464,19 @@ export default class Selector {
 
     private getVariable1_13(result: string) {
         switch (this.variable) {
-            case SelectorVariable.A:
+            case 'a':
                 result += 'a'
                 break
-            case SelectorVariable.E:
+            case 'e':
                 result += 'e'
                 break
-            case SelectorVariable.P:
+            case 'p':
                 result += 'p'
                 break
-            case SelectorVariable.R:
+            case 'r':
                 result += 'r'
                 break
-            case SelectorVariable.S:
+            case 's':
                 result += 's'
                 break
         }
@@ -522,29 +523,27 @@ export default class Selector {
         for (const i of this.gamemode) {
             result += `gamemode=${i},`
         }
-        let tmp = this.level.get1_13()
-        if (tmp) {
+        let tmp
+        if ((tmp = this.level.get1_13())) {
             result += `level=${tmp},`
         }
-        tmp = this.distance.get1_13()
-        if (this.distance.get1_13()) {
+        if ((tmp = this.distance.get1_13())) {
             result += `distance=${this.distance.get1_13()},`
         }
-        tmp = this.x_rotation.get1_13()
-        if (tmp) {
+        if ((tmp = this.x_rotation.get1_13())) {
             result += `x_rotation=${tmp},`
         }
-        tmp = this.y_rotation.get1_13()
-        if (tmp) {
+        if ((tmp = this.y_rotation.get1_13())) {
             result += `y_rotation=${tmp},`
         }
-        tmp = this.getScores1_13()
-        if (tmp) {
+        if ((tmp = this.getScores1_13())) {
             result += `scores=${tmp},`
         }
-        tmp = this.getAdvancements1_13()
-        if (tmp) {
+        if ((tmp = this.getAdvancements1_13())) {
             result += `advancements=${tmp},`
+        }
+        if ((tmp = this.nbt.toString()) !== '{}') {
+            result += `nbt=${tmp},`
         }
         return result
     }
@@ -671,14 +670,6 @@ export default class Selector {
 
         return result
     }
-}
-
-enum SelectorVariable {
-    A,
-    E,
-    P,
-    R,
-    S
 }
 
 /**

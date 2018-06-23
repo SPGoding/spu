@@ -12596,21 +12596,21 @@ class Selector {
     parseVariable1_12(char, str) {
         switch (char) {
             case 'a':
-                this.variable = SelectorVariable.A;
+                this.variable = 'a';
                 this.sort = 'nearest';
                 break;
             case 'e':
-                this.variable = SelectorVariable.E;
+                this.variable = 'e';
                 this.sort = 'nearest';
                 break;
             case 'p':
-                this.variable = SelectorVariable.P;
+                this.variable = 'p';
                 break;
             case 'r':
-                this.variable = SelectorVariable.R;
+                this.variable = 'r';
                 break;
             case 's':
-                this.variable = SelectorVariable.S;
+                this.variable = 's';
                 break;
             default:
                 throw `Unknown variable: ${char} in ${str}`;
@@ -12629,6 +12629,7 @@ class Selector {
                 char = charReader.next();
                 val = charReader.readUntil([',', ']']);
                 char = charReader.next();
+                console.log(`${key}=${val}`);
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     this.parseScore1_12(key, val);
                 }
@@ -12653,8 +12654,8 @@ class Selector {
                             this.name.push(val);
                             break;
                         case 'type':
-                            if (this.variable === SelectorVariable.R) {
-                                this.variable = SelectorVariable.E;
+                            if (this.variable === 'r') {
+                                this.variable = 'e';
                                 this.sort = 'random';
                             }
                             this.type.push(val);
@@ -12723,7 +12724,7 @@ class Selector {
                             }
                             break;
                         default:
-                            break;
+                            throw `Unknown selector key: ${key}`;
                     }
                 }
             }
@@ -12735,19 +12736,19 @@ class Selector {
     parseVariable1_13(char, str) {
         switch (char) {
             case 'a':
-                this.variable = SelectorVariable.A;
+                this.variable = 'a';
                 break;
             case 'e':
-                this.variable = SelectorVariable.E;
+                this.variable = 'e';
                 break;
             case 'p':
-                this.variable = SelectorVariable.P;
+                this.variable = 'p';
                 break;
             case 'r':
-                this.variable = SelectorVariable.R;
+                this.variable = 'r';
                 break;
             case 's':
-                this.variable = SelectorVariable.S;
+                this.variable = 's';
                 break;
             default:
                 throw `Unknown variable: ${char} in ${str}`;
@@ -12902,19 +12903,19 @@ class Selector {
     }
     getVariable1_13(result) {
         switch (this.variable) {
-            case SelectorVariable.A:
+            case 'a':
                 result += 'a';
                 break;
-            case SelectorVariable.E:
+            case 'e':
                 result += 'e';
                 break;
-            case SelectorVariable.P:
+            case 'p':
                 result += 'p';
                 break;
-            case SelectorVariable.R:
+            case 'r':
                 result += 'r';
                 break;
-            case SelectorVariable.S:
+            case 's':
                 result += 's';
                 break;
         }
@@ -12960,29 +12961,27 @@ class Selector {
         for (const i of this.gamemode) {
             result += `gamemode=${i},`;
         }
-        let tmp = this.level.get1_13();
-        if (tmp) {
+        let tmp;
+        if ((tmp = this.level.get1_13())) {
             result += `level=${tmp},`;
         }
-        tmp = this.distance.get1_13();
-        if (this.distance.get1_13()) {
+        if ((tmp = this.distance.get1_13())) {
             result += `distance=${this.distance.get1_13()},`;
         }
-        tmp = this.x_rotation.get1_13();
-        if (tmp) {
+        if ((tmp = this.x_rotation.get1_13())) {
             result += `x_rotation=${tmp},`;
         }
-        tmp = this.y_rotation.get1_13();
-        if (tmp) {
+        if ((tmp = this.y_rotation.get1_13())) {
             result += `y_rotation=${tmp},`;
         }
-        tmp = this.getScores1_13();
-        if (tmp) {
+        if ((tmp = this.getScores1_13())) {
             result += `scores=${tmp},`;
         }
-        tmp = this.getAdvancements1_13();
-        if (tmp) {
+        if ((tmp = this.getAdvancements1_13())) {
             result += `advancements=${tmp},`;
+        }
+        if ((tmp = this.nbt.toString()) !== '{}') {
+            result += `nbt=${tmp},`;
         }
         return result;
     }
@@ -13084,14 +13083,6 @@ class Selector {
     }
 }
 exports.default = Selector;
-var SelectorVariable;
-(function (SelectorVariable) {
-    SelectorVariable[SelectorVariable["A"] = 0] = "A";
-    SelectorVariable[SelectorVariable["E"] = 1] = "E";
-    SelectorVariable[SelectorVariable["P"] = 2] = "P";
-    SelectorVariable[SelectorVariable["R"] = 3] = "R";
-    SelectorVariable[SelectorVariable["S"] = 4] = "S";
-})(SelectorVariable || (SelectorVariable = {}));
 class Range {
     getMin() {
         return this.min;
