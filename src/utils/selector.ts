@@ -209,9 +209,9 @@ export default class Selector {
                             break
                         case 'm':
                             if (val.slice(0, 1) !== '!') {
-                                this.gamemode.push(Updater.cvtGamemode(val))
+                                this.gamemode.push(Updater.upGamemode(val))
                             } else {
-                                this.gamemode.push('!' + Updater.cvtGamemode(val.slice(1)))
+                                this.gamemode.push('!' + Updater.upGamemode(val.slice(1)))
                             }
                             break
                         case 'l':

@@ -100,7 +100,7 @@ export default class SpuScript {
                             break
                         }
                         case 'addNbtToItem':
-                            params[0] = Updater.cvtItemTagNbt(params[0], source)
+                            params[0] = Updater.upItemTagNbt(params[0], source)
                             source += params[0]
                             break
                         case 'addScbMaxToEntity': {

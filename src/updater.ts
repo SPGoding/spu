@@ -50,7 +50,7 @@ export default class Updater {
             end = cmdSplited.length
 
             if (spusArg.charAt(0) === '%') {
-                map.set(`%${cnt++}`, Updater.cvtArgument(cmdArg, spusArg))
+                map.set(`%${cnt++}`, Updater.upArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
@@ -63,15 +63,15 @@ export default class Updater {
         }
     }
 
-    public static cvtLine(input: string, positionCorrect: boolean) {
+    public static upLine(input: string, positionCorrect: boolean) {
         if (input.charAt(0) === '#') {
             return input
         } else {
-            return Updater.cvtCommand(input, positionCorrect)
+            return Updater.upCommand(input, positionCorrect)
         }
     }
 
-    public static cvtCommand(input: string, positionCorrect: boolean) {
+    public static upCommand(input: string, positionCorrect: boolean) {
         for (const spusOld of Spuses.pairs.keys()) {
             let map = Updater.getResultMap(input, spusOld)
             if (map) {
@@ -90,7 +90,7 @@ export default class Updater {
         throw `Unknown command: ${input}`
     }
 
-    public static cvtArgument(arg: string, spus: string) {
+    public static upArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
             case 'adv':
                 return arg
@@ -99,7 +99,7 @@ export default class Updater {
             case 'block':
                 return arg
             case 'block_dust_param':
-                return Updater.cvtBlockDustParam(arg)
+                return Updater.upBlockDustParam(arg)
             case 'block_metadata_or_state':
                 return arg
             case 'block_nbt':
@@ -107,23 +107,23 @@ export default class Updater {
             case 'bool':
                 return arg
             case 'command':
-                return Updater.cvtCommand(arg, false)
+                return Updater.upCommand(arg, false)
             case 'difficulty':
-                return Updater.cvtDifficulty(arg)
+                return Updater.upDifficulty(arg)
             case 'effect':
-                return Updater.cvtEffect(arg)
+                return Updater.upEffect(arg)
             case 'entity':
-                return Updater.cvtEntity(arg)
+                return Updater.upEntity(arg)
             case 'entity_nbt':
-                return Updater.cvtEntityNbt(arg)
+                return Updater.upEntityNbt(arg)
             case 'ench':
-                return Updater.cvtEnch(arg)
+                return Updater.upEnch(arg)
             case 'entity_type':
-                return Updater.cvtEntityType(arg)
+                return Updater.upEntityType(arg)
             case 'func':
                 return arg
             case 'gamemode':
-                return Updater.cvtGamemode(arg)
+                return Updater.upGamemode(arg)
             case 'ip':
                 return arg
             case 'item':
@@ -131,13 +131,13 @@ export default class Updater {
             case 'item_data':
                 return arg
             case 'item_dust_params':
-                return Updater.cvtItemDustParams(arg)
+                return Updater.upItemDustParams(arg)
             case 'item_nbt':
-                return Updater.cvtItemNbt(arg)
+                return Updater.upItemNbt(arg)
             case 'item_tag_nbt':
                 return arg
             case 'json':
-                return Updater.cvtJson(arg)
+                return Updater.upJson(arg)
             case 'literal':
                 return arg.toLowerCase()
             case 'num':
@@ -145,13 +145,13 @@ export default class Updater {
             case 'num_or_star':
                 return arg
             case 'particle':
-                return Updater.cvtParticle(arg)
+                return Updater.upParticle(arg)
             case 'recipe':
                 return arg
             case 'scb_crit':
-                return Updater.cvtScbCrit(arg)
+                return Updater.upScbCrit(arg)
             case 'slot':
-                return Updater.cvtSlot(arg)
+                return Updater.upSlot(arg)
             case 'sound':
                 return arg
             case 'source':
@@ -171,19 +171,19 @@ export default class Updater {
         }
     }
 
-    public static cvtBlockDustParam(input: string) {
+    public static upBlockDustParam(input: string) {
         const num = Number(input)
         const id = Blocks.get1_13NominalIDFrom1_12NumericID(num)
         return id.toString()
     }
 
-    public static cvtBlockNbt(nbt: string, item: string) {
+    public static upBlockNbt(nbt: string, item: string) {
         const root = getNbt(nbt)
         const items = root.get('Items')
         if (items instanceof NbtList) {
             for (let i = 0; i < items.length; i++) {
                 let item = items.get(i)
-                item = getNbt(Updater.cvtItemNbt(item.toString()))
+                item = getNbt(Updater.upItemNbt(item.toString()))
                 items.set(i, item)
             }
             root.set('Items', items)
@@ -192,7 +192,7 @@ export default class Updater {
         return root.toString()
     }
 
-    public static cvtDifficulty(input: string) {
+    public static upDifficulty(input: string) {
         switch (input) {
             case '0':
             case 'p':
@@ -215,7 +215,7 @@ export default class Updater {
         }
     }
 
-    public static cvtEffect(input: string) {
+    public static upEffect(input: string) {
         if (isNumeric(input)) {
             return Effects.get1_12NominalIDFrom1_12NumericID(Number(input))
         } else {
@@ -223,7 +223,7 @@ export default class Updater {
         }
     }
 
-    public static cvtEnch(input: string) {
+    public static upEnch(input: string) {
         if (isNumeric(input)) {
             return Enchantments.get1_12NominalIDFrom1_12NumericID(Number(input))
         } else {
@@ -231,7 +231,7 @@ export default class Updater {
         }
     }
 
-    public static cvtEntity(input: string) {
+    public static upEntity(input: string) {
         let sel = new Selector()
         if (Checker.isSelector(input)) {
             sel.parse1_12(input)
@@ -243,7 +243,7 @@ export default class Updater {
         return sel.get1_13()
     }
 
-    public static cvtEntityNbt(input: string) {
+    public static upEntityNbt(input: string) {
         const root = getNbt(input)
 
         const value = root.get('CustomName')
@@ -255,11 +255,11 @@ export default class Updater {
         return root.toString()
     }
 
-    public static cvtEntityType(input: string) {
+    public static upEntityType(input: string) {
         return Entities.get1_13NominalIDFrom1_12NominalID(input)
     }
 
-    public static cvtGamemode(input: string) {
+    public static upGamemode(input: string) {
         switch (input) {
             case '0':
             case 's':
@@ -282,13 +282,13 @@ export default class Updater {
         }
     }
 
-    public static cvtItemDustParams(input: string) {
+    public static upItemDustParams(input: string) {
         const params = input.split(' ').map(x => Number(x))
         const nominal = Items.get1_12NominalIDFrom1_12NumericID(params[0])
         return Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(nominal, params[1])
     }
 
-    public static cvtItemNbt(input: string) {
+    public static upItemNbt(input: string) {
         const root = getNbt(input)
         const id = root.get('id')
         const damage = root.get('Damage')
@@ -296,7 +296,7 @@ export default class Updater {
 
         if (id instanceof NbtString && damage instanceof NbtShort) {
             if (tag instanceof NbtCompound) {
-                tag = getNbt(Updater.cvtItemTagNbt(tag.toString(), id.get()))
+                tag = getNbt(Updater.upItemTagNbt(tag.toString(), id.get()))
             }
             if (Items.isDamageItem(id.get())) {
                 if (!(tag instanceof NbtCompound)) {
@@ -317,7 +317,7 @@ export default class Updater {
         return root.toString()
     }
 
-    public static cvtItemTagNbt(nbt: string, item: string) {
+    public static upItemTagNbt(nbt: string, item: string) {
         // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
 
         const root = getNbt(nbt)
@@ -359,7 +359,7 @@ export default class Updater {
             if (Blocks.is1_12StringID(item)) {
                 let blockEntityTag = root.get('BlockEntityTag')
                 if (blockEntityTag instanceof NbtCompound) {
-                    blockEntityTag = getNbt(Updater.cvtBlockNbt(blockEntityTag.toString(), item))
+                    blockEntityTag = getNbt(Updater.upBlockNbt(blockEntityTag.toString(), item))
                     root.set('BlockEntityTag', blockEntityTag)
                 }
             }
@@ -424,7 +424,7 @@ export default class Updater {
             if (Items.hasEntityTag(item)) {
                 let entityTag = root.get('EntityTag')
                 if (entityTag instanceof NbtCompound) {
-                    entityTag = getNbt(Updater.cvtEntityNbt(entityTag.toString()))
+                    entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
                     root.set('EntityTag', entityTag)
                 }
             }
@@ -433,14 +433,14 @@ export default class Updater {
         return root.toString()
     }
 
-    public static cvtJson(input: string) {
+    public static upJson(input: string) {
         if (input.slice(0, 1) === '"') {
             return input
         } else if (input.slice(0, 1) === '[') {
             let json = JSON.parse(input)
             let result: string[] = []
             for (const i of json) {
-                result.push(Updater.cvtJson(JSON.stringify(i)))
+                result.push(Updater.upJson(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
@@ -457,22 +457,22 @@ export default class Updater {
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
                 json.clickEvent.value
             ) {
-                json.clickEvent.value = Updater.cvtCommand(json.clickEvent.value, false)
+                json.clickEvent.value = Updater.upCommand(json.clickEvent.value, false)
             }
 
             if (json.extra) {
-                json.extra = JSON.parse(Updater.cvtJson(JSON.stringify(json.extra)))
+                json.extra = JSON.parse(Updater.upJson(JSON.stringify(json.extra)))
             }
 
             return JSON.stringify(json)
         }
     }
 
-    public static cvtParticle(input: string) {
+    public static upParticle(input: string) {
         return Particles.get1_13NominalIDFrom1_12NominalID(input)
     }
 
-    public static cvtScbCrit(input: string) {
+    public static upScbCrit(input: string) {
         if (input.slice(0, 5) === 'stat.') {
             const subs = input.split(/\./g)
             const newCrit = ScoreboardCriterias.get1_13From1_12(subs[1])
@@ -523,7 +523,7 @@ export default class Updater {
         }
     }
 
-    public static cvtSlot(input: string) {
+    public static upSlot(input: string) {
         return input.slice(5)
     }
 }
