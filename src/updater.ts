@@ -317,10 +317,10 @@ export default class Updater {
         return root.toString()
     }
 
-    // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
     public static cvtItemTagNbt(nbt: string, item: string) {
+        // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
+
         const root = getNbt(nbt)
-        console.log('executed')
         /* CanDestroy */ {
             const canDestroy = root.get('CanDestroy')
             if (canDestroy instanceof NbtList) {
@@ -356,10 +356,12 @@ export default class Updater {
             }
         }
         /* BlockEntityTag */ {
-            let blockEntityTag = root.get('BlockEntityTag')
-            if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = getNbt(Updater.cvtBlockNbt(blockEntityTag.toString(), item))
-                root.set('BlockEntityTag', blockEntityTag)
+            if (Blocks.is1_12StringID(item)) {
+                let blockEntityTag = root.get('BlockEntityTag')
+                if (blockEntityTag instanceof NbtCompound) {
+                    blockEntityTag = getNbt(Updater.cvtBlockNbt(blockEntityTag.toString(), item))
+                    root.set('BlockEntityTag', blockEntityTag)
+                }
             }
         }
         /* ench */ {
@@ -416,6 +418,15 @@ export default class Updater {
                     display.set('Name', locName)
                 }
                 root.set('display', display)
+            }
+        }
+        /* EntityTag */ {
+            if (Items.hasEntityTag(item)) {
+                let entityTag = root.get('EntityTag')
+                if (entityTag instanceof NbtCompound) {
+                    entityTag = getNbt(Updater.cvtEntityNbt(entityTag.toString()))
+                    root.set('EntityTag', entityTag)
+                }
             }
         }
 

@@ -10,6 +10,13 @@ export default class Items {
         return arr ? true : false
     }
 
+    static hasEntityTag(id: string) {
+        if (id.slice(0, 10) !== 'minecraft:') {
+            id = `minecraft:${id}`
+        }
+        return ['armor_stand', 'spawn_egg'].indexOf(id) !== -1
+    }
+
     static get1_13NominalIDFrom1_12NominalIDWithDataValue(str: string, data: number = 0) {
         if (data === -1) {
             data = 0
