@@ -660,7 +660,7 @@ export default class Updater {
         name.set(nominal.split('[')[0])
         if (nominal.indexOf('[') !== -1) {
             nominal
-                .slice(nominal.indexOf('['), -1)
+                .slice(nominal.indexOf('[') + 1, -1)
                 .split(',')
                 .forEach(v => {
                     const val = new NbtString()
