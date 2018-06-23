@@ -62,6 +62,8 @@ class Checker {
                     return Checker.isLiteral(cmdArg);
                 case 'num':
                     return Checker.isNum(cmdArg);
+                case 'num_or_star':
+                    return Checker.isNumOrStar(cmdArg);
                 case 'particle':
                     return Checker.isStringID(cmdArg);
                 case 'recipe':
@@ -176,6 +178,9 @@ class Checker {
     static isNum(input) {
         return utils_1.isNumeric(input);
     }
+    static isNumOrStar(input) {
+        return utils_1.isNumeric(input) || input == '*';
+    }
     static isUuid(input) {
         return /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/.test(input);
     }
@@ -275,28 +280,31 @@ class Converter {
     static getResultMap(cmd, spus) {
         let spusReader = new argument_reader_1.default(spus);
         let spusArg = spusReader.next();
-        let cmdReader = new argument_reader_1.default(cmd);
-        let cmdArg = cmdReader.next();
+        let cmdSplited = cmd.split(' ');
+        let begin = 0;
+        let end = cmdSplited.length;
+        let cmdArg = cmdSplited.slice(begin, end).join(' ');
         let map = new Map();
         let cnt = 0;
-        while (spusArg !== '') {
+        while (spusArg !== '' && begin < cmdSplited.length) {
             while (!checker_1.default.isArgumentMatch(cmdArg, spusArg)) {
-                if (cmdReader.hasMore()) {
-                    cmdArg += ' ' + cmdReader.next();
+                if (cmdArg !== '') {
+                    end -= 1;
+                    cmdArg = cmdSplited.slice(begin, end).join(' ');
                 }
                 else {
                     return null;
                 }
             }
+            begin = end;
+            end = cmdSplited.length;
             if (spusArg.charAt(0) === '%') {
-                map.set(`%${cnt}`, Converter.cvtArgument(cmdArg, spusArg));
-                cnt++;
+                map.set(`%${cnt++}`, Converter.cvtArgument(cmdArg, spusArg));
             }
             spusArg = spusReader.next();
-            cmdArg = cmdReader.next();
+            cmdArg = cmdSplited.slice(begin, end).join(' ');
         }
         if (cmdArg === '') {
-            console.log(spus);
             return map;
         }
         else {
@@ -381,6 +389,8 @@ class Converter {
             case 'literal':
                 return arg.toLowerCase();
             case 'num':
+                return arg;
+            case 'num_or_star':
                 return arg;
             case 'particle':
                 return Converter.cvtParticle(arg);
@@ -11356,7 +11366,7 @@ Spuses.pairs = new Map([
     ['gamemode %gamemode', 'gamemode %0'],
     ['gamemode %gamemode %entity', 'gamemode %0 %1'],
     ['gamerule %word', 'gamerule %0'],
-    ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'.|error"],
+    ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'."],
     ['gamerule %word %word', 'gamerule %0 %1'],
     ['give %entity %item', 'give %0 %1$fuckItemItself'],
     ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
@@ -11376,8 +11386,14 @@ Spuses.pairs = new Map([
     ['particle %particle %vec_3 %vec_3 %num %num', 'particle %0 %1 %2 %3 %4'],
     ['particle %particle %vec_3 %vec_3 %num %num %literal', 'particle %0 %1 %2 %3 %4 %5'],
     ['particle %particle %vec_3 %vec_3 %num %num %literal %entity', 'particle %0 %1 %2 %3 %4 %5 %6'],
-    ['particle %particle %vec_3 %vec_3 %num %num %literal %entity %block_dust_param', 'FUCK|danger'],
-    ['particle %particle %vec_3 %vec_3 %num %num %literal %entity %item_dust_params', 'FUCK|danger'],
+    [
+        'particle %particle %vec_3 %vec_3 %num %num %literal %entity %block_dust_param',
+        'particle %0 %7 %1 %2 %3 %4 %5 %6'
+    ],
+    [
+        'particle %particle %vec_3 %vec_3 %num %num %literal %entity %item_dust_params',
+        'particle %0 %7 %1 %2 %3 %4 %5 %6'
+    ],
     ['playsound %sound %source %entity', 'playsound %0 %1 %2'],
     ['playsound %sound %source %entity %vec_3', 'playsound %0 %1 %2 %3'],
     ['playsound %sound %source %entity %vec_3 %num', 'playsound %0 %1 %2 %3 %4'],
@@ -11417,7 +11433,7 @@ Spuses.pairs = new Map([
     ['scoreboard players %literal %entity %word', 'scoreboard players %0 %1 %2'],
     ['scoreboard players test %entity %word %num', 'execute if entity %0$addScbMinToEntity%1%2'],
     [
-        'scoreboard players test %entity %word %num %num',
+        'scoreboard players test %entity %word %num_or_star %num_or_star',
         'execute if entity %0$addScbMinToEntity%1%2$addScbMaxToEntity%1%3'
     ],
     ['scoreboard players %literal %entity %word %num', 'scoreboard players set %0 %1 %2'],
@@ -11454,7 +11470,7 @@ Spuses.pairs = new Map([
     ['spawnpoint %entity', 'spawnpoint %0'],
     ['spawnpoint %entity %vec_3', 'spawnpoint %0 %1'],
     ['spreadplayers %vec_2 %num %num %bool %entity', 'spreadplayers %0 %1 %2 %3 %4'],
-    ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'!|error"],
+    ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'"],
     ['stop', 'stop'],
     ['stopsound %entity', 'stopsound %0'],
     ['stopsound %entity %source', 'stopsound %0 %1'],
@@ -11482,7 +11498,7 @@ Spuses.pairs = new Map([
     ['title %entity %word', 'title %0 %1'],
     ['title %entity %word %json', 'title %0 %1 %2'],
     ['title %entity times %num %num %num', 'title %0 times %1 %2 %3'],
-    ['toggledownfall', 'weather clear|warn'],
+    ['toggledownfall', 'weather clear'],
     ['tp %entity', 'teleport %0'],
     ['tp %entity %entity', 'teleport %0 %1'],
     ['tp %vec_3', 'teleport %0'],
@@ -11535,11 +11551,9 @@ class SpuScript {
         let ast = this.getAst(arg);
         let id = ast.keys().next().value;
         let methods = ast.get(id);
-        console.log(methods);
         let source = resultMap.get(`%${id}`);
         if (methods && source) {
             for (const name of methods.keys()) {
-                console.log(name);
                 let paramIds = methods.get(name);
                 if (paramIds) {
                     let params = paramIds.map(x => {
@@ -11587,17 +11601,21 @@ class SpuScript {
                             source += params[0];
                             break;
                         case 'addScbMaxToEntity': {
-                            let sel = new selector_1.default();
-                            sel.parse1_13(source);
-                            sel.setScore(params[0], params[1], 'max');
-                            source = sel.get1_13();
+                            if (params[1] !== '*') {
+                                let sel = new selector_1.default();
+                                sel.parse1_13(source);
+                                sel.setScore(params[0], params[1], 'max');
+                                source = sel.get1_13();
+                            }
                             break;
                         }
                         case 'addScbMinToEntity': {
-                            let sel = new selector_1.default();
-                            sel.parse1_13(source);
-                            sel.setScore(params[0], params[1], 'min');
-                            source = sel.get1_13();
+                            if (params[1] !== '*') {
+                                let sel = new selector_1.default();
+                                sel.parse1_13(source);
+                                sel.setScore(params[0], params[1], 'min');
+                                source = sel.get1_13();
+                            }
                             break;
                         }
                         case 'fuckItemItself':

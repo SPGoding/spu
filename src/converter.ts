@@ -23,33 +23,39 @@ export default class Converter {
      * @param cmd An 1.12 minecraft command.
      * @param spus An 1.12 spus defined in spuses.ts.
      * @returns NULLABLE. A map filled with converted value.
-     * @example {'%0': 'converted value'}.
+     * @example {'%n': 'converted value'}.
      */
     public static getResultMap(cmd: string, spus: string) {
         let spusReader = new ArgumentReader(spus)
         let spusArg = spusReader.next()
-        let cmdReader = new ArgumentReader(cmd)
-        let cmdArg = cmdReader.next()
+        let cmdSplited = cmd.split(' ')
+        let begin: number = 0
+        let end: number = cmdSplited.length
+        let cmdArg = cmdSplited.slice(begin, end).join(' ')
         let map = new Map<string, string>()
         let cnt = 0
-        while (spusArg !== '') {
+        while (spusArg !== '' && begin < cmdSplited.length) {
             while (!Checker.isArgumentMatch(cmdArg, spusArg)) {
-                if (cmdReader.hasMore()) {
-                    cmdArg += ' ' + cmdReader.next()
+                if (cmdArg !== '') {
+                    end -= 1
+                    cmdArg = cmdSplited.slice(begin, end).join(' ')
                 } else {
-                    // Can't match this spus.
+                    // The cmdArg has sliced to ''.
+                    // Still can't match.
                     return null
                 }
             }
+
+            begin = end
+            end = cmdSplited.length
+
             if (spusArg.charAt(0) === '%') {
-                map.set(`%${cnt}`, Converter.cvtArgument(cmdArg, spusArg))
-                cnt++
+                map.set(`%${cnt++}`, Converter.cvtArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
-            cmdArg = cmdReader.next()
+            cmdArg = cmdSplited.slice(begin, end).join(' ')
         }
         if (cmdArg === '') {
-            console.log(spus)
             // Match successfully.
             return map
         } else {
@@ -135,6 +141,8 @@ export default class Converter {
             case 'literal':
                 return arg.toLowerCase()
             case 'num':
+                return arg
+            case 'num_or_star':
                 return arg
             case 'particle':
                 return Converter.cvtParticle(arg)

@@ -1,4 +1,3 @@
-import Checker from './checker'
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
 import Selector from './utils/selector'
@@ -103,17 +102,21 @@ export default class SpuScript {
                             source += params[0]
                             break
                         case 'addScbMaxToEntity': {
-                            let sel = new Selector()
-                            sel.parse1_13(source)
-                            sel.setScore(params[0], params[1], 'max')
-                            source = sel.get1_13()
+                            if (params[1] !== '*') {
+                                let sel = new Selector()
+                                sel.parse1_13(source)
+                                sel.setScore(params[0], params[1], 'max')
+                                source = sel.get1_13()
+                            }
                             break
                         }
                         case 'addScbMinToEntity': {
-                            let sel = new Selector()
-                            sel.parse1_13(source)
-                            sel.setScore(params[0], params[1], 'min')
-                            source = sel.get1_13()
+                            if (params[1] !== '*') {
+                                let sel = new Selector()
+                                sel.parse1_13(source)
+                                sel.setScore(params[0], params[1], 'min')
+                                source = sel.get1_13()
+                            }
                             break
                         }
                         case 'fuckItemItself':

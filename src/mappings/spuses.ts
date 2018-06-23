@@ -29,6 +29,7 @@ export default class Spuses {
      * %json
      * %literal
      * %num
+     * %num_or_star
      * %particle
      * %recipe
      * %scb_crit
@@ -114,7 +115,7 @@ export default class Spuses {
         ['gamemode %gamemode', 'gamemode %0'],
         ['gamemode %gamemode %entity', 'gamemode %0 %1'],
         ['gamerule %word', 'gamerule %0'],
-        ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'.|error"],
+        ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'."],
         ['gamerule %word %word', 'gamerule %0 %1'],
         ['give %entity %item', 'give %0 %1$fuckItemItself'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
@@ -134,15 +135,20 @@ export default class Spuses {
         ['particle %particle %vec_3 %vec_3 %num %num', 'particle %0 %1 %2 %3 %4'],
         ['particle %particle %vec_3 %vec_3 %num %num %literal', 'particle %0 %1 %2 %3 %4 %5'],
         ['particle %particle %vec_3 %vec_3 %num %num %literal %entity', 'particle %0 %1 %2 %3 %4 %5 %6'],
-        ['particle %particle %vec_3 %vec_3 %num %num %literal %entity %block_dust_param', 'FUCK|danger'],
-        ['particle %particle %vec_3 %vec_3 %num %num %literal %entity %item_dust_params', 'FUCK|danger'],
+        [
+            'particle %particle %vec_3 %vec_3 %num %num %literal %entity %block_dust_param',
+            'particle %0 %7 %1 %2 %3 %4 %5 %6'
+        ],
+        [
+            'particle %particle %vec_3 %vec_3 %num %num %literal %entity %item_dust_params',
+            'particle %0 %7 %1 %2 %3 %4 %5 %6'
+        ],
         ['playsound %sound %source %entity', 'playsound %0 %1 %2'],
         ['playsound %sound %source %entity %vec_3', 'playsound %0 %1 %2 %3'],
         ['playsound %sound %source %entity %vec_3 %num', 'playsound %0 %1 %2 %3 %4'],
         ['playsound %sound %source %entity %vec_3 %num %num', 'playsound %0 %1 %2 %3 %4 %5'],
         ['playsound %sound %source %entity %vec_3 %num %num %num', 'playsound %0 %1 %2 %3 %4 %5 %6'],
         ['publish', 'publish'],
-        // FIXME: %recipe should contain * and resource location.
         ['recipe %literal %recipe', 'recipe %0 %1'],
         ['recipe %literal %entity %recipe', 'recipe %0 %1 %2'],
         ['reload', 'reload'],
@@ -175,10 +181,8 @@ export default class Spuses {
         ['scoreboard players %literal %entity', 'scoreboard players %0 %1'],
         ['scoreboard players %literal %entity %word', 'scoreboard players %0 %1 %2'],
         ['scoreboard players test %entity %word %num', 'execute if entity %0$addScbMinToEntity%1%2'],
-
-        //TODO: if "*" is used in %num, max defaults to 2,147,483,647, min defaults to -2,147,483,648
         [
-            'scoreboard players test %entity %word %num %num',
+            'scoreboard players test %entity %word %num_or_star %num_or_star',
             'execute if entity %0$addScbMinToEntity%1%2$addScbMaxToEntity%1%3'
         ],
 
@@ -216,7 +220,7 @@ export default class Spuses {
         ['spawnpoint %entity', 'spawnpoint %0'],
         ['spawnpoint %entity %vec_3', 'spawnpoint %0 %1'],
         ['spreadplayers %vec_2 %num %num %bool %entity', 'spreadplayers %0 %1 %2 %3 %4'],
-        ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'!|error"],
+        ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'"],
         ['stop', 'stop'],
         ['stopsound %entity', 'stopsound %0'],
         ['stopsound %entity %source', 'stopsound %0 %1'],
@@ -244,7 +248,7 @@ export default class Spuses {
         ['title %entity %word', 'title %0 %1'],
         ['title %entity %word %json', 'title %0 %1 %2'],
         ['title %entity times %num %num %num', 'title %0 times %1 %2 %3'],
-        ['toggledownfall', 'weather clear|warn'],
+        ['toggledownfall', 'weather clear'],
         ['tp %entity', 'teleport %0'],
         ['tp %entity %entity', 'teleport %0 %1'],
         ['tp %vec_3', 'teleport %0'],

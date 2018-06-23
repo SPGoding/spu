@@ -62,6 +62,8 @@ export default class Checker {
                     return Checker.isLiteral(cmdArg)
                 case 'num':
                     return Checker.isNum(cmdArg)
+                case 'num_or_star':
+                    return Checker.isNumOrStar(cmdArg)
                 case 'particle':
                     return Checker.isStringID(cmdArg)
                 case 'recipe':
@@ -194,6 +196,10 @@ export default class Checker {
 
     public static isNum(input: string) {
         return isNumeric(input)
+    }
+
+    public static isNumOrStar(input: string) {
+        return isNumeric(input) || input == '*'
     }
 
     public static isUuid(input: string) {
