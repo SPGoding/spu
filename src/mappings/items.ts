@@ -47,10 +47,10 @@ export default class Items {
         return arr ? true : false
     }
 
-    static getBedIDFromColorValue(input: number) {
-        const arr = Items.BedNbtID.find(v => v[0] === input.toString())
+    static getNominalColorFromNumericColor(input: number, suffix: string) {
+        const arr = Items.NumericColor_NominalColor.find(v => v[0] === input.toString())
         if (arr) {
-            return arr[1]
+            return `${arr[1]}${suffix}`
         } else {
             throw `Unknown color value for bed: ${input}`
         }
@@ -899,23 +899,23 @@ export default class Items {
         'minecraft:wooden_sword'
     ]
 
-    static BedNbtID: string[][] = [
-        ['0', 'minecraft:white_bed'],
-        ['1', 'minecraft:orange_bed'],
-        ['2', 'minecraft:magenta_bed'],
-        ['3', 'minecraft:light_blue_bed'],
-        ['4', 'minecraft:yellow_bed'],
-        ['5', 'minecraft:lime_bed'],
-        ['6', 'minecraft:pink_bed'],
-        ['7', 'minecraft:gray_bed'],
-        ['8', 'minecraft:light_gray_bed'],
-        ['9', 'minecraft:cyan_bed'],
-        ['10', 'minecraft:purple_bed'],
-        ['11', 'minecraft:blue_bed'],
-        ['12', 'minecraft:brown_bed'],
-        ['13', 'minecraft:green_bed'],
-        ['14', 'minecraft:red_bed'],
-        ['15', 'minecraft:black_bed']
+    static NumericColor_NominalColor: string[][] = [
+        ['0', 'minecraft:white_'],
+        ['1', 'minecraft:orange_'],
+        ['2', 'minecraft:magenta_'],
+        ['3', 'minecraft:light_blue_'],
+        ['4', 'minecraft:yellow_'],
+        ['5', 'minecraft:lime_'],
+        ['6', 'minecraft:pink_'],
+        ['7', 'minecraft:gray_'],
+        ['8', 'minecraft:light_gray_'],
+        ['9', 'minecraft:cyan_'],
+        ['10', 'minecraft:purple_'],
+        ['11', 'minecraft:blue_'],
+        ['12', 'minecraft:brown_'],
+        ['13', 'minecraft:green_'],
+        ['14', 'minecraft:red_'],
+        ['15', 'minecraft:black_']
     ]
 }
 

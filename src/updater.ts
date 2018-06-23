@@ -181,8 +181,38 @@ export default class Updater {
         const root = getNbt(nbt)
 
         switch (block) {
-            case 'minecraft:banner':
-            // TODO: Base for banner removed.
+            case 'minecraft:white_banner': {
+                /* CustomName */ {
+                    const value = root.get('CustomName')
+                    if (value instanceof NbtString) {
+                        value.set(`{"text":"${escape(value.get())}"}`)
+                    }
+                }
+                /* Base */ {
+                    const base = root.get('Base')
+                    root.del('Base')
+                    if (base instanceof NbtInt) {
+                        return `$ID>${Items.getNominalColorFromNumericColor(base.get(), 'banner')}`
+                    }
+                }
+                break
+            }
+            case 'minecraft:white_wall_banner': {
+                /* CustomName */ {
+                    const value = root.get('CustomName')
+                    if (value instanceof NbtString) {
+                        value.set(`{"text":"${escape(value.get())}"}`)
+                    }
+                }
+                /* Base */ {
+                    const base = root.get('Base')
+                    root.del('Base')
+                    if (base instanceof NbtInt) {
+                        return `$ID>${Items.getNominalColorFromNumericColor(base.get(), 'wall_banner')}`
+                    }
+                }
+                break
+            }
             case 'minecraft:enchanting_table': {
                 /* CustomName */ {
                     const value = root.get('CustomName')
@@ -192,12 +222,12 @@ export default class Updater {
                 }
                 break
             }
-            case 'minecraft:bed': {
+            case 'minecraft:red_bed': {
                 /* color */ {
                     const color = root.get('color')
                     root.del('color')
                     if (color instanceof NbtInt) {
-                        return `$ID>${Items.getBedIDFromColorValue(color.get())}`
+                        return `$ID>${Items.getNominalColorFromNumericColor(color.get(), 'bed')}`
                     }
                 }
                 break

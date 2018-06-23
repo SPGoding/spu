@@ -9980,6 +9980,15 @@ class Items {
         const arr = Items.DamageItemIDs.find(v => v === input);
         return arr ? true : false;
     }
+    static getNominalColorFromNumericColor(input, suffix) {
+        const arr = Items.NumericColor_NominalColor.find(v => v[0] === input.toString());
+        if (arr) {
+            return `${arr[1]}${suffix}`;
+        }
+        else {
+            throw `Unknown color value for bed: ${input}`;
+        }
+    }
 }
 Items.NumericID_NominalID = [
     [0, 'minecraft:air'],
@@ -10821,6 +10830,24 @@ Items.DamageItemIDs = [
     'minecraft:wooden_shovel',
     'minecraft:wooden_sword'
 ];
+Items.NumericColor_NominalColor = [
+    ['0', 'minecraft:white_'],
+    ['1', 'minecraft:orange_'],
+    ['2', 'minecraft:magenta_'],
+    ['3', 'minecraft:light_blue_'],
+    ['4', 'minecraft:yellow_'],
+    ['5', 'minecraft:lime_'],
+    ['6', 'minecraft:pink_'],
+    ['7', 'minecraft:gray_'],
+    ['8', 'minecraft:light_gray_'],
+    ['9', 'minecraft:cyan_'],
+    ['10', 'minecraft:purple_'],
+    ['11', 'minecraft:blue_'],
+    ['12', 'minecraft:brown_'],
+    ['13', 'minecraft:green_'],
+    ['14', 'minecraft:red_'],
+    ['15', 'minecraft:black_']
+];
 exports.default = Items;
 
 },{}],8:[function(require,module,exports){
@@ -11196,7 +11223,14 @@ class SpuScript {
                             }
                             break;
                         case 'addNbtToBlock':
-                            source += params[0];
+                            params[0] = updater_1.default.upBlockNbt(params[0], source.split('[')[0]);
+                            if (params[0].slice(0, 4) === '$ID>') {
+                                const states = '[' + source.split('[')[1];
+                                source = params[0].slice(4) + (states !== '[' ? states : '');
+                            }
+                            else {
+                                source += params[0];
+                            }
                             break;
                         case 'addNbtToEntity': {
                             let sel = new selector_1.default();
@@ -11453,14 +11487,174 @@ class Updater {
     }
     static upBlockNbt(nbt, block) {
         const root = utils_1.getNbt(nbt);
-        const items = root.get('Items');
-        if (items instanceof nbt_1.NbtList) {
-            for (let i = 0; i < items.length; i++) {
-                let item = items.get(i);
-                item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
-                items.set(i, item);
+        switch (block) {
+            case 'minecraft:white_banner': {
+                {
+                    const value = root.get('CustomName');
+                    if (value instanceof nbt_1.NbtString) {
+                        value.set(`{"text":"${utils_1.escape(value.get())}"}`);
+                    }
+                }
+                {
+                    const base = root.get('Base');
+                    root.del('Base');
+                    if (base instanceof nbt_1.NbtInt) {
+                        return `$ID>${items_1.default.getNominalColorFromNumericColor(base.get(), 'banner')}`;
+                    }
+                }
+                break;
             }
-            root.set('Items', items);
+            case 'minecraft:white_wall_banner': {
+                {
+                    const value = root.get('CustomName');
+                    if (value instanceof nbt_1.NbtString) {
+                        value.set(`{"text":"${utils_1.escape(value.get())}"}`);
+                    }
+                }
+                {
+                    const base = root.get('Base');
+                    root.del('Base');
+                    if (base instanceof nbt_1.NbtInt) {
+                        return `$ID>${items_1.default.getNominalColorFromNumericColor(base.get(), 'wall_banner')}`;
+                    }
+                }
+                break;
+            }
+            case 'minecraft:enchanting_table': {
+                {
+                    const value = root.get('CustomName');
+                    if (value instanceof nbt_1.NbtString) {
+                        value.set(`{"text":"${utils_1.escape(value.get())}"}`);
+                    }
+                }
+                break;
+            }
+            case 'minecraft:red_bed': {
+                {
+                    const color = root.get('color');
+                    root.del('color');
+                    if (color instanceof nbt_1.NbtInt) {
+                        return `$ID>${items_1.default.getNominalColorFromNumericColor(color.get(), 'bed')}`;
+                    }
+                }
+                break;
+            }
+            case 'minecraft:cauldron': {
+                {
+                    const items = root.get('Items');
+                    if (items instanceof nbt_1.NbtList) {
+                        for (let i = 0; i < items.length; i++) {
+                            let item = items.get(i);
+                            item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                            items.set(i, item);
+                        }
+                    }
+                }
+                break;
+            }
+            case 'minecraft:brewing_stand':
+            case 'minecraft:chest':
+            case 'minecraft:dispenser':
+            case 'minecraft:dropper':
+            case 'minecraft:furnance':
+            case 'minecraft:hopper':
+            case 'minecraft:shulker_box': {
+                {
+                    const value = root.get('CustomName');
+                    if (value instanceof nbt_1.NbtString) {
+                        value.set(`{"text":"${utils_1.escape(value.get())}"}`);
+                    }
+                }
+                {
+                    const items = root.get('Items');
+                    if (items instanceof nbt_1.NbtList) {
+                        for (let i = 0; i < items.length; i++) {
+                            let item = items.get(i);
+                            item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                            items.set(i, item);
+                        }
+                    }
+                }
+                break;
+            }
+            case 'minecraft:command_block': {
+                {
+                    const value = root.get('CustomName');
+                    if (value instanceof nbt_1.NbtString) {
+                        value.set(`{"text":"${utils_1.escape(value.get())}"}`);
+                    }
+                }
+                {
+                    const command = root.get('Command');
+                    if (command instanceof nbt_1.NbtString) {
+                        command.set(Updater.upCommand(command.get(), false));
+                    }
+                }
+                break;
+            }
+            case 'minecraft:flower_pot': {
+                break;
+            }
+            case 'minecraft:jukebox': {
+                {
+                    root.del('Record');
+                }
+                {
+                    let item = root.get('RecordItem');
+                    if (item instanceof nbt_1.NbtString) {
+                        item = utils_1.getNbt(Updater.upItemNbt(item.toString()));
+                        root.set('RecordItem', item);
+                    }
+                }
+                break;
+            }
+            case 'minecraft:mob_spawner': {
+                {
+                    const spawnPotentials = root.get('SpawnPotentials');
+                    if (spawnPotentials instanceof nbt_1.NbtList) {
+                        for (let i = 0; i < spawnPotentials.length; i++) {
+                            const potential = spawnPotentials.get(i);
+                            if (potential instanceof nbt_1.NbtCompound) {
+                                let entity = potential.get('Entity');
+                                if (entity instanceof nbt_1.NbtCompound) {
+                                    entity = utils_1.getNbt(Updater.upEntityNbt(entity.toString()));
+                                    potential.set('Entity', entity);
+                                }
+                            }
+                        }
+                    }
+                }
+                {
+                    let spawnData = root.get('SpawnData');
+                    if (spawnData instanceof nbt_1.NbtCompound) {
+                        spawnData = utils_1.getNbt(Updater.upEntityNbt(spawnData.toString()));
+                        root.set('SpawnData', spawnData);
+                    }
+                }
+                break;
+            }
+            case 'minecraft:note_block': {
+                break;
+            }
+            case 'minecraft:piston': {
+                {
+                    const blockID = root.get('blockId');
+                    const blockData = root.get('blockData');
+                    root.del('blockId');
+                    root.del('blockData');
+                    if (blockID instanceof nbt_1.NbtInt &&
+                        (blockData instanceof nbt_1.NbtInt || typeof blockData === 'undefined')) {
+                        const blockState = Updater.upBlockNumericIDToBlockState(blockID, blockData);
+                        root.set('blockState', blockState);
+                    }
+                }
+                break;
+            }
+            case 'minecraft:skull': {
+                break;
+            }
+            default:
+                break;
         }
         return root.toString();
     }
@@ -11668,6 +11862,39 @@ class Updater {
             if (block instanceof nbt_1.NbtString && tileEntityData instanceof nbt_1.NbtCompound) {
                 tileEntityData = utils_1.getNbt(Updater.upBlockNbt(tileEntityData.toString(), block.get()));
                 root.set('TileEntityData', tileEntityData);
+            }
+        }
+        {
+            const displayTile = root.get('DisplayTile');
+            const displayData = root.get('DisplayData');
+            root.del('DisplayTile');
+            root.del('DisplayData');
+            if (displayTile instanceof nbt_1.NbtString &&
+                (displayData instanceof nbt_1.NbtInt || typeof displayData === 'undefined')) {
+                const displayState = Updater.upBlockStringIDToBlockState(displayTile, displayData);
+                root.set('DisplayState', displayState);
+            }
+        }
+        {
+            const particle = root.get('Particle');
+            const particleParam1 = root.get('ParticleParam1');
+            const particleParam2 = root.get('ParticleParam2');
+            root.del('ParticleParam1');
+            root.del('ParticleParam2');
+            if (particle instanceof nbt_1.NbtString) {
+                particle.set(Updater.upParticle(particle.get()));
+                if (particle.get() === 'block') {
+                    if (particleParam1 instanceof nbt_1.NbtInt) {
+                        particle.set(particle.get() + ' ' + Updater.upBlockDustParam(particleParam1.get().toString()));
+                    }
+                }
+                else if (particle.get() === 'item') {
+                    if (particleParam1 instanceof nbt_1.NbtInt && particleParam2 instanceof nbt_1.NbtInt) {
+                        particle.set(particle.get() +
+                            ' ' +
+                            Updater.upItemDustParams(particleParam1.get().toString() + ' ' + particleParam2.get().toString()));
+                    }
+                }
             }
         }
         return root.toString();
