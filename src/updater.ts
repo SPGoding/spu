@@ -423,7 +423,6 @@ export default class Updater {
                         skullIDPrefix = 'skeleton'
                         skullIDSuffix = 'skull'
                     }
-                    console.log(blockNominalID)
                     if (blockNominalID.indexOf('facing=up') !== -1 || blockNominalID.indexOf('facing=down') !== -1) {
                         // Floor
                         if (rot instanceof NbtByte || rot instanceof NbtInt) {
@@ -815,11 +814,9 @@ export default class Updater {
         const damage = root.get('Damage')
         let tag = root.get('tag')
 
-        if (id instanceof NbtString && damage instanceof NbtShort) {
+        if (id instanceof NbtString && (damage instanceof NbtShort || damage instanceof NbtInt)) {
             if (tag instanceof NbtCompound) {
-                tag = getNbt(
-                    Updater.upItemTagNbt(tag.toString(), Items.get1_12NominalIDFrom1_12NumericID(Number(id.get())))
-                )
+                tag = getNbt(Updater.upItemTagNbt(tag.toString(), id.get()))
             }
             if (Items.isDamageItem(id.get())) {
                 if (!(tag instanceof NbtCompound)) {

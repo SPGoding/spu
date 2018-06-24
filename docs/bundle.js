@@ -11111,8 +11111,8 @@ Spuses.pairs = new Map([
         'scoreboard players %0 %1$addNbtToEntity%4 %2 %3'
     ],
     ['scoreboard players tag %entity list', 'tag %0 list'],
-    ['scoreboard players tag %entity %literal %num', 'tag %0 %1 %2'],
-    ['scoreboard players tag %entity %literal %num %entity_nbt', 'tag %0$addNbtToEntity%3 %1 %2'],
+    ['scoreboard players tag %entity %literal %word', 'tag %0 %1 %2'],
+    ['scoreboard players tag %entity %literal %word %entity_nbt', 'tag %0$addNbtToEntity%3 %1 %2'],
     ['scoreboard teams list', 'team list'],
     ['scoreboard teams list %word', 'team list %0'],
     ['scoreboard teams add %word', 'team add %0'],
@@ -11798,7 +11798,6 @@ class Updater {
                         skullIDPrefix = 'skeleton';
                         skullIDSuffix = 'skull';
                     }
-                    console.log(blockNominalID);
                     if (blockNominalID.indexOf('facing=up') !== -1 || blockNominalID.indexOf('facing=down') !== -1) {
                         if (rot instanceof nbt_1.NbtByte || rot instanceof nbt_1.NbtInt) {
                             return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=${rot.get()}]${root.toString() !== '{}' ? root.toString() : ''}`;
@@ -12147,9 +12146,9 @@ class Updater {
         const id = root.get('id');
         const damage = root.get('Damage');
         let tag = root.get('tag');
-        if (id instanceof nbt_1.NbtString && damage instanceof nbt_1.NbtShort) {
+        if (id instanceof nbt_1.NbtString && (damage instanceof nbt_1.NbtShort || damage instanceof nbt_1.NbtInt)) {
             if (tag instanceof nbt_1.NbtCompound) {
-                tag = utils_1.getNbt(Updater.upItemTagNbt(tag.toString(), items_1.default.get1_12NominalIDFrom1_12NumericID(Number(id.get()))));
+                tag = utils_1.getNbt(Updater.upItemTagNbt(tag.toString(), id.get()));
             }
             if (items_1.default.isDamageItem(id.get())) {
                 if (!(tag instanceof nbt_1.NbtCompound)) {
@@ -13244,6 +13243,9 @@ class Selector {
     }
     static isValid(input) {
         try {
+            if (['a', 'e', 'p', 'r', 's', ']'].indexOf(input.slice(-1)) === -1) {
+                return false;
+            }
             let sel = new Selector();
             sel.parse1_12(input);
         }

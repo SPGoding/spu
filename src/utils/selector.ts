@@ -101,6 +101,9 @@ export default class Selector {
      */
     public static isValid(input: string) {
         try {
+            if (['a', 'e', 'p', 'r', 's', ']'].indexOf(input.slice(-1)) === -1) {
+                return false
+            }
             let sel = new Selector()
             sel.parse1_12(input)
         } catch (ignored) {
