@@ -72,6 +72,13 @@ export default class Updater {
     }
 
     public static upCommand(input: string, positionCorrect: boolean) {
+        let slash = false
+
+        if (input.slice(0, 1) === '/') {
+            input = input.slice(1)
+            slash = true
+        }
+
         for (const spusOld of Spuses.pairs.keys()) {
             let map = Updater.getResultMap(input, spusOld)
             if (map) {
@@ -82,6 +89,9 @@ export default class Updater {
                     if (positionCorrect) {
                         return `execute positioned 0.0 0.0 0.0 run ${result}`
                     } else {
+                        if (slash) {
+                            result = '/' + result
+                        }
                         return result
                     }
                 }

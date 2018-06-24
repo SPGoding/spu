@@ -116,8 +116,8 @@ describe('Checker tests', () => {
             })
         })
         describe('%entity tests', () => {
-            it('should return true', () => {
-                let actual = Checker.isArgumentMatch('@e', '%entity')
+            it.only('should return true', () => {
+                let actual = Checker.isArgumentMatch('@e[type=item,score_foo_min=1]', '%entity')
                 assert(actual)
             })
             it('should return false', () => {
