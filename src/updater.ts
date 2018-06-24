@@ -378,6 +378,33 @@ export default class Updater {
                 }
                 break
             }
+            case 'minecraft:sign': {
+                /* Text1 */ {
+                    const text = root.get('Text1')
+                    if (text instanceof NbtString) {
+                        text.set(Updater.upJson(text.get()))
+                    }
+                }
+                /* Text2 */ {
+                    const text = root.get('Text2')
+                    if (text instanceof NbtString) {
+                        text.set(Updater.upJson(text.get()))
+                    }
+                }
+                /* Text3 */ {
+                    const text = root.get('Text3')
+                    if (text instanceof NbtString) {
+                        text.set(Updater.upJson(text.get()))
+                    }
+                }
+                /* Text4 */ {
+                    const text = root.get('Text4')
+                    if (text instanceof NbtString) {
+                        text.set(Updater.upJson(text.get()))
+                    }
+                }
+                break
+            }
             case 'minecraft:skeleton_skull': {
                 /* SkullType & Rot */ {
                     const skullType = root.get('SkullType')

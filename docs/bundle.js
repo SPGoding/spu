@@ -11038,6 +11038,7 @@ Spuses.pairs = new Map([
     ],
     ['gamerule %word %word', 'gamerule %0 %1'],
     ['give %entity %item', 'give %0 %1$fuckItemItself'],
+    ['give %entity %item %num', 'give %0 %1$addDataToItem%3'],
     ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
     ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
     ['kick %entity', 'kick %0'],
@@ -11750,6 +11751,33 @@ class Updater {
                         (blockData instanceof nbt_1.NbtInt || typeof blockData === 'undefined')) {
                         const blockState = Updater.upBlockNumericIDToBlockState(blockID, blockData);
                         root.set('blockState', blockState);
+                    }
+                }
+                break;
+            }
+            case 'minecraft:sign': {
+                {
+                    const text = root.get('Text1');
+                    if (text instanceof nbt_1.NbtString) {
+                        text.set(Updater.upJson(text.get()));
+                    }
+                }
+                {
+                    const text = root.get('Text2');
+                    if (text instanceof nbt_1.NbtString) {
+                        text.set(Updater.upJson(text.get()));
+                    }
+                }
+                {
+                    const text = root.get('Text3');
+                    if (text instanceof nbt_1.NbtString) {
+                        text.set(Updater.upJson(text.get()));
+                    }
+                }
+                {
+                    const text = root.get('Text4');
+                    if (text instanceof nbt_1.NbtString) {
+                        text.set(Updater.upJson(text.get()));
                     }
                 }
                 break;
