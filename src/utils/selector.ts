@@ -167,7 +167,7 @@ export default class Selector {
                 key = charReader.readUntil(['='])
                 char = charReader.next()
                 val = charReader.readUntil([',', ']'])
-                char = charReader.next()
+                //char = charReader.next()
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
                     this.parseScore1_12(key, val)

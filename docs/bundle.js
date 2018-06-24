@@ -11459,6 +11459,11 @@ class Updater {
         }
     }
     static upCommand(input, positionCorrect) {
+        let slash = false;
+        if (input.slice(0, 1) === '/') {
+            input = input.slice(1);
+            slash = true;
+        }
         for (const spusOld of spuses_1.default.pairs.keys()) {
             let map = Updater.getResultMap(input, spusOld);
             if (map) {
@@ -11470,6 +11475,9 @@ class Updater {
                         return `execute positioned 0.0 0.0 0.0 run ${result}`;
                     }
                     else {
+                        if (slash) {
+                            result = '/' + result;
+                        }
                         return result;
                     }
                 }
@@ -13335,7 +13343,6 @@ class Selector {
                 key = charReader.readUntil(['=']);
                 char = charReader.next();
                 val = charReader.readUntil([',', ']']);
-                char = charReader.next();
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     this.parseScore1_12(key, val);
                 }
