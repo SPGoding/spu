@@ -96,10 +96,21 @@ export default class SpuScript {
                             }
                             break
                         case 'addNbtToBlock':
-                            params[0] = Updater.upBlockNbt(params[0], source.split('[')[0])
+                            params[0] = Updater.upBlockNbt(params[0], source)
                             if (params[0].slice(0, 4) === '$ID>') {
                                 const states: string = '[' + source.split('[')[1]
-                                source = params[0].slice(4) + (states !== '[' ? states : '')
+                                source = params[0].slice(4) + (states !== '[undefined' ? states : '')
+                            } else if (params[0].slice(0, 4) === '$BS>') {
+                                const states: string = '[' + source.split('[')[1]
+                                if (states === '[undefined') {
+                                    source = `${source}[${params[0].slice(4)}]`
+                                } else {
+                                    source = `${source}[${Blocks.sortStates(
+                                        Blocks.combineStates(states.slice(1, -1), params[0])
+                                    )}]`
+                                }
+                            } else if (params[0].slice(0, 4) === '$FL>') {
+                                source = params[0].slice(4)
                             } else {
                                 source += params[0]
                             }

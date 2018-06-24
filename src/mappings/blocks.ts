@@ -85,13 +85,17 @@ export default class Blocks {
         }
     }
 
-    private static sortStates(input: string) {
+    public static sortStates(input: string) {
         let arr = input.split(',')
         arr.sort()
         return arr.join()
     }
 
-    private static combineStates(defaultStates: string, customStates: string) {
+    /**
+     * @param defaultStates Defualt states without square('[' and ']').
+     * @param customStates Custom states. Will replace the default states.
+     */
+    public static combineStates(defaultStates: string, customStates: string) {
         let drr = defaultStates.split(',')
         let crr = customStates.split(',')
         let rrr: string[] = []
@@ -5186,18 +5190,18 @@ export default class Blocks {
             'minecraft:oak_button[face=floor,facing=north,powered=true]',
             'minecraft:wooden_button[facing=up,powered=true]'
         ],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:down,nodrop=false]', 'minecraft:skull[facing=down,nodrop=false]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:up,nodrop=false]', 'minecraft:skull[facing=up,nodrop=false]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:north,nodrop=false]', 'minecraft:skull[facing=north,nodrop=false]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:south,nodrop=false]', 'minecraft:skull[facing=south,nodrop=false]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:west,nodrop=false]', 'minecraft:skull[facing=west,nodrop=false]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:east,nodrop=false]', 'minecraft:skull[facing=east,nodrop=false]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:down,nodrop=true]', 'minecraft:skull[facing=down,nodrop=true]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:up,nodrop=true]', 'minecraft:skull[facing=up,nodrop=true]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:north,nodrop=true]', 'minecraft:skull[facing=north,nodrop=true]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:south,nodrop=true]', 'minecraft:skull[facing=south,nodrop=true]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:west,nodrop=true]', 'minecraft:skull[facing=west,nodrop=true]'],
-        ['{Name:%%FILTER_ME%%,Properties:{facing:east,nodrop=true]', 'minecraft:skull[facing=east,nodrop=true]'],
+        ['minecraft:skeleton_skull[facing=down,nodrop=false]', 'minecraft:skull[facing=down,nodrop=false]'],
+        ['minecraft:skeleton_skull[facing=up,nodrop=false]', 'minecraft:skull[facing=up,nodrop=false]'],
+        ['minecraft:skeleton_skull[facing=north,nodrop=false]', 'minecraft:skull[facing=north,nodrop=false]'],
+        ['minecraft:skeleton_skull[facing=south,nodrop=false]', 'minecraft:skull[facing=south,nodrop=false]'],
+        ['minecraft:skeleton_skull[facing=west,nodrop=false]', 'minecraft:skull[facing=west,nodrop=false]'],
+        ['minecraft:skeleton_skull[facing=east,nodrop=false]', 'minecraft:skull[facing=east,nodrop=false]'],
+        ['minecraft:skeleton_skull[facing=down,nodrop=true]', 'minecraft:skull[facing=down,nodrop=true]'],
+        ['minecraft:skeleton_skull[facing=up,nodrop=true]', 'minecraft:skull[facing=up,nodrop=true]'],
+        ['minecraft:skeleton_skull[facing=north,nodrop=true]', 'minecraft:skull[facing=north,nodrop=true]'],
+        ['minecraft:skeleton_skull[facing=south,nodrop=true]', 'minecraft:skull[facing=south,nodrop=true]'],
+        ['minecraft:skeleton_skull[facing=west,nodrop=true]', 'minecraft:skull[facing=west,nodrop=true]'],
+        ['minecraft:skeleton_skull[facing=east,nodrop=true]', 'minecraft:skull[facing=east,nodrop=true]'],
         ['minecraft:anvil[facing=south]', 'minecraft:anvil[damage=0,facing=south]'],
         ['minecraft:anvil[facing=west]', 'minecraft:anvil[damage=0,facing=west]'],
         ['minecraft:anvil[facing=north]', 'minecraft:anvil[damage=0,facing=north]'],

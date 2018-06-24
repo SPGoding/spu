@@ -43,7 +43,7 @@ $(document).ready(function() {
         } catch (ex) {
             $('#output').html('')
             $('#warn').hide()
-            $('#error').html(`错误：<br />Line ${number}: ${ex}`)
+            $('#error').html(`错误：<br />Line ${number + 1}: ${ex}`)
             $('#error').show()
         }
     })

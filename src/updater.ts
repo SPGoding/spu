@@ -34,7 +34,7 @@ export default class Updater {
         let cmdArg = cmdSplited.slice(begin, end).join(' ')
         let map = new Map<string, string>()
         let cnt = 0
-        while (spusArg !== '' || begin < cmdSplited.length) {
+        while (spusArg !== '' && begin < cmdSplited.length) {
             while (!Checker.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdArg !== '') {
                     end -= 1
@@ -55,7 +55,7 @@ export default class Updater {
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
         }
-        if (cmdArg === '') {
+        if (cmdArg === '' && spusArg === '') {
             // Match successfully.
             return map
         } else {
@@ -177,12 +177,15 @@ export default class Updater {
         return id.toString()
     }
 
-    public static upBlockNbt(nbt: string, block: string) {
+    // FIXME: Block & block entity will update together one day.
+    public static upBlockNbt(nbt: string, blockNominalID: string) {
         const root = getNbt(nbt)
 
-        if (block.slice(0, 10) !== 'minecraft:') {
-            block = 'minecraft:' + block
+        if (blockNominalID.slice(0, 10) !== 'minecraft:') {
+            blockNominalID = 'minecraft:' + blockNominalID
         }
+
+        const block = blockNominalID.split('[')[0]
 
         switch (block) {
             case 'minecraft:white_banner': {
@@ -229,7 +232,6 @@ export default class Updater {
             case 'minecraft:red_bed': {
                 /* color */ {
                     const color = root.get('color')
-                    root.del('color')
                     if (color instanceof NbtInt) {
                         return `$ID>${Items.getNominalColorFromNumericColor(color.get(), 'bed')}`
                     }
@@ -274,8 +276,9 @@ export default class Updater {
                 }
                 break
             }
-            case 'minecraft:command_block': {
-                //TODO: Other kinds of command block.
+            case 'minecraft:command_block':
+            case 'minecraft:repeating_command_block':
+            case 'minecraft:chain_command_block': {
                 /* CustomName */ {
                     const value = root.get('CustomName')
                     if (value instanceof NbtString) {
@@ -290,8 +293,18 @@ export default class Updater {
                 }
                 break
             }
-            case 'minecraft:flower_pot': {
-                // TODO: https://minecraft.gamepedia.com/1.13/Flattening flower pot
+            case 'minecraft:potted_cactus': {
+                /* Item & Data */ {
+                    const item = root.get('Item')
+                    const data = root.get('Data')
+                    if (item instanceof NbtString && data instanceof NbtInt) {
+                        return `$ID>minecraft:potted_${Blocks.get1_13NominalIDFrom1_12NominalID(
+                            Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(item.get(), data.get())
+                        )
+                            .split('[')[0]
+                            .replace('minecraft:', '')}`
+                    }
+                }
                 break
             }
             case 'minecraft:jukebox': {
@@ -333,7 +346,20 @@ export default class Updater {
                 break
             }
             case 'minecraft:note_block': {
-                // TODO: Removed.
+                /* note & powered */ {
+                    const note = root.get('note')
+                    const powered = root.get('powered')
+                    if (
+                        (note instanceof NbtByte || note instanceof NbtInt) &&
+                        (powered instanceof NbtByte || powered instanceof NbtInt)
+                    ) {
+                        return `$BS>pitch=${note.get()},powered=${powered.get() !== 0}`
+                    } else if (note instanceof NbtByte || note instanceof NbtInt) {
+                        return `$BS>pitch=${note.get()}`
+                    } else if (powered instanceof NbtByte || powered instanceof NbtInt) {
+                        return `$BS>powered=${powered.get() !== 0}`
+                    }
+                }
                 break
             }
             case 'minecraft:piston': {
@@ -352,9 +378,77 @@ export default class Updater {
                 }
                 break
             }
-            case 'minecraft:skull': {
-                // TODO: Removed SkullType & Rot
-                break
+            case 'minecraft:skeleton_skull': {
+                /* SkullType & Rot */ {
+                    const skullType = root.get('SkullType')
+                    const rot = root.get('Rot')
+                    root.del('SkullType')
+                    root.del('Rot')
+
+                    let skullIDPrefix: 'skeleton' | 'wither_skeleton' | 'zombie' | 'player' | 'creeper' | 'dragon'
+                    let skullIDSuffix: 'skull' | 'head'
+
+                    if (skullType instanceof NbtByte || skullType instanceof NbtInt) {
+                        switch (skullType.get()) {
+                            case 0:
+                                skullIDPrefix = 'skeleton'
+                                skullIDSuffix = 'skull'
+                                break
+                            case 1:
+                                skullIDPrefix = 'wither_skeleton'
+                                skullIDSuffix = 'skull'
+                                break
+                            case 2:
+                                skullIDPrefix = 'zombie'
+                                skullIDSuffix = 'head'
+                                break
+                            case 3:
+                                skullIDPrefix = 'player'
+                                skullIDSuffix = 'head'
+                                break
+                            case 4:
+                                skullIDPrefix = 'creeper'
+                                skullIDSuffix = 'head'
+                                break
+                            case 5:
+                                skullIDPrefix = 'dragon'
+                                skullIDSuffix = 'head'
+                                break
+                            default:
+                                skullIDPrefix = 'skeleton'
+                                skullIDSuffix = 'skull'
+                                break
+                        }
+                    } else {
+                        skullIDPrefix = 'skeleton'
+                        skullIDSuffix = 'skull'
+                    }
+                    console.log(blockNominalID)
+                    if (blockNominalID.indexOf('facing=up') !== -1 || blockNominalID.indexOf('facing=down') !== -1) {
+                        // Floor
+                        if (rot instanceof NbtByte || rot instanceof NbtInt) {
+                            return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=${rot.get()}]${
+                                root.toString() !== '{}' ? root.toString() : ''
+                            }`
+                        } else {
+                            return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=0]${
+                                root.toString() !== '{}' ? root.toString() : ''
+                            }`
+                        }
+                    } else {
+                        // Wall
+                        const facing =
+                            blockNominalID.indexOf('facing=') !== -1
+                                ? blockNominalID.slice(
+                                      blockNominalID.indexOf('facing=') + 7,
+                                      blockNominalID.indexOf(',', blockNominalID.indexOf('facing=') + 7)
+                                  )
+                                : 'north'
+                        return `$FL>${skullIDPrefix}_wall_${skullIDSuffix}[facing=${facing}]${
+                            root.toString() !== '{}' ? root.toString() : ''
+                        }`
+                    }
+                }
             }
             default:
                 break
@@ -580,7 +674,15 @@ export default class Updater {
 
             let tileEntityData = root.get('TileEntityData')
             if (block instanceof NbtString && tileEntityData instanceof NbtCompound) {
-                tileEntityData = getNbt(Updater.upBlockNbt(tileEntityData.toString(), block.get()))
+                tileEntityData = getNbt(
+                    Updater.upBlockNbt(
+                        tileEntityData.toString(),
+                        Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(
+                            block.get(),
+                            data ? (<NbtInt | NbtByte>data).get() : 0
+                        )
+                    )
+                )
                 root.set('TileEntityData', tileEntityData)
             }
         }
@@ -715,7 +817,9 @@ export default class Updater {
 
         if (id instanceof NbtString && damage instanceof NbtShort) {
             if (tag instanceof NbtCompound) {
-                tag = getNbt(Updater.upItemTagNbt(tag.toString(), id.get()))
+                tag = getNbt(
+                    Updater.upItemTagNbt(tag.toString(), Items.get1_12NominalIDFrom1_12NumericID(Number(id.get())))
+                )
             }
             if (Items.isDamageItem(id.get())) {
                 if (!(tag instanceof NbtCompound)) {
@@ -736,9 +840,9 @@ export default class Updater {
         return root.toString()
     }
 
-    public static upItemTagNbt(nbt: string, item: string) {
+    public static upItemTagNbt(nbt: string, itemNominalID: string) {
         // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
-
+        const item = itemNominalID.split('[')[0]
         const root = getNbt(nbt)
         /* CanDestroy */ {
             const canDestroy = root.get('CanDestroy')
