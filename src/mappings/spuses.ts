@@ -121,6 +121,7 @@ export default class Spuses {
         ],
         ['gamerule %word %word', 'gamerule %0 %1'],
         ['give %entity %item', 'give %0 %1$fuckItemItself'],
+        ['give %entity %item %num', 'give %0 %1$addDataToItem%3'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
         ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
         ['kick %entity', 'kick %0'],
