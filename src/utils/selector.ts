@@ -165,7 +165,6 @@ export default class Selector {
                 char = charReader.next()
                 val = charReader.readUntil([',', ']'])
                 char = charReader.next()
-
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
                     this.parseScore1_12(key, val)
@@ -259,6 +258,8 @@ export default class Selector {
                                     break
                             }
                             break
+                        case '':
+                            return
                         default:
                             throw `Unknown selector key: ${key}`
                     }

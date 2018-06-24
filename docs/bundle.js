@@ -91,7 +91,7 @@ class Checker {
             }
         }
         else {
-            return cmdArg.toLowerCase() === spusArg;
+            return cmdArg.toLowerCase() === spusArg.toLowerCase();
         }
     }
     static isBlock(input) {
@@ -264,23 +264,42 @@ exports.default = Checker;
 Object.defineProperty(exports, "__esModule", { value: true });
 const updater_1 = require("./updater");
 $(document).ready(function () {
+    $('#warn').hide();
+    $('#error').hide();
     $('#button').click(function () {
+        let number = 1;
         try {
             let result = '';
+            let warn = '警告：<br />';
             let content = $('#input').val();
             if (content) {
                 let lines = content.toString().split('\n');
                 for (let line of lines) {
+                    number = lines.indexOf(line);
                     line = updater_1.default.upLine(line, $('#position-correct').is(':checked'));
+                    if (line.indexOf('!>') !== -1) {
+                        warn += `Line ${number + 1}：${line.slice(line.indexOf('!>') + 2)}<br />`;
+                        line = line.slice(0, line.indexOf('!>') - 1);
+                    }
                     result += line + '\n';
                 }
                 result = result.slice(0, -1);
                 $('#output').html(result);
+                $('#warn').html(warn);
+                if (warn === '警告：<br />') {
+                    $('#warn').hide();
+                }
+                else {
+                    $('#warn').show();
+                }
+                $('#error').hide();
             }
         }
         catch (ex) {
-            console.error(`Updated error: ${ex}`);
-            alert(ex);
+            $('#output').html('');
+            $('#warn').hide();
+            $('#error').html(`错误：<br />Line ${number}: ${ex}`);
+            $('#error').show();
         }
     });
 });
@@ -11013,7 +11032,10 @@ Spuses.pairs = new Map([
     ['gamemode %gamemode', 'gamemode %0'],
     ['gamemode %gamemode %entity', 'gamemode %0 %1'],
     ['gamerule %word', 'gamerule %0'],
-    ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'."],
+    [
+        'gamerule gameLoopFunction %func',
+        "# gamerule gameLoopFunction %0 !>Please add function %0 into function tag '#minecraft:tick'."
+    ],
     ['gamerule %word %word', 'gamerule %0 %1'],
     ['give %entity %item', 'give %0 %1$fuckItemItself'],
     ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
@@ -11117,7 +11139,7 @@ Spuses.pairs = new Map([
     ['spawnpoint %entity', 'spawnpoint %0'],
     ['spawnpoint %entity %vec_3', 'spawnpoint %0 %1'],
     ['spreadplayers %vec_2 %num %num %bool %entity', 'spreadplayers %0 %1 %2 %3 %4'],
-    ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'"],
+    ['stats %string', "# stat %0 !>Use 'execute store ...'"],
     ['stop', 'stop'],
     ['stopsound %entity', 'stopsound %0'],
     ['stopsound %entity %source', 'stopsound %0 %1'],
@@ -11145,7 +11167,10 @@ Spuses.pairs = new Map([
     ['title %entity %word', 'title %0 %1'],
     ['title %entity %word %json', 'title %0 %1 %2'],
     ['title %entity times %num %num %num', 'title %0 times %1 %2 %3'],
-    ['toggledownfall', 'weather clear'],
+    [
+        'toggledownfall',
+        "weather clear !>'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear."
+    ],
     ['tp %entity', 'teleport %0'],
     ['tp %entity %entity', 'teleport %0 %1'],
     ['tp %vec_3', 'teleport %0'],
@@ -11303,7 +11328,17 @@ class SpuScript {
             }
             return source;
         }
-        throw 'Spu Script execute error!';
+        console.error('==========');
+        console.error('AST:');
+        console.error(ast);
+        console.error('ID:');
+        console.error(id);
+        console.error('METHODS:');
+        console.error(methods);
+        console.error('SOURCE');
+        console.error(source);
+        console.error('==========');
+        throw 'Spu Script execute error. See console for more information.';
     }
     getAst(arg) {
         let charReader = new char_reader_1.default(arg);
@@ -11377,7 +11412,7 @@ class Updater {
         let cmdArg = cmdSplited.slice(begin, end).join(' ');
         let map = new Map();
         let cnt = 0;
-        while (spusArg !== '' && begin < cmdSplited.length) {
+        while (spusArg !== '' || begin < cmdSplited.length) {
             while (!checker_1.default.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdArg !== '') {
                     end -= 1;
@@ -13268,6 +13303,8 @@ class Selector {
                                     break;
                             }
                             break;
+                        case '':
+                            return;
                         default:
                             throw `Unknown selector key: ${key}`;
                     }

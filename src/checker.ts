@@ -90,7 +90,7 @@ export default class Checker {
                     throw `Unknown argument type: ${spusArg.slice(1)}`
             }
         } else {
-            return cmdArg.toLowerCase() === spusArg
+            return cmdArg.toLowerCase() === spusArg.toLowerCase()
         }
     }
 

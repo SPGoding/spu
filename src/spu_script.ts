@@ -158,7 +158,17 @@ export default class SpuScript {
             return source
         }
 
-        throw 'Spu Script execute error!'
+        console.error('==========')
+        console.error('AST:')
+        console.error(ast)
+        console.error('ID:')
+        console.error(id)
+        console.error('METHODS:')
+        console.error(methods)
+        console.error('SOURCE')
+        console.error(source)
+        console.error('==========')
+        throw 'Spu Script execute error. See console for more information.'
     }
 
     /**

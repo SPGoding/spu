@@ -34,7 +34,7 @@ export default class Updater {
         let cmdArg = cmdSplited.slice(begin, end).join(' ')
         let map = new Map<string, string>()
         let cnt = 0
-        while (spusArg !== '' && begin < cmdSplited.length) {
+        while (spusArg !== '' || begin < cmdSplited.length) {
             while (!Checker.isArgumentMatch(cmdArg, spusArg)) {
                 if (cmdArg !== '') {
                     end -= 1
@@ -613,10 +613,10 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                            ' ' +
-                            Updater.upItemDustParams(
-                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                            )
+                                ' ' +
+                                Updater.upItemDustParams(
+                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                                )
                         )
                     }
                 }

@@ -115,7 +115,10 @@ export default class Spuses {
         ['gamemode %gamemode', 'gamemode %0'],
         ['gamemode %gamemode %entity', 'gamemode %0 %1'],
         ['gamerule %word', 'gamerule %0'],
-        ['gamerule gameLoopFunction %word', "# Please add function '%0' into function tag '#minecraft:tick'."],
+        [
+            'gamerule gameLoopFunction %func',
+            "# gamerule gameLoopFunction %0 !>Please add function %0 into function tag '#minecraft:tick'."
+        ],
         ['gamerule %word %word', 'gamerule %0 %1'],
         ['give %entity %item', 'give %0 %1$fuckItemItself'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
@@ -220,7 +223,7 @@ export default class Spuses {
         ['spawnpoint %entity', 'spawnpoint %0'],
         ['spawnpoint %entity %vec_3', 'spawnpoint %0 %1'],
         ['spreadplayers %vec_2 %num %num %bool %entity', 'spreadplayers %0 %1 %2 %3 %4'],
-        ['stats %string', "# Couldn't convert 'stat' commands. Use 'execute store .'"],
+        ['stats %string', "# stat %0 !>Use 'execute store ...'"],
         ['stop', 'stop'],
         ['stopsound %entity', 'stopsound %0'],
         ['stopsound %entity %source', 'stopsound %0 %1'],
@@ -248,7 +251,10 @@ export default class Spuses {
         ['title %entity %word', 'title %0 %1'],
         ['title %entity %word %json', 'title %0 %1 %2'],
         ['title %entity times %num %num %num', 'title %0 times %1 %2 %3'],
-        ['toggledownfall', 'weather clear'],
+        [
+            'toggledownfall',
+            "weather clear !>'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear."
+        ],
         ['tp %entity', 'teleport %0'],
         ['tp %entity %entity', 'teleport %0 %1'],
         ['tp %vec_3', 'teleport %0'],

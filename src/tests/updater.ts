@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import Updater from '../updater'
 
-describe.only('Updater tests', () => {
+describe('Updater tests', () => {
     describe('cvtArgument() tests', () => {
         describe('%adv tests', () => {
             it('should convert', () => {
@@ -76,8 +76,8 @@ describe.only('Updater tests', () => {
         })
         describe('%entity tests', () => {
             it('should convert', () => {
-                const actual = Updater.upArgument('@r', '%entity')
-                assert(actual === '@e[sort=random,type=player]')
+                const actual = Updater.upArgument('@r[type=zombie]', '%entity')
+                assert(actual === '@e[sort=random,type=zombie]')
             })
         })
         describe('%entity_nbt tests', () => {

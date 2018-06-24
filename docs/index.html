@@ -18,7 +18,7 @@
         <div>
             <ul class="nav navbar-nav">
                 <li class="active">
-                    <a href="#">spu</a>
+                    <a href="#">SPU</a>
                 </li>
                 <li>
                     <a href="https://github.com/SPGoding/spu" target="_blank">Github</a>
@@ -40,7 +40,7 @@
                     <label class="checkbox-inline">
                         <input type="checkbox" id="position-correct">坐标矫正
                     </label>
-                    <button type="button" id="button" class="btn btn-primary">转换</button>
+                    <button type="button" id="button" class="btn btn-primary">升级</button>
                 </div>
                 <textarea rows="10" class="form-control" id="input" placeholder="请输入函数或命令(不带斜杠'/')" style="resize: none;"></textarea>
             </div>
@@ -51,14 +51,19 @@
                 <textarea rows="10" class="form-control" id="output" style="resize: none;"></textarea>
             </div>
         </div>
+        <br/>
         <div class="row">
             <div class="col-md-6">
-                <p>
+                <div class="alert alert-info alert-block">
                     注意事项：
                     <br /> 1. stat命令不作转换。
-                    <br /> 2. execute命令的转换不完全等效，如有需要请手动改为多层function。
-                    <br /> 3. 本网页为静态页面，可直接Ctrl + S保存并在离线时使用。
-                    <br /> 4. 请确保1.12的命令能够正确执行，否则可能造成网页未响应。</p>
+                    <br /> 2. execute命令的转换不完全等效，如有需要请手动改为嵌套function。
+                    <br /> 3. 请确保输入的命令能够正确执行，否则可能造成网页未响应。
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-danger" id="error"> </div>
+                <div class="alert alert-warning" id="warn"> </div>
             </div>
         </div>
     </div>
