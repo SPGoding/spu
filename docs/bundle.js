@@ -266,40 +266,44 @@ const updater_1 = require("./updater");
 $(document).ready(function () {
     $('#warn').hide();
     $('#error').hide();
+    $('#info').hide();
     $('#button').click(function () {
         let number = 1;
+        let frame = 'info';
+        let output = "";
         try {
+            let timeBefore = (new Date()).getTime();
             let result = '';
-            let warn = '警告：<br />';
             let content = $('#input').val();
             if (content) {
                 let lines = content.toString().split('\n');
                 for (let line of lines) {
-                    number = lines.indexOf(line);
+                    number++;
                     line = updater_1.default.upLine(line, $('#position-correct').is(':checked'));
                     if (line.indexOf('!>') !== -1) {
-                        warn += `Line ${number + 1}：${line.slice(line.indexOf('!>') + 2)}<br />`;
+                        frame = 'warn';
+                        output += `Line ${number}：${line.slice(line.indexOf('!>') + 2)}<br />`;
                         line = line.slice(0, line.indexOf('!>') - 1);
                     }
                     result += line + '\n';
                 }
                 result = result.slice(0, -1);
                 $('#output').html(result);
-                $('#warn').html(warn);
-                if (warn === '警告：<br />') {
-                    $('#warn').hide();
-                }
-                else {
-                    $('#warn').show();
-                }
-                $('#error').hide();
+                let timeAfter = (new Date()).getTime();
+                let timeDelta = timeAfter - timeBefore;
+                output = `Upgraded ${number} command${number === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(2)} seconds)<br />${output}`;
             }
         }
         catch (ex) {
-            $('#output').html('');
+            frame = 'error';
+            output = `Upgraded error: <br />Line ${number}: ${ex}`;
+        }
+        finally {
+            $('#info').hide();
             $('#warn').hide();
-            $('#error').html(`错误：<br />Line ${number + 1}: ${ex}`);
-            $('#error').show();
+            $('#error').hide();
+            $(`#${frame}`).html(output);
+            $(`#${frame}`).show();
         }
     });
 });
@@ -532,10 +536,10 @@ Blocks.NominalID_NominalID = [
     ['minecraft:spruce_log[axis=z]', 'minecraft:log[axis=z,variant=spruce]'],
     ['minecraft:birch_log[axis=z]', 'minecraft:log[axis=z,variant=birch]'],
     ['minecraft:jungle_log[axis=z]', 'minecraft:log[axis=z,variant=jungle]'],
-    ['minecraft:oak_bark', 'minecraft:log[axis=none,variant=oak]'],
-    ['minecraft:spruce_bark', 'minecraft:log[axis=none,variant=spruce]'],
-    ['minecraft:birch_bark', 'minecraft:log[axis=none,variant=birch]'],
-    ['minecraft:jungle_bark', 'minecraft:log[axis=none,variant=jungle]'],
+    ['minecraft:oak_wood', 'minecraft:log[axis=none,variant=oak]'],
+    ['minecraft:spruce_wood', 'minecraft:log[axis=none,variant=spruce]'],
+    ['minecraft:birch_wood', 'minecraft:log[axis=none,variant=birch]'],
+    ['minecraft:jungle_wood', 'minecraft:log[axis=none,variant=jungle]'],
     [
         'minecraft:oak_leaves[check_decay=false,decayable=true]',
         'minecraft:leaves[check_decay=false,decayable=true,variant=oak]'
@@ -1509,7 +1513,7 @@ Blocks.NominalID_NominalID = [
         'minecraft:fire[age=15,east=true,north:true,south=true,up:true,west=false]',
         'minecraft:fire[age=15,east=true,north:true,south=true,up:true,west=true]'
     ],
-    ['minecraft:mob_spawner', 'minecraft:mob_spawner'],
+    ['minecraft:mob_spawner', 'minecraft:spawner'],
     [
         'minecraft:oak_stairs[facing=east,half=bottom,shape=straight]',
         'minecraft:oak_stairs[facing=east,half=bottom,shape=inner_left]',
@@ -3398,8 +3402,8 @@ Blocks.NominalID_NominalID = [
     ['minecraft:netherrack', 'minecraft:netherrack'],
     ['minecraft:soul_sand', 'minecraft:soul_sand'],
     ['minecraft:glowstone', 'minecraft:glowstone'],
-    ['minecraft:portal[axis=x]', 'minecraft:portal[axis=x]'],
-    ['minecraft:portal[axis=z]', 'minecraft:portal[axis=z]'],
+    ['minecraft:portal[axis=x]', 'minecraft:nether_portal[axis=x]'],
+    ['minecraft:portal[axis=z]', 'minecraft:nether_portal[axis=z]'],
     ['minecraft:jack_o_lantern[facing=south]', 'minecraft:lit_pumpkin[facing=south]'],
     ['minecraft:jack_o_lantern[facing=west]', 'minecraft:lit_pumpkin[facing=west]'],
     ['minecraft:jack_o_lantern[facing=north]', 'minecraft:lit_pumpkin[facing=north]'],
@@ -6185,8 +6189,8 @@ Blocks.NominalID_NominalID = [
     ['minecraft:dark_oak_log[axis=x]', '{Name:minecraft:log2,Properties:{axis:x,variant=dark_oak]'],
     ['minecraft:acacia_log[axis=z]', '{Name:minecraft:log2,Properties:{axis:z,variant=acacia]'],
     ['minecraft:dark_oak_log[axis=z]', '{Name:minecraft:log2,Properties:{axis:z,variant=dark_oak]'],
-    ['minecraft:acacia_bark', '{Name:minecraft:log2,Properties:{axis:none,variant=acacia]'],
-    ['minecraft:dark_oak_bark', '{Name:minecraft:log2,Properties:{axis:none,variant=dark_oak]'],
+    ['minecraft:acacia_wood', '{Name:minecraft:log2,Properties:{axis:none,variant=acacia]'],
+    ['minecraft:dark_oak_wood', '{Name:minecraft:log2,Properties:{axis:none,variant=dark_oak]'],
     [
         'minecraft:acacia_stairs[facing=east,half=bottom,shape=straight]',
         'minecraft:acacia_stairs[facing=east,half=bottom,shape=inner_left]',
@@ -9895,7 +9899,9 @@ Entities.NominalID_NominalID = [
     ['minecraft:ender_crystal', 'minecraft:end_crystal'],
     ['minecraft:fireworks_rocket', 'minecraft:firework_rocket'],
     ['minecraft:commandblock_minecart', 'minecraft:command_block_minecart'],
+    ['minecraft:snowman', 'minecraft:snow_golem'],
     ['minecraft:villager_golem', 'minecraft:iron_golem'],
+    ['minecraft:evocation_fangs', 'minecraft:evoker_fangs'],
     ['minecraft:vindication_illager', 'minecraft:vindicator'],
     ['minecraft:evocation_illager', 'minecraft:evoker'],
     ['minecraft:illusion_illager', 'minecraft:illusioner']
@@ -10702,7 +10708,7 @@ Items.StringIDWithDataValue_NominalID = [
     ['minecraft:coal.1', 'minecraft:charcoal'],
     ['minecraft:fish.0', 'minecraft:cod'],
     ['minecraft:fish.1', 'minecraft:salmon'],
-    ['minecraft:fish.2', 'minecraft:clownfish'],
+    ['minecraft:fish.2', 'minecraft:tropical_fish'],
     ['minecraft:fish.3', 'minecraft:pufferfish'],
     ['minecraft:cooked_fish.0', 'minecraft:cooked_cod'],
     ['minecraft:cooked_fish.1', 'minecraft:cooked_salmon'],
@@ -10802,7 +10808,8 @@ Items.StringIDWithDataValue_NominalID = [
     ['minecraft:record_stal.0', 'minecraft:music_disc_stal'],
     ['minecraft:record_strad.0', 'minecraft:music_disc_strad'],
     ['minecraft:record_wait.0', 'minecraft:music_disc_wait'],
-    ['minecraft:record_ward.0', 'minecraft:music_disc_ward']
+    ['minecraft:record_ward.0', 'minecraft:music_disc_ward'],
+    ['chorus_fruit_popped.0', 'popped_chorus_fruit']
 ];
 Items.DamageItemIDs = [
     'minecraft:bow',

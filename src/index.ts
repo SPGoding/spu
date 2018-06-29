@@ -10,14 +10,17 @@
 
 import Updater from './updater'
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('#warn').hide()
     $('#error').hide()
-    $('#button').click(function() {
+    $('#info').hide()
+    $('#button').click(function () {
         let number = 1
+        let frame: 'info' | 'warn' | 'error' = 'info'
+        let output = ""
         try {
+            let timeBefore = (new Date()).getTime()
             let result = ''
-            let warn = '警告：<br />'
             let content = $('#input').val()
             if (content) {
                 let lines = content.toString().split('\n')
@@ -25,26 +28,27 @@ $(document).ready(function() {
                     number = lines.indexOf(line)
                     line = Updater.upLine(line, $('#position-correct').is(':checked'))
                     if (line.indexOf('!>') !== -1) {
-                        warn += `Line ${number + 1}：${line.slice(line.indexOf('!>') + 2)}<br />`
+                        frame = 'warn'
+                        output += `Line #${number + 1}：${line.slice(line.indexOf('!>') + 2)}<br />`
                         line = line.slice(0, line.indexOf('!>') - 1)
                     }
                     result += line + '\n'
                 }
                 result = result.slice(0, -1) // Remove the last line.
                 $('#output').html(result)
-                $('#warn').html(warn)
-                if (warn === '警告：<br />') {
-                    $('#warn').hide()
-                } else {
-                    $('#warn').show()
-                }
-                $('#error').hide()
+                let timeAfter = (new Date()).getTime()
+                let timeDelta = timeAfter - timeBefore
+                output = `Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).<br />${output}`
             }
         } catch (ex) {
-            $('#output').html('')
+            frame = 'error'
+            output = `Updated error. <br />Line #${number + 1}: ${ex}`
+        } finally {
+            $('#info').hide()
             $('#warn').hide()
-            $('#error').html(`错误：<br />Line ${number + 1}: ${ex}`)
-            $('#error').show()
+            $('#error').hide()
+            $(`#${frame}`).html(output)
+            $(`#${frame}`).show()
         }
     })
 })
