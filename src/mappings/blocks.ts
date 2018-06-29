@@ -240,10 +240,10 @@ export default class Blocks {
         ['minecraft:spruce_log[axis=z]', 'minecraft:log[axis=z,variant=spruce]'],
         ['minecraft:birch_log[axis=z]', 'minecraft:log[axis=z,variant=birch]'],
         ['minecraft:jungle_log[axis=z]', 'minecraft:log[axis=z,variant=jungle]'],
-        ['minecraft:oak_bark', 'minecraft:log[axis=none,variant=oak]'],
-        ['minecraft:spruce_bark', 'minecraft:log[axis=none,variant=spruce]'],
-        ['minecraft:birch_bark', 'minecraft:log[axis=none,variant=birch]'],
-        ['minecraft:jungle_bark', 'minecraft:log[axis=none,variant=jungle]'],
+        ['minecraft:oak_wood', 'minecraft:log[axis=none,variant=oak]'],
+        ['minecraft:spruce_wood', 'minecraft:log[axis=none,variant=spruce]'],
+        ['minecraft:birch_wood', 'minecraft:log[axis=none,variant=birch]'],
+        ['minecraft:jungle_wood', 'minecraft:log[axis=none,variant=jungle]'],
         [
             'minecraft:oak_leaves[check_decay=false,decayable=true]',
             'minecraft:leaves[check_decay=false,decayable=true,variant=oak]'
@@ -1217,7 +1217,7 @@ export default class Blocks {
             'minecraft:fire[age=15,east=true,north:true,south=true,up:true,west=false]',
             'minecraft:fire[age=15,east=true,north:true,south=true,up:true,west=true]'
         ],
-        ['minecraft:mob_spawner', 'minecraft:mob_spawner'],
+        ['minecraft:mob_spawner', 'minecraft:spawner'],
         [
             'minecraft:oak_stairs[facing=east,half=bottom,shape=straight]',
             'minecraft:oak_stairs[facing=east,half=bottom,shape=inner_left]',
@@ -3106,8 +3106,8 @@ export default class Blocks {
         ['minecraft:netherrack', 'minecraft:netherrack'],
         ['minecraft:soul_sand', 'minecraft:soul_sand'],
         ['minecraft:glowstone', 'minecraft:glowstone'],
-        ['minecraft:portal[axis=x]', 'minecraft:portal[axis=x]'],
-        ['minecraft:portal[axis=z]', 'minecraft:portal[axis=z]'],
+        ['minecraft:portal[axis=x]', 'minecraft:nether_portal[axis=x]'],
+        ['minecraft:portal[axis=z]', 'minecraft:nether_portal[axis=z]'],
         ['minecraft:jack_o_lantern[facing=south]', 'minecraft:lit_pumpkin[facing=south]'],
         ['minecraft:jack_o_lantern[facing=west]', 'minecraft:lit_pumpkin[facing=west]'],
         ['minecraft:jack_o_lantern[facing=north]', 'minecraft:lit_pumpkin[facing=north]'],
@@ -5893,8 +5893,8 @@ export default class Blocks {
         ['minecraft:dark_oak_log[axis=x]', '{Name:minecraft:log2,Properties:{axis:x,variant=dark_oak]'],
         ['minecraft:acacia_log[axis=z]', '{Name:minecraft:log2,Properties:{axis:z,variant=acacia]'],
         ['minecraft:dark_oak_log[axis=z]', '{Name:minecraft:log2,Properties:{axis:z,variant=dark_oak]'],
-        ['minecraft:acacia_bark', '{Name:minecraft:log2,Properties:{axis:none,variant=acacia]'],
-        ['minecraft:dark_oak_bark', '{Name:minecraft:log2,Properties:{axis:none,variant=dark_oak]'],
+        ['minecraft:acacia_wood', '{Name:minecraft:log2,Properties:{axis:none,variant=acacia]'],
+        ['minecraft:dark_oak_wood', '{Name:minecraft:log2,Properties:{axis:none,variant=dark_oak]'],
         [
             'minecraft:acacia_stairs[facing=east,half=bottom,shape=straight]',
             'minecraft:acacia_stairs[facing=east,half=bottom,shape=inner_left]',

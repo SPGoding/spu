@@ -24,7 +24,9 @@ export default class Entities {
         ['minecraft:ender_crystal', 'minecraft:end_crystal'],
         ['minecraft:fireworks_rocket', 'minecraft:firework_rocket'],
         ['minecraft:commandblock_minecart', 'minecraft:command_block_minecart'],
+        ['minecraft:snowman', 'minecraft:snow_golem'],
         ['minecraft:villager_golem', 'minecraft:iron_golem'],
+        ['minecraft:evocation_fangs', 'minecraft:evoker_fangs'],
         ['minecraft:vindication_illager', 'minecraft:vindicator'],
         ['minecraft:evocation_illager', 'minecraft:evoker'],
         ['minecraft:illusion_illager', 'minecraft:illusioner']

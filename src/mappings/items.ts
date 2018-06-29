@@ -750,7 +750,7 @@ export default class Items {
         ['minecraft:coal.1', 'minecraft:charcoal'],
         ['minecraft:fish.0', 'minecraft:cod'],
         ['minecraft:fish.1', 'minecraft:salmon'],
-        ['minecraft:fish.2', 'minecraft:clownfish'],
+        ['minecraft:fish.2', 'minecraft:tropical_fish'],
         ['minecraft:fish.3', 'minecraft:pufferfish'],
         ['minecraft:cooked_fish.0', 'minecraft:cooked_cod'],
         ['minecraft:cooked_fish.1', 'minecraft:cooked_salmon'],
@@ -850,7 +850,8 @@ export default class Items {
         ['minecraft:record_stal.0', 'minecraft:music_disc_stal'],
         ['minecraft:record_strad.0', 'minecraft:music_disc_strad'],
         ['minecraft:record_wait.0', 'minecraft:music_disc_wait'],
-        ['minecraft:record_ward.0', 'minecraft:music_disc_ward']
+        ['minecraft:record_ward.0', 'minecraft:music_disc_ward'],
+        ['chorus_fruit_popped.0','popped_chorus_fruit']
     ]
 
     static DamageItemIDs: string[] = [
