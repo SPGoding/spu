@@ -465,24 +465,24 @@ export default class Updater {
                         if (rot instanceof NbtByte || rot instanceof NbtInt) {
                             return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=${rot.get()}]${
                                 root.toString() !== '{}' ? root.toString() : ''
-                            }`
+                                }`
                         } else {
                             return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=0]${
                                 root.toString() !== '{}' ? root.toString() : ''
-                            }`
+                                }`
                         }
                     } else {
                         // Wall
                         const facing =
                             blockNominalID.indexOf('facing=') !== -1
                                 ? blockNominalID.slice(
-                                      blockNominalID.indexOf('facing=') + 7,
-                                      blockNominalID.indexOf(',', blockNominalID.indexOf('facing=') + 7)
-                                  )
+                                    blockNominalID.indexOf('facing=') + 7,
+                                    blockNominalID.indexOf(',', blockNominalID.indexOf('facing=') + 7)
+                                )
                                 : 'north'
                         return `$FL>${skullIDPrefix}_wall_${skullIDSuffix}[facing=${facing}]${
                             root.toString() !== '{}' ? root.toString() : ''
-                        }`
+                            }`
                     }
                 }
             }
@@ -667,6 +667,13 @@ export default class Updater {
                 root.set('SelectedItem', selectedItem)
             }
         }
+        /* FireworksItem */ {
+            let fireworksItem = root.get('FireworksItem')
+            if (fireworksItem instanceof NbtCompound) {
+                fireworksItem = getNbt(Updater.upItemNbt(fireworksItem.toString()))
+                root.set('FireworksItem', fireworksItem)
+            }
+        }
         /* Command */ {
             const command = root.get('Command')
             if (command instanceof NbtString) {
@@ -751,10 +758,10 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                                ' ' +
-                                Updater.upItemDustParams(
-                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                                )
+                            ' ' +
+                            Updater.upItemDustParams(
+                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                            )
                         )
                     }
                 }
@@ -850,8 +857,9 @@ export default class Updater {
         const id = root.get('id')
         const damage = root.get('Damage')
         let tag = root.get('tag')
+        root.del('Damage')
 
-        if (id instanceof NbtString && (damage instanceof NbtShort || damage instanceof NbtInt)) {
+        if (id instanceof NbtString && (damage === undefined || damage instanceof NbtShort || damage instanceof NbtInt)) {
             if (tag instanceof NbtCompound) {
                 tag = getNbt(Updater.upItemTagNbt(tag.toString(), id.get()))
             }
@@ -859,13 +867,14 @@ export default class Updater {
                 if (!(tag instanceof NbtCompound)) {
                     tag = new NbtCompound()
                 }
-                tag.set('Damage', damage)
+                if (damage !== undefined) {
+                    tag.set('Damage', damage)
+                }
             } else {
-                const newID = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(id.get(), damage.get())
+                const newID = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(id.get(), damage ? damage.get() : 0)
                 id.set(newID)
                 root.set('id', id)
             }
-            root.del('Damage')
             if (tag instanceof NbtCompound) {
                 root.set('tag', tag)
             }

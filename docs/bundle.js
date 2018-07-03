@@ -12039,6 +12039,13 @@ class Updater {
             }
         }
         {
+            let fireworksItem = root.get('FireworksItem');
+            if (fireworksItem instanceof nbt_1.NbtCompound) {
+                fireworksItem = utils_1.getNbt(Updater.upItemNbt(fireworksItem.toString()));
+                root.set('FireworksItem', fireworksItem);
+            }
+        }
+        {
             const command = root.get('Command');
             if (command instanceof nbt_1.NbtString) {
                 command.set(Updater.upCommand(command.get(), false));
@@ -12196,7 +12203,8 @@ class Updater {
         const id = root.get('id');
         const damage = root.get('Damage');
         let tag = root.get('tag');
-        if (id instanceof nbt_1.NbtString && (damage instanceof nbt_1.NbtShort || damage instanceof nbt_1.NbtInt)) {
+        root.del('Damage');
+        if (id instanceof nbt_1.NbtString && (damage === undefined || damage instanceof nbt_1.NbtShort || damage instanceof nbt_1.NbtInt)) {
             if (tag instanceof nbt_1.NbtCompound) {
                 tag = utils_1.getNbt(Updater.upItemTagNbt(tag.toString(), id.get()));
             }
@@ -12204,14 +12212,15 @@ class Updater {
                 if (!(tag instanceof nbt_1.NbtCompound)) {
                     tag = new nbt_1.NbtCompound();
                 }
-                tag.set('Damage', damage);
+                if (damage !== undefined) {
+                    tag.set('Damage', damage);
+                }
             }
             else {
-                const newID = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(id.get(), damage.get());
+                const newID = items_1.default.get1_13NominalIDFrom1_12NominalIDWithDataValue(id.get(), damage ? damage.get() : 0);
                 id.set(newID);
                 root.set('id', id);
             }
-            root.del('Damage');
             if (tag instanceof nbt_1.NbtCompound) {
                 root.set('tag', tag);
             }

@@ -133,6 +133,10 @@ describe('Updater tests', () => {
                 const actual = Updater.upArgument('{Count:1b,id:"minecraft:wooden_sword",Damage:998s}', '%item_nbt')
                 assert(actual === '{Count:1b,id:"minecraft:wooden_sword",tag:{Damage:998s}}')
             })
+            it('should convert', () => {
+                const actual = Updater.upArgument('{id:"minecraft:fireworks",Count:1b}', '%item_nbt')
+                assert(actual === '{id:"minecraft:firework_rocket",Count:1b}')
+            })
         })
         describe('%item_tag_nbt tests', () => {
             it('should convert', () => {
