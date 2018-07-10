@@ -40,7 +40,6 @@ $(document).ready(() => {
                             line = line.slice(0, line.indexOf('!>') - 1)
                         }
                         result += line + '\n'
-                        console.log(result)
                 }
 
                 result = result.slice(0, -1) // Remove the last line.

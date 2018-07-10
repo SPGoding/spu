@@ -113,6 +113,9 @@ class Checker {
         return ['true', 'false'].indexOf(input.toLowerCase()) !== -1;
     }
     static isCommand(input) {
+        if (input.slice(0, 1) === '/') {
+            input = input.slice(1);
+        }
         for (const spusOld of spuses_1.default.pairs.keys()) {
             let map = updater_1.default.getResultMap(input, spusOld);
             if (map) {
@@ -292,7 +295,6 @@ $(document).ready(() => {
                         line = line.slice(0, line.indexOf('!>') - 1);
                     }
                     result += line + '\n';
-                    console.log(result);
                 }
                 result = result.slice(0, -1);
                 let timeAfter = (new Date()).getTime();

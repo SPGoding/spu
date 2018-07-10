@@ -116,6 +116,9 @@ export default class Checker {
     }
 
     public static isCommand(input: string) {
+        if (input.slice(0, 1) === '/') {
+            input = input.slice(1)
+        }
         for (const spusOld of Spuses.pairs.keys()) {
             let map = Updater.getResultMap(input, spusOld)
             if (map) {
