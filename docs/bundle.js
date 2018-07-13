@@ -11026,7 +11026,12 @@ Spuses.pairs = new Map([
     ['enchant %entity %ench', 'enchant %0 %1'],
     ['enchant %entity %ench %num', 'enchant %0 %1 %2'],
     ['entitydata %entity %entity_nbt', 'execute as %0 run data merge entity @s %1'],
+    ['execute %entity ~ ~ ~ %command', 'execute as %0 at @s run %1'],
     ['execute %entity %vec_3 %command', 'execute as %0 at @s positioned %1 run %2'],
+    [
+        'execute %entity ~ ~ ~ detect %vec_3 %block %block_metadata_or_state %command',
+        'execute as %0 at @s if block %1 %2$addMetadataOrStateToBlock%3 run %4'
+    ],
     [
         'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %command',
         'execute as %0 at @s positioned %1 if block %2 %3$addMetadataOrStateToBlock%4 run %5'
@@ -13273,7 +13278,7 @@ class Selector {
             throw `First char should be '@': ${str}`;
         }
         char = charReader.next();
-        this.parseVariable1_12(char, str);
+        this.parseVariable(char, str);
         char = charReader.next();
         this.parseProperties1_12(char, charReader, str);
     }
@@ -13285,7 +13290,7 @@ class Selector {
             throw `First char should be '@': ${str}`;
         }
         char = charReader.next();
-        this.parseVariable1_13(char, str);
+        this.parseVariable(char, str);
         char = charReader.next();
         this.parseProperties1_13(char, charReader, str);
     }
@@ -13340,13 +13345,10 @@ class Selector {
     setNbt(nbt) {
         this.nbt = utils_1.getNbt(nbt);
     }
-    parseVariable1_12(char, str) {
+    parseVariable(char, str) {
         switch (char) {
             case 'a':
             case 'e':
-                this.sort = 'nearest';
-                this.variable = char;
-                break;
             case 'p':
             case 'r':
             case 's':
@@ -13400,10 +13402,13 @@ class Selector {
                             break;
                         case 'c':
                             if (Number(val) >= 0) {
+                                if (this.sort !== 'random' && this.variable !== 'r') {
+                                    this.sort = 'nearest';
+                                }
                                 this.limit = Number(val);
                             }
                             else {
-                                if (this.sort !== 'random') {
+                                if (this.sort !== 'random' && this.variable !== 'r') {
                                     this.sort = 'furthest';
                                 }
                                 this.limit = -Number(val);
@@ -13471,19 +13476,6 @@ class Selector {
         }
         else {
             throw `Unexpected token: ${str}`;
-        }
-    }
-    parseVariable1_13(char, str) {
-        switch (char) {
-            case 'a':
-            case 'e':
-            case 'p':
-            case 'r':
-            case 's':
-                this.variable = char;
-                break;
-            default:
-                throw `Unknown variable: ${char} in ${str}`;
         }
     }
     parseProperties1_13(char, charReader, str) {

@@ -94,7 +94,12 @@ export default class Spuses {
         ['enchant %entity %ench', 'enchant %0 %1'],
         ['enchant %entity %ench %num', 'enchant %0 %1 %2'],
         ['entitydata %entity %entity_nbt', 'execute as %0 run data merge entity @s %1'],
+        ['execute %entity ~ ~ ~ %command', 'execute as %0 at @s run %1'],
         ['execute %entity %vec_3 %command', 'execute as %0 at @s positioned %1 run %2'],
+        [
+            'execute %entity ~ ~ ~ detect %vec_3 %block %block_metadata_or_state %command',
+            'execute as %0 at @s if block %1 %2$addMetadataOrStateToBlock%3 run %4'
+        ],
         [
             'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %command',
             'execute as %0 at @s positioned %1 if block %2 %3$addMetadataOrStateToBlock%4 run %5'

@@ -31,7 +31,7 @@ export default class Selector {
     private advancements = new Map<string, boolean | Map<string, boolean>>()
     private nbt = new NbtCompound()
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Parses this selector according to a string in 1.12.
@@ -47,7 +47,7 @@ export default class Selector {
         }
 
         char = charReader.next()
-        this.parseVariable1_12(char, str)
+        this.parseVariable(char, str)
 
         char = charReader.next()
         this.parseProperties1_12(char, charReader, str)
@@ -67,7 +67,7 @@ export default class Selector {
         }
 
         char = charReader.next()
-        this.parseVariable1_13(char, str)
+        this.parseVariable(char, str)
 
         char = charReader.next()
         this.parseProperties1_13(char, charReader, str)
@@ -137,13 +137,10 @@ export default class Selector {
         this.nbt = getNbt(nbt)
     }
 
-    private parseVariable1_12(char: string, str: string) {
+    private parseVariable(char: string, str: string) {
         switch (char) {
             case 'a':
             case 'e':
-                this.sort = 'nearest'
-                this.variable = char
-                break
             case 'p':
             case 'r':
             case 's':
@@ -201,9 +198,12 @@ export default class Selector {
                             break
                         case 'c':
                             if (Number(val) >= 0) {
+                                if (this.sort !== 'random' && this.variable !== 'r') {
+                                    this.sort = 'nearest'
+                                }
                                 this.limit = Number(val)
                             } else {
-                                if (this.sort !== 'random') {
+                                if (this.sort !== 'random' && this.variable !== 'r') {
                                     this.sort = 'furthest'
                                 }
                                 this.limit = -Number(val)
@@ -270,20 +270,6 @@ export default class Selector {
             }
         } else {
             throw `Unexpected token: ${str}`
-        }
-    }
-
-    private parseVariable1_13(char: string, str: string) {
-        switch (char) {
-            case 'a':
-            case 'e':
-            case 'p':
-            case 'r':
-            case 's':
-                this.variable = char
-                break
-            default:
-                throw `Unknown variable: ${char} in ${str}`
         }
     }
 
