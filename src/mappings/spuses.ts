@@ -183,7 +183,7 @@ export default class Spuses {
         ['say %string', 'say %0'],
         ['scoreboard objectives list', 'scoreboard objectives list'],
         ['scoreboard objectives add %word %scb_crit', 'scoreboard objectives add %0 %1'],
-        ['scoreboard objectives add %word %scb_crit %string', 'scoreboard objectives add %0 %1 %2'],
+        ['scoreboard objectives add %word %scb_crit %string', 'scoreboard objectives add %0 %1 "%2"'],
         ['scoreboard objectives remove %word', 'scoreboard objectives remove %0'],
         ['scoreboard objectives setdisplay %word', 'scoreboard objectives setdisplay %0'],
         ['scoreboard objectives setdisplay %word %word', 'scoreboard objectives setdisplay %0 %1'],
