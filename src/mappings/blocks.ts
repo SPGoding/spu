@@ -463,12 +463,6 @@ export default class Blocks {
         return new StdBlock(ansName, ansStates, ansNbt)
     }
 
-    public static sortStates(input: string) {
-        let arr = input.split(',')
-        arr.sort()
-        return arr.join()
-    }
-
     public static upNumericToBlockState(id: NbtShort | NbtInt, data?: NbtShort | NbtInt) {
         const blockState = new NbtCompound()
         const name = new NbtString()
