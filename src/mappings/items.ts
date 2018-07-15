@@ -1,12 +1,49 @@
+import { NbtCompound } from "../utils/nbt/nbt";
+
+export class StdItem {
+    private name: string
+    private nbt: NbtCompound
+
+    public constructor(name: string, nbt: NbtCompound) {
+        this.name = name
+        this.nbt = nbt
+    }
+
+    public getName() {
+        return this.name
+    }
+
+    public getNbt() {
+        return this.nbt
+    }
+
+    public getNominal() {
+        let state = ''
+        let nbt = ''
+        if (this.hasNbt()) {
+            nbt = this.nbt.toString()
+        }
+        return `${this.name}${state}${nbt}`
+    }
+
+    public hasNbt() {
+        return this.nbt && this.nbt.toString() !== '{}'
+    }
+}
+
 /**
  * Providing a map storing old item IDs and new item IDs.
  */
 export default class Items {
+    public static std1_12(id?: number, name?: string, data?: number, nbt?: NbtCompound) {
+        // TODO:
+    }
+
     static is1_12NominalIDExist(id: string) {
         if (id.slice(0, 10) !== 'minecraft:') {
             id = `minecraft:${id}`
         }
-        const arr = Items.NumericID_NominalID.find(v => v[1] === id)
+        const arr = Items.NumericID1_12_NominalID1_12.find(v => v[1] === id)
         return arr ? true : false
     }
 
@@ -25,7 +62,7 @@ export default class Items {
             str = 'minecraft:' + str
         }
         str = `${str}.${data}`
-        const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0] === str)
+        const arr = Items.StringWithData1_12_NominalID1_13.find(v => v[0] === str)
         if (arr) {
             return arr[1]
         } else {
@@ -34,7 +71,7 @@ export default class Items {
     }
 
     static get1_12NominalIDFrom1_12NumericID(input: number) {
-        const arr = Items.NumericID_NominalID.find(v => v[0] === input)
+        const arr = Items.NumericID1_12_NominalID1_12.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
@@ -46,14 +83,14 @@ export default class Items {
         if (input.slice(0, 10) !== 'minecraft:') {
             input = 'minecraft:' + input
         }
-        return Items.DamageItemIDs.indexOf(input) !== -1
+        return Items.DamageItems.indexOf(input) !== -1
     }
 
     static isMapItem(input: string) {
         if (input.slice(0, 10) !== 'minecraft:') {
             input = 'minecraft:' + input
         }
-        return Items.MapItemIDs.indexOf(input) !== -1
+        return Items.MapItems.indexOf(input) !== -1
     }
 
     static getNominalColorFromNumericColor(input: number, suffix: string) {
@@ -65,7 +102,7 @@ export default class Items {
         }
     }
 
-    static NumericID_NominalID: NumericID_NominalID[] = [
+    static NumericID1_12_NominalID1_12: Number_String[] = [
         [0, 'minecraft:air'],
         [1, 'minecraft:stone'],
         [2, 'minecraft:grass'],
@@ -531,7 +568,7 @@ export default class Items {
         [2267, 'minecraft:record_wait']
     ]
 
-    static StringIDWithDataValue_NominalID: string[][] = [
+    static StringWithData1_12_NominalID1_13: string[][] = [
         ['minecraft:stone.0', 'minecraft:stone'],
         ['minecraft:stone.1', 'minecraft:granite'],
         ['minecraft:stone.2', 'minecraft:polished_granite'],
@@ -854,7 +891,7 @@ export default class Items {
         ['chorus_fruit_popped.0','popped_chorus_fruit']
     ]
 
-    static DamageItemIDs: string[] = [
+    static DamageItems: string[] = [
         'minecraft:bow',
         'minecraft:carrot_on_a_stick',
         'minecraft:chainmail_boots',
@@ -909,7 +946,7 @@ export default class Items {
         'minecraft:wooden_sword'
     ]
 
-    static MapItemIDs: string[] = [
+    static MapItems: string[] = [
         'minecraft:map',
         'minecraft:filled_map'
     ]
@@ -934,7 +971,7 @@ export default class Items {
     ]
 }
 
-interface NumericID_NominalID {
+interface Number_String {
     0: number
     1: string
 }
