@@ -463,6 +463,12 @@ export default class Blocks {
         return new StdBlock(ansName, ansStates, ansNbt)
     }
 
+    public static sortStates(input: string) {
+        let arr = input.split(',')
+        arr.sort()
+        return arr.join()
+    }
+
     public static upNumericToBlockState(id: NbtShort | NbtInt, data?: NbtShort | NbtInt) {
         const blockState = new NbtCompound()
         const name = new NbtString()
@@ -504,79 +510,6 @@ export default class Blocks {
         blockState.set('Name', name)
         return blockState
     }
-
-    // private static get1_12NominalIDFrom1_12StringIDWithMetadata(id: string, metadata: number) {
-    //     if (id.slice(0, 10) !== 'minecraft:') {
-    //         id = `minecraft:${id}`
-    //     }
-    //     const arr = Blocks.ID_Data_Name_States.find(v => v[1] === metadata && v[2].split('[')[0] === id)
-    //     if (arr) {
-    //         return arr[2]
-    //     } else {
-    //         throw `Unknown 1.12 string ID: '${id}:${metadata}'`
-    //     }
-    // }
-
-    // private static get1_12NominalIDFrom1_12NumericID(id: number, metadata?: number) {
-    //     if (!metadata) {
-    //         metadata = 0
-    //         while (id > 255) {
-    //             metadata += 1
-    //             id -= 4096
-    //         }
-    //     }
-    //     const arr = Blocks.ID_Data_Name_States.find(v => v[0] === id && v[1] === metadata)
-    //     if (arr) {
-    //         return arr[2]
-    //     } else {
-    //         // return null
-    //         throw `Unknown 1.12 Numeric ID.`
-    //     }
-    // }
-
-    // private static get1_13NominalIDFrom1_12NominalID(input: string) {
-    //     if (input.slice(0, 10) !== 'minecraft:') {
-    //         input = `minecraft:${input}`
-    //     }
-    //     const arr = Blocks.Nominal1_12_Nominal1_13.find(v => v.indexOf(input, 1) >= 1) // Should be >=1. Cuz 0 is 4 1.12.
-    //     if (arr) {
-    //         return arr[0]
-    //     } else {
-    //         return input
-    //     }
-    // }
-
-    // private static get1_13NominalIDFrom1_12NumericID(id: number, metadata?: number) {
-    //     const nominalID1_12 = Blocks.get1_12NominalIDFrom1_12NumericID(id, metadata)
-    //     if (nominalID1_12) {
-    //         return Blocks.get1_13NominalIDFrom1_12NominalID(nominalID1_12)
-    //     } else {
-    //         throw `Unknown 1.12 numeric ID: '${id}:${metadata}'`
-    //     }
-    // }
-
-    // private static get1_12NominalIDFrom1_12StringID(input: string) {
-    //     if (input.slice(0, 10) !== 'minecraft:') {
-    //         input = `minecraft:${input}`
-    //     }
-    //     const arr = Blocks.ID_Data_Name_States.find(
-    //         v => v[2].toString().split('[')[0] === input.split('[')[0] && v[1] === 0
-    //     )
-    //     if (arr) {
-    //         let defaultStates = Blocks.getStatesFromStringID(arr[2])
-    //         let customStates = Blocks.getStatesFromStringID(input)
-    //         let resultStates = Blocks.sortStates(Blocks.combineStates(defaultStates, customStates))
-    //         return `${input.split('[')[0]}[${resultStates}]`
-    //     } else {
-    //         throw `Unknown 1.12 string ID: '${input}'`
-    //     }
-    // }
-
-    // public static sortStates(input: string) {
-    //     let arr = input.split(',')
-    //     arr.sort()
-    //     return arr.join()
-    // }
 
     private static getStatesFromNominal(input: string) {
         let arr = input.split('[')
