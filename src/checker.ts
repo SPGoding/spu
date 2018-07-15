@@ -66,6 +66,8 @@ export default class Checker {
                     return Checker.isNumOrStar(cmdArg)
                 case 'particle':
                     return Checker.isStringID(cmdArg)
+                case 'pre_json':
+                    return Checker.isString(cmdArg)
                 case 'recipe':
                     return Checker.isPath(cmdArg) || cmdArg === '*'
                 case 'scb_crit':
@@ -99,8 +101,7 @@ export default class Checker {
     }
 
     public static isBlockDustParam(input: string) {
-        const result = Blocks.get1_12NominalIDFrom1_12NumericID(Number(input))
-        return result ? true : false
+        return isNumeric(input) && Number(input) >= 0 && Number(input) <= 255 + 15 * 4096
     }
 
     public static isBlockMetadataOrState(input: string) {

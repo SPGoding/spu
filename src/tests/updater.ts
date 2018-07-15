@@ -52,8 +52,8 @@ describe('Updater tests', () => {
         })
         describe('%command tests', () => {
             it('should convert', () => {
-                const actual = Updater.upArgument('advancement grant @e only foo', '%command')
-                assert(actual === 'advancement grant @e[sort=nearest] only foo')
+                const actual = Updater.upArgument('advancement grant @e[c=1] only foo', '%command')
+                assert(actual === 'advancement grant @e[limit=1,sort=nearest] only foo')
             })
         })
         describe('%difficulty tests', () => {
@@ -147,10 +147,10 @@ describe('Updater tests', () => {
         describe('%json tests', () => {
             it('should convert', () => {
                 const actual = Updater.upArgument(
-                    '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e"}}}]',
+                    '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e[c=1]"}}}]',
                     '%json'
                 )
-                assert(actual === '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e[sort=nearest]"}}}]')
+                assert(actual === '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e[limit=1,sort=nearest]"}}}]')
             })
         })
         describe('%literal tests', () => {

@@ -161,6 +161,8 @@ export class NbtList {
 
         return result
     }
+
+    public forEach = this.value.forEach.bind(this.value)
 }
 
 export class NbtByteArray {

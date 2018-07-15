@@ -31,6 +31,7 @@ export default class Spuses {
      * %num
      * %num_or_star
      * %particle
+     * %pre_json
      * %recipe
      * %scb_crit
      * %slot
@@ -46,7 +47,7 @@ export default class Spuses {
      * $addAdvToEntity
      * $addDataToItem
      * $addMetadataOrStateToBlock
-     * $addNbtToBlock
+     * $addMetadataOrStateAndNbtToBlock
      * $addNbtToEntity
      * $addNbtToItem
      * $addScbMaxToEntity
@@ -109,7 +110,7 @@ export default class Spuses {
         ['fill %vec_3 %vec_3 %block %block_metadata_or_state %literal', 'fill %0 %1 %2$addMetadataOrStateToBlock%3 %4'],
         [
             'fill %vec_3 %vec_3 %block %block_metadata_or_state %literal %block_nbt',
-            'fill %0 %1 %2$addMetadataOrStateToBlock%3$addNbtToBlock%5 %4'
+            'fill %0 %1 %2$addMetadataOrStateAndNbtToBlock%3%5 %4'
         ],
         [
             'fill %vec_3 %vec_3 %block %block_metadata_or_state replace %block %block_metadata_or_state',
@@ -183,7 +184,7 @@ export default class Spuses {
         ['say %string', 'say %0'],
         ['scoreboard objectives list', 'scoreboard objectives list'],
         ['scoreboard objectives add %word %scb_crit', 'scoreboard objectives add %0 %1'],
-        ['scoreboard objectives add %word %scb_crit %string', 'scoreboard objectives add %0 %1 {"text":"%2"}'],
+        ['scoreboard objectives add %word %scb_crit %pre_json', 'scoreboard objectives add %0 %1 %2'],
         ['scoreboard objectives remove %word', 'scoreboard objectives remove %0'],
         ['scoreboard objectives setdisplay %word', 'scoreboard objectives setdisplay %0'],
         ['scoreboard objectives setdisplay %word %word', 'scoreboard objectives setdisplay %0 %1'],
@@ -207,7 +208,7 @@ export default class Spuses {
         ['scoreboard teams list', 'team list'],
         ['scoreboard teams list %word', 'team list %0'],
         ['scoreboard teams add %word', 'team add %0'],
-        ['scoreboard teams add %word %string', 'team add %0 {"text":"%1"}'],
+        ['scoreboard teams add %word %pre_json', 'team add %0 %1'],
         ['scoreboard teams remove %word', 'team remove %0'],
         ['scoreboard teams empty %word', 'team empty %0'],
         ['scoreboard teams join %word', 'team join %0'],
@@ -221,7 +222,7 @@ export default class Spuses {
         ['setblock %vec_3 %block %block_metadata_or_state %literal', 'setblock %0 %1$addMetadataOrStateToBlock%2 %3'],
         [
             'setblock %vec_3 %block %block_metadata_or_state %literal %block_nbt',
-            'setblock %0 %1$addMetadataOrStateToBlock%2$addNbtToBlock%4 %3'
+            'setblock %0 %1$addMetadataOrStateAndNbtToBlock%2%4 %3'
         ],
         ['setidletimeout %num', 'setidletimeout %0'],
         ['setworldspawn', 'setworldspawn'],
@@ -250,7 +251,7 @@ export default class Spuses {
         ['testforblock %vec_3 %block %block_metadata_or_state', 'execute if block %0 %1$addMetadataOrStateToBlock%2'],
         [
             'testforblock %vec_3 %block %block_metadata_or_state %block_nbt',
-            'execute if block %0 %1$addMetadataOrStateToBlock%2$addNbtToBlock%3'
+            'execute if block %0 %1$addMetadataOrStateAndNbtToBlock%2%3'
         ],
         ['testforblocks %vec_3 %vec_3 %vec_3', 'execute if blocks %0 %1 %2 all'],
         ['testforblocks %vec_3 %vec_3 %vec_3 %literal', 'execute if blocks %0 %1 %2 %3'],

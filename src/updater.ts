@@ -156,6 +156,8 @@ export default class Updater {
                 return arg
             case 'particle':
                 return Updater.upParticle(arg)
+            case 'pre_json':
+                return Updater.upPreJson(arg)
             case 'recipe':
                 return arg
             case 'scb_crit':
@@ -183,315 +185,282 @@ export default class Updater {
 
     public static upBlockDustParam(input: string) {
         const num = Number(input)
-        const id = Blocks.get1_13NominalIDFrom1_12NumericID(num)
-        return id.toString()
+        const nominal = Blocks.get1_13(Blocks.std1_12(num)).getFull()
+        return nominal
     }
 
-    // FIXME: Block & block entity will update together one day.
-    public static upBlockNbt(nbt: string, blockNominalID: string) {
-        const root = getNbt(nbt)
+    // public static upBlockNbt(nbt: string, blockNominalID: string) {
+    //     const root = getNbt(nbt)
 
-        if (blockNominalID.slice(0, 10) !== 'minecraft:') {
-            blockNominalID = 'minecraft:' + blockNominalID
-        }
+    //     if (blockNominalID.slice(0, 10) !== 'minecraft:') {
+    //         blockNominalID = 'minecraft:' + blockNominalID
+    //     }
 
-        const block = blockNominalID.split('[')[0]
+    //     const block = blockNominalID.split('[')[0]
 
-        switch (block) {
-            case 'minecraft:white_banner': {
-                /* CustomName */ {
-                    const value = root.get('CustomName')
-                    if (value instanceof NbtString) {
-                        value.set(`{"text":"${escape(value.get())}"}`)
-                    }
-                }
-                /* Base */ {
-                    const base = root.get('Base')
-                    root.del('Base')
-                    if (base instanceof NbtInt) {
-                        return `$ID>${Items.getNominalColorFromNumericColor(base.get(), 'banner')}`
-                    }
-                }
-                break
-            }
-            case 'minecraft:white_wall_banner': {
-                /* CustomName */ {
-                    const value = root.get('CustomName')
-                    if (value instanceof NbtString) {
-                        value.set(`{"text":"${escape(value.get())}"}`)
-                    }
-                }
-                /* Base */ {
-                    const base = root.get('Base')
-                    root.del('Base')
-                    if (base instanceof NbtInt) {
-                        return `$ID>${Items.getNominalColorFromNumericColor(base.get(), 'wall_banner')}`
-                    }
-                }
-                break
-            }
-            case 'minecraft:enchanting_table': {
-                /* CustomName */ {
-                    const value = root.get('CustomName')
-                    if (value instanceof NbtString) {
-                        value.set(`{"text":"${escape(value.get())}"}`)
-                    }
-                }
-                break
-            }
-            case 'minecraft:red_bed': {
-                /* color */ {
-                    const color = root.get('color')
-                    if (color instanceof NbtInt) {
-                        return `$ID>${Items.getNominalColorFromNumericColor(color.get(), 'bed')}`
-                    }
-                }
-                break
-            }
-            case 'minecraft:cauldron': {
-                /* Items */ {
-                    const items = root.get('Items')
-                    if (items instanceof NbtList) {
-                        for (let i = 0; i < items.length; i++) {
-                            let item = items.get(i)
-                            item = getNbt(Updater.upItemNbt(item.toString()))
-                            items.set(i, item)
-                        }
-                    }
-                }
-                break
-            }
-            case 'minecraft:brewing_stand':
-            case 'minecraft:chest':
-            case 'minecraft:dispenser':
-            case 'minecraft:dropper':
-            case 'minecraft:furnance':
-            case 'minecraft:hopper':
-            case 'minecraft:shulker_box': {
-                /* CustomName */ {
-                    const value = root.get('CustomName')
-                    if (value instanceof NbtString) {
-                        value.set(`{"text":"${escape(value.get())}"}`)
-                    }
-                }
-                /* Items */ {
-                    const items = root.get('Items')
-                    if (items instanceof NbtList) {
-                        for (let i = 0; i < items.length; i++) {
-                            let item = items.get(i)
-                            item = getNbt(Updater.upItemNbt(item.toString()))
-                            items.set(i, item)
-                        }
-                    }
-                }
-                break
-            }
-            case 'minecraft:command_block':
-            case 'minecraft:repeating_command_block':
-            case 'minecraft:chain_command_block': {
-                /* CustomName */ {
-                    const value = root.get('CustomName')
-                    if (value instanceof NbtString) {
-                        value.set(`{"text":"${escape(value.get())}"}`)
-                    }
-                }
-                /* Command */ {
-                    const command = root.get('Command')
-                    if (command instanceof NbtString) {
-                        command.set(Updater.upCommand(command.get(), false))
-                    }
-                }
-                break
-            }
-            case 'minecraft:potted_cactus': {
-                /* Item & Data */ {
-                    const item = root.get('Item')
-                    const data = root.get('Data')
-                    if (item instanceof NbtString && data instanceof NbtInt) {
-                        return `$ID>minecraft:potted_${Blocks.get1_13NominalIDFrom1_12NominalID(
-                            Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(item.get(), data.get())
-                        )
-                            .split('[')[0]
-                            .replace('minecraft:', '')}`
-                    }
-                }
-                break
-            }
-            case 'minecraft:jukebox': {
-                /* Record */ {
-                    root.del('Record')
-                }
-                /* RecordItem */ {
-                    let item = root.get('RecordItem')
-                    if (item instanceof NbtString) {
-                        item = getNbt(Updater.upItemNbt(item.toString()))
-                        root.set('RecordItem', item)
-                    }
-                }
-                break
-            }
-            case 'minecraft:mob_spawner': {
-                /* SpawnPotentials */ {
-                    const spawnPotentials = root.get('SpawnPotentials')
-                    if (spawnPotentials instanceof NbtList) {
-                        for (let i = 0; i < spawnPotentials.length; i++) {
-                            const potential = spawnPotentials.get(i)
-                            if (potential instanceof NbtCompound) {
-                                let entity = potential.get('Entity')
-                                if (entity instanceof NbtCompound) {
-                                    entity = getNbt(Updater.upEntityNbt(entity.toString()))
-                                    potential.set('Entity', entity)
-                                }
-                            }
-                        }
-                    }
-                }
-                /* SpawnData */ {
-                    let spawnData = root.get('SpawnData')
-                    if (spawnData instanceof NbtCompound) {
-                        spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
-                        root.set('SpawnData', spawnData)
-                    }
-                }
-                break
-            }
-            case 'minecraft:note_block': {
-                /* note & powered */ {
-                    const note = root.get('note')
-                    const powered = root.get('powered')
-                    if (
-                        (note instanceof NbtByte || note instanceof NbtInt) &&
-                        (powered instanceof NbtByte || powered instanceof NbtInt)
-                    ) {
-                        return `$BS>pitch=${note.get()},powered=${powered.get() !== 0}`
-                    } else if (note instanceof NbtByte || note instanceof NbtInt) {
-                        return `$BS>pitch=${note.get()}`
-                    } else if (powered instanceof NbtByte || powered instanceof NbtInt) {
-                        return `$BS>powered=${powered.get() !== 0}`
-                    }
-                }
-                break
-            }
-            case 'minecraft:piston': {
-                /* blockId & blockData */ {
-                    const blockID = root.get('blockId')
-                    const blockData = root.get('blockData')
-                    root.del('blockId')
-                    root.del('blockData')
-                    if (
-                        blockID instanceof NbtInt &&
-                        (blockData instanceof NbtInt || typeof blockData === 'undefined')
-                    ) {
-                        const blockState = Updater.upBlockNumericIDToBlockState(blockID, blockData)
-                        root.set('blockState', blockState)
-                    }
-                }
-                break
-            }
-            case 'minecraft:sign': {
-                /* Text1 */ {
-                    const text = root.get('Text1')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                /* Text2 */ {
-                    const text = root.get('Text2')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                /* Text3 */ {
-                    const text = root.get('Text3')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                /* Text4 */ {
-                    const text = root.get('Text4')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                break
-            }
-            case 'minecraft:skeleton_skull': {
-                /* SkullType & Rot */ {
-                    const skullType = root.get('SkullType')
-                    const rot = root.get('Rot')
-                    root.del('SkullType')
-                    root.del('Rot')
+    //     switch (block) {
+    //         case 'minecraft:enchanting_table': {
+    //             /* CustomName */ {
+    //                 const value = root.get('CustomName')
+    //                 if (value instanceof NbtString) {
+    //                     value.set(`{"text":"${escape(value.get())}"}`)
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:red_bed': {
+    //             /* color */ {
+    //                 const color = root.get('color')
+    //                 if (color instanceof NbtInt) {
+    //                     return `$ID>${Items.getNominalColorFromNumericColor(color.get(), 'bed')}`
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:cauldron': {
+    //             /* Items */ {
+    //                 const items = root.get('Items')
+    //                 if (items instanceof NbtList) {
+    //                     for (let i = 0; i < items.length; i++) {
+    //                         let item = items.get(i)
+    //                         item = getNbt(Updater.upItemNbt(item.toString()))
+    //                         items.set(i, item)
+    //                     }
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:brewing_stand':
+    //         case 'minecraft:chest':
+    //         case 'minecraft:dispenser':
+    //         case 'minecraft:dropper':
+    //         case 'minecraft:furnance':
+    //         case 'minecraft:hopper':
+    //         case 'minecraft:shulker_box': {
+    //             /* CustomName */ {
+    //                 const value = root.get('CustomName')
+    //                 if (value instanceof NbtString) {
+    //                     value.set(`{"text":"${escape(value.get())}"}`)
+    //                 }
+    //             }
+    //             /* Items */ {
+    //                 const items = root.get('Items')
+    //                 if (items instanceof NbtList) {
+    //                     for (let i = 0; i < items.length; i++) {
+    //                         let item = items.get(i)
+    //                         item = getNbt(Updater.upItemNbt(item.toString()))
+    //                         items.set(i, item)
+    //                     }
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:command_block':
+    //         case 'minecraft:repeating_command_block':
+    //         case 'minecraft:chain_command_block': {
+    //             /* CustomName */ {
+    //                 const value = root.get('CustomName')
+    //                 if (value instanceof NbtString) {
+    //                     value.set(`{"text":"${escape(value.get())}"}`)
+    //                 }
+    //             }
+    //             /* Command */ {
+    //                 const command = root.get('Command')
+    //                 if (command instanceof NbtString) {
+    //                     command.set(Updater.upCommand(command.get(), false))
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:potted_cactus': {
+    //             /* Item & Data */ {
+    //                 const item = root.get('Item')
+    //                 const data = root.get('Data')
+    //                 if (item instanceof NbtString && data instanceof NbtInt) {
+    //                     return `$ID>minecraft:potted_${Blocks.get1_13NominalIDFrom1_12NominalID(
+    //                         Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(item.get(), data.get())
+    //                     )
+    //                         .split('[')[0]
+    //                         .replace('minecraft:', '')}`
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:jukebox': {
+    //             /* Record */ {
+    //                 root.del('Record')
+    //             }
+    //             /* RecordItem */ {
+    //                 let item = root.get('RecordItem')
+    //                 if (item instanceof NbtString) {
+    //                     item = getNbt(Updater.upItemNbt(item.toString()))
+    //                     root.set('RecordItem', item)
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:mob_spawner': {
+    //             /* SpawnPotentials */ {
+    //                 const spawnPotentials = root.get('SpawnPotentials')
+    //                 if (spawnPotentials instanceof NbtList) {
+    //                     for (let i = 0; i < spawnPotentials.length; i++) {
+    //                         const potential = spawnPotentials.get(i)
+    //                         if (potential instanceof NbtCompound) {
+    //                             let entity = potential.get('Entity')
+    //                             if (entity instanceof NbtCompound) {
+    //                                 entity = getNbt(Updater.upEntityNbt(entity.toString()))
+    //                                 potential.set('Entity', entity)
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             /* SpawnData */ {
+    //                 let spawnData = root.get('SpawnData')
+    //                 if (spawnData instanceof NbtCompound) {
+    //                     spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+    //                     root.set('SpawnData', spawnData)
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:note_block': {
+    //             /* note & powered */ {
+    //                 const note = root.get('note')
+    //                 const powered = root.get('powered')
+    //                 if (
+    //                     (note instanceof NbtByte || note instanceof NbtInt) &&
+    //                     (powered instanceof NbtByte || powered instanceof NbtInt)
+    //                 ) {
+    //                     return `$BS>pitch=${note.get()},powered=${powered.get() !== 0}`
+    //                 } else if (note instanceof NbtByte || note instanceof NbtInt) {
+    //                     return `$BS>pitch=${note.get()}`
+    //                 } else if (powered instanceof NbtByte || powered instanceof NbtInt) {
+    //                     return `$BS>powered=${powered.get() !== 0}`
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:piston': {
+    //             /* blockId & blockData */ {
+    //                 const blockID = root.get('blockId')
+    //                 const blockData = root.get('blockData')
+    //                 root.del('blockId')
+    //                 root.del('blockData')
+    //                 if (
+    //                     blockID instanceof NbtInt &&
+    //                     (blockData instanceof NbtInt || typeof blockData === 'undefined')
+    //                 ) {
+    //                     const blockState = Updater.upBlockNumericIDToBlockState(blockID, blockData)
+    //                     root.set('blockState', blockState)
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:sign': {
+    //             /* Text1 */ {
+    //                 const text = root.get('Text1')
+    //                 if (text instanceof NbtString) {
+    //                     text.set(Updater.upJson(text.get()))
+    //                 }
+    //             }
+    //             /* Text2 */ {
+    //                 const text = root.get('Text2')
+    //                 if (text instanceof NbtString) {
+    //                     text.set(Updater.upJson(text.get()))
+    //                 }
+    //             }
+    //             /* Text3 */ {
+    //                 const text = root.get('Text3')
+    //                 if (text instanceof NbtString) {
+    //                     text.set(Updater.upJson(text.get()))
+    //                 }
+    //             }
+    //             /* Text4 */ {
+    //                 const text = root.get('Text4')
+    //                 if (text instanceof NbtString) {
+    //                     text.set(Updater.upJson(text.get()))
+    //                 }
+    //             }
+    //             break
+    //         }
+    //         case 'minecraft:skeleton_skull': {
+    //             /* SkullType & Rot */ {
+    //                 const skullType = root.get('SkullType')
+    //                 const rot = root.get('Rot')
+    //                 root.del('SkullType')
+    //                 root.del('Rot')
 
-                    let skullIDPrefix: 'skeleton' | 'wither_skeleton' | 'zombie' | 'player' | 'creeper' | 'dragon'
-                    let skullIDSuffix: 'skull' | 'head'
+    //                 let skullIDPrefix: 'skeleton' | 'wither_skeleton' | 'zombie' | 'player' | 'creeper' | 'dragon'
+    //                 let skullIDSuffix: 'skull' | 'head'
 
-                    if (skullType instanceof NbtByte || skullType instanceof NbtInt) {
-                        switch (skullType.get()) {
-                            case 0:
-                                skullIDPrefix = 'skeleton'
-                                skullIDSuffix = 'skull'
-                                break
-                            case 1:
-                                skullIDPrefix = 'wither_skeleton'
-                                skullIDSuffix = 'skull'
-                                break
-                            case 2:
-                                skullIDPrefix = 'zombie'
-                                skullIDSuffix = 'head'
-                                break
-                            case 3:
-                                skullIDPrefix = 'player'
-                                skullIDSuffix = 'head'
-                                break
-                            case 4:
-                                skullIDPrefix = 'creeper'
-                                skullIDSuffix = 'head'
-                                break
-                            case 5:
-                                skullIDPrefix = 'dragon'
-                                skullIDSuffix = 'head'
-                                break
-                            default:
-                                skullIDPrefix = 'skeleton'
-                                skullIDSuffix = 'skull'
-                                break
-                        }
-                    } else {
-                        skullIDPrefix = 'skeleton'
-                        skullIDSuffix = 'skull'
-                    }
-                    if (blockNominalID.indexOf('facing=up') !== -1 || blockNominalID.indexOf('facing=down') !== -1) {
-                        // Floor
-                        if (rot instanceof NbtByte || rot instanceof NbtInt) {
-                            return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=${rot.get()}]${
-                                root.toString() !== '{}' ? root.toString() : ''
-                                }`
-                        } else {
-                            return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=0]${
-                                root.toString() !== '{}' ? root.toString() : ''
-                                }`
-                        }
-                    } else {
-                        // Wall
-                        const facing =
-                            blockNominalID.indexOf('facing=') !== -1
-                                ? blockNominalID.slice(
-                                    blockNominalID.indexOf('facing=') + 7,
-                                    blockNominalID.indexOf(',', blockNominalID.indexOf('facing=') + 7)
-                                )
-                                : 'north'
-                        return `$FL>${skullIDPrefix}_wall_${skullIDSuffix}[facing=${facing}]${
-                            root.toString() !== '{}' ? root.toString() : ''
-                            }`
-                    }
-                }
-            }
-            default:
-                break
-        }
+    //                 if (skullType instanceof NbtByte || skullType instanceof NbtInt) {
+    //                     switch (skullType.get()) {
+    //                         case 0:
+    //                             skullIDPrefix = 'skeleton'
+    //                             skullIDSuffix = 'skull'
+    //                             break
+    //                         case 1:
+    //                             skullIDPrefix = 'wither_skeleton'
+    //                             skullIDSuffix = 'skull'
+    //                             break
+    //                         case 2:
+    //                             skullIDPrefix = 'zombie'
+    //                             skullIDSuffix = 'head'
+    //                             break
+    //                         case 3:
+    //                             skullIDPrefix = 'player'
+    //                             skullIDSuffix = 'head'
+    //                             break
+    //                         case 4:
+    //                             skullIDPrefix = 'creeper'
+    //                             skullIDSuffix = 'head'
+    //                             break
+    //                         case 5:
+    //                             skullIDPrefix = 'dragon'
+    //                             skullIDSuffix = 'head'
+    //                             break
+    //                         default:
+    //                             skullIDPrefix = 'skeleton'
+    //                             skullIDSuffix = 'skull'
+    //                             break
+    //                     }
+    //                 } else {
+    //                     skullIDPrefix = 'skeleton'
+    //                     skullIDSuffix = 'skull'
+    //                 }
+    //                 if (blockNominalID.indexOf('facing=up') !== -1 || blockNominalID.indexOf('facing=down') !== -1) {
+    //                     // Floor
+    //                     if (rot instanceof NbtByte || rot instanceof NbtInt) {
+    //                         return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=${rot.get()}]${
+    //                             root.toString() !== '{}' ? root.toString() : ''
+    //                             }`
+    //                     } else {
+    //                         return `$FL>${skullIDPrefix}_${skullIDSuffix}[rotation=0]${
+    //                             root.toString() !== '{}' ? root.toString() : ''
+    //                             }`
+    //                     }
+    //                 } else {
+    //                     // Wall
+    //                     const facing =
+    //                         blockNominalID.indexOf('facing=') !== -1
+    //                             ? blockNominalID.slice(
+    //                                 blockNominalID.indexOf('facing=') + 7,
+    //                                 blockNominalID.indexOf(',', blockNominalID.indexOf('facing=') + 7)
+    //                             )
+    //                             : 'north'
+    //                     return `$FL>${skullIDPrefix}_wall_${skullIDSuffix}[facing=${facing}]${
+    //                         root.toString() !== '{}' ? root.toString() : ''
+    //                         }`
+    //                 }
+    //             }
+    //         }
+    //         default:
+    //             break
+    //     }
 
-        return root.toString()
-    }
+    //     return root.toString()
+    // }
 
     public static upDifficulty(input: string) {
         switch (input) {
@@ -649,7 +618,7 @@ export default class Updater {
             const inTile = root.get('inTile')
             root.del('inTile')
             if (inTile instanceof NbtString) {
-                const inBlockState = Updater.upBlockStringIDToBlockState(inTile)
+                const inBlockState = Blocks.upStringToBlockState(inTile)
                 root.set('inBlockState', inBlockState)
             }
         }
@@ -711,21 +680,18 @@ export default class Updater {
                 block instanceof NbtString &&
                 (data instanceof NbtByte || data instanceof NbtInt || typeof data === 'undefined')
             ) {
-                const blockState = Updater.upBlockStringIDToBlockState(block, data)
+                const blockState = Blocks.upStringToBlockState(block, data)
                 root.set('BlockState', blockState)
             }
 
             let tileEntityData = root.get('TileEntityData')
-            if (block instanceof NbtString && tileEntityData instanceof NbtCompound) {
-                tileEntityData = getNbt(
-                    Updater.upBlockNbt(
-                        tileEntityData.toString(),
-                        Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(
-                            block.get(),
-                            data ? (<NbtInt | NbtByte>data).get() : 0
-                        )
-                    )
-                )
+            if (block instanceof NbtString && tileEntityData instanceof NbtCompound &&
+                (data instanceof NbtInt || data instanceof NbtByte || data === undefined)) {
+                tileEntityData = Blocks.get1_13(
+                    Blocks.std1_12(
+                        undefined, block.get(), data ? data.get() : 0, 
+                        undefined, tileEntityData.toString())
+                    ).getNbt()
                 root.set('TileEntityData', tileEntityData)
             }
         }
@@ -738,7 +704,7 @@ export default class Updater {
                 displayTile instanceof NbtString &&
                 (displayData instanceof NbtInt || typeof displayData === 'undefined')
             ) {
-                const displayState = Updater.upBlockStringIDToBlockState(displayTile, displayData)
+                const displayState = Blocks.upStringToBlockState(displayTile, displayData)
                 root.set('DisplayState', displayState)
             }
         }
@@ -772,41 +738,14 @@ export default class Updater {
     }
 
     private static upBlockNumericIDToBlockState(id: NbtShort | NbtInt, data?: NbtShort | NbtInt) {
-        const carriedBlockState = new NbtCompound()
-        const name = new NbtString()
-        const properties = new NbtCompound()
-        const metadata = data ? data.get() : 0
-        const nominal = Blocks.get1_13NominalIDFrom1_12NumericID(id.get(), metadata)
-        name.set(nominal.split('[')[0])
-        if (nominal.indexOf('[') !== -1) {
-            nominal
-                .slice(nominal.indexOf('[') + 1, -1)
-                .split(',')
-                .forEach(v => {
-                    const val = new NbtString()
-                    const pairs = v.split('=')
-                    val.set(pairs[1])
-                    properties.set(pairs[0], val)
-                })
-            carriedBlockState.set('Properties', properties)
-        }
-        carriedBlockState.set('Name', name)
-        return carriedBlockState
-    }
-
-    private static upBlockStringIDToBlockState(block: NbtString, data?: NbtByte | NbtInt) {
         const blockState = new NbtCompound()
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
-        const nominal = Blocks.get1_13NominalIDFrom1_12NominalID(
-            Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), metadata)
-        )
-        name.set(nominal.split('[')[0])
-        if (nominal.indexOf('[') !== -1) {
-            nominal
-                .slice(nominal.indexOf('[') + 1, -1)
-                .split(',')
+        const std = Blocks.get1_13(Blocks.std1_12(id.get(), undefined, metadata))
+        name.set(std.getName())
+        if (std.hasStates()) {
+            std.getStates()
                 .forEach(v => {
                     const val = new NbtString()
                     const pairs = v.split('=')
@@ -894,9 +833,9 @@ export default class Updater {
                     const block = canDestroy.get(i)
                     if (block instanceof NbtString) {
                         block.set(
-                            Blocks.get1_13NominalIDFrom1_12NominalID(
-                                Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), 0)
-                            ).split('[')[0]
+                            Blocks.get1_13(
+                                Blocks.std1_12(undefined, block.get(), 0)
+                            ).getName()
                         )
                         canDestroy.set(i, block)
                     }
@@ -911,9 +850,9 @@ export default class Updater {
                     const block = canPlaceOn.get(i)
                     if (block instanceof NbtString) {
                         block.set(
-                            Blocks.get1_13NominalIDFrom1_12NominalID(
-                                Blocks.get1_12NominalIDFrom1_12StringIDWithMetadata(block.get(), 0)
-                            ).split('[')[0]
+                            Blocks.get1_13(
+                                Blocks.std1_12(undefined, block.get(), 0)
+                            ).getName()
                         )
                     }
                     canPlaceOn.set(i, block)
@@ -925,7 +864,9 @@ export default class Updater {
             if (Blocks.is1_12StringID(item)) {
                 let blockEntityTag = root.get('BlockEntityTag')
                 if (blockEntityTag instanceof NbtCompound) {
-                    blockEntityTag = getNbt(Updater.upBlockNbt(blockEntityTag.toString(), item))
+                    blockEntityTag = Blocks.get1_13(
+                        Blocks.std1_12(undefined, item, undefined, 
+                            undefined, blockEntityTag.toString())).getNbt()
                     root.set('BlockEntityTag', blockEntityTag)
                 }
             }
@@ -1038,6 +979,10 @@ export default class Updater {
         return Particles.get1_13NominalIDFrom1_12NominalID(input)
     }
 
+    public static upPreJson(input: string) {
+        return `{"text":"${escape(input)}"}`
+    }
+
     public static upScbCrit(input: string) {
         if (input.slice(0, 5) === 'stat.') {
             const subs = input.split(/\./g)
@@ -1046,13 +991,13 @@ export default class Updater {
                 case 'mineBlock':
                     let block = ''
                     if (isNumeric(subs[2])) {
-                        block = Blocks.get1_13NominalIDFrom1_12NumericID(Number(subs[2]))
+                        block = Blocks.get1_13(Blocks.std1_12(Number(subs[2])))
+                            .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
                     } else {
-                        block = Blocks.get1_13NominalIDFrom1_12NominalID(
-                            Blocks.get1_12NominalIDFrom1_12StringID(`${subs[2]}:${subs[3]}`)
-                        )
+                        block = Blocks.get1_13(Blocks.std1_12(undefined, `${subs[2]}:${subs[3]}`))
+                            .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
                     }
