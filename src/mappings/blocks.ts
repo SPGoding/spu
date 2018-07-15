@@ -143,6 +143,7 @@ export default class Blocks {
             ansStates = Blocks.getStatesFromNominal(arr[0])
         }
         switch (ansName) {
+            case 'minecraft:black_banner':
             case 'minecraft:white_banner': {
                 /* CustomName */ {
                     const customName = ansNbt.get('CustomName')
