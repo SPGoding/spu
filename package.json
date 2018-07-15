@@ -25,7 +25,7 @@
         "uglify-js-es6": "^2.8.9"
     },
     "scripts": {
-        "build": "tsc && browserify ./dist/index.js > ./docs/bundle.js && uglifyjs ./docs/bundle.js -m -c -o ./docs/bundle.min.js",
+        "build": "tsc && browserify ./dist/index.js > ./dist/bundle.js && uglifyjs ./dist/bundle.js -m -c -o ./docs/bundle.min.js",
         "test": "mocha --require espower-typescript/guess \"./src/tests/**/*.ts\""
     },
     "repository": {
