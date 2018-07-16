@@ -44,14 +44,14 @@ describe('Blocks tests', () => {
         it('should deal with Numeric', () => {
             let std = Blocks.std1_12(1)
 
-            let actual = Blocks.get1_13(std).getNominal()
+            let actual = Blocks.to1_13(std).getNominal()
 
             assert(actual === 'minecraft:stone')
-        })        
+        })
         it('should deal with String, Data and NBT', () => {
             let std = Blocks.std1_12(undefined, 'standing_banner', 1, undefined, '{Base:1}')
 
-            let actual = Blocks.get1_13(std).getNominal()
+            let actual = Blocks.to1_13(std).getNominal()
 
             assert(actual === 'minecraft:red_banner[rotation=1]')
         })

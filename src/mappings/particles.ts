@@ -1,6 +1,6 @@
 export default class Particles {
-    public static get1_13NominalIDFrom1_12NominalID(input: string) {
-        const arr = Particles.NominalID_NominalID.find(v => v[0] === input)
+    public static to1_13(input: string) {
+        const arr = Particles.NominalID1_12_NominalID1_13.find(v => v[0] === input)
         if (arr) {
             if (arr[1] === 'removed') {
                 throw `Removed particle: '${input}'`
@@ -11,7 +11,7 @@ export default class Particles {
         }
     }
 
-    static NominalID_NominalID = [
+    static NominalID1_12_NominalID1_13 = [
         ['mobSpellAmbient', 'ambient_entity_effect'],
         ['angryVillager', 'angry_villager'],
         ['blockcrack', 'block'],

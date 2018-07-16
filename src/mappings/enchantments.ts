@@ -1,6 +1,8 @@
+import { Number_String } from './mapping'
+
 export default class Enches {
-    public static get1_12NominalIDFrom1_12NumericID(input: number) {
-        const arr = Enches.NumericID_NominalID.find(v => v[0] === input)
+    public static to1_13(input: number) {
+        const arr = Enches.Numeric_Nominal.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
@@ -8,7 +10,7 @@ export default class Enches {
         }
     }
 
-    static NumericID_NominalID: NumericID_NominalID[] = [
+    static Numeric_Nominal: Number_String[] = [
         [0, 'minecraft:protection'],
         [1, 'minecraft:fire_protection'],
         [2, 'minecraft:feather_falling'],
@@ -40,9 +42,4 @@ export default class Enches {
         [70, 'minecraft:mending'],
         [71, 'minecraft:vanishing_curse']
     ]
-}
-
-interface NumericID_NominalID {
-    0: number
-    1: string
 }

@@ -31,7 +31,7 @@ export default class Selector {
     private advancements = new Map<string, boolean | Map<string, boolean>>()
     private nbt = new NbtCompound()
 
-    constructor() { }
+    constructor() {}
 
     /**
      * Parses this selector according to a string in 1.12.
@@ -76,7 +76,7 @@ export default class Selector {
     /**
      * Gets a string that can represent this target selector in 1.13.
      */
-    public get1_13() {
+    public to1_13() {
         let result = '@'
 
         result = this.getVariable1_13(result)

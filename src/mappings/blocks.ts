@@ -1,7 +1,8 @@
 import { NbtCompound, NbtList, NbtString, NbtInt, NbtByte, NbtValue, NbtShort } from '../utils/nbt/nbt'
-import Updater from '../updater';
-import Items from './items';
-import { getNbt } from '../utils/utils';
+import Updater from '../updater'
+import Items from './items'
+import { getNbt } from '../utils/utils'
+import { Number_Number_String_StringArray } from './mapping';
 
 export class StdBlock {
     private name: string
@@ -59,16 +60,7 @@ export class StdBlock {
  * Providing a map storing old block IDs and new block IDs.
  */
 export default class Blocks {
-    public static is1_12StringID(id: string) {
-        if (id.slice(0, 10) !== 'minecraft:') {
-            id = `minecraft:${id}`
-        }
-        const arr = Blocks.ID_Data_Name_States.find(v => v[2].toString().split('[')[0] === id)
-        return arr ? true : false
-    }
-
-    public static std1_12(id?: number, name?: string, data?: number,
-        state?: string, nbt?: string): StdBlock {
+    public static std1_12(id?: number, name?: string, data?: number, state?: string, nbt?: string): StdBlock {
         let ansName: string
         let ansStates: string[]
         let ansNbt: NbtCompound
@@ -122,17 +114,19 @@ export default class Blocks {
                 }
             } else {
                 throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${
-                state ? 'state, ' : ''}${nbt ? 'nbt, ' : ''}.`
+                    state ? 'state, ' : ''
+                }${nbt ? 'nbt, ' : ''}.`
             }
         } else {
             throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${
-            state ? 'state, ' : ''}${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
+                state ? 'state, ' : ''
+            }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
         }
         ansNbt = getNbt(nbt)
         return new StdBlock(ansName, ansStates, ansNbt)
     }
 
-    public static get1_13(std: StdBlock): StdBlock {
+    public static to1_13(std: StdBlock): StdBlock {
         let ansName = std.getName()
         let ansStates = std.getStates()
         let ansNbt = std.getNbt()
@@ -155,7 +149,7 @@ export default class Blocks {
                     const base = ansNbt.get('Base')
                     ansNbt.del('Base')
                     if (base instanceof NbtInt) {
-                        ansName = `${Items.getNominalColorFromNumericColor(15 - base.get(), 'banner')}`
+                        ansName = `${Items.toNominalColor(15 - base.get(), 'banner')}`
                     }
                 }
                 /* Patterns[n].Color */ {
@@ -184,7 +178,7 @@ export default class Blocks {
                     const base = ansNbt.get('Base')
                     ansNbt.del('Base')
                     if (base instanceof NbtInt) {
-                        ansName = `${Items.getNominalColorFromNumericColor(base.get(), 'wall_banner')}`
+                        ansName = `${Items.toNominalColor(base.get(), 'wall_banner')}`
                     }
                 }
                 /* Patterns[n].Color */ {
@@ -216,7 +210,7 @@ export default class Blocks {
                     const color = ansNbt.get('color')
                     ansNbt.del('color')
                     if (color instanceof NbtInt) {
-                        ansName = Items.getNominalColorFromNumericColor(color.get(), 'bed')
+                        ansName = Items.toNominalColor(color.get(), 'bed')
                     }
                 }
                 break
@@ -281,10 +275,9 @@ export default class Blocks {
                     const item = ansNbt.get('Item')
                     const data = ansNbt.get('Data')
                     if (item instanceof NbtString && data instanceof NbtInt) {
-                        ansName = `minecraft:potted_${Blocks.get1_13(
-                            Blocks.std1_12(undefined, item.get(), data.get()))
-                            .getName().replace('minecraft:', '')
-                            }`
+                        ansName = `minecraft:potted_${Blocks.to1_13(Blocks.std1_12(undefined, item.get(), data.get()))
+                            .getName()
+                            .replace('minecraft:', '')}`
                     }
                 }
                 break
@@ -335,14 +328,14 @@ export default class Blocks {
                         (note instanceof NbtByte || note instanceof NbtInt) &&
                         (powered instanceof NbtByte || powered instanceof NbtInt)
                     ) {
-                        ansStates = Blocks.combineStates(ansStates,
-                            [`pitch=${note.get()}`, `powered=${powered.get() !== 0}`])
+                        ansStates = Blocks.combineStates(ansStates, [
+                            `pitch=${note.get()}`,
+                            `powered=${powered.get() !== 0}`
+                        ])
                     } else if (note instanceof NbtByte || note instanceof NbtInt) {
-                        ansStates = Blocks.combineStates(ansStates,
-                            [`pitch=${note.get()}`])
+                        ansStates = Blocks.combineStates(ansStates, [`pitch=${note.get()}`])
                     } else if (powered instanceof NbtByte || powered instanceof NbtInt) {
-                        ansStates = Blocks.combineStates(ansStates,
-                            [`powered=${powered.get() !== 0}`])
+                        ansStates = Blocks.combineStates(ansStates, [`powered=${powered.get() !== 0}`])
                     }
                 }
                 break
@@ -353,10 +346,7 @@ export default class Blocks {
                     const blockData = ansNbt.get('blockData')
                     ansNbt.del('blockId')
                     ansNbt.del('blockData')
-                    if (
-                        blockID instanceof NbtInt &&
-                        (blockData instanceof NbtInt || blockData === undefined)
-                    ) {
+                    if (blockID instanceof NbtInt && (blockData instanceof NbtInt || blockData === undefined)) {
                         const blockState = Blocks.upNumericToBlockState(blockID, blockData)
                         ansNbt.set('blockState', blockState)
                     }
@@ -468,16 +458,15 @@ export default class Blocks {
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
-        const std = Blocks.get1_13(Blocks.std1_12(id.get(), undefined, metadata))
+        const std = Blocks.to1_13(Blocks.std1_12(id.get(), undefined, metadata))
         name.set(std.getName())
         if (std.hasStates()) {
-            std.getStates()
-                .forEach(v => {
-                    const val = new NbtString()
-                    const pairs = v.split('=')
-                    val.set(pairs[1])
-                    properties.set(pairs[0], val)
-                })
+            std.getStates().forEach(v => {
+                const val = new NbtString()
+                const pairs = v.split('=')
+                val.set(pairs[1])
+                properties.set(pairs[0], val)
+            })
             blockState.set('Properties', properties)
         }
         blockState.set('Name', name)
@@ -489,16 +478,15 @@ export default class Blocks {
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
-        const std = Blocks.get1_13(Blocks.std1_12(undefined, id.get(), metadata))
+        const std = Blocks.to1_13(Blocks.std1_12(undefined, id.get(), metadata))
         name.set(std.getName())
         if (std.hasStates()) {
-            std.getStates()
-                .forEach(v => {
-                    const val = new NbtString()
-                    const pairs = v.split('=')
-                    val.set(pairs[1])
-                    properties.set(pairs[0], val)
-                })
+            std.getStates().forEach(v => {
+                const val = new NbtString()
+                const pairs = v.split('=')
+                val.set(pairs[1])
+                properties.set(pairs[0], val)
+            })
             blockState.set('Properties', properties)
         }
         blockState.set('Name', name)
@@ -9049,42 +9037,106 @@ export default class Blocks {
         [
             132,
             0,
-            'minecraft:tripwire', ['attached=false', 'disarmed=false', 'east=false', 'north=false', 'powered=false', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=false',
+                'disarmed=false',
+                'east=false',
+                'north=false',
+                'powered=false',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             1,
-            'minecraft:tripwire', ['attached=false', 'disarmed=false', 'east=false', 'north=false', 'powered=true', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=false',
+                'disarmed=false',
+                'east=false',
+                'north=false',
+                'powered=true',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             4,
-            'minecraft:tripwire', ['attached=true', 'disarmed=false', 'east=false', 'north=false', 'powered=false', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=true',
+                'disarmed=false',
+                'east=false',
+                'north=false',
+                'powered=false',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             5,
-            'minecraft:tripwire', ['attached=true', 'disarmed=false', 'east=false', 'north=false', 'powered=true', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=true',
+                'disarmed=false',
+                'east=false',
+                'north=false',
+                'powered=true',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             8,
-            'minecraft:tripwire', ['attached=false', 'disarmed=true', 'east=false', 'north=false', 'powered=false', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=false',
+                'disarmed=true',
+                'east=false',
+                'north=false',
+                'powered=false',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             9,
-            'minecraft:tripwire', ['attached=false', 'disarmed=true', 'east=false', 'north=false', 'powered=true', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=false',
+                'disarmed=true',
+                'east=false',
+                'north=false',
+                'powered=true',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             12,
-            'minecraft:tripwire', ['attached=true', 'disarmed=true', 'east=false', 'north=false', 'powered=false', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            [
+                'attached=true',
+                'disarmed=true',
+                'east=false',
+                'north=false',
+                'powered=false',
+                'south=false',
+                'west=false'
+            ]
         ],
         [
             132,
             13,
-            'minecraft:tripwire', ['attached=true', 'disarmed=true', 'east=false', 'north=false', 'powered=true', 'south=false', 'west=false']
+            'minecraft:tripwire',
+            ['attached=true', 'disarmed=true', 'east=false', 'north=false', 'powered=true', 'south=false', 'west=false']
         ],
         [133, 0, 'minecraft:emerald_block', []],
         [134, 0, 'minecraft:spruce_stairs', ['facing=east', 'half=bottom', 'shape=straight']],
@@ -9127,12 +9179,14 @@ export default class Blocks {
         [
             139,
             0,
-            'minecraft:cobblestone_wall', ['east=false', 'north=false', 'south=false', 'up=false', 'variant=cobblestone', 'west=false']
+            'minecraft:cobblestone_wall',
+            ['east=false', 'north=false', 'south=false', 'up=false', 'variant=cobblestone', 'west=false']
         ],
         [
             139,
             1,
-            'minecraft:cobblestone_wall', ['east=false', 'north=false', 'south=false', 'up=false', 'variant=mossy_cobblestone', 'west=false']
+            'minecraft:cobblestone_wall',
+            ['east=false', 'north=false', 'south=false', 'up=false', 'variant=mossy_cobblestone', 'west=false']
         ],
         [140, 0, 'minecraft:flower_pot', ['contents=empty', 'legacy_data=0']],
         [141, 0, 'minecraft:carrots', ['age=0']],
@@ -9336,22 +9390,102 @@ export default class Blocks {
         [159, 13, 'minecraft:stained_hardened_clay', ['color=green']],
         [159, 14, 'minecraft:stained_hardened_clay', ['color=red']],
         [159, 15, 'minecraft:stained_hardened_clay', ['color=black']],
-        [160, 0, 'minecraft:stained_glass_pane', ['color=white', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 1, 'minecraft:stained_glass_pane', ['color=orange', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 2, 'minecraft:stained_glass_pane', ['color=magenta', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 3, 'minecraft:stained_glass_pane', ['color=light_blue', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 4, 'minecraft:stained_glass_pane', ['color=yellow', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 5, 'minecraft:stained_glass_pane', ['color=lime', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 6, 'minecraft:stained_glass_pane', ['color=pink', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 7, 'minecraft:stained_glass_pane', ['color=gray', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 8, 'minecraft:stained_glass_pane', ['color=silver', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 9, 'minecraft:stained_glass_pane', ['color=cyan', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 10, 'minecraft:stained_glass_pane', ['color=purple', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 11, 'minecraft:stained_glass_pane', ['color=blue', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 12, 'minecraft:stained_glass_pane', ['color=brown', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 13, 'minecraft:stained_glass_pane', ['color=green', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 14, 'minecraft:stained_glass_pane', ['color=red', 'east=false', 'north=false', 'south=false', 'west=false']],
-        [160, 15, 'minecraft:stained_glass_pane', ['color=black', 'east=false', 'north=false', 'south=false', 'west=false']],
+        [
+            160,
+            0,
+            'minecraft:stained_glass_pane',
+            ['color=white', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            1,
+            'minecraft:stained_glass_pane',
+            ['color=orange', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            2,
+            'minecraft:stained_glass_pane',
+            ['color=magenta', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            3,
+            'minecraft:stained_glass_pane',
+            ['color=light_blue', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            4,
+            'minecraft:stained_glass_pane',
+            ['color=yellow', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            5,
+            'minecraft:stained_glass_pane',
+            ['color=lime', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            6,
+            'minecraft:stained_glass_pane',
+            ['color=pink', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            7,
+            'minecraft:stained_glass_pane',
+            ['color=gray', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            8,
+            'minecraft:stained_glass_pane',
+            ['color=silver', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            9,
+            'minecraft:stained_glass_pane',
+            ['color=cyan', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            10,
+            'minecraft:stained_glass_pane',
+            ['color=purple', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            11,
+            'minecraft:stained_glass_pane',
+            ['color=blue', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            12,
+            'minecraft:stained_glass_pane',
+            ['color=brown', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            13,
+            'minecraft:stained_glass_pane',
+            ['color=green', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            14,
+            'minecraft:stained_glass_pane',
+            ['color=red', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
+        [
+            160,
+            15,
+            'minecraft:stained_glass_pane',
+            ['color=black', 'east=false', 'north=false', 'south=false', 'west=false']
+        ],
         [161, 0, 'minecraft:leaves2', ['check_decay=false', 'decayable=true', 'variant=acacia']],
         [161, 1, 'minecraft:leaves2', ['check_decay=false', 'decayable=true', 'variant=dark_oak']],
         [161, 4, 'minecraft:leaves2', ['check_decay=false', 'decayable=false', 'variant=acacia']],
@@ -9620,24 +9754,59 @@ export default class Blocks {
         [196, 10, 'minecraft:acacia_door', ['facing=north', 'half=upper', 'hinge=left', 'open=false', 'powered=true']],
         [196, 11, 'minecraft:acacia_door', ['facing=north', 'half=upper', 'hinge=right', 'open=false', 'powered=true']],
         [197, 0, 'minecraft:dark_oak_door', ['facing=east', 'half=lower', 'hinge=left', 'open=false', 'powered=false']],
-        [197, 1, 'minecraft:dark_oak_door', ['facing=south', 'half=lower', 'hinge=left', 'open=false', 'powered=false']],
+        [
+            197,
+            1,
+            'minecraft:dark_oak_door',
+            ['facing=south', 'half=lower', 'hinge=left', 'open=false', 'powered=false']
+        ],
         [197, 2, 'minecraft:dark_oak_door', ['facing=west', 'half=lower', 'hinge=left', 'open=false', 'powered=false']],
-        [197, 3, 'minecraft:dark_oak_door', ['facing=north', 'half=lower', 'hinge=left', 'open=false', 'powered=false']],
+        [
+            197,
+            3,
+            'minecraft:dark_oak_door',
+            ['facing=north', 'half=lower', 'hinge=left', 'open=false', 'powered=false']
+        ],
         [197, 4, 'minecraft:dark_oak_door', ['facing=east', 'half=lower', 'hinge=left', 'open=true', 'powered=false']],
         [197, 5, 'minecraft:dark_oak_door', ['facing=south', 'half=lower', 'hinge=left', 'open=true', 'powered=false']],
         [197, 6, 'minecraft:dark_oak_door', ['facing=west', 'half=lower', 'hinge=left', 'open=true', 'powered=false']],
         [197, 7, 'minecraft:dark_oak_door', ['facing=north', 'half=lower', 'hinge=left', 'open=true', 'powered=false']],
-        [197, 8, 'minecraft:dark_oak_door', ['facing=north', 'half=upper', 'hinge=left', 'open=false', 'powered=false']],
-        [197, 9, 'minecraft:dark_oak_door', ['facing=north', 'half=upper', 'hinge=right', 'open=false', 'powered=false']],
-        [197, 10, 'minecraft:dark_oak_door', ['facing=north', 'half=upper', 'hinge=left', 'open=false', 'powered=true']],
-        [197, 11, 'minecraft:dark_oak_door', ['facing=north', 'half=upper', 'hinge=right', 'open=false', 'powered=true']],
+        [
+            197,
+            8,
+            'minecraft:dark_oak_door',
+            ['facing=north', 'half=upper', 'hinge=left', 'open=false', 'powered=false']
+        ],
+        [
+            197,
+            9,
+            'minecraft:dark_oak_door',
+            ['facing=north', 'half=upper', 'hinge=right', 'open=false', 'powered=false']
+        ],
+        [
+            197,
+            10,
+            'minecraft:dark_oak_door',
+            ['facing=north', 'half=upper', 'hinge=left', 'open=false', 'powered=true']
+        ],
+        [
+            197,
+            11,
+            'minecraft:dark_oak_door',
+            ['facing=north', 'half=upper', 'hinge=right', 'open=false', 'powered=true']
+        ],
         [198, 0, 'minecraft:end_rod', ['facing=down']],
         [198, 1, 'minecraft:end_rod', ['facing=up']],
         [198, 2, 'minecraft:end_rod', ['facing=north']],
         [198, 3, 'minecraft:end_rod', ['facing=south']],
         [198, 4, 'minecraft:end_rod', ['facing=west']],
         [198, 5, 'minecraft:end_rod', ['facing=east']],
-        [199, 0, 'minecraft:chorus_plant', ['down=false', 'east=false', 'north=false', 'south=false', 'up=false', 'west=false']],
+        [
+            199,
+            0,
+            'minecraft:chorus_plant',
+            ['down=false', 'east=false', 'north=false', 'south=false', 'up=false', 'west=false']
+        ],
         [200, 0, 'minecraft:chorus_flower', ['age=0']],
         [200, 1, 'minecraft:chorus_flower', ['age=1']],
         [200, 2, 'minecraft:chorus_flower', ['age=2']],
@@ -9904,11 +10073,4 @@ export default class Blocks {
         [255, 2, 'minecraft:structure_block', ['mode=corner']],
         [255, 3, 'minecraft:structure_block', ['mode=data']]
     ]
-}
-
-interface Number_Number_String_StringArray {
-    0: number
-    1: number
-    2: string
-    3: string[]
 }
