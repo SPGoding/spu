@@ -1,13 +1,287 @@
+import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../utils/nbt/nbt'
+import { getNbt } from '../utils/utils'
+import { Number_String } from './mapping'
+import Blocks from './blocks'
+import Enchantments from './enchantments'
+import Updater from '../updater'
+
+export class StdItem1_12 {
+    private name: string
+    private data: number
+    private tag: NbtCompound
+    private count: NbtValue | undefined
+    private slot: NbtValue | undefined
+
+    public constructor(name: string, data: number, tag: NbtCompound, count?: NbtValue, slot?: NbtValue) {
+        if (name.slice(0, 10) !== 'minecraft:') {
+            name = `minecraft:${name}`
+        }
+        if (data === -1) {
+            data = 0
+        }
+        this.name = name
+        this.data = data
+        this.tag = tag
+        this.count = count
+        this.slot = slot
+    }
+
+    public getName() {
+        return this.name
+    }
+
+    public getCount() {
+        return this.count
+    }
+
+    public getSlot() {
+        return this.slot
+    }
+
+    public getData() {
+        return this.data
+    }
+
+    public getTag() {
+        return this.tag
+    }
+
+    public getNominal() {
+        return `${this.name}.${this.data}`
+    }
+}
+
+export class StdItem1_13 {
+    private name: string
+    private tag: NbtCompound
+    private count: NbtValue | undefined
+    private slot: NbtValue | undefined
+
+    public constructor(name: string, nbt: NbtCompound, count?: NbtValue, slot?: NbtValue) {
+        if (name.slice(0, 10) !== 'minecraft:') {
+            name = `minecraft:${name}`
+        }
+        this.name = name
+        this.tag = nbt
+        this.count = count
+        this.slot = slot
+    }
+
+    public getName() {
+        return this.name
+    }
+
+    public getTag() {
+        return this.tag
+    }
+
+    public getNominal() {
+        let nbt = ''
+        if (this.hasTag()) {
+            nbt = this.tag.toString()
+        }
+        return `${this.name}${nbt}`
+    }
+
+    public getNbt() {
+        let nbt = new NbtCompound()
+
+        nbt.set('id', new NbtString(this.name))
+        if (this.hasTag()) {
+            nbt.set('tag', this.tag)
+        }
+        if (this.count) {
+            nbt.set('Count', this.count)
+        }
+        if (this.slot) {
+            nbt.set('Slot', this.slot)
+        }
+
+        return nbt
+    }
+
+    public hasTag() {
+        return this.tag.toString() !== '{}'
+    }
+}
 /**
  * Providing a map storing old item IDs and new item IDs.
  */
 export default class Items {
-    static is1_12NominalIDExist(id: string) {
-        if (id.slice(0, 10) !== 'minecraft:') {
-            id = `minecraft:${id}`
+    public static std112(id?: number, name?: string, data?: number, tag?: string, nbt?: string) {
+        let ansName: string
+        let ansData: number
+        let ansTag: NbtCompound
+        let ansCount: NbtValue | undefined
+        let ansSlot: NbtValue | undefined
+        if (id && !name && !nbt) {
+            ansData = data ? data : 0
+            ansTag = getNbt(tag ? tag : '{}')
+            const arr = Items.NumericID112_NominalID112.find(v => v[0] === id)
+            if (arr) {
+                ansName = arr[1]
+            } else {
+                throw `Unknown item Numeric ID: '${id}'.`
+            }
+        } else if (name && !id && !nbt) {
+            ansData = data ? data : 0
+            ansTag = getNbt(tag ? tag : '{}')
+            ansName = name
+        } else if (!id && !name && !data && !tag && nbt) {
+            const nbtC = getNbt(nbt)
+            const id = nbtC.get('id')
+            const data = nbtC.get('Damage')
+            const count = nbtC.get('Count')
+            const slot = nbtC.get('Slot')
+            let tagC = nbtC.get('tag')
+
+            ansCount = count
+            ansSlot = slot
+
+            if (id instanceof NbtString && (data === undefined || data instanceof NbtShort || data instanceof NbtInt)) {
+                if (tagC instanceof NbtCompound) {
+                    ansTag = tagC
+                } else {
+                    ansTag = new NbtCompound()
+                }
+                ansName = id.get()
+                ansData = data ? data.get() : 0
+            } else {
+                throw `Unexpected Item NBT: '${nbt.toString()}'.`
+            }
+        } else {
+            throw `Argument Error! Used ${id ? 'id, ' : ''}${name ? 'name, ' : ''}${data ? 'data, ' : ''}${
+                tag && tag !== '{}' ? 'tag, ' : ''
+            }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
         }
-        const arr = Items.NumericID_NominalID.find(v => v[1] === id)
-        return arr ? true : false
+
+        if (ansName.slice(0, 10) !== 'minecraft:') {
+            ansName = `minecraft:${ansName}`
+        }
+
+        return new StdItem1_12(ansName, ansData, ansTag, ansCount, ansSlot)
+    }
+
+    public static to113(std: StdItem1_12) {
+        let ansName = std.getName()
+        let ansCount = std.getCount()
+        let ansSlot = std.getSlot()
+        let ansTag = std.getTag()
+        let data = std.getData()
+
+        if (Items.DamagableItems.indexOf(ansName) !== -1 && data !== 0) {
+            ansTag.set('Damage', new NbtShort(data))
+        } else if (Items.MapItems.indexOf(ansName) !== -1 && data !== 0) {
+            ansTag.set('Map', new NbtInt(data))
+        } else {
+            const arr = Items.Nominal112_NominalID113.find(v => v[0] === std.getNominal())
+            if (arr) {
+                ansName = arr[1]
+            }
+        }
+
+        /* CanDestroy */ {
+            const canDestroy = ansTag.get('CanDestroy')
+            if (canDestroy instanceof NbtList) {
+                for (let i = 0; i < canDestroy.length; i++) {
+                    const block = canDestroy.get(i)
+                    if (block instanceof NbtString) {
+                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
+                        canDestroy.set(i, block)
+                    }
+                }
+                ansTag.set('CanDestroy', canDestroy)
+            }
+        }
+        /* CanPlaceOn */ {
+            const canPlaceOn = ansTag.get('CanPlaceOn')
+            if (canPlaceOn instanceof NbtList) {
+                for (let i = 0; i < canPlaceOn.length; i++) {
+                    const block = canPlaceOn.get(i)
+                    if (block instanceof NbtString) {
+                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
+                    }
+                    canPlaceOn.set(i, block)
+                }
+                ansTag.set('CanPlaceOn', canPlaceOn)
+            }
+        }
+        /* BlockEntityTag */ {
+            let blockEntityTag = ansTag.get('BlockEntityTag')
+            if (blockEntityTag instanceof NbtCompound) {
+                blockEntityTag = Blocks.to113(
+                    Blocks.std112(undefined, ansName, undefined, undefined, blockEntityTag.toString())
+                ).getNbt()
+                ansTag.set('BlockEntityTag', blockEntityTag)
+            }
+        }
+        /* ench */ {
+            const enchantments = ansTag.get('ench')
+            ansTag.del('ench')
+            if (enchantments instanceof NbtList) {
+                for (let i = 0; i < enchantments.length; i++) {
+                    const enchantment = enchantments.get(i)
+                    if (enchantment instanceof NbtCompound) {
+                        let id = enchantment.get('id')
+                        if (id instanceof NbtShort || id instanceof NbtInt) {
+                            const strID = Enchantments.to113(id.get())
+                            id = new NbtString()
+                            id.set(strID)
+                            enchantment.set('id', id)
+                        }
+                        enchantments.set(i, enchantment)
+                    }
+                }
+                ansTag.set('Enchantments', enchantments)
+            }
+        }
+        /* StoredEnchantments */ {
+            const storedEnchantments = ansTag.get('StoredEnchantments')
+            if (storedEnchantments instanceof NbtList) {
+                for (let i = 0; i < storedEnchantments.length; i++) {
+                    const enchantment = storedEnchantments.get(i)
+                    if (enchantment instanceof NbtCompound) {
+                        let id = enchantment.get('id')
+                        if (id instanceof NbtShort || id instanceof NbtInt) {
+                            const strID = Enchantments.to113(id.get())
+                            id = new NbtString()
+                            id.set(strID)
+                            enchantment.set('id', id)
+                        }
+                        storedEnchantments.set(i, enchantment)
+                    }
+                }
+                ansTag.set('Enchantments', storedEnchantments)
+            }
+        }
+        /* display.(Name|LocName) */ {
+            const display = ansTag.get('display')
+            if (display instanceof NbtCompound) {
+                const name = display.get('Name')
+                if (name instanceof NbtString) {
+                    name.set(`{"text": "${escape(name.get())}"}`)
+                    display.set('Name', name)
+                }
+                const locName = display.get('LocName')
+                display.del('LocName')
+                if (locName instanceof NbtString) {
+                    locName.set(`{"translate": "${locName.get()}"}`)
+                    display.set('Name', locName)
+                }
+                ansTag.set('display', display)
+            }
+        }
+        /* EntityTag */ {
+            if (Items.hasEntityTag(ansName)) {
+                let entityTag = ansTag.get('EntityTag')
+                if (entityTag instanceof NbtCompound) {
+                    entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
+                    ansTag.set('EntityTag', entityTag)
+                }
+            }
+        }
+
+        return new StdItem1_13(ansName, ansTag, ansCount, ansSlot)
     }
 
     static hasEntityTag(id: string) {
@@ -17,55 +291,16 @@ export default class Items {
         return ['armor_stand', 'spawn_egg'].indexOf(id) !== -1
     }
 
-    static get1_13NominalIDFrom1_12NominalIDWithDataValue(str: string, data: number = 0) {
-        if (data === -1) {
-            data = 0
-        }
-        if (str.slice(0, 10) !== 'minecraft:') {
-            str = 'minecraft:' + str
-        }
-        str = `${str}.${data}`
-        const arr = Items.StringIDWithDataValue_NominalID.find(v => v[0] === str)
-        if (arr) {
-            return arr[1]
-        } else {
-            return str.split('.')[0]
-        }
-    }
-
-    static get1_12NominalIDFrom1_12NumericID(input: number) {
-        const arr = Items.NumericID_NominalID.find(v => v[0] === input)
-        if (arr) {
-            return arr[1]
-        } else {
-            throw `Unknown item numeric ID: '${input}'`
-        }
-    }
-
-    static isDamageItem(input: string) {
-        if (input.slice(0, 10) !== 'minecraft:') {
-            input = 'minecraft:' + input
-        }
-        return Items.DamageItemIDs.indexOf(input) !== -1
-    }
-
-    static isMapItem(input: string) {
-        if (input.slice(0, 10) !== 'minecraft:') {
-            input = 'minecraft:' + input
-        }
-        return Items.MapItemIDs.indexOf(input) !== -1
-    }
-
-    static getNominalColorFromNumericColor(input: number, suffix: string) {
+    static toNominalColor(input: number, suffix: string) {
         const arr = Items.NumericColor_NominalColor.find(v => v[0] === input.toString())
         if (arr) {
             return `${arr[1]}${suffix}`
         } else {
-            throw `Unknown color value for bed: ${input}`
+            throw `Unknown color value: ${input}`
         }
     }
 
-    static NumericID_NominalID: NumericID_NominalID[] = [
+    static NumericID112_NominalID112: Number_String[] = [
         [0, 'minecraft:air'],
         [1, 'minecraft:stone'],
         [2, 'minecraft:grass'],
@@ -531,7 +766,7 @@ export default class Items {
         [2267, 'minecraft:record_wait']
     ]
 
-    static StringIDWithDataValue_NominalID: string[][] = [
+    static Nominal112_NominalID113 = [
         ['minecraft:stone.0', 'minecraft:stone'],
         ['minecraft:stone.1', 'minecraft:granite'],
         ['minecraft:stone.2', 'minecraft:polished_granite'],
@@ -851,10 +1086,10 @@ export default class Items {
         ['minecraft:record_strad.0', 'minecraft:music_disc_strad'],
         ['minecraft:record_wait.0', 'minecraft:music_disc_wait'],
         ['minecraft:record_ward.0', 'minecraft:music_disc_ward'],
-        ['chorus_fruit_popped.0','popped_chorus_fruit']
+        ['chorus_fruit_popped.0', 'popped_chorus_fruit']
     ]
 
-    static DamageItemIDs: string[] = [
+    static DamagableItems = [
         'minecraft:bow',
         'minecraft:carrot_on_a_stick',
         'minecraft:chainmail_boots',
@@ -909,12 +1144,9 @@ export default class Items {
         'minecraft:wooden_sword'
     ]
 
-    static MapItemIDs: string[] = [
-        'minecraft:map',
-        'minecraft:filled_map'
-    ]
+    static MapItems = ['minecraft:map', 'minecraft:filled_map']
 
-    static NumericColor_NominalColor: string[][] = [
+    static NumericColor_NominalColor = [
         ['0', 'minecraft:white_'],
         ['1', 'minecraft:orange_'],
         ['2', 'minecraft:magenta_'],
@@ -932,9 +1164,4 @@ export default class Items {
         ['14', 'minecraft:red_'],
         ['15', 'minecraft:black_']
     ]
-}
-
-interface NumericID_NominalID {
-    0: number
-    1: string
 }

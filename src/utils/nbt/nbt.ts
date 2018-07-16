@@ -17,6 +17,12 @@ export type NbtValue =
 export class NbtString {
     private value: string
 
+    public constructor(value?: string) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
+
     public get = () => this.value
 
     public set(value: string) {
@@ -28,6 +34,12 @@ export class NbtString {
 
 export class NbtByte {
     private value: number
+
+    public constructor(value?: number) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
 
     public get = () => this.value
 
@@ -41,6 +53,12 @@ export class NbtByte {
 export class NbtShort {
     private value: number
 
+    public constructor(value?: number) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
+
     public get = () => this.value
 
     public set(value: number) {
@@ -52,6 +70,12 @@ export class NbtShort {
 
 export class NbtInt {
     private value: number
+
+    public constructor(value?: number) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
 
     public get = () => this.value
 
@@ -65,6 +89,12 @@ export class NbtInt {
 export class NbtLong {
     private value: number
 
+    public constructor(value?: number) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
+
     public get = () => this.value
 
     public set(value: number) {
@@ -77,6 +107,12 @@ export class NbtLong {
 export class NbtFloat {
     private value: number
 
+    public constructor(value?: number) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
+
     public get = () => this.value
 
     public set(value: number) {
@@ -88,6 +124,12 @@ export class NbtFloat {
 
 export class NbtDouble {
     private value: number
+
+    public constructor(value?: number) {
+        if (value !== undefined) {
+            this.value = value
+        }
+    }
 
     public get = () => this.value
 

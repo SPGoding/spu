@@ -12,11 +12,11 @@ export default class Checker {
         if (spusArg.charAt(0) === '%') {
             switch (spusArg.slice(1)) {
                 case 'adv':
-                    return Checker.isPath(cmdArg)
+                    return Checker.isResourceLocation(cmdArg)
                 case 'adv_crit':
                     return Checker.isWord(cmdArg)
                 case 'block':
-                    return Checker.isBlock(cmdArg)
+                    return Checker.isResourceLocation(cmdArg)
                 case 'block_dust_param':
                     return Checker.isBlockDustParam(cmdArg)
                 case 'block_metadata_or_state':
@@ -42,13 +42,13 @@ export default class Checker {
                 case 'entity_type':
                     return Checker.isStringID(cmdArg)
                 case 'func':
-                    return Checker.isPath(cmdArg)
+                    return Checker.isResourceLocation(cmdArg)
                 case 'gamemode':
                     return Checker.isGamemode(cmdArg)
                 case 'ip':
                     return Checker.isIP(cmdArg)
                 case 'item':
-                    return Checker.isItem(cmdArg)
+                    return Checker.isResourceLocation(cmdArg)
                 case 'item_data':
                     return Checker.isItemData(cmdArg)
                 case 'item_dust_params':
@@ -69,7 +69,9 @@ export default class Checker {
                 case 'pre_json':
                     return Checker.isString(cmdArg)
                 case 'recipe':
-                    return Checker.isPath(cmdArg) || cmdArg === '*'
+                    return Checker.isResourceLocation(cmdArg) || cmdArg === '*'
+                case 'say_string':
+                    return Checker.isString(cmdArg)
                 case 'scb_crit':
                     return Checker.isScbCrit(cmdArg)
                 case 'slot':
@@ -94,10 +96,6 @@ export default class Checker {
         } else {
             return cmdArg.toLowerCase() === spusArg.toLowerCase()
         }
-    }
-
-    public static isBlock(input: string) {
-        return Blocks.is1_12StringID(input)
     }
 
     public static isBlockDustParam(input: string) {
@@ -151,10 +149,6 @@ export default class Checker {
                 input.toLowerCase()
             ) !== -1
         )
-    }
-
-    public static isItem(input: string) {
-        return Items.is1_12NominalIDExist(input)
     }
 
     public static isItemData(input: string) {
@@ -260,11 +254,11 @@ export default class Checker {
     }
 
     public static isStringID(input: string) {
-        // FIXME: If you want.
+        // FIXME: If you want deal with 'say'.
         return /^(\w+:)?[a-z_]+$/.test(input)
     }
 
-    public static isPath(input: string) {
+    public static isResourceLocation(input: string) {
         return /^(\w+:)?\w+(\/\w+)*$/.test(input)
     }
 

@@ -53,18 +53,8 @@ export default class SpuScript {
         let methods = ast.get(id)
         let source = resultMap.get(`%${id}`)
 
-        if (!source || !methods) {
-            console.error('==========')
-            console.error('AST:')
-            console.error(ast)
-            console.error('ID:')
-            console.error(id)
-            console.error('METHODS:')
-            console.error(methods)
-            console.error('SOURCE')
-            console.error(source)
-            console.error('==========')
-            throw 'Spu Script execute error. See console for more information.'
+        if (!methods || !source) {
+            throw 'Spu Script execute error.'
         }
 
         for (const name of methods.keys()) {
@@ -85,35 +75,30 @@ export default class SpuScript {
                         } else {
                             throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
                         }
-                        source = sel.get1_13()
+                        source = sel.to1_13()
                         break
                     }
                     case 'addDataToItem':
-                        if (Items.isDamageItem(source)) {
-                            source += `{Damage:${params[0]}s}`
-                        } else if (Items.isMapItem(source)) {
-                            source += `{map:${params[0]}}`
+                        source = Items.to113(Items.std112(undefined, source, Number(params[0]))).getNominal()
+                        break
+                    case 'addDataAndNbtToItem':
+                        source = Items.to113(Items.std112(undefined, source, Number(params[0]), params[1])).getNominal()
+                        break
+                    case 'addDataOrStateToBlock':
+                        if (isNumeric(params[0])) {
+                            source = Blocks.to113(Blocks.std112(undefined, source, Number(params[0]))).getFull()
                         } else {
-                            source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source, Number(params[0]))
+                            source = Blocks.to113(Blocks.std112(undefined, source, undefined, params[0])).getFull()
                         }
                         break
-                    case 'addMetadataOrStateToBlock':
+                    case 'addDataOrStateAndNbtToBlock':
                         if (isNumeric(params[0])) {
-                            source = Blocks.get1_13(
-                                Blocks.std1_12(undefined, source, Number(params[0]))).getFull()
-                        } else {
-                            source = Blocks.get1_13(
-                                Blocks.std1_12(undefined, source, undefined, params[0])).getFull()
-                        }
-                        break
-                    case 'addMetadataOrStateAndNbtToBlock':
-                        if (isNumeric(params[0])) {
-                            source = Blocks.get1_13(
-                                Blocks.std1_12(undefined, source, Number(params[0]), undefined, params[1])
+                            source = Blocks.to113(
+                                Blocks.std112(undefined, source, Number(params[0]), undefined, params[1])
                             ).getFull()
                         } else {
-                            source = Blocks.get1_13(
-                                Blocks.std1_12(undefined, source, undefined, params[0], params[1])
+                            source = Blocks.to113(
+                                Blocks.std112(undefined, source, undefined, params[0], params[1])
                             ).getFull()
                         }
                         break
@@ -121,27 +106,15 @@ export default class SpuScript {
                         let sel = new Selector()
                         sel.parse1_13(source)
                         sel.setNbt(params[0])
-                        source = sel.get1_13()
+                        source = sel.to1_13()
                         break
                     }
-                    case 'addNbtToItem':
-                        let data: string | undefined
-                        if (source.indexOf('{') !== -1) {
-                            data = source.slice(source.indexOf('{') + 1)
-                            source = source.slice(0, source.indexOf('{'))
-                        }
-                        params[0] = Updater.upItemTagNbt(params[0], source)
-                        source += params[0]
-                        if (data) {
-                            source = source.slice(0, -1) + ',' + data
-                        }
-                        break
                     case 'addScbMaxToEntity': {
                         if (params[1] !== '*') {
                             let sel = new Selector()
                             sel.parse1_13(source)
                             sel.setScore(params[0], params[1], 'max')
-                            source = sel.get1_13()
+                            source = sel.to1_13()
                         }
                         break
                     }
@@ -150,15 +123,15 @@ export default class SpuScript {
                             let sel = new Selector()
                             sel.parse1_13(source)
                             sel.setScore(params[0], params[1], 'min')
-                            source = sel.get1_13()
+                            source = sel.to1_13()
                         }
                         break
                     }
                     case 'fuckItemItself':
-                        source = Items.get1_13NominalIDFrom1_12NominalIDWithDataValue(source)
+                        source = Items.to113(Items.std112(undefined, source)).getNominal()
                         break
                     case 'fuckBlockItself':
-                        source = Blocks.get1_13(Blocks.std1_12(undefined, source)).getFull()
+                        source = Blocks.to113(Blocks.std112(undefined, source)).getFull()
                         break
                     default:
                         throw `Unknwon spu script method: '${name}'`
