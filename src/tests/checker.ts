@@ -31,7 +31,7 @@ describe('Checker tests', () => {
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch('123', '%block')
+                let actual = Checker.isArgumentMatch('方块', '%block')
                 assert(!actual)
             })
         })
@@ -181,7 +181,7 @@ describe('Checker tests', () => {
                 assert(actual)
             })
             it('should return false', () => {
-                let actual = Checker.isArgumentMatch('minecraft:fuck', '%item')
+                let actual = Checker.isArgumentMatch('物品', '%item')
                 assert(!actual)
             })
         })

@@ -128,16 +128,6 @@ describe('Updater tests', () => {
                 assert(actual === 'minecraft:birch_log')
             })
         })
-        describe('%item_nbt tests', () => {
-            it('should convert', () => {
-                const actual = Updater.upArgument('{Count:1b,id:"minecraft:wooden_sword",Damage:998s}', '%item_nbt')
-                assert(actual === '{Count:1b,id:"minecraft:wooden_sword",tag:{Damage:998s}}')
-            })
-            it('should convert', () => {
-                const actual = Updater.upArgument('{id:"minecraft:fireworks",Count:1b}', '%item_nbt')
-                assert(actual === '{id:"minecraft:firework_rocket",Count:1b}')
-            })
-        })
         describe('%item_tag_nbt tests', () => {
             it('should convert', () => {
                 const actual = Updater.upArgument('{display:{Name:"foo"}}', '%item_tag_nbt')
@@ -150,7 +140,10 @@ describe('Updater tests', () => {
                     '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e[c=1]"}}}]',
                     '%json'
                 )
-                assert(actual === '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e[limit=1,sort=nearest]"}}}]')
+                assert(
+                    actual ===
+                        '[{"extra":{"clickEvent":{"action":"run_command","value":"kill @e[limit=1,sort=nearest]"}}}]'
+                )
             })
         })
         describe('%literal tests', () => {
@@ -180,6 +173,10 @@ describe('Updater tests', () => {
         describe('%scb_crit tests', () => {
             it('should convert', () => {
                 const actual = Updater.upArgument('stat.craftItem.minecraft.stone', '%scb_crit')
+                assert(actual === 'minecraft.crafted:minecraft.stone')
+            })
+            it('should convert', () => {
+                const actual = Updater.upArgument('stat.craftItem.1', '%scb_crit')
                 assert(actual === 'minecraft.crafted:minecraft.stone')
             })
         })

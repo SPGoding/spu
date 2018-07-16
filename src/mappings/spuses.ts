@@ -47,10 +47,10 @@ export default class Spuses {
      * =====FUNCS=====
      * $addAdvToEntity
      * $addDataToItem
+     * $addDataAndNbtToItem
      * $addDataOrStateToBlock
      * $addDataOrStateAndNbtToBlock
      * $addNbtToEntity
-     * $addNbtToItem
      * $addScbMaxToEntity
      * $addScbMinToEntity
      * $fuckItemItself
@@ -75,7 +75,7 @@ export default class Spuses {
         ['clear %entity %item', 'clear %0 %1$fuckItemItself'],
         ['clear %entity %item %item_data', 'clear %0 %1$addDataToItem%2'],
         ['clear %entity %item %item_data %num', 'clear %0 %1$addDataToItem%2 %3'],
-        ['clear %entity %item %item_data %num %entity_nbt', 'clear %0 %1$addDataToItem%2$addNbtToItem%4'],
+        ['clear %entity %item %item_data %num %entity_nbt', 'clear %0 %1$addDataAndNbtToItem%2%4'],
         ['clone %vec_3 %vec_3 %vec_3', 'clone %0 %1 %2'],
         ['clone %vec_3 %vec_3 %vec_3 %literal', 'clone %0 %1 %2 %3'],
         ['clone %vec_3 %vec_3 %vec_3 %literal %literal', 'clone %0 %1 %2 %3 %4'],
@@ -130,7 +130,7 @@ export default class Spuses {
         ['give %entity %item', 'give %0 %1$fuckItemItself'],
         ['give %entity %item %num', 'give %0 %1 %2'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
-        ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataToItem%3$addNbtToItem%4 %2'],
+        ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataAndNbtToItem%3%4 %2'],
         ['kick %word', 'kick %0'],
         ['kick %word %string', 'kick %0 %1'],
         ['kill', 'kill @s'],
@@ -169,14 +169,14 @@ export default class Spuses {
         ['replaceitem block %vec_3 %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
         [
             'replaceitem block %vec_3 %slot %item %num %item_data %item_tag_nbt',
-            'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
+            'replaceitem block %0 %1 %2$addDataAndNbtToItem%4%5 %3'
         ],
         ['replaceitem entity %entity %slot %item', 'replaceitem block %0 %1 %2$fuckItemItself'],
         ['replaceitem entity %entity %slot %item %num', 'replaceitem block %0 %1 %2$fuckItemItself %3'],
         ['replaceitem entity %entity %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
         [
             'replaceitem entity %entity %slot %item %num %item_data %item_tag_nbt',
-            'replaceitem block %0 %1 %2$addDataToItem%4$addNbtToItem%5 %3'
+            'replaceitem block %0 %1 %2$addDataAndNbtToItem%4%5 %3'
         ],
         ['save-all', 'save-all'],
         ['save-all %literal', 'save-all %0'],

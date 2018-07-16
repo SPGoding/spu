@@ -11,7 +11,7 @@ import Items from './mappings/items'
 import Particles from './mappings/particles'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
 import { isNumeric, getNbt, escape } from './utils/utils'
-import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte } from './utils/nbt/nbt'
+import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue } from './utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -143,7 +143,7 @@ export default class Updater {
             case 'item_dust_params':
                 return Updater.upItemDustParams(arg)
             case 'item_nbt':
-                return Updater.upItemNbt(arg)
+                return arg
             case 'item_tag_nbt':
                 return arg
             case 'json':
@@ -274,7 +274,8 @@ export default class Updater {
             if (handItems instanceof NbtList) {
                 for (let i = 0; i < handItems.length; i++) {
                     let item = handItems.get(i)
-                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    item = Updater.upItemNbt(item)
+
                     handItems.set(i, item)
                 }
             }
@@ -284,7 +285,7 @@ export default class Updater {
             if (armorItems instanceof NbtList) {
                 for (let i = 0; i < armorItems.length; i++) {
                     let item = armorItems.get(i)
-                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    item = Updater.upItemNbt(item)
                     armorItems.set(i, item)
                 }
             }
@@ -292,14 +293,14 @@ export default class Updater {
         /* ArmorItem */ {
             let armorItem = root.get('ArmorItem')
             if (armorItem instanceof NbtCompound) {
-                armorItem = getNbt(Updater.upItemNbt(armorItem.toString()))
+                armorItem = Updater.upItemNbt(armorItem)
                 root.set('ArmorItem', armorItem)
             }
         }
         /* SaddleItem */ {
             let saddleItem = root.get('SaddleItem')
             if (saddleItem instanceof NbtCompound) {
-                saddleItem = getNbt(Updater.upItemNbt(saddleItem.toString()))
+                saddleItem = Updater.upItemNbt(saddleItem)
                 root.set('SaddleItem', saddleItem)
             }
         }
@@ -308,7 +309,7 @@ export default class Updater {
             if (items instanceof NbtList) {
                 for (let i = 0; i < items.length; i++) {
                     let item = items.get(i)
-                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    item = Updater.upItemNbt(item)
                     items.set(i, item)
                 }
             }
@@ -329,7 +330,7 @@ export default class Updater {
         /* DecorItem */ {
             let decorItem = root.get('DecorItem')
             if (decorItem instanceof NbtCompound) {
-                decorItem = getNbt(Updater.upItemNbt(decorItem.toString()))
+                decorItem = Updater.upItemNbt(decorItem)
                 root.set('DecorItem', decorItem)
             }
         }
@@ -338,7 +339,7 @@ export default class Updater {
             if (inventory instanceof NbtList) {
                 for (let i = 0; i < inventory.length; i++) {
                     let item = inventory.get(i)
-                    item = getNbt(Updater.upItemNbt(item.toString()))
+                    item = Updater.upItemNbt(item)
                     inventory.set(i, item)
                 }
             }
@@ -354,21 +355,21 @@ export default class Updater {
         /* Item */ {
             let item = root.get('Item')
             if (item instanceof NbtCompound) {
-                item = getNbt(Updater.upItemNbt(item.toString()))
+                item = Updater.upItemNbt(item)
                 root.set('Item', item)
             }
         }
         /* SelectedItem */ {
             let selectedItem = root.get('SelectedItem')
             if (selectedItem instanceof NbtCompound) {
-                selectedItem = getNbt(Updater.upItemNbt(selectedItem.toString()))
+                selectedItem = Updater.upItemNbt(selectedItem)
                 root.set('SelectedItem', selectedItem)
             }
         }
         /* FireworksItem */ {
             let fireworksItem = root.get('FireworksItem')
             if (fireworksItem instanceof NbtCompound) {
-                fireworksItem = getNbt(Updater.upItemNbt(fireworksItem.toString()))
+                fireworksItem = Updater.upItemNbt(fireworksItem)
                 root.set('FireworksItem', fireworksItem)
             }
         }
@@ -519,146 +520,8 @@ export default class Updater {
         return Items.to113(Items.std112(params[0], undefined, params[1])).getNominal()
     }
 
-    public static upItemNbt(input: string) {
-        const root = getNbt(input)
-        const id = root.get('id')
-        const damage = root.get('Damage')
-        let tag = root.get('tag')
-        root.del('Damage')
-
-        if (
-            id instanceof NbtString &&
-            (damage === undefined || damage instanceof NbtShort || damage instanceof NbtInt)
-        ) {
-            if (tag instanceof NbtCompound) {
-                tag = getNbt(Updater.upItemTagNbt(tag.toString(), id.get()))
-            }
-            if (Items.isDamagableItem(id.get())) {
-                if (!(tag instanceof NbtCompound)) {
-                    tag = new NbtCompound()
-                }
-                if (damage !== undefined) {
-                    tag.set('Damage', damage)
-                }
-            } else {
-                const newID = Items.to113(Items.std112(undefined, id.get(), damage ? damage.get() : 0)).getName()
-                id.set(newID)
-                root.set('id', id)
-            }
-            if (tag instanceof NbtCompound) {
-                root.set('tag', tag)
-            }
-        }
-
-        return root.toString()
-    }
-
-    public static upItemTagNbt(nbt: string, itemNominalID: string) {
-        // https://minecraft.gamepedia.com/Player.dat_format#Item_structure
-        const item = itemNominalID.split('[')[0]
-        const root = getNbt(nbt)
-        /* CanDestroy */ {
-            const canDestroy = root.get('CanDestroy')
-            if (canDestroy instanceof NbtList) {
-                for (let i = 0; i < canDestroy.length; i++) {
-                    const block = canDestroy.get(i)
-                    if (block instanceof NbtString) {
-                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
-                        canDestroy.set(i, block)
-                    }
-                }
-                root.set('CanDestroy', canDestroy)
-            }
-        }
-        /* CanPlaceOn */ {
-            const canPlaceOn = root.get('CanPlaceOn')
-            if (canPlaceOn instanceof NbtList) {
-                for (let i = 0; i < canPlaceOn.length; i++) {
-                    const block = canPlaceOn.get(i)
-                    if (block instanceof NbtString) {
-                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
-                    }
-                    canPlaceOn.set(i, block)
-                }
-                root.set('CanPlaceOn', canPlaceOn)
-            }
-        }
-        /* BlockEntityTag */ {
-            let blockEntityTag = root.get('BlockEntityTag')
-            if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = Blocks.to113(
-                    Blocks.std112(undefined, item, undefined, undefined, blockEntityTag.toString())
-                ).getNbt()
-                root.set('BlockEntityTag', blockEntityTag)
-            }
-        }
-        /* ench */ {
-            const enchantments = root.get('ench')
-            root.del('ench')
-            if (enchantments instanceof NbtList) {
-                for (let i = 0; i < enchantments.length; i++) {
-                    const enchantment = enchantments.get(i)
-                    if (enchantment instanceof NbtCompound) {
-                        let id = enchantment.get('id')
-                        if (id instanceof NbtShort || id instanceof NbtInt) {
-                            const strID = Enchantments.to113(id.get())
-                            id = new NbtString()
-                            id.set(strID)
-                            enchantment.set('id', id)
-                        }
-                        enchantments.set(i, enchantment)
-                    }
-                }
-                root.set('Enchantments', enchantments)
-            }
-        }
-        /* StoredEnchantments */ {
-            const storedEnchantments = root.get('StoredEnchantments')
-            if (storedEnchantments instanceof NbtList) {
-                for (let i = 0; i < storedEnchantments.length; i++) {
-                    const enchantment = storedEnchantments.get(i)
-                    if (enchantment instanceof NbtCompound) {
-                        let id = enchantment.get('id')
-                        if (id instanceof NbtShort || id instanceof NbtInt) {
-                            const strID = Enchantments.to113(id.get())
-                            id = new NbtString()
-                            id.set(strID)
-                            enchantment.set('id', id)
-                        }
-                        storedEnchantments.set(i, enchantment)
-                    }
-                }
-                root.set('Enchantments', storedEnchantments)
-            }
-        }
-        /* display.(Name|LocName) */ {
-            const display = root.get('display')
-            if (display instanceof NbtCompound) {
-                const name = display.get('Name')
-                if (name instanceof NbtString) {
-                    name.set(`{"text": "${escape(name.get())}"}`)
-                    display.set('Name', name)
-                }
-                const locName = display.get('LocName')
-                display.del('LocName')
-                if (locName instanceof NbtString) {
-                    locName.set(`{"translate": "${locName.get()}"}`)
-                    display.set('Name', locName)
-                }
-                root.set('display', display)
-            }
-        }
-        /* EntityTag */ {
-            if (Items.hasEntityTag(item)) {
-                let entityTag = root.get('EntityTag')
-                if (entityTag instanceof NbtCompound) {
-                    entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
-                    root.set('EntityTag', entityTag)
-                }
-            }
-        }
-
-        return root.toString()
+    public static upItemNbt(item: NbtValue) {
+        return Items.to113(Items.std112(undefined, undefined, undefined, undefined, item.toString())).getNbt()
     }
 
     public static upJson(input: string) {
@@ -748,7 +611,7 @@ export default class Updater {
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
                     } else {
-                        item = Items.to113(Items.std112(undefined, subs[2], Number(subs[3])))
+                        item = Items.to113(Items.std112(undefined, `${subs[2]}:${subs[3]}`))
                             .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')

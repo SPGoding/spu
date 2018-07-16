@@ -221,7 +221,7 @@ export default class Blocks {
                     if (items instanceof NbtList) {
                         for (let i = 0; i < items.length; i++) {
                             let item = items.get(i)
-                            item = getNbt(Updater.upItemNbt(item.toString()))
+                            item = Updater.upItemNbt(item)
                             items.set(i, item)
                         }
                     }
@@ -246,7 +246,7 @@ export default class Blocks {
                     if (items instanceof NbtList) {
                         for (let i = 0; i < items.length; i++) {
                             let item = items.get(i)
-                            item = getNbt(Updater.upItemNbt(item.toString()))
+                            item = Updater.upItemNbt(item)
                             items.set(i, item)
                         }
                     }
@@ -289,7 +289,7 @@ export default class Blocks {
                 /* RecordItem */ {
                     let item = ansNbt.get('RecordItem')
                     if (item instanceof NbtString) {
-                        item = getNbt(Updater.upItemNbt(item.toString()))
+                        item = Updater.upItemNbt(item)
                         ansNbt.set('RecordItem', item)
                     }
                 }
