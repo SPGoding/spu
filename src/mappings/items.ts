@@ -86,7 +86,7 @@ export class StdItem1_13 {
     public getNbt() {
         let nbt = new NbtCompound()
 
-        nbt.set('id', new NbtString(name))
+        nbt.set('id', new NbtString(this.name))
         if (this.hasTag()) {
             nbt.set('tag', this.tag)
         }
@@ -155,6 +155,10 @@ export default class Items {
             }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
         }
 
+        if (ansName.slice(0, 10) !== 'minecraft:') {
+            ansName = `minecraft:${ansName}`
+        }
+
         return new StdItem1_12(ansName, ansData, ansTag, ansCount, ansSlot)
     }
 
@@ -163,16 +167,16 @@ export default class Items {
         let ansCount = std.getCount()
         let ansSlot = std.getSlot()
         let ansTag = std.getTag()
-        if (Items.isDamagableItem(ansName)) {
-            ansTag.set('Damage', new NbtShort(std.getData()))
-        } else if (Items.isMapItem(ansName)) {
-            ansTag.set('Map', new NbtInt(std.getData()))
+        let data = std.getData()
+
+        if (Items.DamagableItems.indexOf(ansName) !== -1 && data !== 0) {
+            ansTag.set('Damage', new NbtShort(data))
+        } else if (Items.MapItems.indexOf(ansName) !== -1 && data !== 0) {
+            ansTag.set('Map', new NbtInt(data))
         } else {
             const arr = Items.Nominal112_NominalID113.find(v => v[0] === std.getNominal())
             if (arr) {
                 ansName = arr[1]
-            } else {
-                throw `Unknown item Nominal ID: '${std.getNominal()}'.`
             }
         }
 
@@ -285,20 +289,6 @@ export default class Items {
             id = `minecraft:${id}`
         }
         return ['armor_stand', 'spawn_egg'].indexOf(id) !== -1
-    }
-
-    private static isDamagableItem(input: string) {
-        if (input.slice(0, 10) !== 'minecraft:') {
-            input = 'minecraft:' + input
-        }
-        return Items.DamagableItems.indexOf(input) !== -1
-    }
-
-    private static isMapItem(input: string) {
-        if (input.slice(0, 10) !== 'minecraft:') {
-            input = 'minecraft:' + input
-        }
-        return Items.MapItems.indexOf(input) !== -1
     }
 
     static toNominalColor(input: number, suffix: string) {

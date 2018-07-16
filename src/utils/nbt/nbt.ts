@@ -18,7 +18,7 @@ export class NbtString {
     private value: string
 
     public constructor(value?: string) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
@@ -36,7 +36,7 @@ export class NbtByte {
     private value: number
 
     public constructor(value?: number) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
@@ -54,7 +54,7 @@ export class NbtShort {
     private value: number
 
     public constructor(value?: number) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
@@ -72,7 +72,7 @@ export class NbtInt {
     private value: number
 
     public constructor(value?: number) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
@@ -90,7 +90,7 @@ export class NbtLong {
     private value: number
 
     public constructor(value?: number) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
@@ -108,7 +108,7 @@ export class NbtFloat {
     private value: number
 
     public constructor(value?: number) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
@@ -126,7 +126,7 @@ export class NbtDouble {
     private value: number
 
     public constructor(value?: number) {
-        if (value) {
+        if (value !== undefined) {
             this.value = value
         }
     }
