@@ -1,6 +1,6 @@
 export default class Entities {
-    public static to1_13(input: string) {
-        const arr = Entities.NominalID1_12_NominalID1_13.find(v => v[0] === input)
+    public static to113(input: string) {
+        const arr = Entities.Nominal112_Nominal113.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
@@ -8,8 +8,8 @@ export default class Entities {
         }
     }
 
-    public static to1_12(fucking: string) {
-        const arr = Entities.FuckingID1_10_NominalID1_12.find(v => v[0] === fucking)
+    public static to112(fucking: string) {
+        const arr = Entities.FuckingID110_NominalID112.find(v => v[0] === fucking)
         if (arr) {
             return arr[1]
         } else {
@@ -17,7 +17,7 @@ export default class Entities {
         }
     }
 
-    static NominalID1_12_NominalID1_13 = [
+    static Nominal112_Nominal113 = [
         ['minecraft:xp_orb', 'minecraft:experience_orb'],
         ['minecraft:xp_bottle', 'minecraft:experience_bottle'],
         ['minecraft:eye_of_ender_signal', 'minecraft:eye_of_ender'],
@@ -36,7 +36,7 @@ export default class Entities {
     // IT IS ALREADY 1.12! BUT YOU STILL USE THE OLD FORMAT OF ENTITY IDS IN SCOREBOARD CRITERIAS,
     // WHICH SHOULD BE IN THE RUBBISH CAN SINCE 16W32A!
     // FUCK YOU MOJANG AB!
-    static FuckingID1_10_NominalID1_12 = [
+    static FuckingID110_NominalID112 = [
         ['AreaEffectCloud', 'area_effect_cloud'],
         ['ArmorStand', 'armor_stand'],
         ['Cauldron', 'brewing_stand'],

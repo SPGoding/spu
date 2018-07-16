@@ -1,7 +1,7 @@
 import { Number_String } from './mapping'
 
 export default class Enches {
-    public static to1_13(input: number) {
+    public static to113(input: number) {
         const arr = Enches.Numeric_Nominal.find(v => v[0] === input)
         if (arr) {
             return arr[1]

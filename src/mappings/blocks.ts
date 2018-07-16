@@ -60,7 +60,7 @@ export class StdBlock {
  * Providing a map storing old block IDs and new block IDs.
  */
 export default class Blocks {
-    public static std1_12(id?: number, name?: string, data?: number, state?: string, nbt?: string): StdBlock {
+    public static std112(id?: number, name?: string, data?: number, state?: string, nbt?: string): StdBlock {
         let ansName: string
         let ansStates: string[]
         let ansNbt: NbtCompound
@@ -126,12 +126,12 @@ export default class Blocks {
         return new StdBlock(ansName, ansStates, ansNbt)
     }
 
-    public static to1_13(std: StdBlock): StdBlock {
+    public static to113(std: StdBlock): StdBlock {
         let ansName = std.getName()
         let ansStates = std.getStates()
         let ansNbt = std.getNbt()
 
-        const arr = Blocks.Nominal1_12_Nominal1_13.find(v => v.indexOf(std.getNominal()) >= 1)
+        const arr = Blocks.Nominal112_Nominal113.find(v => v.indexOf(std.getNominal()) >= 1)
         if (arr) {
             ansName = arr[0].split('[')[0]
             ansStates = Blocks.getStatesFromNominal(arr[0])
@@ -275,7 +275,7 @@ export default class Blocks {
                     const item = ansNbt.get('Item')
                     const data = ansNbt.get('Data')
                     if (item instanceof NbtString && data instanceof NbtInt) {
-                        ansName = `minecraft:potted_${Blocks.to1_13(Blocks.std1_12(undefined, item.get(), data.get()))
+                        ansName = `minecraft:potted_${Blocks.to113(Blocks.std112(undefined, item.get(), data.get()))
                             .getName()
                             .replace('minecraft:', '')}`
                     }
@@ -458,7 +458,7 @@ export default class Blocks {
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
-        const std = Blocks.to1_13(Blocks.std1_12(id.get(), undefined, metadata))
+        const std = Blocks.to113(Blocks.std112(id.get(), undefined, metadata))
         name.set(std.getName())
         if (std.hasStates()) {
             std.getStates().forEach(v => {
@@ -478,7 +478,7 @@ export default class Blocks {
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
-        const std = Blocks.to1_13(Blocks.std1_12(undefined, id.get(), metadata))
+        const std = Blocks.to113(Blocks.std112(undefined, id.get(), metadata))
         name.set(std.getName())
         if (std.hasStates()) {
             std.getStates().forEach(v => {
@@ -526,7 +526,7 @@ export default class Blocks {
      *     ['1.13 Nominal ID', ..'1.12 Normlaize ID']
      * ]
      */
-    public static Nominal1_12_Nominal1_13: string[][] = [
+    public static Nominal112_Nominal113: string[][] = [
         ['minecraft:air', 'minecraft:air'],
         ['minecraft:stone', 'minecraft:stone[variant=stone]'],
         ['minecraft:granite', 'minecraft:stone[variant=granite]'],

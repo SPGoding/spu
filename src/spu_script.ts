@@ -84,24 +84,24 @@ export default class SpuScript {
                         } else if (Items.isMapItem(source)) {
                             source += `{map:${params[0]}}`
                         } else {
-                            source = Items.to1_13(Items.std1_12(undefined, source, Number(params[0]))).getNominal()
+                            source = Items.to113(Items.std112(undefined, source, Number(params[0]))).getNominal()
                         }
                         break
                     case 'addDataOrStateToBlock':
                         if (isNumeric(params[0])) {
-                            source = Blocks.to1_13(Blocks.std1_12(undefined, source, Number(params[0]))).getFull()
+                            source = Blocks.to113(Blocks.std112(undefined, source, Number(params[0]))).getFull()
                         } else {
-                            source = Blocks.to1_13(Blocks.std1_12(undefined, source, undefined, params[0])).getFull()
+                            source = Blocks.to113(Blocks.std112(undefined, source, undefined, params[0])).getFull()
                         }
                         break
                     case 'addDataOrStateAndNbtToBlock':
                         if (isNumeric(params[0])) {
-                            source = Blocks.to1_13(
-                                Blocks.std1_12(undefined, source, Number(params[0]), undefined, params[1])
+                            source = Blocks.to113(
+                                Blocks.std112(undefined, source, Number(params[0]), undefined, params[1])
                             ).getFull()
                         } else {
-                            source = Blocks.to1_13(
-                                Blocks.std1_12(undefined, source, undefined, params[0], params[1])
+                            source = Blocks.to113(
+                                Blocks.std112(undefined, source, undefined, params[0], params[1])
                             ).getFull()
                         }
                         break
@@ -143,10 +143,10 @@ export default class SpuScript {
                         break
                     }
                     case 'fuckItemItself':
-                        source = Items.to1_13(Items.std1_12(undefined, source)).getNominal()
+                        source = Items.to113(Items.std112(undefined, source)).getNominal()
                         break
                     case 'fuckBlockItself':
-                        source = Blocks.to1_13(Blocks.std1_12(undefined, source)).getFull()
+                        source = Blocks.to113(Blocks.std112(undefined, source)).getFull()
                         break
                     default:
                         throw `Unknwon spu script method: '${name}'`

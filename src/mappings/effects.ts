@@ -1,8 +1,8 @@
 import { Number_String } from './mapping'
 
 export default class Effects {
-    public static to1_13(input: number) {
-        const arr = Effects.NumericID1_12_NominalID1_13.find(v => v[0] === input)
+    public static to113(input: number) {
+        const arr = Effects.Numeric112_Nominal113.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
@@ -10,7 +10,7 @@ export default class Effects {
         }
     }
 
-    static NumericID1_12_NominalID1_13: Number_String[] = [
+    static Numeric112_Nominal113: Number_String[] = [
         [1, 'minecraft:speed'],
         [2, 'minecraft:slowness'],
         [3, 'minecraft:haste'],

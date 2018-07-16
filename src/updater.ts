@@ -187,7 +187,7 @@ export default class Updater {
 
     public static upBlockDustParam(input: string) {
         const num = Number(input)
-        const nominal = Blocks.to1_13(Blocks.std1_12(num)).getFull()
+        const nominal = Blocks.to113(Blocks.std112(num)).getFull()
         return nominal
     }
 
@@ -216,7 +216,7 @@ export default class Updater {
 
     public static upEffect(input: string) {
         if (isNumeric(input)) {
-            return Effects.to1_13(Number(input))
+            return Effects.to113(Number(input))
         } else {
             return input
         }
@@ -224,7 +224,7 @@ export default class Updater {
 
     public static upEnch(input: string) {
         if (isNumeric(input)) {
-            return Enchantments.to1_13(Number(input))
+            return Enchantments.to113(Number(input))
         } else {
             return input
         }
@@ -250,7 +250,7 @@ export default class Updater {
         /* id */ {
             const id = root.get('id')
             if (id instanceof NbtString) {
-                id.set(Entities.to1_13(id.get()))
+                id.set(Entities.to113(id.get()))
             }
         }
         /* CustomName */ {
@@ -419,8 +419,8 @@ export default class Updater {
                 tileEntityData instanceof NbtCompound &&
                 (data instanceof NbtInt || data instanceof NbtByte || data === undefined)
             ) {
-                tileEntityData = Blocks.to1_13(
-                    Blocks.std1_12(undefined, block.get(), data ? data.get() : 0, undefined, tileEntityData.toString())
+                tileEntityData = Blocks.to113(
+                    Blocks.std112(undefined, block.get(), data ? data.get() : 0, undefined, tileEntityData.toString())
                 ).getNbt()
                 root.set('TileEntityData', tileEntityData)
             }
@@ -472,7 +472,7 @@ export default class Updater {
         const name = new NbtString()
         const properties = new NbtCompound()
         const metadata = data ? data.get() : 0
-        const std = Blocks.to1_13(Blocks.std1_12(id.get(), undefined, metadata))
+        const std = Blocks.to113(Blocks.std112(id.get(), undefined, metadata))
         name.set(std.getName())
         if (std.hasStates()) {
             std.getStates().forEach(v => {
@@ -488,7 +488,7 @@ export default class Updater {
     }
 
     public static upEntityType(input: string) {
-        return Entities.to1_13(input)
+        return Entities.to113(input)
     }
 
     public static upGamemode(input: string) {
@@ -516,7 +516,7 @@ export default class Updater {
 
     public static upItemDustParams(input: string) {
         const params = input.split(' ').map(x => Number(x))
-        return Items.to1_13(Items.std1_12(params[0], undefined, params[1])).getNominal()
+        return Items.to113(Items.std112(params[0], undefined, params[1])).getNominal()
     }
 
     public static upItemNbt(input: string) {
@@ -541,7 +541,7 @@ export default class Updater {
                     tag.set('Damage', damage)
                 }
             } else {
-                const newID = Items.to1_13(Items.std1_12(undefined, id.get(), damage ? damage.get() : 0)).getName()
+                const newID = Items.to113(Items.std112(undefined, id.get(), damage ? damage.get() : 0)).getName()
                 id.set(newID)
                 root.set('id', id)
             }
@@ -563,7 +563,7 @@ export default class Updater {
                 for (let i = 0; i < canDestroy.length; i++) {
                     const block = canDestroy.get(i)
                     if (block instanceof NbtString) {
-                        block.set(Blocks.to1_13(Blocks.std1_12(undefined, block.get(), 0)).getName())
+                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
                         canDestroy.set(i, block)
                     }
                 }
@@ -576,7 +576,7 @@ export default class Updater {
                 for (let i = 0; i < canPlaceOn.length; i++) {
                     const block = canPlaceOn.get(i)
                     if (block instanceof NbtString) {
-                        block.set(Blocks.to1_13(Blocks.std1_12(undefined, block.get(), 0)).getName())
+                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
                     }
                     canPlaceOn.set(i, block)
                 }
@@ -586,8 +586,8 @@ export default class Updater {
         /* BlockEntityTag */ {
             let blockEntityTag = root.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = Blocks.to1_13(
-                    Blocks.std1_12(undefined, item, undefined, undefined, blockEntityTag.toString())
+                blockEntityTag = Blocks.to113(
+                    Blocks.std112(undefined, item, undefined, undefined, blockEntityTag.toString())
                 ).getNbt()
                 root.set('BlockEntityTag', blockEntityTag)
             }
@@ -601,7 +601,7 @@ export default class Updater {
                     if (enchantment instanceof NbtCompound) {
                         let id = enchantment.get('id')
                         if (id instanceof NbtShort || id instanceof NbtInt) {
-                            const strID = Enchantments.to1_13(id.get())
+                            const strID = Enchantments.to113(id.get())
                             id = new NbtString()
                             id.set(strID)
                             enchantment.set('id', id)
@@ -620,7 +620,7 @@ export default class Updater {
                     if (enchantment instanceof NbtCompound) {
                         let id = enchantment.get('id')
                         if (id instanceof NbtShort || id instanceof NbtInt) {
-                            const strID = Enchantments.to1_13(id.get())
+                            const strID = Enchantments.to113(id.get())
                             id = new NbtString()
                             id.set(strID)
                             enchantment.set('id', id)
@@ -697,7 +697,7 @@ export default class Updater {
     }
 
     public static upParticle(input: string) {
-        return Particles.to1_13(input)
+        return Particles.to113(input)
     }
 
     public static upPreJson(input: string) {
@@ -720,17 +720,17 @@ export default class Updater {
     public static upScbCrit(input: string) {
         if (input.slice(0, 5) === 'stat.') {
             const subs = input.split(/\./g)
-            const newCrit = ScoreboardCriterias.to1_13(subs[1])
+            const newCrit = ScoreboardCriterias.to113(subs[1])
             switch (subs[1]) {
                 case 'mineBlock':
                     let block = ''
                     if (isNumeric(subs[2])) {
-                        block = Blocks.to1_13(Blocks.std1_12(Number(subs[2])))
+                        block = Blocks.to113(Blocks.std112(Number(subs[2])))
                             .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
                     } else {
-                        block = Blocks.to1_13(Blocks.std1_12(undefined, `${subs[2]}:${subs[3]}`))
+                        block = Blocks.to113(Blocks.std112(undefined, `${subs[2]}:${subs[3]}`))
                             .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
@@ -743,12 +743,12 @@ export default class Updater {
                 case 'drop':
                     let item = ''
                     if (isNumeric(subs[2])) {
-                        item = Items.to1_13(Items.std1_12(Number(subs[2])))
+                        item = Items.to113(Items.std112(Number(subs[2])))
                             .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
                     } else {
-                        item = Items.to1_13(Items.std1_12(undefined, subs[2], Number(subs[3])))
+                        item = Items.to113(Items.std112(undefined, subs[2], Number(subs[3])))
                             .getName()
                             .replace(/:/g, '.')
                             .replace(/\[.*$/g, '')
@@ -756,7 +756,7 @@ export default class Updater {
                     return `minecraft.${newCrit}:${item}`
                 case 'killEntity':
                 case 'entityKilledBy':
-                    const entity = Entities.to1_13(Entities.to1_12(subs[2])).replace(/:/g, '.')
+                    const entity = Entities.to113(Entities.to112(subs[2])).replace(/:/g, '.')
                     return `minecraft.${newCrit}:${entity}`
                 default:
                     return `minecraft.custom:minecraft.${subs[1]}`

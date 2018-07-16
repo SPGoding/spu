@@ -1,6 +1,6 @@
 export default class ScoreboardCriterias {
-    public static to1_13(input: string) {
-        const arr = ScoreboardCriterias.Criteria1_12_Criteria1_13.find(v => v[0] === input)
+    public static to113(input: string) {
+        const arr = ScoreboardCriterias.Criteria112_Criteria113.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
@@ -8,7 +8,7 @@ export default class ScoreboardCriterias {
         }
     }
 
-    static Criteria1_12_Criteria1_13 = [
+    static Criteria112_Criteria113 = [
         ['craftItem', 'crafted'],
         ['useItem', 'used'],
         ['breakItem', 'broken'],

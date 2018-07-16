@@ -105,7 +105,7 @@ export class StdItem1_13 {
  * Providing a map storing old item IDs and new item IDs.
  */
 export default class Items {
-    public static std1_12(id?: number, name?: string, data?: number, tag?: string, nbt?: string): StdItem1_12 {
+    public static std112(id?: number, name?: string, data?: number, tag?: string, nbt?: string): StdItem1_12 {
         let ansName: string
         let ansData: number
         let ansTag: NbtCompound
@@ -114,7 +114,7 @@ export default class Items {
         if (id && !name && !nbt) {
             ansData = data ? data : 0
             ansTag = getNbt(tag ? tag : '{}')
-            const arr = Items.NumericID1_12_NominalID1_12.find(v => v[0] === id)
+            const arr = Items.NumericID112_NominalID112.find(v => v[0] === id)
             if (arr) {
                 ansName = arr[1]
             } else {
@@ -155,12 +155,12 @@ export default class Items {
         return new StdItem1_12(ansName, ansData, ansTag, ansCount, ansSlot)
     }
 
-    public static to1_13(std: StdItem1_12): StdItem1_13 {
+    public static to113(std: StdItem1_12): StdItem1_13 {
         let ansName = std.getName()
         let ansCount = std.getCount()
         let ansSlot = std.getSlot()
         let ansTag = std.getTag()
-        const arr = Items.Nominal1_12_NominalID1_13.find(v => v[0] === std.getNominal())
+        const arr = Items.Nominal112_NominalID113.find(v => v[0] === std.getNominal())
         if (arr) {
             ansName = arr[1]
         } else {
@@ -200,7 +200,7 @@ export default class Items {
         }
     }
 
-    static NumericID1_12_NominalID1_12: Number_String[] = [
+    static NumericID112_NominalID112: Number_String[] = [
         [0, 'minecraft:air'],
         [1, 'minecraft:stone'],
         [2, 'minecraft:grass'],
@@ -666,7 +666,7 @@ export default class Items {
         [2267, 'minecraft:record_wait']
     ]
 
-    static Nominal1_12_NominalID1_13 = [
+    static Nominal112_NominalID113 = [
         ['minecraft:stone.0', 'minecraft:stone'],
         ['minecraft:stone.1', 'minecraft:granite'],
         ['minecraft:stone.2', 'minecraft:polished_granite'],
