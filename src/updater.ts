@@ -269,6 +269,35 @@ export default class Updater {
                 }
             }
         }
+        /* Offers.Recipes[n].buy &
+           Offers.Recipes[n].buyB & 
+           Offers.Recipes[n].sell */ {
+            const offers = root.get('Offers')
+            if (offers instanceof NbtCompound) {
+                const recipes = offers.get('Recipes')
+                if (recipes instanceof NbtList) {
+                    recipes.forEach((v: NbtValue) => {
+                        if (v instanceof NbtCompound) {
+                            let buy = v.get('buy')
+                            let buyB = v.get('buyB')
+                            let sell = v.get('sell')
+                            if (buy instanceof NbtCompound) {
+                                buy = Updater.upItemNbt(buy)
+                                v.set('buy', buy)
+                            }
+                            if (buyB instanceof NbtCompound) {
+                                buyB = Updater.upItemNbt(buyB)
+                                v.set('buyB', buyB)
+                            }
+                            if (sell instanceof NbtCompound) {
+                                sell = Updater.upItemNbt(sell)
+                                v.set('sell', sell)
+                            }
+                        }
+                    })
+                }
+            }
+        }
         /* HandItems */ {
             const handItems = root.get('HandItems')
             if (handItems instanceof NbtList) {
@@ -455,10 +484,10 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                                ' ' +
-                                Updater.upItemDustParams(
-                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                                )
+                            ' ' +
+                            Updater.upItemDustParams(
+                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                            )
                         )
                     }
                 }
