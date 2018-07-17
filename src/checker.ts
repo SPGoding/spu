@@ -275,14 +275,14 @@ export default class Checker {
     }
 
     public static isVec_2(input: string) {
-        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){2})$/.test(input)
+        return /^((((~?[+-]?(\d*(\.\d*)?)|\.\d+)|(~))(\s|$)){2})$/.test(input)
     }
 
     public static isVec_3(input: string) {
         // This regex is coppied from
         // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
         // Dressed pca, I love you!!!
-        return /^((((~?[+-]?(\d+(\.\d+)?)|\.\d+)|(~))(\s|$)){3}|(\^([+-]?(\d+(\.\d+)?|\.\d+))?(\s|$)){3})$/.test(input)
+        return /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/.test(input)
     }
 
     public static isNbt(input: string) {
