@@ -8641,6 +8641,8 @@ export default class Blocks {
         [67, 6, 'minecraft:stone_stairs', ['facing=south', 'half=top', 'shape=straight']],
         [67, 7, 'minecraft:stone_stairs', ['facing=north', 'half=top', 'shape=straight']],
         [68, 0, 'minecraft:wall_sign', ['facing=north']],
+        [68, 1, 'minecraft:wall_sign', ['facing=north']],
+        [68, 2, 'minecraft:wall_sign', ['facing=north']],
         [68, 3, 'minecraft:wall_sign', ['facing=south']],
         [68, 4, 'minecraft:wall_sign', ['facing=west']],
         [68, 5, 'minecraft:wall_sign', ['facing=east']],
