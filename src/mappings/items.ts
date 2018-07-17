@@ -11,6 +11,7 @@ export class StdItem1_12 {
     private tag: NbtCompound
     private count: NbtValue | undefined
     private slot: NbtValue | undefined
+    private empty: boolean
 
     public constructor(name: string, data: number, tag: NbtCompound, count?: NbtValue, slot?: NbtValue) {
         if (name.slice(0, 10) !== 'minecraft:') {
@@ -24,6 +25,14 @@ export class StdItem1_12 {
         this.tag = tag
         this.count = count
         this.slot = slot
+    }
+
+    public setEmpty() {
+        this.empty = true
+    }
+
+    public isEmpty() {
+        return this.empty
     }
 
     public getName() {
@@ -47,6 +56,9 @@ export class StdItem1_12 {
     }
 
     public getNominal() {
+        if (this.empty) {
+            return ''
+        }
         return `${this.name}.${this.data}`
     }
 }
@@ -56,6 +68,7 @@ export class StdItem1_13 {
     private tag: NbtCompound
     private count: NbtValue | undefined
     private slot: NbtValue | undefined
+    private empty: boolean
 
     public constructor(name: string, nbt: NbtCompound, count?: NbtValue, slot?: NbtValue) {
         if (name.slice(0, 10) !== 'minecraft:') {
@@ -65,6 +78,10 @@ export class StdItem1_13 {
         this.tag = nbt
         this.count = count
         this.slot = slot
+    }
+
+    public setEmpty() {
+        this.empty = true
     }
 
     public getName() {
@@ -85,6 +102,10 @@ export class StdItem1_13 {
 
     public getNbt() {
         let nbt = new NbtCompound()
+
+        if (this.empty) {
+            return nbt
+        }
 
         nbt.set('id', new NbtString(this.name))
         if (this.hasTag()) {
@@ -147,7 +168,9 @@ export default class Items {
                 ansName = id.get()
                 ansData = data ? data.get() : 0
             } else {
-                throw `Unexpected Item NBT: '${nbt.toString()}'.`
+                let ans = new StdItem1_12('', 0, new NbtCompound())
+                ans.setEmpty()
+                return ans
             }
         } else {
             throw `Argument Error! Used ${id ? 'id, ' : ''}${name ? 'name, ' : ''}${data ? 'data, ' : ''}${
@@ -163,6 +186,11 @@ export default class Items {
     }
 
     public static to113(std: StdItem1_12) {
+        if (std.isEmpty()) {
+            let ans = new StdItem1_13('', new NbtCompound())
+            ans.setEmpty()
+            return ans
+        }
         let ansName = std.getName()
         let ansCount = std.getCount()
         let ansSlot = std.getSlot()
