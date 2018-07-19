@@ -216,7 +216,7 @@ export default class Spuses {
         ['scoreboard teams join %word %entity', 'team join %0 %1'],
         ['scoreboard teams leave', 'team leave'],
         ['scoreboard teams leave %entity', 'team leave %0'],
-        ['scoreboard teams option %word %word %word', 'team option %0 %1 %2'],
+        ['scoreboard teams option %word %word %word', 'team modify %0 %1 %2'],
         ['seed', 'seed'],
         ['setblock %vec_3 %block', 'setblock %0 %1$fuckBlockItself'],
         ['setblock %vec_3 %block %block_metadata_or_state', 'setblock %0 %1$addDataOrStateToBlock%2'],
