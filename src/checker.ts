@@ -82,6 +82,8 @@ export default class Checker {
                     return Checker.isSource(cmdArg)
                 case 'string':
                     return Checker.isString(cmdArg)
+                case 'team_option':
+                    return Checker.isWord(cmdArg)
                 case 'uuid':
                     return Checker.isUuid(cmdArg)
                 case 'vec_2':

@@ -172,6 +172,8 @@ export default class Updater {
                 return arg
             case 'string':
                 return arg
+            case 'team_option':
+                return Updater.upTeamOption(arg)
             case 'uuid':
                 return arg
             case 'vec_2':
@@ -660,5 +662,14 @@ export default class Updater {
 
     public static upSlot(input: string) {
         return input.slice(5)
+    }
+
+    public static upTeamOption(input: string) {
+        switch (input) {
+            case 'friendlyfire':
+                return 'friendlyFire'
+            default:
+                return input
+        }
     }
 }
