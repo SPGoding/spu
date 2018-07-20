@@ -1,7 +1,7 @@
 import { NbtCompound, NbtList, NbtString, NbtInt, NbtByte, NbtValue, NbtShort } from '../utils/nbt/nbt'
 import Updater from '../updater'
 import Items from './items'
-import { getNbt } from '../utils/utils'
+import { getNbt, escape } from '../utils/utils'
 import { Number_Number_String_StringArray } from './mapping';
 
 export class StdBlock {

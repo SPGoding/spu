@@ -1,9 +1,10 @@
 import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../utils/nbt/nbt'
-import { getNbt } from '../utils/utils'
+import { getNbt, escape } from '../utils/utils'
 import { Number_String } from './mapping'
 import Blocks from './blocks'
 import Enchantments from './enchantments'
 import Updater from '../updater'
+import Entities from './entities';
 
 export class StdItem1_12 {
     private name: string
@@ -174,7 +175,7 @@ export default class Items {
             }
         } else {
             throw `Argument Error! Used ${id ? 'id, ' : ''}${name ? 'name, ' : ''}${data ? 'data, ' : ''}${
-                tag && tag !== '{}' ? 'tag, ' : ''
+            tag && tag !== '{}' ? 'tag, ' : ''
             }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
         }
 
@@ -300,23 +301,31 @@ export default class Items {
             }
         }
         /* EntityTag */ {
-            if (Items.hasEntityTag(ansName)) {
+            if (ansName === 'minecraft:armor_stand') {
                 let entityTag = ansTag.get('EntityTag')
                 if (entityTag instanceof NbtCompound) {
                     entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
                     ansTag.set('EntityTag', entityTag)
                 }
+            } else if (ansName === 'minecraft:spawn_egg') {
+                let entityTag = ansTag.get('EntityTag')
+                if (entityTag instanceof NbtCompound) {
+                    entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
+                    ansTag.set('EntityTag', entityTag)
+                    const id = entityTag.get('id')
+                    if (id instanceof NbtString) {
+                        const after = Entities.to113(id.get())
+                        if (Items.SpawnEgges.indexOf(`${after}_spawn_egg`) !== -1) {
+                            ansName = `${after}_spawn_egg`
+                        } else {
+                            throw `Removed spawn egg of: '${after}'.`
+                        }
+                    }
+                }
             }
         }
 
         return new StdItem1_13(ansName, ansTag, ansCount, ansSlot)
-    }
-
-    static hasEntityTag(id: string) {
-        if (id.slice(0, 10) !== 'minecraft:') {
-            id = `minecraft:${id}`
-        }
-        return ['armor_stand', 'spawn_egg'].indexOf(id) !== -1
     }
 
     static toNominalColor(input: number, suffix: string) {
@@ -1173,6 +1182,51 @@ export default class Items {
     ]
 
     static MapItems = ['minecraft:map', 'minecraft:filled_map']
+
+    static SpawnEgges = [
+        'minecraft:bat_spawn_egg',
+        'minecraft:blaze_spawn_egg',
+        'minecraft:cave_spider_spawn_egg',
+        'minecraft:chicken_spawn_egg',
+        'minecraft:cow_spawn_egg',
+        'minecraft:creeper_spawn_egg',
+        'minecraft:donkey_spawn_egg',
+        'minecraft:elder_guardian_spawn_egg',
+        'minecraft:enderman_spawn_egg',
+        'minecraft:endermite_spawn_egg',
+        'minecraft:evoker_spawn_egg',
+        'minecraft:ghast_spawn_egg',
+        'minecraft:guardian_spawn_egg',
+        'minecraft:horse_spawn_egg',
+        'minecraft:husk_spawn_egg',
+        'minecraft:llama_spawn_egg',
+        'minecraft:magma_cube_spawn_egg',
+        'minecraft:mooshroom_spawn_egg',
+        'minecraft:mule_spawn_egg',
+        'minecraft:ocelot_spawn_egg',
+        'minecraft:parrot_spawn_egg',
+        'minecraft:pig_spawn_egg',
+        'minecraft:polar_bear_spawn_egg',
+        'minecraft:rabbit_spawn_egg',
+        'minecraft:sheep_spawn_egg',
+        'minecraft:shulker_spawn_egg',
+        'minecraft:silverfish_spawn_egg',
+        'minecraft:skeleton_spawn_egg',
+        'minecraft:skeleton_horse_spawn_egg',
+        'minecraft:slime_spawn_egg',
+        'minecraft:spider_spawn_egg',
+        'minecraft:squid_spawn_egg',
+        'minecraft:stray_spawn_egg',
+        'minecraft:vex_spawn_egg',
+        'minecraft:villager_spawn_egg',
+        'minecraft:vindicator_spawn_egg',
+        'minecraft:witch_spawn_egg',
+        'minecraft:wither_skeleton_spawn_egg',
+        'minecraft:wolf_spawn_egg',
+        'minecraft:zombie_spawn_egg',
+        'minecraft:zombie_horse_spawn_egg',
+        'minecraft:zombie_pigman_spawn_egg',
+        'minecraft:zombie_villager_spawn_egg']
 
     static NumericColor_NominalColor = [
         ['0', 'minecraft:white_'],

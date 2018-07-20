@@ -1,5 +1,8 @@
 export default class Entities {
     public static to113(input: string) {
+        if (input.slice(0, 10) !== 'minecraft:') {
+            input = `minecraft:${input}`
+        }
         const arr = Entities.Nominal112_Nominal113.find(v => v[0] === input)
         if (arr) {
             return arr[1]
@@ -9,6 +12,9 @@ export default class Entities {
     }
 
     public static to112(fucking: string) {
+        if (fucking.slice(0,10) !== 'minecraft:') {
+            fucking = `minecraft:${fucking}`
+        }
         const arr = Entities.FuckingID110_NominalID112.find(v => v[0] === fucking)
         if (arr) {
             return arr[1]
