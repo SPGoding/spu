@@ -280,7 +280,7 @@ export default class Items {
                         storedEnchantments.set(i, enchantment)
                     }
                 }
-                ansTag.set('Enchantments', storedEnchantments)
+                ansTag.set('StoredEnchantments', storedEnchantments)
             }
         }
         /* display.(Name|LocName) */ {

@@ -133,6 +133,11 @@ export default class SpuScript {
                     case 'fuckBlockItself':
                         source = Blocks.to113(Blocks.std112(undefined, source)).getFull()
                         break
+                    case 'setLimitOfSelector': {
+                        let sel = new Selector()
+                        
+                        break
+                    }
                     default:
                         throw `Unknwon spu script method: '${name}'`
                 }
