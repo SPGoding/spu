@@ -57,7 +57,7 @@ export default class Selector {
      * Parses this selector according to a string in 1.13.
      * @param str An string representing a target selector.
      */
-    public parse1_13(str: string) {
+    public parse113(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -76,7 +76,7 @@ export default class Selector {
     /**
      * Gets a string that can represent this target selector in 1.13.
      */
-    public to1_13() {
+    public to113() {
         let result = '@'
 
         result = this.getVariable1_13(result)
@@ -135,6 +135,10 @@ export default class Selector {
 
     public setNbt(nbt: string) {
         this.nbt = getNbt(nbt)
+    }
+
+    public setLimit(limit: number) {
+        this.limit = limit
     }
 
     private parseVariable(char: string, str: string) {

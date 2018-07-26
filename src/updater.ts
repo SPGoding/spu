@@ -241,7 +241,7 @@ export default class Updater {
         } else {
             return input
         }
-        return sel.to1_13()
+        return sel.to113()
     }
 
     public static upEntityNbt(input: string) {
@@ -570,7 +570,7 @@ export default class Updater {
             if (json.selector) {
                 let sel = new Selector()
                 sel.parse1_12(json.selector)
-                json.selector = sel.to1_13()
+                json.selector = sel.to113()
             }
 
             if (

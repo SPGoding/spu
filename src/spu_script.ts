@@ -67,7 +67,7 @@ export default class SpuScript {
                 switch (name) {
                     case 'addAdvToEntity': {
                         let sel = new Selector()
-                        sel.parse1_13(source)
+                        sel.parse113(source)
                         if (params.length === 1) {
                             sel.addFinishedAdvancement(params[0])
                         } else if (params.length === 2) {
@@ -75,7 +75,7 @@ export default class SpuScript {
                         } else {
                             throw `Unexpected param count: ${params.length} of ${name} in ${arg}.`
                         }
-                        source = sel.to1_13()
+                        source = sel.to113()
                         break
                     }
                     case 'addDataToItem':
@@ -104,26 +104,26 @@ export default class SpuScript {
                         break
                     case 'addNbtToEntity': {
                         let sel = new Selector()
-                        sel.parse1_13(source)
+                        sel.parse113(source)
                         sel.setNbt(params[0])
-                        source = sel.to1_13()
+                        source = sel.to113()
                         break
                     }
                     case 'addScbMaxToEntity': {
                         if (params[1] !== '*') {
                             let sel = new Selector()
-                            sel.parse1_13(source)
+                            sel.parse113(source)
                             sel.setScore(params[0], params[1], 'max')
-                            source = sel.to1_13()
+                            source = sel.to113()
                         }
                         break
                     }
                     case 'addScbMinToEntity': {
                         if (params[1] !== '*') {
                             let sel = new Selector()
-                            sel.parse1_13(source)
+                            sel.parse113(source)
                             sel.setScore(params[0], params[1], 'min')
-                            source = sel.to1_13()
+                            source = sel.to113()
                         }
                         break
                     }
@@ -135,7 +135,9 @@ export default class SpuScript {
                         break
                     case 'setLimitOfSelector': {
                         let sel = new Selector()
-                        
+                        sel.parse113(source)
+                        sel.setLimit(1)
+                        source = sel.to113()
                         break
                     }
                     default:

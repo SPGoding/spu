@@ -267,7 +267,7 @@ export default class Spuses {
             "weather clear !>'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear."
         ],
         ['tp %entity', 'teleport %0'],
-        ['tp %entity %entity$setLimitOfSelector', 'teleport %0 %1'],
+        ['tp %entity %entity', 'teleport %0 %1$setLimitOfSelector'],
         ['tp %vec_3', 'teleport %0'],
         ['tp %entity %vec_3', 'execute as %0 at @s run teleport @s %1'],
         ['tp %entity %vec_3 %vec_2', 'execute as %0 at @s run teleport @s %1 %2'],
