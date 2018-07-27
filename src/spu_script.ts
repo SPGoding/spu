@@ -136,7 +136,7 @@ export default class SpuScript {
                     case 'setLimitOfSelector': {
                         let sel = new Selector()
                         sel.parse113(source)
-                        sel.setLimit(1)
+                        sel.setLimit()
                         source = sel.to113()
                         break
                     }

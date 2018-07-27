@@ -31,7 +31,7 @@ export default class Selector {
     private advancements = new Map<string, boolean | Map<string, boolean>>()
     private nbt = new NbtCompound()
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Parses this selector according to a string in 1.12.
@@ -137,8 +137,10 @@ export default class Selector {
         this.nbt = getNbt(nbt)
     }
 
-    public setLimit(limit: number) {
-        this.limit = limit
+    public setLimit() {
+        if (this.variable === 'a' || this.variable === 'e') {
+            this.limit = 1
+        }
     }
 
     private parseVariable(char: string, str: string) {
