@@ -62,6 +62,8 @@ export default class Checker {
                     return Checker.isLiteral(cmdArg)
                 case 'num':
                     return Checker.isNum(cmdArg)
+                case 'num_l':
+                    return Checker.isNum(cmdArg.slice(0, -1)) && cmdArg.slice(-1).toUpperCase() === 'L'
                 case 'num_or_star':
                     return Checker.isNumOrStar(cmdArg)
                 case 'particle':

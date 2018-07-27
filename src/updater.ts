@@ -152,6 +152,8 @@ export default class Updater {
                 return arg.toLowerCase()
             case 'num':
                 return arg
+            case 'num_l':
+                return arg.slice(0, -1)
             case 'num_or_star':
                 return arg
             case 'particle':
