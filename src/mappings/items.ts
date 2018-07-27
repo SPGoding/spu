@@ -318,7 +318,10 @@ export default class Items {
                         if (Items.SpawnEgges.indexOf(`${after}_spawn_egg`) !== -1) {
                             ansName = `${after}_spawn_egg`
                         } else {
-                            throw `Removed spawn egg of: '${after}'.`
+                            ansName = `bat_spawn_egg`
+                            let display = new NbtCompound()
+                            display.set('Name', new NbtString(`{"text":"${after.replace('minecraft:', '')}_spawn_egg","italic":false}`))
+                            ansTag.set('display', display)
                         }
                     }
                 }
