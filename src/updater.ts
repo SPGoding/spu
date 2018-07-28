@@ -152,6 +152,8 @@ export default class Updater {
                 return arg.toLowerCase()
             case 'num':
                 return arg
+            case 'num_l':
+                return arg.slice(0, -1)
             case 'num_or_star':
                 return arg
             case 'particle':
@@ -486,10 +488,10 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                            ' ' +
-                            Updater.upItemDustParams(
-                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                            )
+                                ' ' +
+                                Updater.upItemDustParams(
+                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                                )
                         )
                     }
                 }

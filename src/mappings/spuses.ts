@@ -283,6 +283,10 @@ export default class Spuses {
         ['worldborder get', 'worldborder get'],
         ['worldborder set %num', 'worldborder set %0'],
         ['worldborder set %num %num', 'worldborder set %0 %1'],
-        ['worldborder warning %literal %num', 'worldborder warning %0 %1']
+        ['worldborder warning %literal %num', 'worldborder warning %0 %1'],
+        ['xp %num', 'experience add @s %0 points'],
+        ['xp %num %entity', 'experience add %1 %0 points'],
+        ['xp %num_l', 'experience add @s %0 levels'],
+        ['xp %num_l %entity', 'experience add %1 %0 levels']
     ])
 }
