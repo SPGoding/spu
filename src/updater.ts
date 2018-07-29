@@ -488,10 +488,10 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                            ' ' +
-                            Updater.upItemDustParams(
-                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                            )
+                                ' ' +
+                                Updater.upItemDustParams(
+                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                                )
                         )
                     }
                 }
