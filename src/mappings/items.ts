@@ -239,7 +239,7 @@ export default class Items {
             let blockEntityTag = ansTag.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
                 blockEntityTag = Blocks.to113(
-                    Blocks.std112(undefined, ansName, undefined, undefined, blockEntityTag.toString())
+                    Blocks.std112(undefined, ansName === 'minecraft:sign' ? 'minecraft:standing_sign' : ansName, undefined, undefined, blockEntityTag.toString())
                 ).getNbt()
                 ansTag.set('BlockEntityTag', blockEntityTag)
             }
