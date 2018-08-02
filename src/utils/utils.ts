@@ -25,6 +25,16 @@ export function getNbt(str: string) {
 }
 
 /**
+ * Get UUIDMost and UUIDLeast froom a UUID pair.
+ */
+export function getUuidLeastUuidMost(uuid: string) {
+    uuid = uuid.replace(/-/g, '')
+    const uuidMost = parseInt(uuid.slice(0, 16), 16)
+    const uuidLeast = parseInt(uuid.slice(16), 16)
+    return {L: uuidLeast, M: uuidMost}
+}
+
+/**
  * For escape & unescape.
  *
  * @author pca006132

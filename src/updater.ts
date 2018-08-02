@@ -10,8 +10,8 @@ import Entities from './mappings/entities'
 import Items from './mappings/items'
 import Particles from './mappings/particles'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
-import { isNumeric, getNbt, escape } from './utils/utils'
-import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue } from './utils/nbt/nbt'
+import { isNumeric, getNbt, escape, getUuidLeastUuidMost } from './utils/utils'
+import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue, NbtLong } from './utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
@@ -488,13 +488,52 @@ export default class Updater {
                     if (particleParam1 instanceof NbtInt && particleParam2 instanceof NbtInt) {
                         particle.set(
                             particle.get() +
-                                ' ' +
-                                Updater.upItemDustParams(
-                                    particleParam1.get().toString() + ' ' + particleParam2.get().toString()
-                                )
+                            ' ' +
+                            Updater.upItemDustParams(
+                                particleParam1.get().toString() + ' ' + particleParam2.get().toString()
+                            )
                         )
                     }
                 }
+            }
+        }
+        /* Owner */ {
+            let owner = root.get('Owner')
+            root.del('Owner')
+            if (owner instanceof NbtString) {
+                const uuid = getUuidLeastUuidMost(owner.get())
+                const m = new NbtLong(uuid.M)
+                const l = new NbtLong(uuid.L)
+                owner = new NbtCompound()
+                owner.set('M', m)
+                owner.set('L', l)
+                root.set('Owner', owner)
+            }
+        }
+        /* owner */ {
+            let owner = root.get('owner')
+            root.del('owner')
+            if (owner instanceof NbtString) {
+                const uuid = getUuidLeastUuidMost(owner.get())
+                const m = new NbtLong(uuid.M)
+                const l = new NbtLong(uuid.L)
+                owner = new NbtCompound()
+                owner.set('M', m)
+                owner.set('L', l)
+                root.set('owner', owner)
+            }
+        }
+        /* Thrower */ {
+            let thrower = root.get('Thrower')
+            root.del('Thrower')
+            if (thrower instanceof NbtString) {
+                const uuid = getUuidLeastUuidMost(thrower.get())
+                const m = new NbtLong(uuid.M)
+                const l = new NbtLong(uuid.L)
+                thrower = new NbtCompound()
+                thrower.set('M', m)
+                thrower.set('L', l)
+                root.set('Thrower', thrower)
             }
         }
 
