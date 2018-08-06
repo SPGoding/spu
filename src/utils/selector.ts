@@ -1,5 +1,5 @@
 import CharReader from './char_reader'
-import Updater from '../updater'
+import Updater from '../112to113/updater'
 import { isWhiteSpace, getNbt } from './utils'
 import { NbtCompound } from './nbt/nbt'
 

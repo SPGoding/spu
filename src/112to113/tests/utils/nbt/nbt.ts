@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { NbtString } from '../../../utils/nbt/nbt'
+import { NbtString } from '../../../../utils/nbt/nbt'
 
 describe('Nbt tests', () => {
     describe('NbtString tests', () => {

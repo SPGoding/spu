@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import CharReader from '../../utils/char_reader'
+import CharReader from '../../../utils/char_reader'
 
 describe('CharReader tests', () => {
     describe('peak() tests', () => {

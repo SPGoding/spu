@@ -7,7 +7,7 @@
  * |_______/    | _|       \______|  \______/  |_______/ |__| |__| \__|  \______|
  *
  */
-import Updater from './updater'
+import Updater from './112to113/updater'
 
 $(document).ready(() => {
     $('#warn').hide()

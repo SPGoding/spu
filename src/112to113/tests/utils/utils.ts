@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { isNumeric } from '../../utils/utils'
+import { isNumeric } from '../../../utils/utils'
 
 describe('Utils tests', () => {
     describe('isNumeric() tests', () => {

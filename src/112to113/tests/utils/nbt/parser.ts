@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { Parser } from '../../../utils/nbt/parser'
+import { Parser } from '../../../../utils/nbt/parser'
 
 describe('Parser tests', () => {
     describe('parse() tests', () => {

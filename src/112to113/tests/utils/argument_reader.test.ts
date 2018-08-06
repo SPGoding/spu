@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import ArgumentReader from '../../utils/argument_reader'
+import ArgumentReader from '../../../utils/argument_reader'
 
 describe('ArgumentReader tests', () => {
     describe('peak() tests', () => {

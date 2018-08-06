@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { Tokenizer, Token, TokenType } from '../../../utils/nbt/tokenizer'
+import { Tokenizer, Token, TokenType } from '../../../../utils/nbt/tokenizer'
 
 describe('Tokenizer tests', () => {
     describe('tokenize() tests', () => {

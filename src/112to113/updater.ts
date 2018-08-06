@@ -1,7 +1,7 @@
-import ArgumentReader from './utils/argument_reader'
-import Selector from './utils/selector'
+import ArgumentReader from '../utils/argument_reader'
+import Selector from '../utils/selector'
 import Spuses from './mappings/spuses'
-import SpuScript from './spu_script'
+import SpuScript from '../spu_script'
 import Checker from './checker'
 import Blocks from './mappings/blocks'
 import Effects from './mappings/effects'
@@ -10,8 +10,8 @@ import Entities from './mappings/entities'
 import Items from './mappings/items'
 import Particles from './mappings/particles'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
-import { isNumeric, getNbt, escape, getUuidLeastUuidMost } from './utils/utils'
-import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue, NbtLong } from './utils/nbt/nbt'
+import { isNumeric, getNbt, escape, getUuidLeastUuidMost } from '../utils/utils'
+import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue, NbtLong } from '../utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.
