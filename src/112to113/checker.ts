@@ -187,11 +187,11 @@ export default class Checker {
     }
 
     public static isWord(input: string) {
-        return /^[\w0-9]+$/.test(input)
+        return /^[A-Za-z0-9\+\._-]+$/.test(input)
     }
 
     public static isString(input: string) {
-        return /^.+$/.test(input)
+        return true
     }
 
     public static isNum(input: string) {

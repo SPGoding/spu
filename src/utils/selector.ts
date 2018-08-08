@@ -447,28 +447,28 @@ export default class Selector {
     private getVariable1_13 = (result: string) => (result += this.variable)
 
     private getProperties1_13(result: string) {
-        if (this.dx) {
+        if (this.dx !== undefined) {
             result += `dx=${this.dx},`
         }
-        if (this.dy) {
+        if (this.dy !== undefined) {
             result += `dy=${this.dy},`
         }
-        if (this.dz) {
+        if (this.dz !== undefined) {
             result += `dz=${this.dz},`
         }
-        if (this.limit) {
+        if (this.limit !== undefined) {
             result += `limit=${this.limit},`
         }
-        if (this.x) {
+        if (this.x !== undefined) {
             result += `x=${this.x},`
         }
-        if (this.y) {
+        if (this.y !== undefined) {
             result += `y=${this.y},`
         }
-        if (this.z) {
+        if (this.z !== undefined) {
             result += `z=${this.z},`
         }
-        if (this.sort) {
+        if (this.sort !== undefined) {
             result += `sort=${this.sort},`
         }
         for (const i of this.tag) {
@@ -676,15 +676,15 @@ class Range {
     get1_13() {
         let min = this.min
         let max = this.max
-        if (min && max) {
+        if (min !== null && max !== null) {
             if (min !== max) {
                 return `${min}..${max}`
             } else {
                 return `${min}`
             }
-        } else if (min) {
+        } else if (min !== null ) {
             return `${min}..`
-        } else if (max) {
+        } else if (max !== null ) {
             return `..${max}`
         } else {
             return ''
