@@ -169,7 +169,7 @@ export default class Updater {
             case 'slot':
                 return Updater.upSlot(arg)
             case 'sound':
-                return arg
+                return Updater.upSound(arg)
             case 'source':
                 return arg
             case 'string':
@@ -703,6 +703,16 @@ export default class Updater {
 
     public static upSlot(input: string) {
         return input.slice(5)
+    }
+
+    public static upSound(input: string) {
+        if (input.slice(0, 10) !== "minecraft:") {
+            input = `minecraft:${input}`
+        }
+        input = input.replace('minecraft:entity.endermen', 'minecraft:entity.enderman')
+        input = input.replace('minecraft:entity.enderdragon', 'minecraft:entity.ender_dragon')
+
+        return input
     }
 
     public static upTeamOption(input: string) {
