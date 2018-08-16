@@ -5,14 +5,16 @@ import { getNbt, escape } from '../../utils/utils'
 import { Number_Number_String_StringArray } from './mapping';
 
 export class StdBlock {
+    private isBlockTag: boolean
     private name: string
     private states: string[]
     private nbt: NbtCompound
 
-    public constructor(name: string, states: string[], nbt: NbtCompound) {
+    public constructor(name: string, states: string[], nbt: NbtCompound, isBlockTag: boolean = false) {
         this.name = name
         this.states = states.sort()
         this.nbt = nbt
+        this.isBlockTag = isBlockTag
     }
 
     public getName() {
@@ -54,6 +56,10 @@ export class StdBlock {
     public hasNbt() {
         return this.nbt.toString() !== '{}'
     }
+
+    public hasBlockTag() {
+        return this.isBlockTag
+    }
 }
 
 /**
@@ -64,6 +70,8 @@ export default class Blocks {
         let ansName: string
         let ansStates: string[]
         let ansNbt: NbtCompound
+        let isRemovingStates = false // For metadata = -1.
+
         if (id && !name && !state) {
             if (!data) {
                 data = 0
@@ -106,9 +114,25 @@ export default class Blocks {
                     throw `Unknown block ID: '${name}'.`
                 }
             } else if (data && !state) {
+                if (data === -1) {
+                    switch (name) {
+                        case 'minecraft:wool':
+                            return new StdBlock('#minecraft:wools', [], getNbt(nbt), true)
+                        case 'minecraft:planks':
+                            return new StdBlock('#minecraft:planks', [], getNbt(nbt), true)
+                        default:
+                            data = 0
+                            isRemovingStates = true
+                            break
+                    }
+                }
                 const arr = Blocks.ID_Data_Name_States.find(v => v[1] === data && v[2] === name)
                 if (arr) {
-                    ansStates = arr[3]
+                    if (isRemovingStates) {
+                        ansStates = []
+                    } else {
+                        ansStates = arr[3]
+                    }
                 } else {
                     throw `Unknown block ID: '${name}:${data}'.`
                 }
@@ -130,6 +154,10 @@ export default class Blocks {
         let ansName = std.getName()
         let ansStates = std.getStates()
         let ansNbt = std.getNbt()
+        
+        if (std.hasBlockTag()) {
+            return std
+        }
 
         const arr = Blocks.Nominal112_Nominal113.find(v => v.indexOf(std.getNominal()) >= 1)
         if (arr) {
