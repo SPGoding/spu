@@ -53,7 +53,7 @@ $(document).ready(() => {
             result = ''
         } finally {
             $('#info').hide()
-            $('#output').html(result)
+            $('#output').val(result)
             $(`#${frame}`).html(msg)
             $(`#${frame}`).show()
         }
