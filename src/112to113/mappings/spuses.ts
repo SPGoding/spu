@@ -204,7 +204,10 @@ export default class Spuses {
             'scoreboard players test %entity %word %num_or_star %num_or_star',
             'execute if entity %0$addScbMinToEntity%1%2$addScbMaxToEntity%1%3'
         ],
-
+        [   
+            'scoreboard players operation %entity %word %word %entity %word', 
+            'scoreboard players operation %0 %1 %2 %3 %4'
+        ],
         ['scoreboard players %literal %entity %word %num', 'scoreboard players %0 %1 %2 %3'],
         [
             'scoreboard players %literal %entity %word %num %entity_nbt',
