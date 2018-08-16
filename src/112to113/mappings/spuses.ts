@@ -117,6 +117,10 @@ export default class Spuses {
             'fill %0 %1 %2$addDataOrStateAndNbtToBlock%3%5 %4'
         ],
         [
+            'fill %vec_3 %vec_3 %block %block_metadata_or_state replace %block',
+            'fill %0 %1 %2$addDataOrStateToBlock%3 replace %4'
+        ],
+        [
             'fill %vec_3 %vec_3 %block %block_metadata_or_state replace %block %block_metadata_or_state',
             'fill %0 %1 %2$addDataOrStateToBlock%3 replace %4$addDataOrStateToBlock%5'
         ],

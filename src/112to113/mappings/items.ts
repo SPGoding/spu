@@ -201,7 +201,7 @@ export default class Items {
         if (Items.DamagableItems.indexOf(ansName) !== -1 && data !== 0) {
             ansTag.set('Damage', new NbtShort(data))
         } else if (Items.MapItems.indexOf(ansName) !== -1 && data !== 0) {
-            ansTag.set('Map', new NbtInt(data))
+            ansTag.set('map', new NbtInt(data))
         } else {
             const arr = Items.Nominal112_NominalID113.find(v => v[0] === std.getNominal())
             if (arr) {
