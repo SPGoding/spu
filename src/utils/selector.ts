@@ -2,6 +2,7 @@ import CharReader from './char_reader'
 import Updater from '../112to113/updater'
 import { isWhiteSpace, getNbt } from './utils'
 import { NbtCompound } from './nbt/nbt'
+import Entities from '../112to113/mappings/entities';
 
 /**
  * Represent a target selector.
@@ -200,7 +201,7 @@ export default class Selector {
                                 this.variable = 'e'
                                 this.sort = 'random'
                             }
-                            this.type.push(val)
+                            this.type.push(Entities.to113(val))
                             break
                         case 'c':
                             if (Number(val) >= 0) {

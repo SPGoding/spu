@@ -96,7 +96,7 @@ export default class Checker {
                     throw `Unknown argument type: ${spusArg.slice(1)}`
             }
         } else {
-            return cmdArg.toLowerCase() === spusArg.toLowerCase()
+            return cmdArg.toLowerCase() === spusArg.toLowerCase().replace(/\\%/g, '%')
         }
     }
 
