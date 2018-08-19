@@ -227,7 +227,7 @@ export default class Selector {
                             this.level.setMax(Number(val))
                             break
                         case 'lm':
-                            this.level.setMax(Number(val))
+                            this.level.setMin(Number(val))
                             break
                         case 'r':
                             this.distance.setMax(Number(val))
