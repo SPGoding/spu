@@ -50,7 +50,7 @@ export default class Updater {
     }
     
     public static upLine(input: string) {
-        if (input.charAt(0) === '#' || /^\s*$/.test(input)) {
+        if (/^\s*$/.test(input)) {
             return input
         } else {
             return Updater.upCommand(input)
@@ -85,8 +85,6 @@ export default class Updater {
 
     private static upArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
-            case 'entity':
-                throw `qwq`
             case 'string':
                 return arg
             default:

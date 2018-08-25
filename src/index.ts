@@ -1,16 +1,19 @@
+import Updater18To111 from './18to111/updater'
+import Updater111To112 from './111to112/updater'
 import Updater112To113 from './112to113/updater'
-import Updater113To1131 from './113to1131/updater'
 
 function $(id: string) {
     return <HTMLElement>document.getElementById(id)
 }
 
+let from_18 = $('from-18')
+let from_111 = $('from-111')
 let from_112 = $('from-112')
-let from_113 = $('from-113')
+let to_111 = $('to-111')
+let to_112 = $('to-112')
 let to_113 = $('to-113')
-let to_1131 = $('to-1131')
-let from: '1.12' | '1.13' = '1.12'
-let to: '1.13' | '1.13.1' = '1.13.1'
+let from: '1.8' | '1.11' | '1.12' = '1.12'
+let to: '1.11' | '1.12' | '1.13' = '1.13'
 
 $('warn').style.display = 'none'
 $('error').style.display = 'none'
@@ -36,14 +39,26 @@ $('button').onclick = () => {
             for (let line of lines) {
                 number = lines.indexOf(line)
 
-                if (from === '1.12' && to === '1.13') {
-                    line = Updater112To113.upLine(line, false)
-                } else if (from === '1.13' && to === '1.13.1') {
-                    line = Updater113To1131.upLine(line)
-                } else if (from === '1.12' && to === '1.13.1') {
-                    line = Updater113To1131.upLine(
-                        Updater112To113.upLine(line, false)
+                if (from === '1.8' && to === '1.11') {
+                    line = Updater18To111.upLine(line)
+                } else if (from === '1.8' && to === '1.12') {
+                    line = Updater111To112.upLine(
+                        Updater111To112.upLine(line)
                     )
+                } else if (from === '1.8' && to === '1.13') {
+                    line = Updater112To113.upLine(
+                        Updater111To112.upLine(
+                            Updater18To111.upLine(line)
+                        ), false
+                    )
+                } else if (from === '1.11' && to === '1.12') {
+                    line = Updater111To112.upLine(line)
+                } else if (from === '1.11' && to === '1.13') {
+                    line = Updater112To113.upLine(
+                        Updater111To112.upLine(line), false
+                    )
+                } else if (from === '1.12' && to === '1.13') {
+                    line = Updater112To113.upLine(line, false)
                 }
 
                 if (line.indexOf('!>') !== -1) {
@@ -65,29 +80,51 @@ $('button').onclick = () => {
         result = ''
     } finally {
         $('info').style.display = 'none'
-        ;(<HTMLInputElement>$('output')).value = result
+            ; (<HTMLInputElement>$('output')).value = result
         $(frame).innerHTML = msg
         $(frame).style.display = ''
     }
 }
 
+function resetButtons(type: 'from' | 'to') {
+    if (type === 'from') {
+        from_18.classList.replace('btn-active', 'btn-default')
+        from_111.classList.replace('btn-active', 'btn-default')
+        from_112.classList.replace('btn-active', 'btn-default')
+    } else {
+        to_111.classList.replace('btn-active', 'btn-default')
+        to_112.classList.replace('btn-active', 'btn-default')
+        to_113.classList.replace('btn-active', 'btn-default')
+    }
+}
+
+from_18.onclick = () => {
+    resetButtons('from')
+    from_18.classList.replace('btn-default', 'btn-active')
+    from = '1.8'
+}
+from_111.onclick = () => {
+    resetButtons('from')
+    from_111.classList.replace('btn-default', 'btn-active')
+    from = '1.11'
+}
 from_112.onclick = () => {
+    resetButtons('from')
     from_112.classList.replace('btn-default', 'btn-active')
-    from_113.classList.replace('btn-active', 'btn-default')
     from = '1.12'
 }
-from_113.onclick = () => {
-    from_112.classList.replace('btn-active', 'btn-default')
-    from_113.classList.replace('btn-default', 'btn-active')
-    from = '1.13'
+to_111.onclick = () => {
+    resetButtons('to')
+    to_111.classList.replace('btn-default', 'btn-active')
+    to = '1.11'
+}
+to_112.onclick = () => {
+    resetButtons('to')
+    to_112.classList.replace('btn-default', 'btn-active')
+    to = '1.12'
 }
 to_113.onclick = () => {
+    resetButtons('to')
     to_113.classList.replace('btn-default', 'btn-active')
-    to_1131.classList.replace('btn-active', 'btn-default')
     to = '1.13'
-}
-to_1131.onclick = () => {
-    to_113.classList.replace('btn-active', 'btn-default')
-    to_1131.classList.replace('btn-default', 'btn-active')
-    to = '1.13.1'
 }
