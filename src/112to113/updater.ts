@@ -627,7 +627,7 @@ export default class Updater {
                 json.extra = JSON.parse(Updater.upJson(JSON.stringify(json.extra)))
             }
 
-            return JSON.stringify(json)
+            return JSON.stringify(json).replace(/§/g, '\\u00a7')
         }
     }
 
