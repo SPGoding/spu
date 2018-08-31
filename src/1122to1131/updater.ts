@@ -63,7 +63,7 @@ export default class Updater {
         }
     }
 
-    public static upLine(input: string, positionCorrect: boolean) {
+    public static upLine(input: string, positionCorrect: boolean = false) {
         if (input.charAt(0) === '#' || /^\s*$/.test(input)) {
             return input
         } else {
@@ -71,7 +71,7 @@ export default class Updater {
         }
     }
 
-    public static upCommand(input: string, positionCorrect: boolean) {
+    public static upCommand(input: string, positionCorrect: boolean = false) {
         let slash = false
 
         if (input.slice(0, 1) === '/') {
@@ -130,6 +130,8 @@ export default class Updater {
                 return Updater.upEnch(arg)
             case 'entity_type':
                 return Updater.upEntityType(arg)
+            case 'execute_command':
+                return Updater.upCommand(arg)
             case 'func':
                 return arg
             case 'gamemode':

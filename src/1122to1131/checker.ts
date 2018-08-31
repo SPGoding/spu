@@ -39,6 +39,8 @@ export default class Checker {
                     return Checker.isNbt(cmdArg)
                 case 'entity_type':
                     return Checker.isStringID(cmdArg)
+                case 'execute_command':
+                    return Checker.isExecuteCommand(cmdArg)
                 case 'func':
                     return Checker.isResourceLocation(cmdArg)
                 case 'gamemode':
@@ -256,8 +258,11 @@ export default class Checker {
     }
 
     public static isStringID(input: string) {
-        // FIXME: If you want deal with 'say'.
         return /^(\w+:)?[a-z_]+$/.test(input)
+    }
+
+    public static isExecuteCommand(input: string) {
+        return input.split(/ /g)[0] === 'execute'
     }
 
     public static isResourceLocation(input: string) {

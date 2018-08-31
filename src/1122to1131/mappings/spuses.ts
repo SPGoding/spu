@@ -18,6 +18,7 @@ export default class Spuses {
      * %entity
      * %entity_nbt
      * %entity_type
+     * %execute_command
      * %func
      * %gamemode
      * %ip
@@ -99,6 +100,22 @@ export default class Spuses {
         ['enchant %entity %ench', 'enchant %0 %1'],
         ['enchant %entity %ench %num', 'enchant %0 %1 %2'],
         ['entitydata %entity %entity_nbt', 'execute as %0 run data merge entity @s %1'],
+        [
+            'execute %entity ~ ~ ~ %execute_command', 
+            'execute as %0 at @s run %1 !> The execution number of nested execute in 1.13 may be different from that in 1.12.'
+        ],
+        [
+            'execute %entity %vec_3 %execute_command', 
+            'execute as %0 at @s positioned %1 run %2 !> The execution number of nested execute in 1.13 may be different from that in 1.12.'
+        ],
+        [
+            'execute %entity ~ ~ ~ detect %vec_3 %block %block_metadata_or_state %execute_command',
+            'execute as %0 at @s if block %1 %2$addDataOrStateToBlock%3 run %4 !> The execution number of nested execute in 1.13 may be different from that in 1.12.'
+        ],
+        [
+            'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %execute_command',
+            'execute as %0 at @s positioned %1 if block %2 %3$addDataOrStateToBlock%4 run %5 !> The execution number of nested execute in 1.13 may be different from that in 1.12.'
+        ],
         ['execute %entity ~ ~ ~ %command', 'execute as %0 at @s run %1'],
         ['execute %entity %vec_3 %command', 'execute as %0 at @s positioned %1 run %2'],
         [

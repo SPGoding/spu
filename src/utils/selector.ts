@@ -1,8 +1,8 @@
 import CharReader from './char_reader'
-import Updater from '../112to113/updater'
+import Updater from '../1122to1131/updater'
 import { isWhiteSpace, getNbt } from './utils'
 import { NbtCompound } from './nbt/nbt'
-import Entities from '../112to113/mappings/entities';
+import Entities from '../1122to1131/mappings/entities';
 
 /**
  * Represent a target selector.
@@ -200,6 +200,9 @@ export default class Selector {
                             if (this.variable === 'r') {
                                 this.variable = 'e'
                                 this.sort = 'random'
+                                if (this.limit !== undefined) {
+                                    this.limit = 1
+                                }
                             }
                             this.type.push(Entities.to113(val))
                             break

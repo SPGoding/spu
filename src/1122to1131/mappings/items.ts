@@ -12,7 +12,6 @@ export class StdItem1_12 {
     private tag: NbtCompound
     private count: NbtValue | undefined
     private slot: NbtValue | undefined
-    private empty: boolean
 
     public constructor(name: string, data: number, tag: NbtCompound, count?: NbtValue, slot?: NbtValue) {
         if (name.slice(0, 10) !== 'minecraft:') {
@@ -26,14 +25,6 @@ export class StdItem1_12 {
         this.tag = tag
         this.count = count
         this.slot = slot
-    }
-
-    public setEmpty() {
-        this.empty = true
-    }
-
-    public isEmpty() {
-        return this.empty
     }
 
     public getName() {
@@ -57,9 +48,6 @@ export class StdItem1_12 {
     }
 
     public getNominal() {
-        if (this.empty) {
-            return ''
-        }
         return `${this.name}.${this.data}`
     }
 }
@@ -69,7 +57,6 @@ export class StdItem1_13 {
     private tag: NbtCompound
     private count: NbtValue | undefined
     private slot: NbtValue | undefined
-    private empty: boolean
 
     public constructor(name: string, nbt: NbtCompound, count?: NbtValue, slot?: NbtValue) {
         if (name.slice(0, 10) !== 'minecraft:') {
@@ -79,10 +66,6 @@ export class StdItem1_13 {
         this.tag = nbt
         this.count = count
         this.slot = slot
-    }
-
-    public setEmpty() {
-        this.empty = true
     }
 
     public getName() {
@@ -104,18 +87,16 @@ export class StdItem1_13 {
     public getNbt() {
         let nbt = new NbtCompound()
 
-        if (this.empty) {
-            return nbt
+        if (this.name !== 'minecraft:') {
+            nbt.set('id', new NbtString(this.name))
         }
-
-        nbt.set('id', new NbtString(this.name))
         if (this.hasTag()) {
             nbt.set('tag', this.tag)
         }
-        if (this.count) {
+        if (this.count !== undefined) {
             nbt.set('Count', this.count)
         }
-        if (this.slot) {
+        if (this.slot !== undefined) {
             nbt.set('Slot', this.slot)
         }
 
@@ -160,18 +141,20 @@ export default class Items {
             ansCount = count
             ansSlot = slot
 
-            if (id instanceof NbtString && (data === undefined || data instanceof NbtShort || data instanceof NbtInt)) {
-                if (tagC instanceof NbtCompound) {
-                    ansTag = tagC
-                } else {
-                    ansTag = new NbtCompound()
-                }
-                ansName = id.get()
-                ansData = data ? data.get() : 0
+            if (tagC instanceof NbtCompound) {
+                ansTag = tagC
             } else {
-                let ans = new StdItem1_12('', 0, new NbtCompound())
-                ans.setEmpty()
-                return ans
+                ansTag = new NbtCompound()
+            }
+            if (id instanceof NbtString) {
+                ansName = id.get()
+            } else {
+                ansName = 'minecraft:'
+            }
+            if (data instanceof NbtInt || data instanceof NbtByte) {
+                ansData = data.get()
+            } else {
+                ansData = 0
             }
         } else {
             throw `Argument Error! Used ${id ? 'id, ' : ''}${name ? 'name, ' : ''}${data ? 'data, ' : ''}${
@@ -187,11 +170,6 @@ export default class Items {
     }
 
     public static to113(std: StdItem1_12) {
-        if (std.isEmpty()) {
-            let ans = new StdItem1_13('', new NbtCompound())
-            ans.setEmpty()
-            return ans
-        }
         let ansName = std.getName()
         let ansCount = std.getCount()
         let ansSlot = std.getSlot()
