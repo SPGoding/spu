@@ -200,7 +200,7 @@ export default class Selector {
                             if (this.variable === 'r') {
                                 this.variable = 'e'
                                 this.sort = 'random'
-                                if (this.limit !== undefined) {
+                                if (this.limit === undefined) {
                                     this.limit = 1
                                 }
                             }
