@@ -99,6 +99,7 @@ export default class Spuses {
         ['effect %entity %effect %num %num %bool', 'effect give %0 %1 %2 %3 %4'],
         ['enchant %entity %ench', 'enchant %0 %1'],
         ['enchant %entity %ench %num', 'enchant %0 %1 %2'],
+        ['entitydata %entity {}', 'data get entity %0$setLimitOfSelector'],
         ['entitydata %entity %entity_nbt', 'execute as %0 run data merge entity @s %1'],
         [
             'execute %entity ~ ~ ~ %execute_command', 
