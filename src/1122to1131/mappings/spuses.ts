@@ -99,7 +99,7 @@ export default class Spuses {
         ['effect %entity %effect %num %num %bool', 'effect give %0 %1 %2 %3 %4'],
         ['enchant %entity %ench', 'enchant %0 %1'],
         ['enchant %entity %ench %num', 'enchant %0 %1 %2'],
-        ['entitydata %entity {}', 'data get entity %0$setLimitOfSelector'],
+        ['entitydata %entity {}', 'execute as %0 run data get entity @s'],
         ['entitydata %entity %entity_nbt', 'execute as %0 run data merge entity @s %1'],
         [
             'execute %entity ~ ~ ~ %execute_command', 
@@ -156,6 +156,7 @@ export default class Spuses {
         ['give %entity %item %num', 'give %0 %1$fuckItemItself %2'],
         ['give %entity %item %num %item_data', 'give %0 %1$addDataToItem%3 %2'],
         ['give %entity %item %num %item_data %item_tag_nbt', 'give %0 %1$addDataAndNbtToItem%3%4 %2'],
+        ['help %string', '# help %0 !> Can\'t update help commands!'],
         ['kick %word', 'kick %0'],
         ['kick %word %string', 'kick %0 %1'],
         ['kill', 'kill @s'],

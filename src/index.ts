@@ -58,7 +58,7 @@ $('button').onclick = () => {
                 if (line.indexOf(' !> ') !== -1) {
                     frame = 'warning'
                     msg += `Line #${number + 1}: ${line.slice(line.indexOf(' !> ') + 4).replace(/ !> /g, '<br />')}<br />`
-                    line = line.slice(0, line.indexOf(' !> ') - 1)
+                    line = line.slice(0, line.indexOf(' !> '))
                 }
                 result += line + '\n'
             }
