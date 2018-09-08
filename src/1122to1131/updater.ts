@@ -89,7 +89,7 @@ export default class Updater {
                     if (positionCorrect) {
                         return `execute positioned 0.0 0.0 0.0 run ${result}`
                     } else {
-                        if (slash) {
+                        if (slash && result.slice(0, 1) !== '#') {
                             result = '/' + result
                         }
                         return result
