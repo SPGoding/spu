@@ -35,7 +35,7 @@ export class Parser {
     /**
      * @returns {pos: the index of the closed square, value: parsed Value object}
      */
-    private parseCompound(tokens: Token[], pos: number): ParseResult {
+    private parseCompound(tokens: Token[], pos: number, version: 'before 1.12' | 'after 1.12' = 'after 1.12'): ParseResult {
         let expectedTypes: TokenType[]
         let state: 'key' | 'val' = 'key'
         let key = ''
@@ -90,7 +90,7 @@ export class Parser {
                     case 'BeginList':
                     case 'BeginLongArray':
                         expectedTypes = ['Comma', 'EndCompound']
-                        const parseResult = this.parseValue(tokens, pos)
+                        const parseResult = this.parseValue(tokens, pos, version)
                         val = parseResult.value
                         pos = parseResult.pos
                         result.set(key, val)
@@ -121,10 +121,10 @@ export class Parser {
         throw 'Parsing compound error!'
     }
 
-    private parseList(tokens: Token[], pos: number): ParseResult {
+    private parseList(tokens: Token[], pos: number, version: 'before 1.12' | 'after 1.12'): ParseResult {
         let expectedTypes: TokenType[]
         let resultValue = new NbtList()
-        let state: 'begin' | 'value' = 'begin'
+        let state: 'begin' | 'item' = 'begin'
         let val: NbtValue
 
         expectedTypes = ['BeginList']
@@ -146,10 +146,10 @@ export class Parser {
                                 'BeginList',
                                 'BeginLongArray'
                             ]
-                            state = 'value'
-                        } else if (state === 'value') {
+                            state = 'item'
+                        } else if (state === 'item') {
                             expectedTypes = ['Comma', 'EndListOrArray']
-                            const parseResult = this.parseList(tokens, pos)
+                            const parseResult = this.parseList(tokens, pos, version)
                             val = parseResult.value
                             pos = parseResult.pos
 
@@ -158,19 +158,37 @@ export class Parser {
                         break
                     case 'EndListOrArray':
                         return { value: resultValue, pos: pos }
-                    case 'Thing':
+                    case 'Thing': {
+                        if (this.parseThing(token) instanceof NbtInt) {
+                            if (tokens[pos+1].type === 'Colon') {
+                                if (version === 'before 1.12') {
+                                    pos += 1
+                                    continue
+                                } else {
+                                    throw `Unexpected token in ${tokens}.`
+                                }
+                            }
+                        }
+                        expectedTypes = ['Comma', 'EndListOrArray']
+                        const parseResult = this.parseValue(tokens, pos, version)
+                        val = parseResult.value
+                        pos = parseResult.pos
+                        resultValue.add(val)
+                        break
+                    }
                     case 'String':
                     case 'BeginByteArray':
                     case 'BeginIntArray':
                     case 'BeginList':
                     case 'BeginLongArray':
-                    case 'BeginCompound':
+                    case 'BeginCompound': {
                         expectedTypes = ['Comma', 'EndListOrArray']
-                        const parseResult = this.parseValue(tokens, pos)
+                        const parseResult = this.parseValue(tokens, pos, version)
                         val = parseResult.value
                         pos = parseResult.pos
                         resultValue.add(val)
                         break
+                    }
                     case 'Comma':
                         expectedTypes = [
                             'EndListOrArray',
@@ -317,7 +335,7 @@ export class Parser {
      * @param tokens A list of tokens.
      * @param pos The beginning index.
      */
-    private parseValue(tokens: Token[], pos: number): ParseResult {
+    private parseValue(tokens: Token[], pos: number, version: 'before 1.12' | 'after 1.12'): ParseResult {
         let token = tokens[pos]
         let val: NbtValue
         let parseResult: ParseResult
@@ -342,7 +360,7 @@ export class Parser {
                 parseResult = this.parseIntArray(tokens, pos)
                 break
             case 'BeginList':
-                parseResult = this.parseList(tokens, pos)
+                parseResult = this.parseList(tokens, pos, version)
                 break
             case 'BeginLongArray':
                 parseResult = this.parseLongArray(tokens, pos)

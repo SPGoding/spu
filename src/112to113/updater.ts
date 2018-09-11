@@ -1,5 +1,5 @@
 import ArgumentReader from '../utils/argument_reader'
-import Selector from '../utils/selector'
+import Selector from './selector'
 import Spuses from './mappings/spuses'
 import SpuScript from '../spu_script'
 import Checker from './checker'

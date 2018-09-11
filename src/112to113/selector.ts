@@ -1,8 +1,8 @@
-import CharReader from './char_reader'
-import Updater from '../112to113/updater'
-import { isWhiteSpace, getNbt } from './utils'
-import { NbtCompound } from './nbt/nbt'
-import Entities from '../112to113/mappings/entities';
+import CharReader from '../utils/char_reader'
+import Updater from './updater'
+import { isWhiteSpace, getNbt } from '../utils/utils'
+import { NbtCompound } from '../utils/nbt/nbt'
+import Entities from './mappings/entities';
 
 /**
  * Represent a target selector.

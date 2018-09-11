@@ -1,6 +1,6 @@
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
-import Selector from './utils/selector'
+import Selector from './112to113/selector'
 import Items from './112to113/mappings/items'
 import { isNumeric } from './utils/utils'
 import Blocks from './112to113/mappings/blocks'

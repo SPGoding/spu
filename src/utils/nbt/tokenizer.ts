@@ -6,20 +6,20 @@ import { isWhiteSpace, isNumeric } from '../utils'
  * @author SPGoding
  */
 export class Tokenizer {
-    public tokenize(nbt: string) {
+    public tokenize(nbt: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
         let tokens: Token[] = []
 
-        let result = this.readAToken(nbt, 0)
+        let result = this.readAToken(nbt, 0, version)
         tokens.push(result.token)
         while (result.token.type !== 'EndOfDocument') {
-            result = this.readAToken(nbt, result.pos)
+            result = this.readAToken(nbt, result.pos, version)
             tokens.push(result.token)
         }
 
         return tokens
     }
 
-    private readAToken(nbt: string, pos: number): ReadTokenResult {
+    private readAToken(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadTokenResult {
         pos = this.skipWhiteSpace(nbt, pos)
         switch (nbt.substr(pos, 1)) {
             case '{':
@@ -61,7 +61,7 @@ export class Tokenizer {
             }
             default: {
                 // Unquoted.
-                const readResult = this.readUnquoted(nbt, pos)
+                const readResult = this.readUnquoted(nbt, pos, version)
                 return {
                     token: { type: 'Thing', value: readResult.str },
                     pos: readResult.pos + 1
@@ -96,12 +96,14 @@ export class Tokenizer {
         return { str: str, pos: pos }
     }
 
-    private readUnquoted(nbt: string, pos: number): ReadStringResult {
+    private readUnquoted(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadStringResult {
         let str = ''
 
         while ([',', ']', '}', ' ', ':', ''].indexOf(nbt.substr(pos, 1)) === -1) {
             const char = nbt.substr(pos, 1)
-            if (this.charPattern.test(char)) {
+            if (version === 'before 1.12') {
+                str += char
+            } else if (version === 'after 1.12' && /[a-zA-Z0-9\._+\-]/.test(char)) {
                 str += char
             } else {
                 throw `Illegal unquoted char at ${pos} in '${nbt}'.`
@@ -113,8 +115,6 @@ export class Tokenizer {
 
         return { str: str, pos: pos }
     }
-
-    private charPattern = /[a-zA-Z0-9\._+\-]/
 }
 
 export type TokenType =
