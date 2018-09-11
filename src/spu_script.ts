@@ -1,9 +1,9 @@
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
 import Selector from './utils/selector'
-import Items from './1122to1131/mappings/items'
+import Items from './112to113/mappings/items'
 import { isNumeric } from './utils/utils'
-import Blocks from './1122to1131/mappings/blocks'
+import Blocks from './112to113/mappings/blocks'
 
 /**
  * Represents a spu script.
