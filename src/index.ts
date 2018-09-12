@@ -1,20 +1,22 @@
 import Updater18To111 from './18to111/updater'
-import Updater111To1122 from './111to112/updater'
-import Updater112To1131 from './112to113/updater'
+import Updater19To111 from './19to111/updater'
+import Updater111To112 from './111to112/updater'
+import Updater112To113 from './112to113/updater'
 
 function $(id: string) {
     return <HTMLElement>document.getElementById(id)
 }
 
 let from_18 = $('from-18')
+let from_19 = $('from-19')
 let from_111 = $('from-111')
 let from_112 = $('from-112')
 let to_111 = $('to-111')
 let to_112 = $('to-112')
 let to_113 = $('to-113')
 let info = $('info')
-let from: '18' | '111' | '112' = '112'
-let to: '111' | '1122' | '113' = '113'
+let from: '18' | '19' | '111' | '112' = '112'
+let to: '111' | '112' | '113' = '113'
 
 info.style.display = 'none'
 
@@ -33,26 +35,26 @@ $('button').onclick = () => {
             for (let line of lines) {
                 number = lines.indexOf(line)
 
-                if (from === '18' && to === '111') {
-                    line = Updater18To111.upLine(line)
-                } else if (from === '18' && to === '1122') {
-                    line = Updater111To1122.upLine(
-                        Updater111To1122.upLine(line)
+                if (from === '19' && to === '111') {
+                    line = Updater19To111.upLine(line)
+                } else if (from === '19' && to === '112') {
+                    line = Updater111To112.upLine(
+                        Updater19To111.upLine(line)
                     )
-                } else if (from === '18' && to === '113') {
-                    line = Updater112To1131.upLine(
-                        Updater111To1122.upLine(
-                            Updater18To111.upLine(line)
+                } else if (from === '19' && to === '113') {
+                    line = Updater112To113.upLine(
+                        Updater111To112.upLine(
+                            Updater19To111.upLine(line)
                         )
                     )
-                } else if (from === '111' && to === '1122') {
-                    line = Updater111To1122.upLine(line)
+                } else if (from === '111' && to === '112') {
+                    line = Updater111To112.upLine(line)
                 } else if (from === '111' && to === '113') {
-                    line = Updater112To1131.upLine(
-                        Updater111To1122.upLine(line)
+                    line = Updater112To113.upLine(
+                        Updater111To112.upLine(line)
                     )
                 } else if (from === '112' && to === '113') {
-                    line = Updater112To1131.upLine(line)
+                    line = Updater112To113.upLine(line)
                 }
 
                 if (line.indexOf(' !> ') !== -1) {
@@ -84,6 +86,7 @@ $('button').onclick = () => {
 function resetButtons(type: 'from' | 'to') {
     if (type === 'from') {
         from_18.classList.replace('btn-active', 'btn-default')
+        from_19.classList.replace('btn-active', 'btn-default')
         from_111.classList.replace('btn-active', 'btn-default')
         from_112.classList.replace('btn-active', 'btn-default')
     } else {
@@ -97,6 +100,11 @@ from_18.onclick = () => {
     resetButtons('from')
     from_18.classList.replace('btn-default', 'btn-active')
     from = '18'
+}
+from_19.onclick = () => {
+    resetButtons('from')
+    from_19.classList.replace('btn-default', 'btn-active')
+    from = '19'
 }
 from_111.onclick = () => {
     resetButtons('from')
@@ -116,7 +124,7 @@ to_111.onclick = () => {
 to_112.onclick = () => {
     resetButtons('to')
     to_112.classList.replace('btn-default', 'btn-active')
-    to = '1122'
+    to = '112'
 }
 to_113.onclick = () => {
     resetButtons('to')
