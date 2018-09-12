@@ -23,6 +23,7 @@ export default class Checker {
                     return Checker.isNbt(cmdArg)
                 case 'bool':
                     return Checker.isBool(cmdArg)
+                case 'no_slash_command':
                 case 'command':
                     return Checker.isCommand(cmdArg)
                 case 'difficulty':
@@ -262,7 +263,7 @@ export default class Checker {
     }
 
     public static isExecuteCommand(input: string) {
-        return input.split(/ /g)[0] === 'execute'
+        return input.slice(0, 7) === 'execute' || input.slice(0, 8) === '/execute'
     }
 
     public static isResourceLocation(input: string) {

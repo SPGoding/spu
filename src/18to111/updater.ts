@@ -1,7 +1,7 @@
 import Spuses from "./mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
-import Checker from "./checker";
+import Checker from "../utils/checker";
 
 export default class Updater {
     /**

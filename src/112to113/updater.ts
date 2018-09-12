@@ -71,7 +71,7 @@ export default class Updater {
         }
     }
 
-    public static upCommand(input: string, positionCorrect: boolean = false) {
+    public static upCommand(input: string, positionCorrect: boolean = false, allowSlash: boolean = true) {
         let slash = false
 
         if (input.slice(0, 1) === '/') {
@@ -89,7 +89,7 @@ export default class Updater {
                     if (positionCorrect) {
                         return `execute positioned 0.0 0.0 0.0 run ${result}`
                     } else {
-                        if (slash && result.slice(0, 1) !== '#') {
+                        if (slash && allowSlash && result.slice(0, 1) !== '#') {
                             result = '/' + result
                         }
                         return result
@@ -131,7 +131,7 @@ export default class Updater {
             case 'entity_type':
                 return Updater.upEntityType(arg)
             case 'execute_command':
-                return Updater.upCommand(arg)
+                return Updater.upCommand(arg, false, false)
             case 'func':
                 return arg
             case 'gamemode':
@@ -158,6 +158,8 @@ export default class Updater {
                 return arg.slice(0, -1)
             case 'num_or_star':
                 return arg
+            case 'no_slash_command':
+                return Updater.upCommand(arg, false, false)
             case 'particle':
                 return Updater.upParticle(arg)
             case 'pre_json':

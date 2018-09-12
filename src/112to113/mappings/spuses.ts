@@ -29,6 +29,7 @@ export default class Spuses {
      * %item_tag_nbt
      * %json
      * %literal
+     * %no_slash_command
      * %num
      * %num_l
      * %num_or_star
@@ -117,14 +118,14 @@ export default class Spuses {
             'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %execute_command',
             'execute as %0 at @s positioned %1 if block %2 %3$addDataOrStateToBlock%4 run %5 !> The execution number of nested execute in 1.13 may be different from that in 1.12.'
         ],
-        ['execute %entity ~ ~ ~ %command', 'execute as %0 at @s run %1'],
-        ['execute %entity %vec_3 %command', 'execute as %0 at @s positioned %1 run %2'],
+        ['execute %entity ~ ~ ~ %no_slash_command', 'execute as %0 at @s run %1'],
+        ['execute %entity %vec_3 %no_slash_command', 'execute as %0 at @s positioned %1 run %2'],
         [
-            'execute %entity ~ ~ ~ detect %vec_3 %block %block_metadata_or_state %command',
+            'execute %entity ~ ~ ~ detect %vec_3 %block %block_metadata_or_state %no_slash_command',
             'execute as %0 at @s if block %1 %2$addDataOrStateToBlock%3 run %4'
         ],
         [
-            'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %command',
+            'execute %entity %vec_3 detect %vec_3 %block %block_metadata_or_state %no_slash_command',
             'execute as %0 at @s positioned %1 if block %2 %3$addDataOrStateToBlock%4 run %5'
         ],
         ['fill %vec_3 %vec_3 %block', 'fill %0 %1 %2$fuckBlockItself'],
