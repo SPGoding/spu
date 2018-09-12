@@ -1,9 +1,9 @@
-import Updater from './updater'
-import Selector from './selector'
-import Spuses from './mappings/spuses'
-import { isNumeric } from '../utils/utils'
-import { Tokenizer as NbtTokenizer } from '../utils/nbt/tokenizer'
-import { Parser as NbtParser } from '../utils/nbt/parser'
+import Updater from '../112to113/updater'
+import Selector from '../112to113/selector'
+import Spuses from '../112to113/mappings/spuses'
+import { isNumeric } from './utils'
+import { Tokenizer as NbtTokenizer } from './nbt/tokenizer'
+import { Parser as NbtParser } from './nbt/parser'
 
 export default class Checker {
     public static isArgumentMatch(cmdArg: string, spusArg: string) {
