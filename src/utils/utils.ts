@@ -16,11 +16,11 @@ export function isWhiteSpace(char: string) {
 /**
  * Get an NbtCompound object from a string.
  */
-export function getNbt(str: string) {
+export function getNbt(str: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
     const tokenizer = new NbtTokenizer()
-    const tokens = tokenizer.tokenize(str)
+    const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
-    const nbt = parser.parse(tokens)
+    const nbt = parser.parse(tokens, version)
     return nbt
 }
 

@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import Checker from '../../utils/checker'
+import Checker from '../checker'
 
 describe('Checker tests', () => {
     describe('isArgumentMatch() tests', () => {

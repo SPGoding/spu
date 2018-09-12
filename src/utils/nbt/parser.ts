@@ -22,8 +22,8 @@ import {
  * @author SPGoding
  */
 export class Parser {
-    public parse(tokens: Token[]) {
-        const result = this.parseCompound(tokens, 0)
+    public parse(tokens: Token[], version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+        const result = this.parseCompound(tokens, 0, version)
 
         if (tokens[result.pos + 1].type === 'EndOfDocument') {
             return <NbtCompound>result.value
@@ -35,7 +35,7 @@ export class Parser {
     /**
      * @returns {pos: the index of the closed square, value: parsed Value object}
      */
-    private parseCompound(tokens: Token[], pos: number, version: 'before 1.12' | 'after 1.12' = 'after 1.12'): ParseResult {
+    private parseCompound(tokens: Token[], pos: number, version: 'before 1.12' | 'after 1.12'): ParseResult {
         let expectedTypes: TokenType[]
         let state: 'key' | 'val' = 'key'
         let key = ''
@@ -54,7 +54,7 @@ export class Parser {
                             expectedTypes = ['EndCompound', 'Thing', 'String']
                         } else if (state === 'val') {
                             expectedTypes = ['Comma', 'EndCompound']
-                            const parseResult = this.parseCompound(tokens, pos)
+                            const parseResult = this.parseCompound(tokens, pos, version)
                             val = parseResult.value
                             pos = parseResult.pos
 
@@ -351,7 +351,7 @@ export class Parser {
                 }
                 return { value: val, pos: pos }
             case 'BeginCompound':
-                parseResult = this.parseCompound(tokens, pos)
+                parseResult = this.parseCompound(tokens, pos, version)
                 break
             case 'BeginByteArray':
                 parseResult = this.parseByteArray(tokens, pos)
