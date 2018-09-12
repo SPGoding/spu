@@ -83,7 +83,7 @@ $('button').onclick = () => {
     }
 }
 
-function resetButtons(type: 'from' | 'to') {
+function resetButtonClasses(type: 'from' | 'to') {
     if (type === 'from') {
         from_18.classList.replace('btn-active', 'btn-default')
         from_19.classList.replace('btn-active', 'btn-default')
@@ -96,38 +96,59 @@ function resetButtons(type: 'from' | 'to') {
     }
 }
 
+function resetButtonVisibility() {
+    to_111.style.display = ''
+    to_112.style.display = ''
+    to_113.style.display = ''
+}
+
 from_18.onclick = () => {
-    resetButtons('from')
+    resetButtonClasses('from')
     from_18.classList.replace('btn-default', 'btn-active')
+
+    resetButtonVisibility()
+
     from = '18'
 }
 from_19.onclick = () => {
-    resetButtons('from')
+    resetButtonClasses('from')
     from_19.classList.replace('btn-default', 'btn-active')
+
+    resetButtonVisibility()
+
     from = '19'
 }
 from_111.onclick = () => {
-    resetButtons('from')
+    resetButtonClasses('from')
     from_111.classList.replace('btn-default', 'btn-active')
+
+    resetButtonVisibility()
+    to_111.style.display = 'none'
+
     from = '111'
 }
 from_112.onclick = () => {
-    resetButtons('from')
+    resetButtonClasses('from')
     from_112.classList.replace('btn-default', 'btn-active')
+
+    resetButtonVisibility()
+    to_111.style.display = 'none'
+    to_112.style.display = 'none'
+
     from = '112'
 }
 to_111.onclick = () => {
-    resetButtons('to')
+    resetButtonClasses('to')
     to_111.classList.replace('btn-default', 'btn-active')
     to = '111'
 }
 to_112.onclick = () => {
-    resetButtons('to')
+    resetButtonClasses('to')
     to_112.classList.replace('btn-default', 'btn-active')
     to = '112'
 }
 to_113.onclick = () => {
-    resetButtons('to')
+    resetButtonClasses('to')
     to_113.classList.replace('btn-default', 'btn-active')
     to = '113'
 }
