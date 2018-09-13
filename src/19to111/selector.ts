@@ -39,7 +39,7 @@ export default class Selector {
      * Parses this selector according to a string in 1.9.
      * @param str An string representing a target selector.
      */
-    public parse19(str: string) {
+    public parse(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -87,7 +87,7 @@ export default class Selector {
                 return false
             }
             let sel = new Selector()
-            sel.parse19(input)
+            sel.parse(input)
         } catch (ignored) {
             return false
         }

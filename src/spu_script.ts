@@ -1,8 +1,9 @@
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
-import Selector from './112to113/selector'
+import Selector112To113 from './112to113/selector'
+import Selector19To111 from './19to111/selector'
 import Items from './112to113/mappings/items'
-import { isNumeric } from './utils/utils'
+import { isNumeric, getNbt } from './utils/utils'
 import Blocks from './112to113/mappings/blocks'
 
 /**
@@ -65,7 +66,7 @@ export default class SpuScript {
                 })
                 switch (name) {
                     case 'addAdvToEntity': {
-                        let sel = new Selector()
+                        let sel = new Selector112To113()
                         sel.parse113(source)
                         if (params.length === 1) {
                             sel.addFinishedAdvancement(params[0])
@@ -102,7 +103,7 @@ export default class SpuScript {
                         }
                         break
                     case 'addNbtToEntity': {
-                        let sel = new Selector()
+                        let sel = new Selector112To113()
                         sel.parse113(source)
                         sel.setNbt(params[0])
                         source = sel.to113()
@@ -110,7 +111,7 @@ export default class SpuScript {
                     }
                     case 'addScbMaxToEntity': {
                         if (params[1] !== '*') {
-                            let sel = new Selector()
+                            let sel = new Selector112To113()
                             sel.parse113(source)
                             sel.setScore(params[0], params[1], 'max')
                             source = sel.to113()
@@ -119,7 +120,7 @@ export default class SpuScript {
                     }
                     case 'addScbMinToEntity': {
                         if (params[1] !== '*') {
-                            let sel = new Selector()
+                            let sel = new Selector112To113()
                             sel.parse113(source)
                             sel.setScore(params[0], params[1], 'min')
                             source = sel.to113()
@@ -133,10 +134,17 @@ export default class SpuScript {
                         source = Blocks.to113(Blocks.std112(undefined, source)).getFull()
                         break
                     case 'setLimitOfSelector': {
-                        let sel = new Selector()
+                        let sel = new Selector112To113()
                         sel.parse113(source)
                         sel.setLimit()
                         source = sel.to113()
+                        break
+                    }
+                    case '[19to111]CombineEntityTypeWithNbt':{
+                        const nbt = getNbt(params[0])
+                        const sel = new Selector19To111()
+                        sel.parse(source)
+                        
                         break
                     }
                     default:

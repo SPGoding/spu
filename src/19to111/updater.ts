@@ -1,4 +1,4 @@
-import Spuses from "../111to112/mappings/spuses";
+import Spuses from "./mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
@@ -130,7 +130,7 @@ export default class Updater {
 
     private static upEntity(input: string) {
         let sel = new Selector()
-        sel.parse19(input)
+        sel.parse(input)
         return sel.to111()
     }
 
