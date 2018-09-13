@@ -1,7 +1,11 @@
 import Spuses from "../111to112/mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
-import Checker from "../111to112/checker";
+import Checker from "./checker";
+import Entities from "./mappings/entities";
+import Selector from "./selector";
+import { getNbt } from "../utils/utils";
+import { NbtCompound, NbtString } from "../utils/nbt/nbt";
 
 export default class Updater {
     /**
@@ -92,11 +96,11 @@ export default class Updater {
             case 'command':
                 return arg
             case 'entity':
-                return arg
+                return Updater.upEntity(arg)
             case 'entity_nbt':
-                return arg
+                return Updater.upEntityNbt(arg)
             case 'entity_type':
-                return arg
+                return Updater.upEntityType(arg)
             case 'item_nbt':
                 return arg
             case 'item_tag_nbt':
@@ -122,5 +126,24 @@ export default class Updater {
             default:
                 throw `Unknown arg type: '${spus}'`
         }
+    }
+
+    private static upEntity(input: string) {
+        let sel = new Selector()
+        sel.parse19(input)
+        return sel.to111()
+    }
+
+    private static upEntityNbt(input: string) {
+        const nbt = getNbt(input, 'before 1.12')
+        const id = nbt.get('id')
+        if (id instanceof NbtString) {
+            id.set(Entities.to111(id.get()))
+        }
+        return nbt.toString()
+    }
+
+    private static upEntityType(input: string) {
+        return Entities.to111(input)
     }
 }

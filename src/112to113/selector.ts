@@ -38,7 +38,7 @@ export default class Selector {
      * Parses this selector according to a string in 1.12.
      * @param str An string representing a target selector.
      */
-    public parse1_12(str: string) {
+    public parse112(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -75,6 +75,28 @@ export default class Selector {
     }
 
     /**
+     * Gets a string that can represent this target selector in 1.12.
+     */
+    public to112() {
+        let result = '@'
+
+        result = this.getVariable1_12(result)
+
+        result += '['
+
+        result = this.getProperties1_12(result)
+
+        // Close the square brackets.
+        if (result.slice(-1) === ',') {
+            result = result.slice(0, -1) + ']'
+        } else if (result.slice(-1) === '[') {
+            result = result.slice(0, -1)
+        }
+
+        return result
+    }
+
+    /**
      * Gets a string that can represent this target selector in 1.13.
      */
     public to113() {
@@ -106,7 +128,7 @@ export default class Selector {
                 return false
             }
             let sel = new Selector()
-            sel.parse1_12(input)
+            sel.parse112(input)
         } catch (ignored) {
             return false
         }
@@ -448,8 +470,83 @@ export default class Selector {
         }
     }
 
+    private getVariable1_12 = (result: string) => (result += this.variable)
     private getVariable1_13 = (result: string) => (result += this.variable)
 
+    private getProperties1_12(result: string) {
+        if (this.dx !== undefined) {
+            result += `dx=${this.dx},`
+        }
+        if (this.dy !== undefined) {
+            result += `dy=${this.dy},`
+        }
+        if (this.dz !== undefined) {
+            result += `dz=${this.dz},`
+        }
+        if (this.limit !== undefined) {
+            if (this.sort === 'furthest') {
+                result += `c=-${this.limit},`
+            } else {
+                result += `c=${this.limit},`
+            }
+        }
+        if (this.x !== undefined) {
+            result += `x=${this.x},`
+        }
+        if (this.y !== undefined) {
+            result += `y=${this.y},`
+        }
+        if (this.z !== undefined) {
+            result += `z=${this.z},`
+        }
+        for (const i of this.tag) {
+            result += `tag=${i},`
+        }
+        for (const i of this.team) {
+            result += `team=${i},`
+        }
+        for (const i of this.name) {
+            result += `name=${i},`
+        }
+        for (const i of this.type) {
+            result += `type=${i},`
+        }
+        for (const i of this.gamemode) {
+            result += `m=${i},`
+        }
+        let tmp
+        if ((tmp = this.level.getMax())) {
+            result += `l=${tmp},`
+        }
+        if ((tmp = this.level.getMin())) {
+            result += `lm=${tmp},`
+        }
+        if ((tmp = this.distance.getMax())) {
+            result += `r=${tmp},`
+        }
+        if ((tmp = this.distance.getMin())) {
+            result += `rm=${tmp},`
+        }
+        if ((tmp = this.x_rotation.getMax())) {
+            result += `rx=${tmp},`
+        }
+        if ((tmp = this.x_rotation.getMin())) {
+            result += `rxm=${tmp},`
+        }
+        if ((tmp = this.y_rotation.getMax())) {
+            result += `ry=${tmp},`
+        }
+        if ((tmp = this.y_rotation.getMin())) {
+            result += `rym=${tmp},`
+        }
+        if ((tmp = this.getScores1_12())) {
+            result += `scores=${tmp},`
+        }
+        if (this.sort === 'random') {
+            result = `@r${result.slice(2)}`
+        }
+        return result
+    }
     private getProperties1_13(result: string) {
         if (this.dx !== undefined) {
             result += `dx=${this.dx},`
@@ -590,6 +687,22 @@ export default class Selector {
             range.parse1_13(rangeStr)
             this.scores.set(objective, range)
         }
+    }
+
+    private getScores1_12() {
+        let result = ''
+
+        for (const i of this.scores.keys()) {
+            let score = this.scores.get(i)
+            if (score && score.getMax() !== null) {
+                result += `score_${i}=${score.getMax()},`
+            }
+            if (score && score.getMin() !== null) {
+                result += `score_${i}_min=${score.getMin()},`
+            }
+        }
+
+        return result
     }
 
     private getScores1_13() {

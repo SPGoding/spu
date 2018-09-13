@@ -1,6 +1,6 @@
 import Updater from './updater'
-import Selector from '../112to113/selector'
-import Spuses from './mappings/spuses'
+import Selector from './selector'
+import Spuses from '../111to112/mappings/spuses'
 import { isNumeric } from '../utils/utils'
 import { Tokenizer as NbtTokenizer } from '../utils/nbt/tokenizer'
 import { Parser as NbtParser } from '../utils/nbt/parser'
@@ -22,7 +22,7 @@ export default class Checker {
                 case 'entity_nbt':
                     return Checker.isNbt(cmdArg)
                 case 'entity_type':
-                    return Checker.isStringID(cmdArg)
+                    return Checker.isWord(cmdArg)
                 case 'item_nbt':
                 case 'item_tag_nbt':
                     return Checker.isNbt(cmdArg)

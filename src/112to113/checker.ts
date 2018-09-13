@@ -90,9 +90,9 @@ export default class Checker {
                 case 'uuid':
                     return Checker.isUuid(cmdArg)
                 case 'vec_2':
-                    return Checker.isVec_2(cmdArg)
+                    return Checker.isVec2(cmdArg)
                 case 'vec_3':
-                    return Checker.isVec_3(cmdArg)
+                    return Checker.isVec3(cmdArg)
                 case 'word':
                     return Checker.isWord(cmdArg)
                 default:
@@ -282,11 +282,11 @@ export default class Checker {
         )
     }
 
-    public static isVec_2(input: string) {
+    public static isVec2(input: string) {
         return /^((((~?[+-]?(\d*(\.\d*)?)|\.\d+)|(~))(\s|$)){2})$/.test(input)
     }
 
-    public static isVec_3(input: string) {
+    public static isVec3(input: string) {
         // This regex is coppied from
         // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
         // Dressed pca, I love you!!!

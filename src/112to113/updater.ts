@@ -241,9 +241,9 @@ export default class Updater {
     public static upEntity(input: string) {
         let sel = new Selector()
         if (Checker.isSelector(input)) {
-            sel.parse1_12(input)
+            sel.parse112(input)
         } else if (Checker.isWord(input)) {
-            sel.parse1_12(`@p[name=${input}]`)
+            sel.parse112(`@p[name=${input}]`)
         } else {
             return input
         }
@@ -614,7 +614,7 @@ export default class Updater {
             let json = JSON.parse(input)
             if (json.selector) {
                 let sel = new Selector()
-                sel.parse1_12(json.selector)
+                sel.parse112(json.selector)
                 json.selector = sel.to113()
             }
 
