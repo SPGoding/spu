@@ -1,3 +1,5 @@
+import Updater17To18 from './17to18/updater'
+import Updater18To19 from './18to19/updater'
 import Updater18To111 from './18to111/updater'
 import Updater19To111 from './19to111/updater'
 import Updater111To112 from './111to112/updater'
@@ -7,16 +9,19 @@ function $(id: string) {
     return <HTMLElement>document.getElementById(id)
 }
 
+let from_17 = $('from-17')
 let from_18 = $('from-18')
 let from_19 = $('from-19')
 let from_111 = $('from-111')
 let from_112 = $('from-112')
+let to_18 = $('to-18')
+let to_19 = $('to-19')
 let to_111 = $('to-111')
 let to_112 = $('to-112')
 let to_113 = $('to-113')
 let info = $('info')
-let from: '18' | '19' | '111' | '112' = '112'
-let to: '111' | '112' | '113' = '113'
+let from: '17' | '18' | '19' | '111' | '112' = '112'
+let to: '18' | '19' | '111' | '112' | '113' = '113'
 
 info.style.display = 'none'
 
@@ -35,7 +40,57 @@ $('button').onclick = () => {
             for (let line of lines) {
                 number = lines.indexOf(line)
 
-                if (from === '19' && to === '111') {
+                if (from === '17' && to === '18') {
+                    line = Updater17To18.upLine(line)
+                } else if (from === '17' && to === '19') {
+                    line = Updater18To19.upLine(
+                        Updater17To18.upLine(line)
+                    )
+                } else if (from === '17' && to === '111') {
+                    line = Updater19To111.upLine(
+                        Updater18To19.upLine(
+                            Updater17To18.upLine(line)
+                        )
+                    )
+                } else if (from === '17' && to === '112') {
+                    line = Updater111To112.upLine(
+                        Updater19To111.upLine(
+                            Updater18To19.upLine(
+                                Updater17To18.upLine(line)
+                            )
+                        )
+                    )
+                } else if (from === '17' && to === '113') {
+                    line = Updater112To113.upLine(
+                        Updater111To112.upLine(
+                            Updater19To111.upLine(
+                                Updater18To19.upLine(
+                                    Updater17To18.upLine(line)
+                                )
+                            )
+                        )
+                    )
+                } else if (from === '18' && to === '19') {
+                    line = Updater18To19.upLine(line)
+                } else if (from === '18' && to === '111') {
+                    line = Updater19To111.upLine(
+                        Updater18To19.upLine(line)
+                    )
+                } else if (from === '18' && to === '112') {
+                    line = Updater111To112.upLine(
+                        Updater19To111.upLine(
+                            Updater18To19.upLine(line)
+                        )
+                    )
+                } else if (from === '18' && to === '113') {
+                    line = Updater112To113.upLine(
+                        Updater111To112.upLine(
+                            Updater19To111.upLine(
+                                Updater18To19.upLine(line)
+                            )
+                        )
+                    )
+                } else if (from === '19' && to === '111') {
                     line = Updater19To111.upLine(line)
                 } else if (from === '19' && to === '112') {
                     line = Updater111To112.upLine(
@@ -85,11 +140,14 @@ $('button').onclick = () => {
 
 function resetButtonClasses(type: 'from' | 'to') {
     if (type === 'from') {
-        from_18.classList.replace('btn-active', 'btn-default')
+        from_17.classList.replace('btn-active', 'btn-default')
+        from_19.classList.replace('btn-active', 'btn-default')
         from_19.classList.replace('btn-active', 'btn-default')
         from_111.classList.replace('btn-active', 'btn-default')
         from_112.classList.replace('btn-active', 'btn-default')
     } else {
+        to_18.classList.replace('btn-active', 'btn-default')
+        to_19.classList.replace('btn-active', 'btn-default')
         to_111.classList.replace('btn-active', 'btn-default')
         to_112.classList.replace('btn-active', 'btn-default')
         to_113.classList.replace('btn-active', 'btn-default')
@@ -97,16 +155,27 @@ function resetButtonClasses(type: 'from' | 'to') {
 }
 
 function resetButtonVisibility() {
+    to_18.style.display = ''
+    to_19.style.display = ''
     to_111.style.display = ''
     to_112.style.display = ''
     to_113.style.display = ''
 }
 
+from_17.onclick = () => {
+    resetButtonClasses('from')
+    from_17.classList.replace('btn-default', 'btn-active')
+
+    resetButtonVisibility()
+
+    from = '17'
+}
 from_18.onclick = () => {
     resetButtonClasses('from')
     from_18.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
+    to_18.style.display = 'none'
 
     from = '18'
 }
@@ -115,6 +184,8 @@ from_19.onclick = () => {
     from_19.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
+    to_18.style.display = 'none'
+    to_19.style.display = 'none'
 
     from = '19'
 }
@@ -123,6 +194,8 @@ from_111.onclick = () => {
     from_111.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
+    to_18.style.display = 'none'
+    to_19.style.display = 'none'
     to_111.style.display = 'none'
 
     from = '111'
@@ -132,10 +205,22 @@ from_112.onclick = () => {
     from_112.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
+    to_18.style.display = 'none'
+    to_19.style.display = 'none'
     to_111.style.display = 'none'
     to_112.style.display = 'none'
 
     from = '112'
+}
+to_18.onclick = () => {
+    resetButtonClasses('to')
+    to_18.classList.replace('btn-default', 'btn-active')
+    to = '18'
+}
+to_19.onclick = () => {
+    resetButtonClasses('to')
+    to_19.classList.replace('btn-default', 'btn-active')
+    to = '19'
 }
 to_111.onclick = () => {
     resetButtonClasses('to')
