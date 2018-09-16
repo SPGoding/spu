@@ -78,6 +78,8 @@ $('button').onclick = () => {
                     )
                 } else if (from === '112' && to === '113') {
                     line = Updater112To113.upLine(line)
+                } else {
+                    line = ' !> Please select the target version!'
                 }
 
                 if (line.indexOf(' !> ') !== -1) {
