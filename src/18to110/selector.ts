@@ -94,6 +94,14 @@ export default class Selector {
         return true
     }
 
+    public getType() {
+        return this.type
+    }
+
+    public setType(type: string) {
+        this.type = type
+    }
+
     private parseVariable(char: string, str: string) {
         switch (char) {
             case 'a':

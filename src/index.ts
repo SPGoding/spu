@@ -1,6 +1,5 @@
 import Updater17To18 from './17to18/updater'
 import Updater18To19 from './18to19/updater'
-import Updater18To111 from './18to111/updater'
 import Updater19To111 from './19to111/updater'
 import Updater111To112 from './111to112/updater'
 import Updater112To113 from './112to113/updater'
