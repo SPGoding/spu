@@ -91,7 +91,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
             case 'bool':
                 return arg
             case 'command':
-                return arg
+                return Updater.upCommand(arg)
             case 'entity':
                 return arg
             case 'entity_nbt':

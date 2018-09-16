@@ -169,6 +169,27 @@ export class NbtCompound {
 
         return result
     }
+
+    public toJson() {
+        let result = '{'
+
+        for (const key of this.value.keys()) {
+            const val = this.get(key)
+            if (val && !(val instanceof NbtByte)) {
+                result += `"${key}":${val.toString()},`
+            } else if (val instanceof NbtByte) {
+                result += `"${key}":${val.toString() === '0' ? 'false' : 'true'},`
+            }
+        }
+
+        if (result.length === 1) {
+            result += '}'
+        } else {
+            result = result.slice(0, -1) + '}'
+        }
+
+        return result
+    }
 }
 
 export class NbtList {

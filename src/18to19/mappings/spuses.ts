@@ -21,10 +21,6 @@ export default class Spuses {
      * %vec_2
      * %vec_3
      * %word
-     * 
-     * =====METHODS=====
-     * $[19to111]CombineEntityTypeWithNbt
-     * $[19to111]CombineSelectorWithNbt
      */
     static pairs = new Map([
         ['achievement %string', '# achievement %0 !> Achievements have been removed in favor of advancements.'],
@@ -57,7 +53,7 @@ export default class Spuses {
         ['effect %entity %word %num %num %bool', 'effect %0 %1 %2 %3 %4'],
         ['enchant %entity %word', 'enchant %0 %1'],
         ['enchant %entity %word %num', 'enchant %0 %1 %2'],
-        ['entitydata %entity %entity_nbt', 'entitydata %0$[19to111]CombineSelectorWithNbt%1 %1'],
+        ['entitydata %entity %entity_nbt', 'entitydata %0 %1'],
         ['execute %entity %vec_3 %command', 'execute %0 %1 %2'],
         ['execute %entity %vec_3 detect %vec_3 %word %word %command', 'execute %0 %1 detect %2 %3 %4 %5'],
         ['fill %vec_3 %vec_3 %word', 'fill %0 %1 %2'],
@@ -129,10 +125,10 @@ export default class Spuses {
         ['scoreboard players %literal %entity %word %num_or_star %num_or_star', 'scoreboard players %0 %1 %2 %3 %4'],
         ['scoreboard players operation %entity %word %word %entity %word', 'scoreboard players operation %0 %1 %2 %3 %4'],
         ['scoreboard players %literal %entity %word %num', 'scoreboard players %0 %1 %2 %3'],
-        ['scoreboard players %literal %entity %word %num %entity_nbt', 'scoreboard players %0 %1$[19to111]CombineSelectorWithNbt%4 %2 %3 %4'],
+        ['scoreboard players %literal %entity %word %num %entity_nbt', 'scoreboard players %0 %1 %2 %3 %4'],
         ['scoreboard players tag %entity literal', 'scoreboard players tag %0 %1'],
         ['scoreboard players tag %entity %literal %word', 'scoreboard players tag %0 %1 %2'],
-        ['scoreboard players tag %entity %literal %word %entity_nbt', 'scoreboard players tag %0$[19to111]CombineSelectorWithNbt%3 %1 %2 %3'],
+        ['scoreboard players tag %entity %literal %word %entity_nbt', 'scoreboard players tag %0 %1 %2 %3'],
         ['scoreboard teams list', 'scoreboard teams list'],
         ['scoreboard teams %literal %word', 'scoreboard teams %0 %1'],
         ['scoreboard teams add %word %string', 'scoreboard teams add %0 %1'],
@@ -158,7 +154,7 @@ export default class Spuses {
         ['stopsound %entity %string %string', 'stopsound %0 %1 %2'],
         ['summon %entity_type', 'summon %0'],
         ['summon %entity_type %vec_3', 'summon %0 %1'],
-        ['summon %entity_type %vec_3 %entity_nbt', 'summon %0$[19to111]CombineEntityTypeWithNbt%2 %1 %2'],
+        ['summon %entity_type %vec_3 %entity_nbt', 'summon %0 %1 %2'],
         ['teleport %entity %vec_3', 'teleport %0 %1'],
         ['teleport %entity %vec_3 %vec_2', 'teleport %0 %1 %2'],
         ['tell %entity %string', 'tell %0 %1'],
@@ -166,7 +162,7 @@ export default class Spuses {
         ['w %entity %string', 'w %0 %1'],
         ['tellraw %entity %json', 'tellraw %0 %1'],
         ['testfor %entity', 'testfor %0'],
-        ['testfor %entity %entity_nbt', 'testfor %0$[19to111]CombineSelectorWithNbt%1 %1'],
+        ['testfor %entity %entity_nbt', 'testfor %0 %1'],
         ['testforblock %vec_3 %word', 'testforblock %0 %1'],
         ['testforblock %vec_3 %word %word', 'testforblock %0 %1 %2'],
         ['testforblock %vec_3 %word %word %block_nbt', 'testforblock %0 %1 %2 %3'],

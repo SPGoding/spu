@@ -188,6 +188,7 @@ export default class Spuses {
         ['playsound %sound %source %entity %vec_3 %num %num', 'playsound %0 %1 %2 %3 %4 %5'],
         ['playsound %sound %source %entity %vec_3 %num %num %num', 'playsound %0 %1 %2 %3 %4 %5 %6'],
         ['publish', 'publish'],
+        ['rbq', 'SPGoding'],
         ['recipe %literal %recipe', 'recipe %0 %1'],
         ['recipe %literal %entity %recipe', 'recipe %0 %1 %2'],
         ['reload', 'reload'],

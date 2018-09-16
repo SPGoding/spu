@@ -2,10 +2,9 @@ import Spuses from "./mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
-import Entities from "./mappings/entities";
 import Selector from "./selector";
 import { getNbt } from "../utils/utils";
-import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../utils/nbt/nbt";
+import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt, NbtFloat } from "../utils/nbt/nbt";
 
 export default class Updater {
     /**
@@ -94,19 +93,19 @@ export default class Updater {
             case 'bool':
                 return arg
             case 'command':
-                return arg
+                return Updater.upCommand(arg)
             case 'entity':
-                return Updater.upEntity(arg)
+                return arg
             case 'entity_nbt':
                 return Updater.upEntityNbt(arg)
             case 'entity_type':
-                return Updater.upEntityType(arg)
+                return arg
             case 'item_nbt':
                 return Updater.upItemNbt(arg)
             case 'item_tag_nbt':
                 return Updater.upItemTagNbt(arg)
             case 'json':
-                return arg
+                return Updater.upJson(arg)
             case 'literal':
                 return arg
             case 'num':
@@ -154,143 +153,82 @@ export default class Updater {
         return nbt.toString()
     }
 
-    private static upEntity(input: string) {
-        let sel = new Selector()
-        sel.parse(input)
-        return sel.to111()
-    }
-
     private static upEntityNbt(input_nbt: string) {
         let nbt = getNbt(input_nbt, 'before 1.12')
         let id = nbt.get('id')
-        /* id, Type, Elder, ZombieType, SkeletonType */ {
-            if (id instanceof NbtString) {
-                id.set(Entities.to111(id.get()))
-                const ans = this.upEntityNbtWithType(nbt, id.toString());
-                nbt = ans.nbt
-                id = nbt.get('id')
-                if (id instanceof NbtString) {
-                    id.set(ans.entityType)
+        /* Riding */ {
+            const riding = nbt.get('Riding')
+            nbt.del('Riding')
+            if (riding instanceof NbtCompound) {
+                const passengers = new NbtList()
+                const passenger = riding
+                passengers.add(passenger)
+                nbt.set('Passengers', passengers)
+            }
+        }
+        /* Healf */ {
+            const healF = nbt.get('HealF')
+            nbt.del('HealF')
+            if (healF instanceof NbtFloat || healF instanceof NbtInt) {
+                const health = new NbtInt(healF.get())
+                nbt.set('Health', health)
+            }
+        }
+        /* DropChances */ {
+            const dropChances = nbt.get('DropChances')
+            nbt.del('DropChances')
+            if (dropChances instanceof NbtList) {
+                const armorDropChances = new NbtList()
+                const handDropChances = new NbtList()
+                armorDropChances.set(0, dropChances.get(0))
+                armorDropChances.set(1, dropChances.get(1))
+                armorDropChances.set(2, dropChances.get(2))
+                armorDropChances.set(3, dropChances.get(3))
+                handDropChances.set(0, dropChances.get(5))
+                handDropChances.set(1, new NbtFloat(0))
+                nbt.set('ArmorDropChances', armorDropChances)
+                nbt.set('HandDropChances', handDropChances)
+            }
+        }
+        /* Equipment */ {
+            const equipment = nbt.get('Equipment')
+            nbt.del('Equipment')
+            if (equipment instanceof NbtList) {
+                const armorItems = new NbtList()
+                const handItems = new NbtList()
+                armorItems.set(0, getNbt(Updater.upItemNbt(equipment.get(0).toString())))
+                armorItems.set(1, getNbt(Updater.upItemNbt(equipment.get(1).toString())))
+                armorItems.set(2, getNbt(Updater.upItemNbt(equipment.get(2).toString())))
+                armorItems.set(3, getNbt(Updater.upItemNbt(equipment.get(3).toString())))
+                handItems.set(0, getNbt(Updater.upItemNbt(equipment.get(4).toString())))
+                handItems.set(1, new NbtCompound())
+                nbt.set('ArmorItems', armorItems)
+                nbt.set('HandItems', handItems)
+            }
+        }
+        /* Properties (Type) */ {
+            const properties = nbt.get('Properties')
+            nbt.del('Properties')
+            if (properties instanceof NbtCompound) {
+                const type = nbt.get('Type')
+                nbt.del('Type')
+                const spawnData = properties
+                if (type instanceof NbtString) {
+                    spawnData.set('id', type)
                 }
+                nbt.set('SpawnData', spawnData)
             }
         }
-        /* Passengers */ {
-            const passengers = nbt.get('Passengers')
-            if (passengers instanceof NbtList) {
-                for (let i = 0; i < passengers.length; i++) {
-                    let passenger = passengers.get(i)
-                    passenger = getNbt(Updater.upEntityNbt(passenger.toString()))
-                    passengers.set(i, passenger)
-                }
-            }
-        }
-        /* SpawnPotentials */ {
-            const spawnPotentials = nbt.get('SpawnPotentials')
-            if (spawnPotentials instanceof NbtList) {
-                spawnPotentials.forEach((potential: NbtValue) => {
-                    if (potential instanceof NbtCompound) {
-                        let entity = potential.get('Entity')
-                        if (entity instanceof NbtCompound) {
-                            entity = getNbt(Updater.upEntityNbt(entity.toString()))
-                            potential.set('Entity', entity)
-                        }
-                    }
-                })
-            }
-        }
-        /* SpawnData */ {
-            let spawnData = nbt.get('SpawnData')
-            if (spawnData instanceof NbtCompound) {
-                spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+        /* Type */ {
+            const type = nbt.get('Type')
+            nbt.del('Type')
+            if (type instanceof NbtString) {
+                const spawnData = new NbtCompound()
+                spawnData.set('id', type)
                 nbt.set('SpawnData', spawnData)
             }
         }
         return nbt.toString()
-    }
-
-    public static upEntityNbtWithType(nbt: NbtCompound, entityType: string) {
-        switch (entityType) {
-            case 'minecraft:horse': {
-                const type = nbt.get('Type')
-                nbt.del('Type')
-                if (type instanceof NbtInt) {
-                    switch (type.get()) {
-                        case 1:
-                            entityType = 'minecraft:donkey'
-                            break
-                        case 2:
-                            entityType = 'minecraft:mule'
-                            break
-                        case 3:
-                            entityType = 'minecraft:zombie_horse'
-                            break
-                        case 4:
-                            entityType = 'minecraft:skeleton_horse'
-                            break
-                        default:
-                            break
-                    }
-                }
-                break
-            } case 'minecraft:guardian': {
-                const elder = nbt.get('Elder')
-                nbt.del('Elder')
-                if (elder instanceof NbtByte || elder instanceof NbtInt) {
-                    switch (elder.get()) {
-                        case 1:
-                            entityType = 'minecraft:elder_guardian'
-                            break
-                        default:
-                            break
-                    }
-                }
-            } break
-            case 'minecraft:zombie': {
-                const zombieType = nbt.get('ZombieType')
-                nbt.del('ZombieType')
-                if (zombieType instanceof NbtInt) {
-                    switch (zombieType.get()) {
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                            entityType = 'minecraft:zombie_villager'
-                            let profession = new NbtInt(zombieType.get())
-                            nbt.set('Profession', profession)
-                            break
-                        case 6:
-                            entityType = 'minecraft:husk'
-                            break
-                        default:
-                            break
-                    }
-                }
-                break
-            }
-            case 'minecraft:skeleton': {
-                const skeletonType = nbt.get('SkeletonType')
-                nbt.del('SkeletonType')
-                if (skeletonType instanceof NbtByte || skeletonType instanceof NbtInt) {
-                    switch (skeletonType.get()) {
-                        case 1:
-                            entityType = 'minecraft:wither_skeleton'
-                            break
-                        case 2:
-                            entityType = 'minecraft:stray'
-                            break
-                        default:
-                            break
-                    }
-                }
-            }
-        }
-
-        return { nbt: nbt, entityType: entityType }
-    }
-
-    private static upEntityType(input: string) {
-        return Entities.to111(input)
     }
 
     private static upItemNbt(input: string) {
@@ -314,6 +252,48 @@ export default class Updater {
                 nbt.set('EntityTag', entityTag)
             }
         }
+        /* BlockEntityTag */ {
+            let blockEntityTag = nbt.get('BlockEntityTag')
+            if (blockEntityTag instanceof NbtCompound) {
+                blockEntityTag = getNbt(Updater.upBlockNbt(blockEntityTag.toString()))
+                nbt.set('BlockEntityTag', blockEntityTag)
+            }
+        }
         return nbt.toString()
+    }
+
+    private static upJson(input: string) {
+        if (input.slice(0, 1) === '"') {
+            return input
+        } else if (input.slice(0, 1) === '[') {
+            let json = JSON.parse(getNbt(input, 'before 1.12').toJson())
+            let result: string[] = []
+            for (const i of json) {
+                result.push(Updater.upJson(JSON.stringify(i)))
+            }
+            return `[${result.join()}]`
+        } else {
+            let json = JSON.parse(getNbt(input, 'before 1.12').toJson())
+            if (json.selector) {
+                let sel = new Selector()
+                sel.parse(json.selector)
+                json.selector = sel.to111()
+            }
+
+            if (
+                json.clickEvent &&
+                json.clickEvent.action &&
+                (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
+                json.clickEvent.value
+            ) {
+                json.clickEvent.value = Updater.upCommand(json.clickEvent.value)
+            }
+
+            if (json.extra) {
+                json.extra = JSON.parse(Updater.upJson(JSON.stringify(json.extra)))
+            }
+
+            return JSON.stringify(json).replace(/§/g, '\\u00a7')
+        }
     }
 }

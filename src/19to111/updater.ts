@@ -94,7 +94,7 @@ export default class Updater {
             case 'bool':
                 return arg
             case 'command':
-                return arg
+                return Updater.upCommand(arg)
             case 'entity':
                 return Updater.upEntity(arg)
             case 'entity_nbt':
@@ -106,7 +106,7 @@ export default class Updater {
             case 'item_tag_nbt':
                 return Updater.upItemTagNbt(arg)
             case 'json':
-                return arg
+                return Updater.upJson(arg)
             case 'literal':
                 return arg
             case 'num':
@@ -166,7 +166,7 @@ export default class Updater {
         /* id, Type, Elder, ZombieType, SkeletonType */ {
             if (id instanceof NbtString) {
                 id.set(Entities.to111(id.get()))
-                const ans = this.upEntityNbtWithType(nbt, id.toString());
+                const ans = this.upEntityNbtWithType(nbt, id.get());
                 nbt = ans.nbt
                 id = nbt.get('id')
                 if (id instanceof NbtString) {
@@ -314,6 +314,48 @@ export default class Updater {
                 nbt.set('EntityTag', entityTag)
             }
         }
+        /* BlockEntityTag */ {
+            let blockEntityTag = nbt.get('BlockEntityTag')
+            if (blockEntityTag instanceof NbtCompound) {
+                blockEntityTag = getNbt(Updater.upBlockNbt(blockEntityTag.toString()))
+                nbt.set('BlockEntityTag', blockEntityTag)
+            }
+        }
         return nbt.toString()
+    }
+
+    private static upJson(input: string) {
+        if (input.slice(0, 1) === '"') {
+            return input
+        } else if (input.slice(0, 1) === '[') {
+            let json = JSON.parse(input)
+            let result: string[] = []
+            for (const i of json) {
+                result.push(Updater.upJson(JSON.stringify(i)))
+            }
+            return `[${result.join()}]`
+        } else {
+            let json = JSON.parse(input)
+            if (json.selector) {
+                let sel = new Selector()
+                sel.parse(json.selector)
+                json.selector = sel.to111()
+            }
+
+            if (
+                json.clickEvent &&
+                json.clickEvent.action &&
+                (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
+                json.clickEvent.value
+            ) {
+                json.clickEvent.value = Updater.upCommand(json.clickEvent.value)
+            }
+
+            if (json.extra) {
+                json.extra = JSON.parse(Updater.upJson(JSON.stringify(json.extra)))
+            }
+
+            return JSON.stringify(json).replace(/§/g, '\\u00a7')
+        }
     }
 }

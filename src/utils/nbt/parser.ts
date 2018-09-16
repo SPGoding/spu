@@ -23,7 +23,14 @@ import {
  */
 export class Parser {
     public parse(tokens: Token[], version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
-        const result = this.parseCompound(tokens, 0, version)
+        let result: ParseResult
+        if (tokens[0].type === 'BeginCompound') {
+            result = this.parseCompound(tokens, 0, version)
+        } else if (tokens[0].type === 'BeginList') {
+            result = this.parseList(tokens, 0, version)
+        } else {
+            throw `Unexpected start token: '${tokens[0].type}'`
+        }
 
         if (tokens[result.pos + 1].type === 'EndOfDocument') {
             return <NbtCompound>result.value
@@ -160,7 +167,7 @@ export class Parser {
                         return { value: resultValue, pos: pos }
                     case 'Thing': {
                         if (this.parseThing(token) instanceof NbtInt) {
-                            if (tokens[pos+1].type === 'Colon') {
+                            if (tokens[pos + 1].type === 'Colon') {
                                 if (version === 'before 1.12') {
                                     pos += 1
                                     continue

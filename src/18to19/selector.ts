@@ -1,8 +1,4 @@
 import CharReader from '../utils/char_reader'
-import Updater from './updater'
-import { isWhiteSpace, getNbt } from '../utils/utils'
-import { NbtCompound } from '../utils/nbt/nbt'
-import Entities from './mappings/entities';
 
 /**
  * Represent a target selector.
@@ -155,7 +151,7 @@ export default class Selector {
                             this.name = val
                             break
                         case 'type':
-                            this.type = Entities.to111(val)
+                            this.type = val
                             break
                         case 'c':
                             this.c = Number(val)
@@ -221,7 +217,7 @@ export default class Selector {
             result += `dz=${this.dz},`
         }
         if (this.c !== undefined) {
-                result += `c=${this.c},`
+            result += `c=${this.c},`
         }
         if (this.x !== undefined) {
             result += `x=${this.x},`
@@ -360,33 +356,5 @@ class Range {
     constructor(min: number | null, max: number | null) {
         this.max = max
         this.min = min
-    }
-
-    parse113(str: string) {
-        let arr = str.split('..')
-        if (arr.length === 2) {
-            this.min = arr[0] ? Number(arr[0]) : null
-            this.max = arr[1] ? Number(arr[1]) : null
-        } else {
-            this.min = this.max = Number(arr[0])
-        }
-    }
-
-    to113() {
-        let min = this.min
-        let max = this.max
-        if (min !== null && max !== null) {
-            if (min !== max) {
-                return `${min}..${max}`
-            } else {
-                return `${min}`
-            }
-        } else if (min !== null) {
-            return `${min}..`
-        } else if (max !== null) {
-            return `..${max}`
-        } else {
-            return ''
-        }
     }
 }

@@ -27,7 +27,7 @@ export default class Checker {
                 case 'item_tag_nbt':
                     return Checker.isNbt(cmdArg)
                 case 'json':
-                    return Checker.isJson(cmdArg)
+                    return Checker.isNbt(cmdArg)
                 case 'literal':
                     return Checker.isLiteral(cmdArg)
                 case 'num':
@@ -67,18 +67,6 @@ export default class Checker {
             }
         }
         return false
-    }
-
-    public static isJson(input: string) {
-        try {
-            if (typeof JSON.parse(input) === 'object') {
-                return true
-            } else {
-                return false
-            }
-        } catch (ignored) {
-            return false
-        }
     }
 
     public static isLiteral(input: string) {
