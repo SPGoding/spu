@@ -108,7 +108,7 @@ $('button').onclick = () => {
 
 function resetButtonClasses(type: 'from' | 'to') {
     if (type === 'from') {
-        from_19.classList.replace('btn-active', 'btn-default')
+        from_18.classList.replace('btn-active', 'btn-default')
         from_19.classList.replace('btn-active', 'btn-default')
         from_111.classList.replace('btn-active', 'btn-default')
         from_112.classList.replace('btn-active', 'btn-default')
