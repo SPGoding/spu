@@ -1,6 +1,6 @@
 import CharReader from '../utils/char_reader'
 import Updater from './updater'
-import { isWhiteSpace, getNbt } from '../utils/utils'
+import { isWhiteSpace, getNbtCompound } from '../utils/utils'
 import { NbtCompound } from '../utils/nbt/nbt'
 import Entities from './mappings/entities';
 

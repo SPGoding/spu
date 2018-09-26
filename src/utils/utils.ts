@@ -16,12 +16,21 @@ export function isWhiteSpace(char: string) {
 /**
  * Get an NbtCompound object from a string.
  */
-export function getNbt(str: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+export function getNbtCompound(str: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
     const tokenizer = new NbtTokenizer()
     const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
-    const nbt = parser.parse(tokens, version)
-    return nbt
+    return parser.parseCompounds(tokens, version)
+}
+
+/**
+ * Get an NbtList object from a string.
+ */
+export function getNbtList(str: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+    const tokenizer = new NbtTokenizer()
+    const tokens = tokenizer.tokenize(str, version)
+    const parser = new NbtParser()
+    return parser.parseLists(tokens, version)
 }
 
 /**
@@ -31,7 +40,7 @@ export function getUuidLeastUuidMost(uuid: string) {
     uuid = uuid.replace(/-/g, '')
     const uuidMost = parseInt(uuid.slice(0, 16), 16)
     const uuidLeast = parseInt(uuid.slice(16), 16)
-    return {L: uuidLeast, M: uuidMost}
+    return { L: uuidLeast, M: uuidMost }
 }
 
 /**

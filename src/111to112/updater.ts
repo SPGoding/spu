@@ -2,7 +2,7 @@ import Spuses from "./mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
 import Checker from "../111to112/checker";
-import { getNbt } from "../utils/utils";
+import { getNbtCompound } from "../utils/utils";
 
 export default class Updater {
     /**
@@ -87,7 +87,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
     private static upArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
             case 'block_nbt':
-                return getNbt(arg, 'before 1.12').toString()
+                return getNbtCompound(arg, 'before 1.12').toString()
             case 'bool':
                 return arg
             case 'command':
@@ -95,13 +95,13 @@ Returns an result map from an 1.12 command and an 1.12 spus.
             case 'entity':
                 return arg
             case 'entity_nbt':
-                return getNbt(arg, 'before 1.12').toString()
+                return getNbtCompound(arg, 'before 1.12').toString()
             case 'entity_type':
                 return arg
             case 'item_nbt':
-                return getNbt(arg, 'before 1.12').toString()
+                return getNbtCompound(arg, 'before 1.12').toString()
             case 'item_tag_nbt':
-                return getNbt(arg, 'before 1.12').toString()
+                return getNbtCompound(arg, 'before 1.12').toString()
             case 'json':
                 return arg
             case 'literal':

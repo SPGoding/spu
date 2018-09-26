@@ -1,5 +1,5 @@
 import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../../utils/nbt/nbt'
-import { getNbt, escape } from '../../utils/utils'
+import { getNbtCompound, escape } from '../../utils/utils'
 import { Number_String } from './mapping'
 import Blocks from './blocks'
 import Enchantments from './enchantments'
@@ -119,7 +119,7 @@ export default class Items {
         let ansSlot: NbtValue | undefined
         if (id && !name && !nbt) {
             ansData = data ? data : 0
-            ansTag = getNbt(tag ? tag : '{}')
+            ansTag = getNbtCompound(tag ? tag : '{}')
             const arr = Items.NumericID112_NominalID112.find(v => v[0] === id)
             if (arr) {
                 ansName = arr[1]
@@ -128,10 +128,10 @@ export default class Items {
             }
         } else if (name && !id && !nbt) {
             ansData = data ? data : 0
-            ansTag = getNbt(tag ? tag : '{}')
+            ansTag = getNbtCompound(tag ? tag : '{}')
             ansName = name
         } else if (!id && !name && !data && !tag && nbt) {
-            const nbtC = getNbt(nbt)
+            const nbtC = getNbtCompound(nbt)
             const id = nbtC.get('id')
             const data = nbtC.get('Damage')
             const count = nbtC.get('Count')
@@ -282,13 +282,13 @@ export default class Items {
             if (ansName === 'minecraft:armor_stand') {
                 let entityTag = ansTag.get('EntityTag')
                 if (entityTag instanceof NbtCompound) {
-                    entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
+                    entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
                     ansTag.set('EntityTag', entityTag)
                 }
             } else if (ansName === 'minecraft:spawn_egg') {
                 let entityTag = ansTag.get('EntityTag')
                 if (entityTag instanceof NbtCompound) {
-                    entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
+                    entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
                     ansTag.set('EntityTag', entityTag)
                     const id = entityTag.get('id')
                     if (id instanceof NbtString) {

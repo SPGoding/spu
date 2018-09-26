@@ -4,7 +4,7 @@ import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
 import Entities from "./mappings/entities";
 import Selector from "./selector";
-import { getNbt } from "../utils/utils";
+import { getNbtCompound } from "../utils/utils";
 import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../utils/nbt/nbt";
 
 export default class Updater {
@@ -129,7 +129,7 @@ export default class Updater {
     }
 
     private static upBlockNbt(input: string) {
-        const nbt = getNbt(input, 'before 1.12')
+        const nbt = getNbtCompound(input, 'before 1.12')
         /* SpawnPotentials */ {
             const spawnPotentials = nbt.get('SpawnPotentials')
             if (spawnPotentials instanceof NbtList) {
@@ -137,7 +137,7 @@ export default class Updater {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbt(Updater.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -147,7 +147,7 @@ export default class Updater {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -161,7 +161,7 @@ export default class Updater {
     }
 
     private static upEntityNbt(input_nbt: string) {
-        let nbt = getNbt(input_nbt, 'before 1.12')
+        let nbt = getNbtCompound(input_nbt, 'before 1.12')
         let id = nbt.get('id')
         /* id, Type, Elder, ZombieType, SkeletonType */ {
             if (id instanceof NbtString) {
@@ -179,7 +179,7 @@ export default class Updater {
             if (passengers instanceof NbtList) {
                 for (let i = 0; i < passengers.length; i++) {
                     let passenger = passengers.get(i)
-                    passenger = getNbt(Updater.upEntityNbt(passenger.toString()))
+                    passenger = getNbtCompound(Updater.upEntityNbt(passenger.toString()))
                     passengers.set(i, passenger)
                 }
             }
@@ -191,7 +191,7 @@ export default class Updater {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbt(Updater.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -201,7 +201,7 @@ export default class Updater {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -294,11 +294,11 @@ export default class Updater {
     }
 
     private static upItemNbt(input: string) {
-        const nbt = getNbt(input, 'before 1.12')
+        const nbt = getNbtCompound(input, 'before 1.12')
         /* tag */ {
             let tag = nbt.get('tag')
             if (tag instanceof NbtCompound) {
-                tag = getNbt(Updater.upItemTagNbt(tag.toString()))
+                tag = getNbtCompound(Updater.upItemTagNbt(tag.toString()))
                 nbt.set('tag', tag)
             }
         }
@@ -306,18 +306,18 @@ export default class Updater {
     }
 
     private static upItemTagNbt(input: string) {
-        const nbt = getNbt(input, 'before 1.12')
+        const nbt = getNbtCompound(input, 'before 1.12')
         /* EntityTag */ {
             let entityTag = nbt.get('EntityTag')
             if (entityTag instanceof NbtCompound) {
-                entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
+                entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
                 nbt.set('EntityTag', entityTag)
             }
         }
         /* BlockEntityTag */ {
             let blockEntityTag = nbt.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = getNbt(Updater.upBlockNbt(blockEntityTag.toString()))
+                blockEntityTag = getNbtCompound(Updater.upBlockNbt(blockEntityTag.toString()))
                 nbt.set('BlockEntityTag', blockEntityTag)
             }
         }
@@ -346,7 +346,7 @@ export default class Updater {
                 json.clickEvent &&
                 json.clickEvent.action &&
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
-                json.clickEvent.value
+                json.clickEvent.value && json.clickEvent.value.slice(0, 1) !== '/' && Checker.isCommand(json.clickEvent.value)
             ) {
                 json.clickEvent.value = Updater.upCommand(json.clickEvent.value)
             }

@@ -58,7 +58,7 @@ export default class Checker {
                 case 'item_tag_nbt':
                     return Checker.isNbt(cmdArg)
                 case 'json':
-                    return Checker.isJson(cmdArg)
+                    return Checker.isJsonElement(cmdArg)
                 case 'literal':
                     return Checker.isLiteral(cmdArg)
                 case 'num':
@@ -185,6 +185,10 @@ export default class Checker {
         }
     }
 
+    public static isJsonElement(input: string) {
+        return this.isJson(input) || (input.slice(0, 1) === '"' && input.slice(-1) === '"') || this.isNum(input) || this.isBool(input)
+    }
+
     public static isLiteral(input: string) {
         return /^[a-zA-Z]+$/.test(input)
     }
@@ -298,7 +302,7 @@ export default class Checker {
             let tokenizer = new NbtTokenizer()
             let parser = new NbtParser()
             let tokens = tokenizer.tokenize(input)
-            parser.parse(tokens)
+            parser.parseCompounds(tokens)
             return true
         } catch (ignored) {
             return false

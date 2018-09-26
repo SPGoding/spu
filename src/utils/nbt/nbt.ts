@@ -175,10 +175,12 @@ export class NbtCompound {
 
         for (const key of this.value.keys()) {
             const val = this.get(key)
-            if (val && !(val instanceof NbtByte)) {
+            if (val && !(val instanceof NbtByte) && !(val instanceof NbtCompound)) {
                 result += `"${key}":${val.toString()},`
             } else if (val instanceof NbtByte) {
                 result += `"${key}":${val.toString() === '0' ? 'false' : 'true'},`
+            } else if (val instanceof NbtCompound) {
+                result += `"${key}":${val.toJson()},`
             }
         }
 
@@ -214,6 +216,28 @@ export class NbtList {
 
         for (const val of this.value) {
             result += `${val.toString()},`
+        }
+
+        if (result.length === 1) {
+            result += ']'
+        } else {
+            result = result.slice(0, -1) + ']'
+        }
+
+        return result
+    }
+
+    public toJson() {
+        let result = '['
+
+        for (const val of this.value) {
+            if (val && !(val instanceof NbtByte) && !(val instanceof NbtCompound)) {
+                result += `${val.toString()},`
+            } else if (val instanceof NbtByte) {
+                result += `${val.toString() === '0' ? 'false' : 'true'},`
+            } else if (val instanceof NbtCompound) {
+                result += `${val.toJson()},`
+            }
         }
 
         if (result.length === 1) {

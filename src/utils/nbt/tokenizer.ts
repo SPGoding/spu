@@ -99,7 +99,7 @@ export class Tokenizer {
     private readUnquoted(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadStringResult {
         let str = ''
 
-        while ([',', ']', '}', ' ', ':', ''].indexOf(nbt.substr(pos, 1)) === -1) {
+        while ([',', ']', '}', ':', ''].indexOf(nbt.substr(pos, 1)) === -1) {
             const char = nbt.substr(pos, 1)
             if (version === 'before 1.12') {
                 str += char

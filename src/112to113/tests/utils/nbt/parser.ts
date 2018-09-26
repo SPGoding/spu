@@ -8,7 +8,7 @@ describe('Parser tests', () => {
         it('should parse "0.0" as "0d"', () => {
             let parser = new Parser()
 
-            let actual = parser.parse([
+            let actual = parser.parseCompounds([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: '123' },
                 { type: 'Colon', value: ':' },
@@ -22,7 +22,7 @@ describe('Parser tests', () => {
         it('should parse compounds', () => {
             let parser = new Parser()
 
-            let actual = parser.parse([
+            let actual = parser.parseCompounds([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: 'foo' },
                 { type: 'Colon', value: ':' },
@@ -37,7 +37,7 @@ describe('Parser tests', () => {
         it('should parse list', () => {
             let parser = new Parser()
 
-            let actual = parser.parse([
+            let actual = parser.parseCompounds([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: 'foo' },
                 { type: 'Colon', value: ':' },
@@ -56,7 +56,7 @@ describe('Parser tests', () => {
         it('should parse arrays', () => {
             let parser = new Parser()
 
-            let actual = parser.parse([
+            let actual = parser.parseCompounds([
                 { type: 'BeginCompound', value: '{' },
                 { type: 'Thing', value: 'byte' },
                 { type: 'Colon', value: ':' },

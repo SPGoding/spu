@@ -22,18 +22,31 @@ import {
  * @author SPGoding
  */
 export class Parser {
-    public parse(tokens: Token[], version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+    public parseCompounds(tokens: Token[], version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
         let result: ParseResult
         if (tokens[0].type === 'BeginCompound') {
             result = this.parseCompound(tokens, 0, version)
-        } else if (tokens[0].type === 'BeginList') {
-            result = this.parseList(tokens, 0, version)
         } else {
             throw `Unexpected start token: '${tokens[0].type}'`
         }
 
         if (tokens[result.pos + 1].type === 'EndOfDocument') {
             return <NbtCompound>result.value
+        } else {
+            throw `Unsymmetrical squares.`
+        }
+    }
+
+    public parseLists(tokens: Token[], version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+        let result: ParseResult
+        if (tokens[0].type === 'BeginList') {
+            result = this.parseList(tokens, 0, version)
+        } else {
+            throw `Unexpected start token: '${tokens[0].type}'`
+        }
+
+        if (tokens[result.pos + 1].type === 'EndOfDocument') {
+            return <NbtList>result.value
         } else {
             throw `Unsymmetrical squares.`
         }

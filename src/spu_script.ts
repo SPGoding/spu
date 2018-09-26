@@ -3,7 +3,7 @@ import ArgumentReader from './utils/argument_reader'
 import Selector112To113 from './112to113/selector'
 import Selector19To111 from './19to111/selector'
 import Items from './112to113/mappings/items'
-import { isNumeric, getNbt } from './utils/utils'
+import { isNumeric, getNbtCompound } from './utils/utils'
 import Blocks from './112to113/mappings/blocks'
 import { NbtCompound, NbtInt, NbtByte } from './utils/nbt/nbt';
 import Updater19to111 from './19to111/updater';
@@ -143,14 +143,14 @@ export default class SpuScript {
                         break
                     }
                     case '[19to111]CombineEntityTypeWithNbt': {
-                        const ans = Updater19to111.upEntityNbtWithType(getNbt(params[0]), source)
+                        const ans = Updater19to111.upEntityNbtWithType(getNbtCompound(params[0]), source)
                         source =ans.entityType
                         break
                     }
                     case '$[19to111]CombineSelectorWithNbt': {
                         const sel = new Selector19To111()
                         sel.parse(source)
-                        const ans = Updater19to111.upEntityNbtWithType(getNbt(params[0]), sel.getType())
+                        const ans = Updater19to111.upEntityNbtWithType(getNbtCompound(params[0]), sel.getType())
                         sel.setType(ans.entityType)
                         source = sel.to111()
                         break

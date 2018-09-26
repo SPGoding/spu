@@ -3,7 +3,7 @@ import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
 import Selector from "./selector";
-import { getNbt } from "../utils/utils";
+import { getNbtCompound, getNbtList, isNumeric } from "../utils/utils";
 import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt, NbtFloat } from "../utils/nbt/nbt";
 
 export default class Updater {
@@ -128,7 +128,7 @@ export default class Updater {
     }
 
     private static upBlockNbt(input: string) {
-        const nbt = getNbt(input, 'before 1.12')
+        const nbt = getNbtCompound(input, 'before 1.12')
         /* SpawnPotentials */ {
             const spawnPotentials = nbt.get('SpawnPotentials')
             if (spawnPotentials instanceof NbtList) {
@@ -136,7 +136,7 @@ export default class Updater {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbt(Updater.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -146,7 +146,7 @@ export default class Updater {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -154,7 +154,7 @@ export default class Updater {
     }
 
     private static upEntityNbt(input_nbt: string) {
-        let nbt = getNbt(input_nbt, 'before 1.12')
+        let nbt = getNbtCompound(input_nbt, 'before 1.12')
         let id = nbt.get('id')
         /* Riding */ {
             const riding = nbt.get('Riding')
@@ -196,11 +196,11 @@ export default class Updater {
             if (equipment instanceof NbtList) {
                 const armorItems = new NbtList()
                 const handItems = new NbtList()
-                armorItems.set(0, getNbt(Updater.upItemNbt(equipment.get(0).toString())))
-                armorItems.set(1, getNbt(Updater.upItemNbt(equipment.get(1).toString())))
-                armorItems.set(2, getNbt(Updater.upItemNbt(equipment.get(2).toString())))
-                armorItems.set(3, getNbt(Updater.upItemNbt(equipment.get(3).toString())))
-                handItems.set(0, getNbt(Updater.upItemNbt(equipment.get(4).toString())))
+                armorItems.set(0, getNbtCompound(Updater.upItemNbt(equipment.get(0).toString())))
+                armorItems.set(1, getNbtCompound(Updater.upItemNbt(equipment.get(1).toString())))
+                armorItems.set(2, getNbtCompound(Updater.upItemNbt(equipment.get(2).toString())))
+                armorItems.set(3, getNbtCompound(Updater.upItemNbt(equipment.get(3).toString())))
+                handItems.set(0, getNbtCompound(Updater.upItemNbt(equipment.get(4).toString())))
                 handItems.set(1, new NbtCompound())
                 nbt.set('ArmorItems', armorItems)
                 nbt.set('HandItems', handItems)
@@ -232,11 +232,11 @@ export default class Updater {
     }
 
     private static upItemNbt(input: string) {
-        const nbt = getNbt(input, 'before 1.12')
+        const nbt = getNbtCompound(input, 'before 1.12')
         /* tag */ {
             let tag = nbt.get('tag')
             if (tag instanceof NbtCompound) {
-                tag = getNbt(Updater.upItemTagNbt(tag.toString()))
+                tag = getNbtCompound(Updater.upItemTagNbt(tag.toString()))
                 nbt.set('tag', tag)
             }
         }
@@ -244,18 +244,18 @@ export default class Updater {
     }
 
     private static upItemTagNbt(input: string) {
-        const nbt = getNbt(input, 'before 1.12')
+        const nbt = getNbtCompound(input, 'before 1.12')
         /* EntityTag */ {
             let entityTag = nbt.get('EntityTag')
             if (entityTag instanceof NbtCompound) {
-                entityTag = getNbt(Updater.upEntityNbt(entityTag.toString()))
+                entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
                 nbt.set('EntityTag', entityTag)
             }
         }
         /* BlockEntityTag */ {
             let blockEntityTag = nbt.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = getNbt(Updater.upBlockNbt(blockEntityTag.toString()))
+                blockEntityTag = getNbtCompound(Updater.upBlockNbt(blockEntityTag.toString()))
                 nbt.set('BlockEntityTag', blockEntityTag)
             }
         }
@@ -263,17 +263,17 @@ export default class Updater {
     }
 
     private static upJson(input: string) {
-        if (input.slice(0, 1) === '"') {
+        if (input.slice(0, 1) === '"' || isNumeric(input) || Checker.isBool(input)) {
             return input
         } else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(getNbt(input, 'before 1.12').toJson())
+            let json = JSON.parse(getNbtList(input, 'before 1.12').toJson())
             let result: string[] = []
             for (const i of json) {
                 result.push(Updater.upJson(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
-            let json = JSON.parse(getNbt(input, 'before 1.12').toJson())
+            let json = JSON.parse(getNbtCompound(input, 'before 1.12').toJson())
             if (json.selector) {
                 let sel = new Selector()
                 sel.parse(json.selector)
@@ -284,7 +284,7 @@ export default class Updater {
                 json.clickEvent &&
                 json.clickEvent.action &&
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
-                json.clickEvent.value
+                json.clickEvent.value && json.clickEvent.value.slice(0, 1) !== '/' && Checker.isCommand(json.clickEvent.value)
             ) {
                 json.clickEvent.value = Updater.upCommand(json.clickEvent.value)
             }

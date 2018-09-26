@@ -1,7 +1,7 @@
 import { NbtCompound, NbtList, NbtString, NbtInt, NbtByte, NbtValue, NbtShort } from '../../utils/nbt/nbt'
 import Updater from '../updater'
 import Items from './items'
-import { getNbt, escape } from '../../utils/utils'
+import { getNbtCompound, escape } from '../../utils/utils'
 import { Number_Number_String_StringArray } from './mapping';
 
 export class StdBlock {
@@ -117,9 +117,9 @@ export default class Blocks {
                 if (data === -1) {
                     switch (name) {
                         case 'minecraft:wool':
-                            return new StdBlock('#minecraft:wools', [], getNbt(nbt), true)
+                            return new StdBlock('#minecraft:wools', [], getNbtCompound(nbt), true)
                         case 'minecraft:planks':
-                            return new StdBlock('#minecraft:planks', [], getNbt(nbt), true)
+                            return new StdBlock('#minecraft:planks', [], getNbtCompound(nbt), true)
                         default:
                             data = 0
                             isRemovingStates = true
@@ -146,7 +146,7 @@ export default class Blocks {
                 state ? 'state, ' : ''
             }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
         }
-        ansNbt = getNbt(nbt)
+        ansNbt = getNbtCompound(nbt)
         return new StdBlock(ansName, ansStates, ansNbt)
     }
 
@@ -332,7 +332,7 @@ export default class Blocks {
                             if (potential instanceof NbtCompound) {
                                 let entity = potential.get('Entity')
                                 if (entity instanceof NbtCompound) {
-                                    entity = getNbt(Updater.upEntityNbt(entity.toString()))
+                                    entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
                                     potential.set('Entity', entity)
                                 }
                             }
@@ -342,7 +342,7 @@ export default class Blocks {
                 /* SpawnData */ {
                     let spawnData = ansNbt.get('SpawnData')
                     if (spawnData instanceof NbtCompound) {
-                        spawnData = getNbt(Updater.upEntityNbt(spawnData.toString()))
+                        spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
                         ansNbt.set('SpawnData', spawnData)
                     }
                 }

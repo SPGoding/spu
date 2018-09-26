@@ -1,6 +1,6 @@
 import CharReader from '../utils/char_reader'
 import Updater from './updater'
-import { isWhiteSpace, getNbt } from '../utils/utils'
+import { isWhiteSpace, getNbtCompound } from '../utils/utils'
 import { NbtCompound } from '../utils/nbt/nbt'
 import Entities from './mappings/entities';
 
@@ -157,7 +157,7 @@ export default class Selector {
     }
 
     public setNbt(nbt: string) {
-        this.nbt = getNbt(nbt)
+        this.nbt = getNbtCompound(nbt)
     }
 
     public setLimit() {
@@ -403,7 +403,7 @@ export default class Selector {
                         break
                     case 'nbt':
                         // FIXME: NBT reading error, for , .
-                        this.nbt = getNbt(val)
+                        this.nbt = getNbtCompound(val)
                         break
                     default:
                         break
