@@ -346,7 +346,7 @@ export default class Updater {
                 json.clickEvent &&
                 json.clickEvent.action &&
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
-                json.clickEvent.value && json.clickEvent.value.slice(0, 1) !== '/' && Checker.isCommand(json.clickEvent.value)
+                json.clickEvent.value && json.clickEvent.value.slice(0, 1) === '/' && Checker.isCommand(json.clickEvent.value)
             ) {
                 json.clickEvent.value = Updater.upCommand(json.clickEvent.value)
             }
