@@ -12,6 +12,12 @@ Type [https://spgoding.github.io/spu](https://spgoding.github.io/spu) in the web
 
 ## How it Works
 
+### After 113to114
+
+TOO LAZY TO WRITE.
+
+### Before 112to113 (bad_practice)
+
 When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be called. This method will do the following things:
 
 1.  Match each command with a _spu script_ defined in `Spuses.pairs.keys()` from `./spuses.ts`.

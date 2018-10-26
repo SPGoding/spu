@@ -10,8 +10,8 @@ import Entities from './mappings/entities'
 import Items from './mappings/items'
 import Particles from './mappings/particles'
 import ScoreboardCriterias from './mappings/scoreboard_criterias'
-import { isNumeric, getNbtCompound, escape, getUuidLeastUuidMost } from '../utils/utils'
-import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue, NbtLong } from '../utils/nbt/nbt'
+import { isNumeric, getNbtCompound, escape, getUuidLeastUuidMost } from '../../utils/utils'
+import { NbtString, NbtCompound, NbtShort, NbtList, NbtInt, NbtByte, NbtValue, NbtLong } from '../../utils/nbt/nbt'
 
 /**
  * Provides methods to convert commands in a mcf file from minecraft 1.12 to 1.13.

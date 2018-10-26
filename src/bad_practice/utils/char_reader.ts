@@ -1,4 +1,4 @@
-import { isWhiteSpace } from './utils'
+import { isWhiteSpace } from '../../utils/utils'
 
 /**
  * A reader that provides methods to read a string char by char.

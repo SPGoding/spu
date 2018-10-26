@@ -3,8 +3,8 @@ import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
 import Selector from "./selector";
-import { getNbtCompound, getNbtList, isNumeric } from "../utils/utils";
-import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt, NbtFloat } from "../utils/nbt/nbt";
+import { getNbtCompound, getNbtList, isNumeric } from "../../utils/utils";
+import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt, NbtFloat } from "../../utils/nbt/nbt";
 
 export default class Updater {
     /**

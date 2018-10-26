@@ -1,5 +1,5 @@
-import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../../utils/nbt/nbt'
-import { getNbtCompound, escape } from '../../utils/utils'
+import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../../../utils/nbt/nbt'
+import { getNbtCompound, escape } from '../../../utils/utils'
 import { Number_String } from './mapping'
 import Blocks from './blocks'
 import Enchantments from './enchantments'

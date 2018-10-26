@@ -1,16 +1,16 @@
 import Updater from './updater'
-import Selector from './selector'
-import Spuses from '../111to112/mappings/spuses'
-import { isNumeric } from '../utils/utils'
-import { Tokenizer as NbtTokenizer } from '../utils/nbt/tokenizer'
-import { Parser as NbtParser } from '../utils/nbt/parser'
+import Selector from '../112to113/selector'
+import Spuses from './mappings/spuses'
+import { isNumeric } from '../../utils/utils'
+import { Tokenizer as NbtTokenizer } from '../../utils/nbt/tokenizer'
+import { Parser as NbtParser } from '../../utils/nbt/parser'
 
 export default class Checker {
     public static isArgumentMatch(cmdArg: string, spusArg: string) {
         if (spusArg.charAt(0) === '%') {
             switch (spusArg.slice(1)) {
                 case 'block_nbt':
-                    return Checker.isNbtCompound(cmdArg)
+                    return Checker.isNbt(cmdArg)
                 case 'bool':
                     return Checker.isBool(cmdArg)
                 case 'command':
@@ -20,12 +20,12 @@ export default class Checker {
                         Checker.isSelector(cmdArg) || Checker.isWord(cmdArg) || Checker.isUuid(cmdArg) || cmdArg === '*'
                     )
                 case 'entity_nbt':
-                    return Checker.isNbtCompound(cmdArg)
+                    return Checker.isNbt(cmdArg)
                 case 'entity_type':
-                    return Checker.isWord(cmdArg)
+                    return Checker.isStringID(cmdArg)
                 case 'item_nbt':
                 case 'item_tag_nbt':
-                    return Checker.isNbtCompound(cmdArg)
+                    return Checker.isNbt(cmdArg)
                 case 'json':
                     return Checker.isJsonElement(cmdArg)
                 case 'literal':
@@ -69,16 +69,24 @@ export default class Checker {
         return false
     }
 
-    public static isLiteral(input: string) {
-        return /^[a-zA-Z]+$/.test(input)
+    public static isJson(input: string) {
+        try {
+            if (typeof JSON.parse(input) === 'object') {
+                return true
+            } else {
+                return false
+            }
+        } catch (ignored) {
+            return false
+        }
     }
 
     public static isJsonElement(input: string) {
-        return this.isNbtCompound(input) || 
-        this.isNbtList(input) || 
-        (input.slice(0, 1) === '"' && input.slice(-1) === '"') || 
-        this.isNum(input) || 
-        this.isBool(input)
+        return this.isJson(input) || (input.slice(0, 1) === '"' && input.slice(-1) === '"') || this.isNum(input) || this.isBool(input)
+    }
+
+    public static isLiteral(input: string) {
+        return /^[a-zA-Z]+$/.test(input)
     }
 
     public static isWord(input: string) {
@@ -124,24 +132,12 @@ export default class Checker {
         return /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/.test(input)
     }
 
-    public static isNbtCompound(input: string) {
+    public static isNbt(input: string) {
         try {
             let tokenizer = new NbtTokenizer()
             let parser = new NbtParser()
             let tokens = tokenizer.tokenize(input, 'before 1.12')
             parser.parseCompounds(tokens, 'before 1.12')
-            return true
-        } catch (ignored) {
-            return false
-        }
-    }
-    
-    public static isNbtList(input: string) {
-        try {
-            let tokenizer = new NbtTokenizer()
-            let parser = new NbtParser()
-            let tokens = tokenizer.tokenize(input, 'before 1.12')
-            parser.parseLists(tokens, 'before 1.12')
             return true
         } catch (ignored) {
             return false

@@ -4,8 +4,8 @@ import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
 import Entities from "./mappings/entities";
 import Selector from "./selector";
-import { getNbtCompound } from "../utils/utils";
-import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../utils/nbt/nbt";
+import { getNbtCompound } from "../../utils/utils";
+import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../../utils/nbt/nbt";
 
 export default class Updater {
     /**

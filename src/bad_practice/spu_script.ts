@@ -3,9 +3,8 @@ import ArgumentReader from './utils/argument_reader'
 import Selector112To113 from './112to113/selector'
 import Selector19To111 from './19to111/selector'
 import Items from './112to113/mappings/items'
-import { isNumeric, getNbtCompound } from './utils/utils'
+import { isNumeric, getNbtCompound } from '../utils/utils'
 import Blocks from './112to113/mappings/blocks'
-import { NbtCompound, NbtInt, NbtByte } from './utils/nbt/nbt';
 import Updater19to111 from './19to111/updater';
 
 /**

@@ -2,7 +2,7 @@ import Spuses from "./mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
 import Checker from "../111to112/checker";
-import { getNbtCompound } from "../utils/utils";
+import { getNbtCompound } from "../../utils/utils";
 
 export default class Updater {
     /**
