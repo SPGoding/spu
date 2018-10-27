@@ -4,7 +4,7 @@ import { isNumeric } from "../utils";
  * A brigadier parser.
  */
 export default interface Parser {
-    canParse(value: string): boolean
+    tryParse(args: string[], index: number, version: number): boolean
 }
 
 /**
@@ -14,7 +14,7 @@ export default interface Parser {
 export class BrigadierBool implements Parser {
     public constructor() { }
 
-    public canParse(value: string) {
+    public canParse(value: string, version: number) {
         return ['true', 'false'].indexOf(value) !== -1
     }
 }
@@ -33,10 +33,14 @@ export class BrigadierDouble implements Parser {
         this.max = max
     }
 
-    public canParse(value: string) {
-        return isNumeric(value) &&
-            (this.min === undefined || parseFloat(value) >= this.min) &&
-            (this.max === undefined || parseFloat(value) <= this.max)
+    public canParse(value: string, version: number) {
+        if (version === 1) {
+            return isNumeric(value) &&
+                (this.min === undefined || parseFloat(value) >= this.min) &&
+                (this.max === undefined || parseFloat(value) <= this.max)
+        } else {
+            return false
+        }
     }
 }
 
@@ -54,10 +58,14 @@ export class BrigadierFloat implements Parser {
         this.max = max
     }
 
-    public canParse(value: string) {
-        return isNumeric(value) &&
-            (this.min === undefined || parseFloat(value) >= this.min) &&
-            (this.max === undefined || parseFloat(value) <= this.max)
+    public canParse(value: string, version: number) {
+        if (version === 1) {
+            return isNumeric(value) &&
+                (this.min === undefined || parseFloat(value) >= this.min) &&
+                (this.max === undefined || parseFloat(value) <= this.max)
+        } else {
+            return false
+        }
     }
 }
 
@@ -75,11 +83,15 @@ export class BrigadierInteger implements Parser {
         this.max = max
     }
 
-    public canParse(value: string) {
-        return isNumeric(value) &&
-            parseInt(value) === parseFloat(value) &&
-            (this.min === undefined || parseInt(value) >= this.min) &&
-            (this.max === undefined || parseInt(value) <= this.max)
+    public canParse(value: string, version: number) {
+        if (version === 1) {
+            return isNumeric(value) &&
+                parseInt(value) === parseFloat(value) &&
+                (this.min === undefined || parseInt(value) >= this.min) &&
+                (this.max === undefined || parseInt(value) <= this.max)
+        } else {
+            return false
+        }
     }
 }
 
@@ -94,13 +106,17 @@ export class BrigadierString implements Parser {
         this.type = type
     }
 
-    public canParse(value: string) {
-        switch (this.type) {
-            case value:
-                
-                break
-            default:
-                break
+    public canParse(value: string, version: number) {
+        if (version === 1) {
+            switch (this.type) {
+                case value:
+
+                    break
+                default:
+                    break
+            }
+        } else {
+            return false
         }
     }
 }
