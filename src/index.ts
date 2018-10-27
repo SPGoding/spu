@@ -209,7 +209,7 @@ from_112.onclick = () => {
 }
 from_113.onclick = () => {
     resetButtonClasses('from')
-    from_112.classList.replace('btn-default', 'btn-active')
+    from_113.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
     to_18.style.display = 'none'
