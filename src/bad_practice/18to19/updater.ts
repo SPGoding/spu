@@ -5,6 +5,8 @@ import Checker from "./checker";
 import Selector from "./selector";
 import { getNbtCompound, getNbtList, isNumeric } from "../../utils/utils";
 import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt, NbtFloat } from "../../utils/nbt/nbt";
+import Blocks from "./mappings/blocks";
+import Items from "./mappings/items";
 
 export default class Updater {
     /**
@@ -228,6 +230,123 @@ export default class Updater {
                 nbt.set('SpawnData', spawnData)
             }
         }
+        /* Offers.Recipes[n].buy &
+           Offers.Recipes[n].buyB & 
+           Offers.Recipes[n].sell */ {
+            const offers = nbt.get('Offers')
+            if (offers instanceof NbtCompound) {
+                const recipes = offers.get('Recipes')
+                if (recipes instanceof NbtList) {
+                    recipes.forEach((v: NbtValue) => {
+                        if (v instanceof NbtCompound) {
+                            let buy = v.get('buy')
+                            let buyB = v.get('buyB')
+                            let sell = v.get('sell')
+                            if (buy instanceof NbtCompound) {
+                                buy = getNbtCompound(Updater.upItemNbt(buy.toString()))
+                                v.set('buy', buy)
+                            }
+                            if (buyB instanceof NbtCompound) {
+                                buyB = getNbtCompound(Updater.upItemNbt(buyB.toString()))
+                                v.set('buyB', buyB)
+                            }
+                            if (sell instanceof NbtCompound) {
+                                sell = getNbtCompound(Updater.upItemNbt(sell.toString()))
+                                v.set('sell', sell)
+                            }
+                        }
+                    })
+                }
+            }
+        }
+        /* Items */ {
+            const items = nbt.get('Items')
+            if (items instanceof NbtList) {
+                for (let i = 0; i < items.length; i++) {
+                    let item = items.get(i)
+                    item = getNbtCompound(Updater.upItemNbt(item.toString()))
+                    items.set(i, item)
+                }
+            }
+        }
+        /* carried */ {
+            const carried = nbt.get('carried')
+            nbt.del('carried')
+            if (carried instanceof NbtInt) {
+                nbt.set('carried', new NbtString(Items.to19(carried.get())))
+            }
+        }
+        /* DecorItem */ {
+            let decorItem = nbt.get('DecorItem')
+            nbt.del('DecorItem')
+            if (decorItem instanceof NbtCompound) {
+                nbt.set('DecorItem', getNbtCompound(decorItem.toString()))
+            }
+        }
+        /* Inventory */ {
+            const inventory = nbt.get('Inventory')
+            if (inventory instanceof NbtList) {
+                for (let i = 0; i < inventory.length; i++) {
+                    let item = inventory.get(i)
+                    item = getNbtCompound(Updater.upItemNbt(item.toString()))
+                    inventory.set(i, item)
+                }
+            }
+        }
+        /* inTile */ {
+            const inTile = nbt.get('inTile')
+            nbt.del('inTile')
+            if (inTile instanceof NbtInt) {
+                nbt.set('inTile', new NbtString(Blocks.to19(inTile.get())))
+            }
+        }
+        /* Item */ {
+            let item = nbt.get('Item')
+            if (item instanceof NbtCompound) {
+                item = getNbtCompound(Updater.upItemNbt(item.toString()))
+                nbt.set('Item', item)
+            }
+        }
+        /* SelectedItem */ {
+            let selectedItem = nbt.get('SelectedItem')
+            if (selectedItem instanceof NbtCompound) {
+                selectedItem = getNbtCompound(Updater.upItemNbt(selectedItem.toString()))
+                nbt.set('SelectedItem', selectedItem)
+            }
+        }
+        /* FireworksItem */ {
+            let fireworksItem = nbt.get('FireworksItem')
+            if (fireworksItem instanceof NbtCompound) {
+                fireworksItem = getNbtCompound(Updater.upItemNbt(fireworksItem.toString()))
+                nbt.set('FireworksItem', fireworksItem)
+            }
+        }
+        /* TileID & TileEntityData */ {
+            const tileId = nbt.get('TileID')
+            nbt.del('TileID')
+            if (tileId instanceof NbtInt) {
+                nbt.set('TileID', new NbtString(Blocks.to19(tileId.get())))
+            }
+
+            let tileEntityData = nbt.get('TileEntityData')
+            if (tileEntityData instanceof NbtCompound) {
+                tileEntityData = getNbtCompound(Updater.upBlockNbt(tileEntityData.toString()))
+                nbt.set('TileEntityData', tileEntityData)
+            }
+        }
+        /* DisplayTile */ {
+            const displayTile = nbt.get('DisplayTile')
+            nbt.del('DisplayTile')
+            if (displayTile instanceof NbtInt) {
+                nbt.set('DisplayTile', new NbtString(Blocks.to19(displayTile.get())))
+            }
+        }
+        /* Command */ {
+            const command = nbt.get('Command')
+            if (command instanceof NbtString) {
+                command.set(Updater.upCommand(command.get()))
+            }
+        }
         return nbt.toString()
     }
 
@@ -238,6 +357,13 @@ export default class Updater {
             if (tag instanceof NbtCompound) {
                 tag = getNbtCompound(Updater.upItemTagNbt(tag.toString()))
                 nbt.set('tag', tag)
+            }
+        }
+        /* id */ {
+            let id = nbt.get('id')
+            nbt.del('id')
+            if (id instanceof NbtInt) {
+                nbt.set('id', new NbtString(Blocks.to19(id.get())))
             }
         }
         return nbt.toString()

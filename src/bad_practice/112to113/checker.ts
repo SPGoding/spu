@@ -238,7 +238,7 @@ export default class Checker {
     }
 
     public static isSlot(input: string) {
-        return input.slice(0, 5) === 'slot.'
+        return /^slot\.[\w\d\.]+$/.test(input)
     }
 
     public static isSound(input: string) {
