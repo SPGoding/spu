@@ -199,12 +199,12 @@ export default class Spuses {
             'replaceitem block %vec_3 %slot %item %num %item_data %item_tag_nbt',
             'replaceitem block %0 %1 %2$addDataAndNbtToItem%4%5 %3'
         ],
-        ['replaceitem entity %entity %slot %item', 'replaceitem block %0 %1 %2$fuckItemItself'],
-        ['replaceitem entity %entity %slot %item %num', 'replaceitem block %0 %1 %2$fuckItemItself %3'],
-        ['replaceitem entity %entity %slot %item %num %item_data', 'replaceitem block %0 %1 %2$addDataToItem%4 %3'],
+        ['replaceitem entity %entity %slot %item', 'replaceitem entity %0 %1 %2$fuckItemItself'],
+        ['replaceitem entity %entity %slot %item %num', 'replaceitem entity %0 %1 %2$fuckItemItself %3'],
+        ['replaceitem entity %entity %slot %item %num %item_data', 'replaceitem entity %0 %1 %2$addDataToItem%4 %3'],
         [
             'replaceitem entity %entity %slot %item %num %item_data %item_tag_nbt',
-            'replaceitem block %0 %1 %2$addDataAndNbtToItem%4%5 %3'
+            'replaceitem entity %0 %1 %2$addDataAndNbtToItem%4%5 %3'
         ],
         ['save-all', 'save-all'],
         ['save-all %literal', 'save-all %0'],
