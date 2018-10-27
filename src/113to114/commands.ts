@@ -4486,7 +4486,8 @@ export default class Commands {
                                 'properties': {
                                     'min': 0
                                 },
-                                'executable': true
+                                'executable': true,
+                                'spu_script': 'time add $toTime%0'
                             }
                         }
                     },
@@ -4533,7 +4534,8 @@ export default class Commands {
                                     'min': 0
                                 },
                                 'executable': true
-                            }
+                            },
+                            'spu_script': 'time add $toTime%0'
                         }
                     }
                 }
