@@ -1,4 +1,4 @@
-import { BrigadierBoolParser, BrigadierDoubleParser, BrigadierFloatParser, BrigadierIntegerParser, BrigadierStringParser } from "./argument_parsers";
+import { BrigadierBoolParser, BrigadierDoubleParser, BrigadierFloatParser, BrigadierIntegerParser, BrigadierStringParser, MinecraftBlockPosParser, MinecraftBlockPredicateParser, MinecraftBlockStateParser, MinecraftColorParser, MinecraftComponentParser, MinecraftEntityParser, MinecraftEntityAnchorParser, MinecraftFunctionParser, MinecraftGameProfileParser, MinecraftItemEnchantmentParser, MinecraftItemPredicateParser, MinecraftItemSlotParser, MinecraftItemStackParser, MinecraftMessageParser, MinecraftMobEffectParser, MinecraftNbtParser, MinecraftNbtPathParser, MinecraftObjectiveParser, MinecraftIntRangeParser, MinecraftObjectiveCriteriaParser, MinecraftOperationParser, MinecraftParticleParser, MinecraftResourceLocationParser, MinecraftRotationParser, MinecraftScoreHolderParser, MinecraftScoreboardSlotParser, MinecraftSwizzleParser, MinecraftTeamParser, MinecraftVec2Parser, MinecraftVec3Parser, MinecraftColumnPosParser } from "./argument_parsers";
 
 export type Property = { [propertyName: string]: any }
 type Children = { [nodeName: string]: CmdNode }
@@ -180,6 +180,130 @@ export class WheelChief {
             }
             case 'brigadier:string': {
                 canBeParsed = new BrigadierStringParser(properties.type).canParse(splited, index)
+                break
+            }
+            case 'minecraft:block_pos': {
+                canBeParsed = new MinecraftBlockPosParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:block_pos': {
+                canBeParsed = new MinecraftBlockPredicateParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:block_state': {
+                canBeParsed = new MinecraftBlockStateParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:color': {
+                canBeParsed = new MinecraftColorParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:column_pos': {
+                canBeParsed = new MinecraftColumnPosParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:component': {
+                canBeParsed = new MinecraftComponentParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:entity': {
+                canBeParsed = new MinecraftEntityParser(properties.amount, properties.type).canParse(splited, index)
+                break
+            }
+            case 'minecraft:entity_anchor': {
+                canBeParsed = new MinecraftEntityAnchorParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:function': {
+                canBeParsed = new MinecraftFunctionParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:game_profile': {
+                canBeParsed = new MinecraftGameProfileParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:int_range': {
+                canBeParsed = new MinecraftIntRangeParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:item_enchantment': {
+                canBeParsed = new MinecraftItemEnchantmentParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:item_predicate': {
+                canBeParsed = new MinecraftItemPredicateParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:item_slot': {
+                canBeParsed = new MinecraftItemSlotParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:item_stack': {
+                canBeParsed = new MinecraftItemStackParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:message': {
+                canBeParsed = new MinecraftMessageParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:mob_effect': {
+                canBeParsed = new MinecraftMobEffectParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:nbt': {
+                canBeParsed = new MinecraftNbtParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:nbt_path': {
+                canBeParsed = new MinecraftNbtPathParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:objective': {
+                canBeParsed = new MinecraftObjectiveParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:objective_criteria': {
+                canBeParsed = new MinecraftObjectiveCriteriaParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:operation': {
+                canBeParsed = new MinecraftOperationParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:particle': {
+                canBeParsed = new MinecraftParticleParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:resource_location': {
+                canBeParsed = new MinecraftResourceLocationParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:rotation': {
+                canBeParsed = new MinecraftRotationParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:score_holder': {
+                canBeParsed = new MinecraftScoreHolderParser(properties.amount).canParse(splited, index)
+                break
+            }
+            case 'minecraft:scoreboard_slot': {
+                canBeParsed = new MinecraftScoreboardSlotParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:swizzle': {
+                canBeParsed = new MinecraftSwizzleParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:team': {
+                canBeParsed = new MinecraftTeamParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:vec2': {
+                canBeParsed = new MinecraftVec2Parser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:vec3': {
+                canBeParsed = new MinecraftVec3Parser().canParse(splited, index)
                 break
             }
             default:

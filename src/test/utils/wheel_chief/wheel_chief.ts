@@ -2,6 +2,7 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
+import { getNbtCompound } from '../../../utils/utils';
 
 describe.only('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
@@ -218,7 +219,7 @@ describe.only('WheelChief tests', () => {
             throw `It parsed!`
         })
 
-        it(`shouldn parse string`, () => {
+        it(`should parse string`, () => {
             const input: ParseResult = {
                 command: {
                     args: [],
@@ -307,6 +308,47 @@ describe.only('WheelChief tests', () => {
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['execute', 'run', 'execute', 'run', 'spg'])
+        })
+
+        it(`should parse nbt`, () => {
+            const input: ParseResult = {
+                command: {
+                    args: [],
+                    spuScript: ''
+                },
+                index: 0,
+                splited: ['test', '{}', '{foo', ':', 'bar', '}', '{spg:rbq}']
+            }
+            const rootNode: CmdNode = {
+                type: 'root',
+                children: {
+                    test: {
+                        type: 'literal',
+                        children: {
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                children: {
+                                    nbt: {
+                                        type: 'argument',
+                                        parser: 'minecraft:nbt',
+                                        children: {
+                                            nbt: {
+                                                type: 'argument',
+                                                parser: 'minecraft:nbt',
+                                                executable: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            assert.deepEqual(actual.command.args, ['test', '{}', '{foo : bar }', '{spg:rbq}'])
         })
     })
 })

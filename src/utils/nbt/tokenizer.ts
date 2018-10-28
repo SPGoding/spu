@@ -103,7 +103,7 @@ export class Tokenizer {
             const char = nbt.substr(pos, 1)
             if (version === 'before 1.12') {
                 str += char
-            } else if (version === 'after 1.12' && /[a-zA-Z0-9\._+\-]/.test(char)) {
+            } else if (version === 'after 1.12' && /[a-zA-Z0-9\._+\-\s]/.test(char)) {
                 str += char
             } else {
                 throw `Illegal unquoted char at ${pos} in '${nbt}'.`
@@ -113,7 +113,7 @@ export class Tokenizer {
 
         pos -= 1 // Return to the char before ',', ']', '}', ' ' or ''.
 
-        return { str: str, pos: pos }
+        return { str: str.replace(/\s/g, ''), pos: pos }
     }
 }
 
