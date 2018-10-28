@@ -14,7 +14,7 @@ Type [https://spgoding.github.io/spu](https://spgoding.github.io/spu) in the web
 
 ### After 113to114
 
-The *WheelChief* will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very familiar to the format of the `commands.json` file that data generator provides:
+The *WheelChief* will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
 
 ```TypeScript
 interface CmdNode {
