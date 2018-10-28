@@ -36,7 +36,15 @@ export class WheelChief {
         }
     }
 
-    public static parseNode(input: ParseResult, nodeName: string, node: CmdNode, rootNode: CmdNode): ParseResult {
+    /**
+     * 尝试解析一个节点。
+     * @param input 输入。
+     * @param nodeName 解析的当前节点的名称。用于 `literal` 的相等检测。
+     * @param node 当前要解析的节点。
+     * @param rootNode 根节点。可以理解为整个 `commands.json`，用于 `redirect` 的正确操作。
+     * @throws 如果该节点不能解析此处的命令参数，将会抛出异常。异常应由 `parseChildren()` 捕获。
+     */
+    public static parseCmdNode(input: ParseResult, nodeName: string, node: CmdNode, rootNode: CmdNode): ParseResult {
         let result: ParseResult = {
             command: { args: input.command.args.slice(0), spuScript: input.command.spuScript },
             index: input.index,
@@ -75,6 +83,13 @@ export class WheelChief {
         return result
     }
 
+    /**
+     * 尝试向下解析 `children`，`executable` 或 `redirect`。
+     * @param result 输出（可被直接舍弃，不对原输入造成影响）。
+     * @param input 输入。
+     * @param node 当前节点。
+     * @param rootNode 根节点。
+     */
     private static recurse(result: ParseResult, input: ParseResult, node: CmdNode, rootNode: CmdNode) {
         if (result.index >= input.splited.length) {
             if (node.executable) {
@@ -114,13 +129,19 @@ export class WheelChief {
         return result;
     }
 
+    /**
+     * 尝试解析按一整个 `children` 解析。
+     * @param children `children`。
+     * @param result 输出（可被直接舍弃，不对原输入造成影响）。
+     * @param rootNode 根节点。
+     */
     private static parseChildren(children: Children, result: ParseResult, rootNode: CmdNode) {
         let operated = false
         for (const name in children) {
             if (children.hasOwnProperty(name)) {
                 const child = children[name]
                 try {
-                    result = WheelChief.parseNode(result, name, child, rootNode)
+                    result = WheelChief.parseCmdNode(result, name, child, rootNode)
                     operated = true
                     break
                 } catch {

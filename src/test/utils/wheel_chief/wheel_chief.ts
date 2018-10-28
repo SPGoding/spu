@@ -4,7 +4,7 @@ import * as assert from 'power-assert'
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
 
 describe.only('WheelChief tests', () => {
-    describe('parseNode() tests', () => {
+    describe('parseCmdNode() tests', () => {
         it('should parse literal', () => {
             const input: ParseResult = {
                 command: {
@@ -24,7 +24,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['literal'])
         })
@@ -58,7 +58,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['first', 'second', 'the_last_child'])
         })
@@ -104,7 +104,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['b', 'b'])
         })
@@ -143,7 +143,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['test', 'true', '233'])
         })
@@ -176,7 +176,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['spg', 'test'])
         })
@@ -210,7 +210,7 @@ describe.only('WheelChief tests', () => {
             }
 
             try {
-                WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+                WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
             } catch {
                 return
             }
@@ -273,7 +273,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
             assert.deepEqual(actual.command.args, ['test', 'word', 'phrase', '"phrase phrase"', 'g r e e d y'])
         })
 
@@ -304,7 +304,7 @@ describe.only('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
             assert.deepEqual(actual.command.args, ['execute', 'run', 'execute', 'run', 'spg'])
         })
