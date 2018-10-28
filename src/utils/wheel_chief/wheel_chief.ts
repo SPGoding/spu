@@ -24,15 +24,39 @@ export interface ParseResult {
     splited: string[]
 }
 
+export interface SpuScriptExecutor {
+    execute(script: string, args: string[]): string
+}
+
 /**
  * WheelChief
  * 「旅长」命令解析系统的轮子 —— 「轮长」命令解析系统
  */
 export class WheelChief {
-    public static update(command: string, nodes: CmdNode) {
-        let slash = command.slice(0, 1) === '/'
+    public static update(input: string, rootNode: CmdNode, executor: SpuScriptExecutor) {
+        const slash = input.slice(0, 1) === '/'
         if (slash) {
-            command = command.slice(1)
+            input = input.slice(1)
+        }
+
+        const command = WheelChief.parseCmdNode(
+            {
+                command: {
+                    args: [],
+                    spuScript: ''
+                },
+                index: 0,
+                splited: input.split(' ')
+            },
+            'N/A',
+            rootNode,
+            rootNode
+        ).command
+
+        if (command.spuScript) {
+            return executor.execute(command.spuScript, command.args)
+        } else {
+            return command.args.join(' ')
         }
     }
 
