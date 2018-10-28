@@ -1,4 +1,5 @@
 import { BrigadierBoolParser, BrigadierDoubleParser, BrigadierFloatParser, BrigadierIntegerParser, BrigadierStringParser, MinecraftBlockPosParser, MinecraftBlockPredicateParser, MinecraftBlockStateParser, MinecraftColorParser, MinecraftComponentParser, MinecraftEntityParser, MinecraftEntityAnchorParser, MinecraftFunctionParser, MinecraftGameProfileParser, MinecraftItemEnchantmentParser, MinecraftItemPredicateParser, MinecraftItemSlotParser, MinecraftItemStackParser, MinecraftMessageParser, MinecraftMobEffectParser, MinecraftNbtParser, MinecraftNbtPathParser, MinecraftObjectiveParser, MinecraftIntRangeParser, MinecraftObjectiveCriteriaParser, MinecraftOperationParser, MinecraftParticleParser, MinecraftResourceLocationParser, MinecraftRotationParser, MinecraftScoreHolderParser, MinecraftScoreboardSlotParser, MinecraftSwizzleParser, MinecraftTeamParser, MinecraftVec2Parser, MinecraftVec3Parser, MinecraftColumnPosParser } from "./argument_parsers";
+import { isWhiteSpace } from "../utils";
 
 export type Property = { [propertyName: string]: any }
 type Children = { [nodeName: string]: CmdNode }
@@ -34,6 +35,10 @@ export interface SpuScriptExecutor {
  */
 export class WheelChief {
     public static update(input: string, rootNode: CmdNode, executor: SpuScriptExecutor) {
+        if (input.slice(0, 1) === '#' || isWhiteSpace(input)) {
+            return input
+        }
+
         const slash = input.slice(0, 1) === '/'
         if (slash) {
             input = input.slice(1)
@@ -53,11 +58,19 @@ export class WheelChief {
             rootNode
         ).command
 
+        let result = ''
+
         if (command.spuScript) {
-            return executor.execute(command.spuScript, command.args)
+            result = executor.execute(command.spuScript, command.args)
         } else {
-            return command.args.join(' ')
+            result = command.args.join(' ')
         }
+
+        if (slash) {
+            result = `/${result}`
+        }
+
+        return result
     }
 
     /**

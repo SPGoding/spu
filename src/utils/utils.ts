@@ -10,7 +10,7 @@ export function isNumeric(num: any) {
 }
 
 export function isWhiteSpace(char: string) {
-    return [' ', '\t', '\n', '\r'].indexOf(char) !== -1
+    return char === '' || [' ', '\t', '\n', '\r'].indexOf(char) !== -1
 }
 
 /**
