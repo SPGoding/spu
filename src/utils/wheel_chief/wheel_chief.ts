@@ -52,30 +52,7 @@ export class WheelChief {
             if (nodeName === input.splited[input.index]) {
                 result.command.args.push(nodeName)
                 result.index += 1
-                // Begins: end checking
-                if (result.index >= input.splited.length) {
-                    if (node.executable) {
-                        if (node.spu_script) {
-                            result.command.spuScript = node.spu_script
-                        }
-                    } else {
-                        throw `Expected executable command.`
-                    }
-                } else {
-                    if (node.children) {
-                        result = WheelChief.parseChildren(node.children, result, rootNode)
-                    } else if (rootNode.children && node.redirect) {
-                        let children = rootNode.children[node.redirect[0]].children
-                        if (children) {
-                            result = WheelChief.parseChildren(children, result, rootNode)
-                        } else {
-                            throw `Expected redirect: '${node.redirect[0]}'.`
-                        }
-                    } else {
-                        throw `Expected 'EndOfCommand'.`
-                    }
-                }
-                // Ends: end checking
+                result = WheelChief.recurse(result, input, node, rootNode)
             } else {
                 throw `Expected literal '${nodeName}' but get '${input.splited[input.index]}'.`
             }
@@ -88,30 +65,7 @@ export class WheelChief {
                     result.command.args.push(input.splited.slice(input.index, input.index + canBeParsed).join(' '))
                     result.index += canBeParsed
                 }
-                // Begins: end checking
-                if (result.index >= input.splited.length) {
-                    if (node.executable) {
-                        if (node.spu_script) {
-                            result.command.spuScript = node.spu_script
-                        }
-                    } else {
-                        throw `Expected executable command.`
-                    }
-                } else {
-                    if (node.children) {
-                        result = WheelChief.parseChildren(node.children, result, rootNode)
-                    } else if (rootNode.children && node.redirect) {
-                        let children = rootNode.children[node.redirect[0]].children
-                        if (children) {
-                            result = WheelChief.parseChildren(children, result, rootNode)
-                        } else {
-                            throw `Expected redirect: '${node.redirect[0]}'.`
-                        }
-                    } else {
-                        throw `Expected 'EndOfCommand'.`
-                    }
-                }
-                // Ends: end checking
+                result = WheelChief.recurse(result, input, node, rootNode)
             } else {
                 throw `Expected 'parser' for the argument node.`
             }
@@ -119,6 +73,45 @@ export class WheelChief {
             throw `Unknown type: '${node.type}'. Can be one of the following values: 'root', 'literal' and 'argument'.`
         }
         return result
+    }
+
+    private static recurse(result: ParseResult, input: ParseResult, node: CmdNode, rootNode: CmdNode) {
+        if (result.index >= input.splited.length) {
+            if (node.executable) {
+                if (node.spu_script) {
+                    result.command.spuScript = node.spu_script
+                }
+            }
+            else {
+                throw `Expected executable command.`
+            }
+        }
+        else {
+            if (node.children) {
+                result = WheelChief.parseChildren(node.children, result, rootNode)
+            }
+            else if (node.redirect) {
+                if (rootNode.children) {
+                    let children = rootNode.children[node.redirect[0]].children
+                    if (children) {
+                        result = WheelChief.parseChildren(children, result, rootNode)
+                    }
+                    else {
+                        throw `Expected redirect: '${node.redirect[0]}'.`
+                    }
+                } else {
+                    throw `Expected 'children' for the root node.`
+                }
+            }
+            else {
+                if (rootNode.children) {
+                    result = WheelChief.parseChildren(rootNode.children, result, rootNode)
+                } else {
+                    throw `Expected 'children' for the root node.`
+                }
+            }
+        }
+        return result;
     }
 
     private static parseChildren(children: Children, result: ParseResult, rootNode: CmdNode) {
