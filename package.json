@@ -25,7 +25,7 @@
     },
     "scripts": {
         "build": "tsc && browserify ./dist/index.js > ./dist/bundle.js && uglifyjs ./dist/bundle.js -m -c -o ./docs/bundle.min.js",
-        "test": "mocha --require espower-typescript/guess \"./src/tests/**/*.ts\""
+        "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
     },
     "repository": {
         "type": "git",

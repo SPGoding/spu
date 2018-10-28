@@ -1,37 +1,11 @@
 import { isNumeric } from "../utils";
+import { Property } from "./wheel_chief";
 
 /**
  * A brigadier parser.
  */
 export interface ArgumentParser {
-    tryParse(args: string[], index: number): ArgumentParseResult
-}
-
-export interface ArgumentParseResult {
-    successful: boolean
-    deltaIndex: number
-    message?: string
-}
-
-/**
- * literal
- * @property N/A
- */
-export class BrigadierLiteralParser implements ArgumentParser {
-    private literal: string
-
-    public constructor(literal: string) {
-        this.literal = literal
-    }
-
-    public tryParse(args: string[], index: number): ArgumentParseResult {
-        const value = args[index]
-        if (value === this.literal) {
-            return { arg: value, index: index++, parser: 'literal' }
-        } else {
-            return { arg: null, index: index++, parser: 'literal' }
-        }
-    }
+    canParse(splited: string[], index: number): number
 }
 
 /**
@@ -41,12 +15,11 @@ export class BrigadierLiteralParser implements ArgumentParser {
 export class BrigadierBoolParser implements ArgumentParser {
     public constructor() { }
 
-    public tryParse(args: string[], index: number): ArgumentParseResult {
-        const value = args[index]
-        if (['false', 'true'].indexOf(value) !== -1) {
-            return { arg: value, index: index++, parser: 'brigadier:bool' }
+    public canParse(splited: string[], index: number): number {
+        if (['false', 'true'].indexOf(splited[index]) !== -1) {
+            return 1
         } else {
-            return { arg: null, index: index++, parser: 'brigadier:bool' }
+            return 0
         }
     }
 }
@@ -65,17 +38,13 @@ export class BrigadierDoubleParser implements ArgumentParser {
         this.max = max
     }
 
-    public tryParse(args: string[], index: number): ArgumentParseResult {
-        const value = args[index]
-        if (isNumeric(value)) {
-            if ((this.min === undefined || parseFloat(value) >= this.min) &&
-                (this.max === undefined || parseFloat(value) <= this.max)) {
-                return { arg: value, index: index++, parser: 'brigadier:double' }
-            } else {
-                return { arg: value, index: index++, parser: 'brigadier:double', message: `Double should be in [${this.min}, ${this.max}].` }
-            }
+    public canParse(splited: string[], index: number): number {
+        if (isNumeric(splited[index]) &&
+            (this.min === undefined || parseFloat(splited[index]) >= this.min) &&
+            (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+            return 1
         } else {
-            return { arg: null, index: index++, parser: 'brigadier:double' }
+            return 0
         }
     }
 }
@@ -94,17 +63,13 @@ export class BrigadierFloatParser implements ArgumentParser {
         this.max = max
     }
 
-    public tryParse(args: string[], index: number): ArgumentParseResult {
-        const value = args[index]
-        if (isNumeric(value)) {
-            if ((this.min === undefined || parseFloat(value) >= this.min) &&
-                (this.max === undefined || parseFloat(value) <= this.max)) {
-                return { arg: value, index: index++, parser: 'brigadier:float' }
-            } else {
-                return { arg: value, index: index++, parser: 'brigadier:float', message: `Float should be in [${this.min}, ${this.max}].` }
-            }
+    public canParse(splited: string[], index: number): number {
+        if (isNumeric(splited[index]) &&
+            (this.min === undefined || parseFloat(splited[index]) >= this.min) &&
+            (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+            return 1
         } else {
-            return { arg: null, index: index++, parser: 'brigadier:float' }
+            return 0
         }
     }
 }
@@ -123,17 +88,13 @@ export class BrigadierIntegerParser implements ArgumentParser {
         this.max = max
     }
 
-    public tryParse(args: string[], index: number): ArgumentParseResult {
-        const value = args[index]
-        if (isNumeric(value) && parseFloat(value) === parseInt(value)) {
-            if ((this.min === undefined || parseFloat(value) >= this.min) &&
-                (this.max === undefined || parseFloat(value) <= this.max)) {
-                return { arg: value, index: index++, parser: 'brigadier:integer' }
-            } else {
-                return { arg: value, index: index++, parser: 'brigadier:integer', message: `Integer should be in [${this.min}, ${this.max}].` }
-            }
+    public canParse(splited: string[], index: number): number {
+        if (isNumeric(splited[index]) && parseInt(splited[index]) === parseFloat(splited[index]) &&
+            (this.min === undefined || parseFloat(splited[index]) >= this.min) &&
+            (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+            return 1
         } else {
-            return { arg: null, index: index++, parser: 'brigadier:integer' }
+            return 0
         }
     }
 }
@@ -149,31 +110,31 @@ export class BrigadierStringParser implements ArgumentParser {
         this.type = type
     }
 
-    public tryParse(args: string[], index: number): ArgumentParseResult {
+    public canParse(splited: string[], index: number): number {
         switch (this.type) {
             case 'greedy':
-                return { arg: args.slice(index).join(' '), index: args.length, parser: 'brigadier:string' }
+                return splited.length - index
             case 'phrase':
-                if (args[index].slice(0, 1) === '"') {
+                if (splited[index].slice(0, 1) === '"') {
                     let endIndex: number | undefined
-                    for (let i = index; i < args.length; i++) {
-                        const arg = args[i];
+                    for (let i = index; i < splited.length; i++) {
+                        const arg = splited[i];
                         if (arg.slice(-1) === '"' && arg.slice(-2, -1) !== '\\') {
                             endIndex = i
                             break
                         }
                     }
                     if (endIndex !== undefined) {
-                        return { arg: args.slice(index, endIndex + 1).join(' '), index: endIndex++, parser: 'brigadier:string' }
+                        return endIndex - index + 1
                     } else {
-                        return { arg: null, index: index++, parser: 'brigadier:string', message: 'String should be end with ".' }
+                        return 0
                     }
                 } else {
-                    return { arg: args[index], index: index++, parser: 'brigadier:string' }
+                    return 1
                 }
             case 'word':
             default:
-                return { arg: args[index], index: index++, parser: 'brigadier:string' }
+                return 1
         }
     }
 }
