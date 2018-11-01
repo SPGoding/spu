@@ -1,5 +1,6 @@
 import { BrigadierBoolParser, BrigadierDoubleParser, BrigadierFloatParser, BrigadierIntegerParser, BrigadierStringParser, MinecraftBlockPosParser, MinecraftBlockPredicateParser, MinecraftBlockStateParser, MinecraftColorParser, MinecraftComponentParser, MinecraftEntityParser, MinecraftEntityAnchorParser, MinecraftFunctionParser, MinecraftGameProfileParser, MinecraftItemEnchantmentParser, MinecraftItemPredicateParser, MinecraftItemSlotParser, MinecraftItemStackParser, MinecraftMessageParser, MinecraftMobEffectParser, MinecraftNbtParser, MinecraftNbtPathParser, MinecraftObjectiveParser, MinecraftIntRangeParser, MinecraftObjectiveCriteriaParser, MinecraftOperationParser, MinecraftParticleParser, MinecraftResourceLocationParser, MinecraftRotationParser, MinecraftScoreHolderParser, MinecraftScoreboardSlotParser, MinecraftSwizzleParser, MinecraftTeamParser, MinecraftVec2Parser, MinecraftVec3Parser, MinecraftColumnPosParser } from "./argument_parsers";
 import { isWhiteSpace } from "../utils";
+import { Updater } from "./updater";
 
 export type Property = { [propertyName: string]: any }
 type Children = { [nodeName: string]: CmdNode }
@@ -8,6 +9,7 @@ export interface CmdNode {
     type: 'root' | 'literal' | 'argument'
     children?: Children
     parser?: string
+    updater?: string
     properties?: Property
     executable?: boolean
     redirect?: string[]
@@ -15,8 +17,13 @@ export interface CmdNode {
 }
 
 export interface Command {
-    args: string[]
+    args: Argument[]
     spuScript: string
+}
+
+export interface Argument {
+    value: string
+    updater?: string
 }
 
 export interface ParseResult {
@@ -26,7 +33,7 @@ export interface ParseResult {
 }
 
 export interface SpuScriptExecutor {
-    execute(script: string, args: string[]): string
+    execute(script: string, args: Argument[]): string
 }
 
 /**
@@ -34,7 +41,7 @@ export interface SpuScriptExecutor {
  * 「旅长」命令解析系统的轮子 —— 「轮长」命令解析系统
  */
 export class WheelChief {
-    public static update(input: string, rootNode: CmdNode, executor: SpuScriptExecutor) {
+    public static update(input: string, rootNode: CmdNode, executor: SpuScriptExecutor, updater: Updater) {
         if (input.slice(0, 1) === '#' || isWhiteSpace(input)) {
             return input
         }
@@ -44,6 +51,7 @@ export class WheelChief {
             input = input.slice(1)
         }
 
+        // 把输入的命令解析为 `Command`
         const command = WheelChief.parseCmdNode(
             {
                 command: {
@@ -60,6 +68,14 @@ export class WheelChief {
 
         let result = ''
 
+        // 对参数根据 updater 进行升级
+        for (const arg of command.args) {
+            if (arg.updater) {
+                arg.value = updater.upArgument(arg.value, arg.updater)
+            }
+        }
+
+        // 最后执行针对整条命令的 spu script 以调整命令语序以及其他内容
         if (command.spuScript) {
             result = executor.execute(command.spuScript, command.args)
         } else {
@@ -95,7 +111,7 @@ export class WheelChief {
             }
         } else if (node.type === 'literal') {
             if (nodeName === input.splited[input.index]) {
-                result.command.args.push(nodeName)
+                result.command.args.push({ value: nodeName })
                 result.index += 1
                 result = WheelChief.recurse(result, input, node, rootNode)
             } else {
@@ -107,7 +123,7 @@ export class WheelChief {
                 if (canBeParsed === 0) {
                     throw `Can't be parsed.`
                 } else {
-                    result.command.args.push(input.splited.slice(input.index, input.index + canBeParsed).join(' '))
+                    result.command.args.push({ value: input.splited.slice(input.index, input.index + canBeParsed).join(' '), updater: node.updater })
                     result.index += canBeParsed
                 }
                 result = WheelChief.recurse(result, input, node, rootNode)

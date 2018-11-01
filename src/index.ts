@@ -61,7 +61,7 @@ $('button').onclick = () => {
                         )
                     )
                 } else if (from === '18' && to === '114') {
-                    line = Updater113To114.upLine(
+                    line = Updater113To114.upCommand(
                         Updater112To113.upLine(
                             Updater111To112.upLine(
                                 Updater19To111.upLine(
@@ -83,7 +83,7 @@ $('button').onclick = () => {
                         )
                     )
                 } else if (from === '19' && to === '114') {
-                    line = Updater113To114.upLine(
+                    line = Updater113To114.upCommand(
                         Updater112To113.upLine(
                             Updater111To112.upLine(
                                 Updater19To111.upLine(line)
@@ -97,7 +97,7 @@ $('button').onclick = () => {
                         Updater111To112.upLine(line)
                     )
                 } else if (from === '111' && to === '114') {
-                    line = Updater113To114.upLine(
+                    line = Updater113To114.upCommand(
                         Updater112To113.upLine(
                             Updater111To112.upLine(line)
                         )
@@ -105,11 +105,11 @@ $('button').onclick = () => {
                 } else if (from === '112' && to === '113') {
                     line = Updater112To113.upLine(line)
                 } else if (from === '112' && to === '114') {
-                    line = Updater113To114.upLine(
+                    line = Updater113To114.upCommand(
                         Updater112To113.upLine(line)
                     )
                 } else if (from === '113' && to === '114') {
-                    line = Updater113To114.upLine(line)
+                    line = Updater113To114.upCommand(line)
                 } else {
                     line = ' !> Please select the target version!'
                 }

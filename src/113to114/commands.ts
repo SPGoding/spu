@@ -583,6 +583,7 @@ export class Commands113 {
                                             nbt: {
                                                 type: 'argument',
                                                 parser: 'minecraft:nbt',
+                                                updater: 'spgoding:block_nbt',
                                                 executable: true
                                             }
                                         }
@@ -603,6 +604,7 @@ export class Commands113 {
                                             nbt: {
                                                 type: 'argument',
                                                 parser: 'minecraft:nbt',
+                                                updater: 'spgoding:entity_nbt',
                                                 executable: true
                                             }
                                         }
@@ -3971,6 +3973,7 @@ export class Commands113 {
                                     nbt: {
                                         type: 'argument',
                                         parser: 'minecraft:nbt',
+                                        updater: 'spgoding:entity_nbt',
                                         executable: true
                                     }
                                 },

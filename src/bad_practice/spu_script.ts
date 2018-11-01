@@ -146,7 +146,7 @@ export default class SpuScript {
                         source =ans.entityType
                         break
                     }
-                    case '$[19to111]CombineSelectorWithNbt': {
+                    case '[19to111]CombineSelectorWithNbt': {
                         const sel = new Selector19To111()
                         sel.parse(source)
                         const ans = Updater19to111.upEntityNbtWithType(getNbtCompound(params[0]), sel.getType())
