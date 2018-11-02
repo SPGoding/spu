@@ -2,6 +2,7 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { TargetSelector } from '../../utils/target_selector'
+import { NbtByte } from '../../utils/nbt/nbt';
 
 describe.only('TargetSelector tests', () => {
     describe('constructor() tests', () => {
@@ -41,13 +42,24 @@ describe.only('TargetSelector tests', () => {
 
             assert(foobar && foobar.min === 0 && foobar.max === 2)
         })
+        it('should parse nbt', () => {
+            const input = '@e[nbt={foobar:1b}]'
+
+            const actual = new TargetSelector(input)
+            const foobar = actual.nbt.get('foobar')
+
+            assert(foobar instanceof NbtByte && foobar.get() === 1)
+        })
         it('should parse advancements', () => {
             const input = '@e[advancements={foo=false,bar={baz=true}}]'
 
             const actual = new TargetSelector(input)
-            const objective = actual.scores.get('foobar')
+            console.log(actual.toString())
+            const foo = actual.advancements.get('foo')
+            const bar = actual.advancements.get('bar')
 
-            assert(objective && objective.min === 0 && objective.max === 2)
+            assert(foo === 'false')
+            assert.deepEqual(bar, {baz: 'true'})
         })
     })
 })

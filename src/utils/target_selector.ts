@@ -138,24 +138,33 @@ export class TargetSelector {
      * @returns The end index of this score (should be `,` or `}`).
      */
     private parseScore(input: string, index: number) {
+        if (input.charAt(index) === '') {
+            return index
+        }
+
         let objective = ''
         while (input.charAt(index) !== '=') {
             objective += input.charAt(index)
             index += 1
         }
-
         index += 1
 
         let value = ''
+        let end = false
         while (!/^[}|,]$/.test(input.charAt(index))) {
             // Neither '}' nor ','.
             value += input.charAt(index)
             index += 1
+            if (input.charAt(index) === '}') {
+                end = true
+            }
         }
 
         this.scores.set(objective, new Range(value))
 
-        index = this.parseScore(input, index + 1)
+        if (!end) {
+            index = this.parseScore(input, index + 1)
+        }
 
         return index
     }
@@ -187,6 +196,10 @@ export class TargetSelector {
      * @returns The end index of this advancement (should be `,` or `}`).
      */
     private parseAdvancement(input: string, index: number) {
+        if (input.charAt(index) === '') {
+            return index
+        }
+
         let advancement = ''
         while (input.charAt(index) !== '=') {
             advancement += input.charAt(index)
@@ -197,7 +210,7 @@ export class TargetSelector {
 
         if (input.charAt(index) === '{') {
             const result = {}
-            index = this.parseAdvancementCriterias(input, index + 1, result)
+            index = this.parseAdvancementCriterias(input, index, result)
             this.advancements.set(advancement, result)
         } else {
             let value = ''
@@ -209,7 +222,9 @@ export class TargetSelector {
             this.advancements.set(advancement, value)
         }
 
-        index = this.parseAdvancement(input, index + 1)
+        if (input.charAt(index) !== '}') {
+            index = this.parseAdvancement(input, index + 1)
+        }
 
         return index
     }
@@ -241,6 +256,10 @@ export class TargetSelector {
      * @returns The end index of this criteria (should be `,` or `}`).
      */
     private parseAdvancementCriteria(input: string, index: number, result: { [criteria: string]: string }) {
+        if (input.charAt(index) === '') {
+            return index
+        }
+
         let criteria = ''
         while (input.charAt(index) !== '=') {
             criteria += input.charAt(index)
@@ -250,15 +269,21 @@ export class TargetSelector {
         index += 1
 
         let value = ''
+        let end = false
         while (!/^[}|,]$/.test(input.charAt(index))) {
             // Neither '}' nor ','.
             value += input.charAt(index)
             index += 1
+            if (input.charAt(index) === '}') {
+                end = true
+            }
         }
 
         result[criteria] = value
 
-        index = this.parseAdvancementCriteria(input, index + 1, result)
+        if (!end) {
+            index = this.parseAdvancementCriteria(input, index + 1, result)
+        }
 
         return index
     }
@@ -275,6 +300,7 @@ export class TargetSelector {
         while (input.charAt(endIndex) !== '') {
             let nbt = new NbtCompound()
             try {
+                console.log(input.slice(index, endIndex))
                 nbt = getNbtCompound(input.slice(index, endIndex))
             } catch {
                 endIndex += 1
