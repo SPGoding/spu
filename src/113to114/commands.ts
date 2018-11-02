@@ -215,6 +215,7 @@ export class Commands113 {
                                     name: {
                                         type: 'argument',
                                         parser: 'minecraft:component',
+                                        updater: 'spgoding:json_text',
                                         executable: true
                                     }
                                 }
@@ -321,6 +322,7 @@ export class Commands113 {
                                             name: {
                                                 type: 'argument',
                                                 parser: 'minecraft:component',
+                                                updater: 'spgoding:json_text',
                                                 executable: true
                                             }
                                         }
@@ -3419,6 +3421,7 @@ export class Commands113 {
                                                     displayName: {
                                                         type: 'argument',
                                                         parser: 'minecraft:component',
+                                                        updater: 'spgoding:json_text',
                                                         executable: true
                                                     }
                                                 },
@@ -3445,6 +3448,7 @@ export class Commands113 {
                                                     displayName: {
                                                         type: 'argument',
                                                         parser: 'minecraft:component',
+                                                        updater: 'spgoding:json_text',
                                                         executable: true
                                                     }
                                                 }
@@ -4045,6 +4049,7 @@ export class Commands113 {
                                     displayName: {
                                         type: 'argument',
                                         parser: 'minecraft:component',
+                                        updater: 'spgoding:json_text',
                                         executable: true
                                     }
                                 },
@@ -4171,6 +4176,7 @@ export class Commands113 {
                                             displayName: {
                                                 type: 'argument',
                                                 parser: 'minecraft:component',
+                                                updater: 'spgoding:json_text',
                                                 executable: true
                                             }
                                         }
@@ -4212,6 +4218,7 @@ export class Commands113 {
                                             prefix: {
                                                 type: 'argument',
                                                 parser: 'minecraft:component',
+                                                updater: 'spgoding:json_text',
                                                 executable: true
                                             }
                                         }
@@ -4232,6 +4239,7 @@ export class Commands113 {
                                             suffix: {
                                                 type: 'argument',
                                                 parser: 'minecraft:component',
+                                                updater: 'spgoding:json_text',
                                                 executable: true
                                             }
                                         }
@@ -4351,6 +4359,7 @@ export class Commands113 {
                             message: {
                                 type: 'argument',
                                 parser: 'minecraft:component',
+                                updater: 'spgoding:json_text',
                                 executable: true
                             }
                         }
@@ -4369,8 +4378,8 @@ export class Commands113 {
                                 properties: {
                                     min: 0
                                 },
-                                executable: true,
-                                spu_script: '%0 %1 $toTick%2'
+                                updater: 'spgoding:pre_tick_time',
+                                executable: true
                             }
                         }
                     },
@@ -4416,8 +4425,8 @@ export class Commands113 {
                                 properties: {
                                     min: 0
                                 },
-                                executable: true,
-                                spu_script: '%0 %1 $toTick%2'
+                                updater: 'spgoding:pre_tick_time',
+                                executable: true
                             }
                         }
                     }
@@ -4440,6 +4449,7 @@ export class Commands113 {
                                     title: {
                                         type: 'argument',
                                         parser: 'minecraft:component',
+                                        updater: 'spgoding:json_text',
                                         executable: true
                                     }
                                 }
@@ -4458,6 +4468,7 @@ export class Commands113 {
                                     title: {
                                         type: 'argument',
                                         parser: 'minecraft:component',
+                                        updater: 'spgoding:json_text',
                                         executable: true
                                     }
                                 }
@@ -4499,6 +4510,7 @@ export class Commands113 {
                                     title: {
                                         type: 'argument',
                                         parser: 'minecraft:component',
+                                        updater: 'spgoding:json_text',
                                         executable: true
                                     }
                                 }

@@ -1,5 +1,6 @@
 import { getNbtCompound } from "../utils";
 import { NbtString, NbtList, NbtCompound, NbtValue } from "../nbt/nbt";
+import { TargetSelector } from "../target_selector";
 
 export class Updater {
     public upArgument(input: string, updater: string): string {
@@ -12,6 +13,8 @@ export class Updater {
                 return this.upEntityType(input)
             case 'spgoding:item_nbt':
                 return this.upItemNbt(input)
+            case 'spgoding:json_text':
+                return this.upJsonText(input)
             default:
                 return input
         }
@@ -84,15 +87,15 @@ export class Updater {
                             let buyB = v.get('buyB')
                             let sell = v.get('sell')
                             if (buy instanceof NbtCompound) {
-                                buy = this.upItemNbt(buy.get())
+                                buy = getNbtCompound(this.upItemNbt(buy.toString()))
                                 v.set('buy', buy)
                             }
                             if (buyB instanceof NbtCompound) {
-                                buyB = this.upItemNbt(buyB)
+                                buyB = getNbtCompound(this.upItemNbt(buyB.toString()))
                                 v.set('buyB', buyB)
                             }
                             if (sell instanceof NbtCompound) {
-                                sell = this.upItemNbt(sell)
+                                sell = getNbtCompound(this.upItemNbt(sell.toString()))
                                 v.set('sell', sell)
                             }
                         }
@@ -105,7 +108,7 @@ export class Updater {
             if (handItems instanceof NbtList) {
                 for (let i = 0; i < handItems.length; i++) {
                     let item = handItems.get(i)
-                    item = this.upItemNbt(item)
+                    item = getNbtCompound(this.upItemNbt(item.toString()))
 
                     handItems.set(i, item)
                 }
@@ -116,7 +119,7 @@ export class Updater {
             if (armorItems instanceof NbtList) {
                 for (let i = 0; i < armorItems.length; i++) {
                     let item = armorItems.get(i)
-                    item = this.upItemNbt(item)
+                    item = getNbtCompound(this.upItemNbt(item.toString()))
                     armorItems.set(i, item)
                 }
             }
@@ -124,14 +127,14 @@ export class Updater {
         /* ArmorItem */ {
             let armorItem = root.get('ArmorItem')
             if (armorItem instanceof NbtCompound) {
-                armorItem = this.upItemNbt(armorItem)
+                armorItem = getNbtCompound(this.upItemNbt(armorItem.toString()))
                 root.set('ArmorItem', armorItem)
             }
         }
         /* SaddleItem */ {
             let saddleItem = root.get('SaddleItem')
             if (saddleItem instanceof NbtCompound) {
-                saddleItem = this.upItemNbt(saddleItem)
+                saddleItem = getNbtCompound(this.upItemNbt(saddleItem.toString()))
                 root.set('SaddleItem', saddleItem)
             }
         }
@@ -140,7 +143,7 @@ export class Updater {
             if (items instanceof NbtList) {
                 for (let i = 0; i < items.length; i++) {
                     let item = items.get(i)
-                    item = this.upItemNbt(item)
+                    item = getNbtCompound(this.upItemNbt(item.toString()))
                     items.set(i, item)
                 }
             }
@@ -148,7 +151,7 @@ export class Updater {
         /* DecorItem */ {
             let decorItem = root.get('DecorItem')
             if (decorItem instanceof NbtCompound) {
-                decorItem = Updater.upItemNbt(decorItem)
+                decorItem = getNbtCompound(this.upItemNbt(decorItem.toString()))
                 root.set('DecorItem', decorItem)
             }
         }
@@ -157,7 +160,7 @@ export class Updater {
             if (inventory instanceof NbtList) {
                 for (let i = 0; i < inventory.length; i++) {
                     let item = inventory.get(i)
-                    item = Updater.upItemNbt(item)
+                    item = getNbtCompound(this.upItemNbt(item.toString()))
                     inventory.set(i, item)
                 }
             }
@@ -165,21 +168,21 @@ export class Updater {
         /* Item */ {
             let item = root.get('Item')
             if (item instanceof NbtCompound) {
-                item = this.upItemNbt(item)
+                item = getNbtCompound(this.upItemNbt(item.toString()))
                 root.set('Item', item)
             }
         }
         /* SelectedItem */ {
             let selectedItem = root.get('SelectedItem')
             if (selectedItem instanceof NbtCompound) {
-                selectedItem = this.upItemNbt(selectedItem)
+                selectedItem = getNbtCompound(this.upItemNbt(selectedItem.toString()))
                 root.set('SelectedItem', selectedItem)
             }
         }
         /* FireworksItem */ {
             let fireworksItem = root.get('FireworksItem')
             if (fireworksItem instanceof NbtCompound) {
-                fireworksItem = this.upItemNbt(fireworksItem)
+                fireworksItem = getNbtCompound(this.upItemNbt(fireworksItem.toString()))
                 root.set('FireworksItem', fireworksItem)
             }
         }
@@ -225,7 +228,7 @@ export class Updater {
         /* BlockEntityTag */ {
             let blockEntityTag = root.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = this.upBlockNbt(input)
+                blockEntityTag = getNbtCompound(this.upBlockNbt(input))
                 root.set('BlockEntityTag', blockEntityTag)
             }
         }
@@ -238,5 +241,46 @@ export class Updater {
         }
 
         return root.toString()
+    }
+
+    protected upJsonText(input: string) {
+        if (input.slice(0, 1) === '"') {
+            return input
+        } else if (input.slice(0, 1) === '[') {
+            let json = JSON.parse(input)
+            let result: string[] = []
+            for (const i of json) {
+                result.push(this.upJsonText(JSON.stringify(i)))
+            }
+            return `[${result.join()}]`
+        } else {
+            let json = JSON.parse(input)
+            if (json.selector) {
+                json.selector = this.upTargetSelector(json.selector)
+            }
+
+            if (json.clickEvent &&
+                json.clickEvent.action &&
+                (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
+                json.clickEvent.value && json.clickEvent.value.slice(0, 1) === '/') {
+                try {
+                    json.clickEvent.value = this.upCommand(json.clickEvent.value)
+                } catch {
+                    // That's ok. Take it easy.
+                }
+            }
+
+            if (json.extra) {
+                json.extra = JSON.parse(this.upJsonText(JSON.stringify(json.extra)))
+            }
+
+            return JSON.stringify(json).replace(/§/g, '\\u00a7')
+        }
+    }
+
+    protected upTargetSelector(input: string) {
+        let selector = new TargetSelector(input)
+        selector.nbt = getNbtCompound(this.upEntityNbt(selector.nbt.toString()))
+        return selector.toString()
     }
 }

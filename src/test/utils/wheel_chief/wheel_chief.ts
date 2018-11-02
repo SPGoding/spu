@@ -2,9 +2,8 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
-import { getNbtCompound } from '../../../utils/utils';
 
-describe.only('WheelChief tests', () => {
+describe('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
         it('should parse literal', () => {
             const input: ParseResult = {
@@ -26,7 +25,6 @@ describe.only('WheelChief tests', () => {
             }
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
-
             assert.deepEqual(actual.command.args, ['literal'])
         })
 

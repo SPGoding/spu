@@ -27,14 +27,28 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
 
 export default class Updater113To114 extends Updater {
     public static upLine(input: string, from: string) {
+        // TODO: Recursion Update
         // if (from !== '113') {
         //     input = Updater112To113.upLine(input, from)
         // }
         return new Updater113To114().upCommand(input)
     }
     
+    public upArgument(input: string, updater: string): string {
+        switch (updater) {
+            case 'spgoding:pre_tick_time':
+                return this.upPreTickTime(input)
+            default:
+                return super.upArgument(input, updater)
+        }
+    }
+
     protected upCommand(input: string): string {
         return WheelChief.update(input, Commands113.commands,
             new SpuScriptExecutor113To114(), this)
+    }
+
+    private upPreTickTime(input: string) {
+        return `${input}t`
     }
 }
