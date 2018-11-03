@@ -1,6 +1,6 @@
-import { SpuScriptExecutor, WheelChief, Argument } from "../utils/wheel_chief/wheel_chief";
-import { Commands113 } from "./commands";
-import { Updater } from "../utils/wheel_chief/updater";
+import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
+import { Commands113 } from './commands'
+import { Updater } from '../utils/wheel_chief/updater'
 
 export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
@@ -33,7 +33,7 @@ export default class Updater113To114 extends Updater {
         // }
         return new Updater113To114().upCommand(input)
     }
-    
+
     public upArgument(input: string, updater: string): string {
         switch (updater) {
             case 'spgoding:pre_tick_time':
@@ -44,8 +44,7 @@ export default class Updater113To114 extends Updater {
     }
 
     protected upCommand(input: string): string {
-        return WheelChief.update(input, Commands113.commands,
-            new SpuScriptExecutor113To114(), this)
+        return WheelChief.update(input, Commands113.commands, new SpuScriptExecutor113To114(), this)
     }
 
     private upPreTickTime(input: string) {

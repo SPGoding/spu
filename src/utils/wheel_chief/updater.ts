@@ -1,6 +1,6 @@
-import { getNbtCompound } from "../utils";
-import { NbtString, NbtList, NbtCompound, NbtValue } from "../nbt/nbt";
-import { TargetSelector } from "../target_selector";
+import { getNbtCompound } from '../utils'
+import { NbtString, NbtList, NbtCompound, NbtValue } from '../nbt/nbt'
+import { TargetSelector } from '../target_selector'
 
 export class Updater {
     public upArgument(input: string, updater: string): string {
@@ -10,7 +10,7 @@ export class Updater {
             case 'spgoding:entity_nbt':
                 return this.upEntityNbt(input)
             case 'spgoding:entity_type':
-                return this.upEntityType(input)
+                return this.upEntitySummon(input)
             case 'spgoding:item_nbt':
                 return this.upItemNbt(input)
             case 'spgoding:json_text':
@@ -61,7 +61,7 @@ export class Updater {
         /* id */ {
             const id = root.get('id')
             if (id instanceof NbtString) {
-                id.set(this.upEntityType(id.get()))
+                id.set(this.upEntitySummon(id.get()))
             }
         }
         /* Passengers */ {
@@ -218,7 +218,7 @@ export class Updater {
         return root.toString()
     }
 
-    protected upEntityType(input: string) {
+    protected upEntitySummon(input: string) {
         return input
     }
 
@@ -259,10 +259,13 @@ export class Updater {
                 json.selector = this.upTargetSelector(json.selector)
             }
 
-            if (json.clickEvent &&
+            if (
+                json.clickEvent &&
                 json.clickEvent.action &&
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
-                json.clickEvent.value && json.clickEvent.value.slice(0, 1) === '/') {
+                json.clickEvent.value &&
+                json.clickEvent.value.slice(0, 1) === '/'
+            ) {
                 try {
                     json.clickEvent.value = this.upCommand(json.clickEvent.value)
                 } catch {

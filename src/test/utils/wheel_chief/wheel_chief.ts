@@ -373,5 +373,63 @@ describe.only('WheelChief tests', () => {
                 { value: '{spg:rbq}', updater: undefined }
             ])
         })
+
+        it(`should store updater`, () => {
+            const input: ParseResult = {
+                command: {
+                    args: [],
+                    spuScript: ''
+                },
+                index: 0,
+                splited: ['test', '{foo:bar}']
+            }
+            const rootNode: CmdNode = {
+                type: 'root',
+                children: {
+                    test: {
+                        type: 'literal',
+                        children: {
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true
+                            }
+                        }
+                    }
+                }
+            }
+
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            assert.deepEqual(actual.command.args, [
+                { value: 'test' },
+                { value: '{foo:bar}', updater: 'spgoding:entity_nbt' }
+            ])
+        })
+
+        it(`should store spu script`, () => {
+            const input: ParseResult = {
+                command: {
+                    args: [],
+                    spuScript: ''
+                },
+                index: 0,
+                splited: ['test']
+            }
+            const rootNode: CmdNode = {
+                type: 'root',
+                children: {
+                    test: {
+                        type: 'literal',
+                        executable: true,
+                        spu_script: '$test%0'
+                    }
+                }
+            }
+
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            assert.deepEqual(actual.command.args, [{ value: 'test' }])
+            assert(actual.command.spuScript === '$test%0')
+        })
     })
 })

@@ -4,7 +4,7 @@ import * as assert from 'power-assert'
 import { TargetSelector } from '../../utils/target_selector'
 import { NbtByte } from '../../utils/nbt/nbt'
 
-describe.only('TargetSelector tests', () => {
+describe('TargetSelector tests', () => {
     describe('constructor() tests', () => {
         it('should parse variable', () => {
             const input = '@e'

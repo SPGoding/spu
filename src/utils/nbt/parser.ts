@@ -134,7 +134,7 @@ export class Parser {
                         break
                 }
             } else {
-                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+                throw `Expect '${expectedTypes}' but got '${token.type}' at pos '${pos}'.`
             }
         }
 
@@ -225,7 +225,7 @@ export class Parser {
                         break
                 }
             } else {
-                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+                throw `Expect '${expectedTypes}' but got '${token.type}' at pos '${pos}'.`
             }
         }
 
@@ -264,7 +264,7 @@ export class Parser {
                         break
                 }
             } else {
-                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+                throw `Expect '${expectedTypes}' but got '${token.type}' at pos '${pos}'.`
             }
         }
 
@@ -303,7 +303,7 @@ export class Parser {
                         break
                 }
             } else {
-                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+                throw `Expect '${expectedTypes}' but got '${token.type}' at pos '${pos}'.`
             }
         }
 
@@ -342,7 +342,7 @@ export class Parser {
                         break
                 }
             } else {
-                throw `Expect '${expectedTypes}' but get '${token.type}' at pos '${pos}'.`
+                throw `Expect '${expectedTypes}' but got '${token.type}' at pos '${pos}'.`
             }
         }
 

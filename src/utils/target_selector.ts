@@ -31,16 +31,16 @@ export class TargetSelector {
 
     private parseHead(input: string) {
         if (input.charAt(0) !== '@') {
-            throw `Expected '@' at [0] but get '${input.charAt(0)}'.`
+            throw `Expected '@' at [0] but got '${input.charAt(0)}'.`
         }
         if (/^[aeprs]$/.test(input.charAt(1))) {
             this.variable = input.charAt(1)
         } else {
-            throw `Expected '/^[aeprs]$/' at [1] but get '${input.charAt(1)}'.`
+            throw `Expected '/^[aeprs]$/' at [1] but got '${input.charAt(1)}'.`
         }
         if (!/^$|^\[$/.test(input.charAt(2))) {
             // Neither empty nor open square bracket.
-            throw `Expected '/^$|^\[$/' at [2] but get '${input.charAt(2)}'.`
+            throw `Expected '/^$|^\[$/' at [2] but got '${input.charAt(2)}'.`
         }
     }
 
@@ -119,7 +119,7 @@ export class TargetSelector {
      */
     private parseScores(input: string, index: number) {
         if (input.charAt(index) !== '{') {
-            throw `Expected '{' but get '${input.charAt(index)}'.`
+            throw `Expected '{' but got '${input.charAt(index)}'.`
         }
 
         index += 1
@@ -177,7 +177,7 @@ export class TargetSelector {
      */
     private parseAdvancements(input: string, index: number) {
         if (input.charAt(index) !== '{') {
-            throw `Expected '{' but get '${input.charAt(index)}'.`
+            throw `Expected '{' but got '${input.charAt(index)}'.`
         }
 
         index += 1
@@ -238,7 +238,7 @@ export class TargetSelector {
      */
     private parseAdvancementCriterias(input: string, index: number, result: { [criteria: string]: string }) {
         if (input.charAt(index) !== '{') {
-            throw `Expected '{' but get '${input.charAt(index)}'.`
+            throw `Expected '{' but got '${input.charAt(index)}'.`
         }
 
         index += 1

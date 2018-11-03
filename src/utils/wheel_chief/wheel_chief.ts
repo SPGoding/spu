@@ -1,6 +1,44 @@
-import { BrigadierBoolParser, BrigadierDoubleParser, BrigadierFloatParser, BrigadierIntegerParser, BrigadierStringParser, MinecraftBlockPosParser, MinecraftBlockPredicateParser, MinecraftBlockStateParser, MinecraftColorParser, MinecraftComponentParser, MinecraftEntityParser, MinecraftEntityAnchorParser, MinecraftFunctionParser, MinecraftGameProfileParser, MinecraftItemEnchantmentParser, MinecraftItemPredicateParser, MinecraftItemSlotParser, MinecraftItemStackParser, MinecraftMessageParser, MinecraftMobEffectParser, MinecraftNbtParser, MinecraftNbtPathParser, MinecraftObjectiveParser, MinecraftIntRangeParser, MinecraftObjectiveCriteriaParser, MinecraftOperationParser, MinecraftParticleParser, MinecraftResourceLocationParser, MinecraftRotationParser, MinecraftScoreHolderParser, MinecraftScoreboardSlotParser, MinecraftSwizzleParser, MinecraftTeamParser, MinecraftVec2Parser, MinecraftVec3Parser, MinecraftColumnPosParser } from "./argument_parsers";
-import { isWhiteSpace } from "../utils";
-import { Updater } from "./updater";
+import {
+    BrigadierBoolParser,
+    MinecraftColumnPosParser,
+    BrigadierDoubleParser,
+    BrigadierFloatParser,
+    BrigadierIntegerParser,
+    BrigadierStringParser,
+    MinecraftBlockPosParser,
+    MinecraftBlockPredicateParser,
+    MinecraftBlockStateParser,
+    MinecraftColorParser,
+    MinecraftComponentParser,
+    MinecraftEntityParser,
+    MinecraftEntityAnchorParser,
+    MinecraftEntitySummonParser,
+    MinecraftFunctionParser,
+    MinecraftGameProfileParser,
+    MinecraftItemEnchantmentParser,
+    MinecraftItemPredicateParser,
+    MinecraftItemSlotParser,
+    MinecraftItemStackParser,
+    MinecraftMessageParser,
+    MinecraftMobEffectParser,
+    MinecraftNbtParser,
+    MinecraftNbtPathParser,
+    MinecraftObjectiveParser,
+    MinecraftIntRangeParser,
+    MinecraftObjectiveCriteriaParser,
+    MinecraftOperationParser,
+    MinecraftParticleParser,
+    MinecraftResourceLocationParser,
+    MinecraftRotationParser,
+    MinecraftScoreHolderParser,
+    MinecraftScoreboardSlotParser,
+    MinecraftSwizzleParser,
+    MinecraftTeamParser,
+    MinecraftVec2Parser,
+    MinecraftVec3Parser
+} from './argument_parsers'
+import { isWhiteSpace } from '../utils'
+import { Updater } from './updater'
 
 export type Property = { [propertyName: string]: any }
 type Children = { [nodeName: string]: CmdNode }
@@ -79,7 +117,10 @@ export class WheelChief {
         if (command.spuScript) {
             result = executor.execute(command.spuScript, command.args)
         } else {
-            result = command.args.join(' ')
+            for (const argument of command.args) {
+                result += `${argument.value} `
+            }
+            result = result.slice(0, -1)
         }
 
         if (slash) {
@@ -115,15 +156,18 @@ export class WheelChief {
                 result.index += 1
                 result = WheelChief.recurse(result, input, node, rootNode)
             } else {
-                throw `Expected literal '${nodeName}' but get '${input.splited[input.index]}'.`
+                throw `Expected literal '${nodeName}' but got '${input.splited[input.index]}'.`
             }
         } else if (node.type === 'argument') {
             if (node.parser) {
                 let canBeParsed = WheelChief.canBeParsed(input.splited, input.index, node.parser, node.properties)
                 if (canBeParsed === 0) {
-                    throw `Can't be parsed.`
+                    throw `Parser '${node.parser}' failed to parse '${input.splited.slice(input.index).join(' ')}'.`
                 } else {
-                    result.command.args.push({ value: input.splited.slice(input.index, input.index + canBeParsed).join(' '), updater: node.updater })
+                    result.command.args.push({
+                        value: input.splited.slice(input.index, input.index + canBeParsed).join(' '),
+                        updater: node.updater
+                    })
                     result.index += canBeParsed
                 }
                 result = WheelChief.recurse(result, input, node, rootNode)
@@ -149,29 +193,24 @@ export class WheelChief {
                 if (node.spu_script) {
                     result.command.spuScript = node.spu_script
                 }
+            } else {
+                throw `Expected executable command but got EOF.`
             }
-            else {
-                throw `Expected executable command.`
-            }
-        }
-        else {
+        } else {
             if (node.children) {
                 result = WheelChief.parseChildren(node.children, result, rootNode)
-            }
-            else if (node.redirect) {
+            } else if (node.redirect) {
                 if (rootNode.children) {
                     let children = rootNode.children[node.redirect[0]].children
                     if (children) {
                         result = WheelChief.parseChildren(children, result, rootNode)
-                    }
-                    else {
-                        throw `Expected redirect: '${node.redirect[0]}'.`
+                    } else {
+                        throw `Expected redirect node: '${node.redirect[0]}' but got nothing.`
                     }
                 } else {
                     throw `Expected 'children' for the root node.`
                 }
-            }
-            else {
+            } else {
                 if (rootNode.children) {
                     result = WheelChief.parseChildren(rootNode.children, result, rootNode)
                 } else {
@@ -179,7 +218,7 @@ export class WheelChief {
                 }
             }
         }
-        return result;
+        return result
     }
 
     /**
@@ -190,6 +229,7 @@ export class WheelChief {
      */
     private static parseChildren(children: Children, result: ParseResult, rootNode: CmdNode) {
         let operated = false
+        let exception: string[] = []
         for (const name in children) {
             if (children.hasOwnProperty(name)) {
                 const child = children[name]
@@ -197,13 +237,14 @@ export class WheelChief {
                     result = WheelChief.parseCmdNode(result, name, child, rootNode)
                     operated = true
                     break
-                } catch {
+                } catch (e) {
+                    exception.push(e.replace(/Can't match: \<br \/\>/g, ''))
                     continue
                 }
             }
         }
         if (!operated) {
-            throw `Can't match.`
+            throw `Can't match: <br />${exception.join('<br />')}`
         }
         return result
     }
@@ -239,7 +280,7 @@ export class WheelChief {
                 canBeParsed = new MinecraftBlockPosParser().canParse(splited, index)
                 break
             }
-            case 'minecraft:block_pos': {
+            case 'minecraft:block_predicate': {
                 canBeParsed = new MinecraftBlockPredicateParser().canParse(splited, index)
                 break
             }
@@ -265,6 +306,10 @@ export class WheelChief {
             }
             case 'minecraft:entity_anchor': {
                 canBeParsed = new MinecraftEntityAnchorParser().canParse(splited, index)
+                break
+            }
+            case 'minecraft:entity_summon': {
+                canBeParsed = new MinecraftEntitySummonParser().canParse(splited, index)
                 break
             }
             case 'minecraft:function': {

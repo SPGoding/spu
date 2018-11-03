@@ -86,11 +86,13 @@ export class Tokenizer {
 
         pos += 1 // Skip the first quote.
 
-        while (nbt.substr(pos, 1) !== '"' || flag) {
-            if (nbt.substr(pos, 1) === '\\' && !flag) {
+        while (nbt.charAt(pos) !== '"' || flag) {
+            if (nbt.charAt(pos) === '\\' && !flag) {
                 flag = true
+            } else if (nbt.charAt(pos) === '') {
+                throw `Expected '"' but got EOF for a quoted string.`
             } else {
-                str += nbt.substr(pos, 1)
+                str += nbt.charAt(pos)
                 flag = false
             }
             pos += 1

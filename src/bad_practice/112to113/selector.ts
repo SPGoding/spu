@@ -2,7 +2,7 @@ import CharReader from '../utils/char_reader'
 import Updater from './updater'
 import { isWhiteSpace, getNbtCompound } from '../../utils/utils'
 import { NbtCompound } from '../../utils/nbt/nbt'
-import Entities from './mappings/entities';
+import Entities from './mappings/entities'
 
 /**
  * Represent a target selector.
@@ -32,7 +32,7 @@ export default class Selector {
     private advancements = new Map<string, boolean | Map<string, boolean>>()
     private nbt = new NbtCompound()
 
-    constructor() { }
+    constructor() {}
 
     /**
      * Parses this selector according to a string in 1.12.
@@ -423,7 +423,7 @@ export default class Selector {
         let map: Map<string, boolean>
 
         if (char !== '{') {
-            throw `Advancements should start with '{', but get '${char}' at '${val}'`
+            throw `Advancements should start with '{', but got '${char}' at '${val}'`
         }
 
         char = charReader.next()
@@ -799,9 +799,9 @@ class Range {
             } else {
                 return `${min}`
             }
-        } else if (min !== null ) {
+        } else if (min !== null) {
             return `${min}..`
-        } else if (max !== null ) {
+        } else if (max !== null) {
             return `..${max}`
         } else {
             return ''
