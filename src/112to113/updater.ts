@@ -107,7 +107,7 @@ export class UpdaterTo113 extends Updater {
 
         return new UpdaterTo113().upSpgodingCommand(input)
     }
-
+    
     public upArgument(input: string, updater: string) {
         switch (updater) {
             case 'spgoding:difficulty':
@@ -361,7 +361,7 @@ export class UpdaterTo113 extends Updater {
         return blockState
     }
 
-    protected upSpgodingGamemode(input: string) {
+    public upSpgodingGamemode(input: string) {
         switch (input) {
             case '0':
             case 's':

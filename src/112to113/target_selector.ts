@@ -1,8 +1,8 @@
 import CharReader from '../bad_practice/utils/char_reader'
-import Updater from '../bad_practice/112to113/updater'
+import { UpdaterTo113 as Updater } from '../112to113/updater'
 import { isWhiteSpace, getNbtCompound } from '../utils/utils'
 import { NbtCompound } from '../utils/nbt/nbt'
-import Entities from '../bad_practice/112to113/mappings/entities'
+import Entities from '../112to113/mappings/entities'
 
 /**
  * Represent a target selector.
@@ -243,9 +243,9 @@ export class TargetSelector {
                             break
                         case 'm':
                             if (val.slice(0, 1) !== '!') {
-                                this.gamemode.push(Updater.upGamemode(val))
+                                this.gamemode.push(new Updater().upSpgodingGamemode(val))
                             } else {
-                                this.gamemode.push('!' + Updater.upGamemode(val.slice(1)))
+                                this.gamemode.push('!' + new Updater().upSpgodingGamemode(val.slice(1)))
                             }
                             break
                         case 'l':

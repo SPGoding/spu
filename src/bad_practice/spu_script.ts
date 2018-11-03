@@ -2,9 +2,9 @@ import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
 import { TargetSelector as TargetSelector112To113 } from '../112to113/target_selector'
 import Selector19To111 from './19to111/selector'
-import Items from './112to113/mappings/items'
+import Items from '../112to113/mappings/items'
 import { isNumeric, getNbtCompound } from '../utils/utils'
-import Blocks from './112to113/mappings/blocks'
+import Blocks from '../112to113/mappings/blocks'
 import { Updater19To111 } from './19to111/updater';
 
 /**

@@ -363,6 +363,12 @@ export class Updater {
     }
 
     protected upSpgodingItemNbt(input: NbtCompound) {
+        /* id */ {
+            let id = input.get('id')
+            if (id instanceof NbtString) {
+                id.set(this.upSpgodingItemName(id.get()))
+            }
+        }
         /* tag */ {
             let tag = input.get('tag')
             if (tag instanceof NbtCompound) {

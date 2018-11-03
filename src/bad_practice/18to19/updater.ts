@@ -4,7 +4,7 @@ import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
 import Selector from "./selector";
 import { getNbtCompound, getNbtList, isNumeric } from "../../utils/utils";
-import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt, NbtFloat } from "../../utils/nbt/nbt";
+import { NbtCompound, NbtString, NbtList, NbtValue, NbtInt, NbtFloat } from "../../utils/nbt/nbt";
 import Blocks from "./mappings/blocks";
 import Items from "./mappings/items";
 

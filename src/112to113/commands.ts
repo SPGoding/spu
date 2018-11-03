@@ -1906,7 +1906,7 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: 'tag %3 $setNbtToSelector%4%6 %5'
+                                                                spu_script: 'tag $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true,
@@ -1934,7 +1934,7 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: 'tag %3 $setNbtToSelector%4%6 %5'
+                                                                spu_script: 'tag $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true,
