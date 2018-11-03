@@ -158,7 +158,11 @@ export class WheelChief {
             }
         } else if (node.type === 'literal') {
             if (nodeName === input.splited[input.index]) {
-                result.command.args.push({ value: nodeName })
+                if (node.updater) {
+                    result.command.args.push({ value: nodeName, updater: node.updater })
+                } else {
+                    result.command.args.push({ value: nodeName })
+                }
                 result.index += 1
                 result = WheelChief.recurse(result, input, node, rootNode)
             } else {

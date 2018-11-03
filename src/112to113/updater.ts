@@ -1,5 +1,5 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
-import { Commands113To114 } from './commands'
+import { Commands112To113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
@@ -14,6 +14,16 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
             } else if (splited[i].slice(0, 1) === '$') {
                 let params = splited[i].slice(1).split('%')
                 switch (params[0]) {
+                    case 'setBlockParam':
+                    case 'setItemParams':
+                    case 'setNameToItemStack':
+                    case 'setNameDataToItemStack':
+                    case 'setNameDataNbtToItemStack':
+                    case 'setNameToBlockState':
+                    case 'setNameStatesToBlockState':
+                    case 'setNameStatesNbtToBlockState':
+                        splited[i] = `${args[parseInt(params[1])]}t`
+                        break
                     default:
                         throw `Unexpected script method: '${params[0]}'.`
                 }
@@ -35,7 +45,15 @@ export default class Updater113To114 extends Updater {
 
     public upArgument(input: string, updater: string): string {
         switch (updater) {
-            case 'spgoding:pre_tick_time':
+            case 'minecraft:item_slot':
+            case 'spgoding:as_entity':
+            case 'spgoding:difficulty':
+            case 'spgoding:effect':
+            case 'spgoding:enchantment':
+            case 'spgoding:gamemode':
+            case 'spgoding:particle':
+            case 'spgoding:positioned_pos':
+            case 'spgoding:sound':
                 return this.upSpgodingPreTickTime(input)
             default:
                 return super.upArgument(input, updater)
@@ -43,7 +61,7 @@ export default class Updater113To114 extends Updater {
     }
 
     protected upSpgodingCommand(input: string): string {
-        return WheelChief.update(input, Commands113To114.commands, new SpuScriptExecutor113To114(), this)
+        return WheelChief.update(input, Commands112To113.commands, new SpuScriptExecutor113To114(), this)
     }
 
     protected upSpgodingBlockName(input: string): string {

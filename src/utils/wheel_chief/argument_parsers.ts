@@ -3,7 +3,7 @@ import { BlockState } from '../block_state';
 import { TargetSelector } from '../target_selector';
 import { ItemStack } from '../item_stack';
 
-const ResourceLocation = /^(\w+:)?\w+$/
+const ResourceLocation = /^(\w+:)?[\w\.]+$/
 const BlockStateOrItemStack = /^(\w+:)?\w+(\[.*\])?({.*})?$/
 const ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
 const IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
