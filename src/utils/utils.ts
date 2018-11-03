@@ -10,7 +10,7 @@ export function isNumeric(num: any) {
 }
 
 export function isWhiteSpace(char: string) {
-    return [' ', '\t', '\n', '\r'].indexOf(char) !== -1
+    return char === '' || [' ', '\t', '\n', '\r'].indexOf(char) !== -1
 }
 
 /**
@@ -20,7 +20,8 @@ export function getNbtCompound(str: string, version: 'before 1.12' | 'after 1.12
     const tokenizer = new NbtTokenizer()
     const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
-    return parser.parseCompounds(tokens, version)
+    const nbt = parser.parseCompounds(tokens, version)
+    return nbt
 }
 
 /**
@@ -31,6 +32,18 @@ export function getNbtList(str: string, version: 'before 1.12' | 'after 1.12' = 
     const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
     return parser.parseLists(tokens, version)
+}
+
+/**
+ * Set the namespace to `minecraft:` if no namespace.
+ * @param input A string.
+ */
+export function completeNamespace(input: string) {
+    if (input.indexOf(':') === -1) {
+        input = `minecraft:${input}`
+    }
+
+    return input
 }
 
 /**
