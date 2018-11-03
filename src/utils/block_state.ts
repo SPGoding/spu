@@ -1,5 +1,5 @@
 import { NbtCompound } from "./nbt/nbt";
-import { getNbtCompound } from "./utils";
+import { getNbtCompound, completeNamespace } from "./utils";
 
 export class BlockState {
     public name: string
@@ -13,6 +13,21 @@ export class BlockState {
         this.parseNbt(input, index)
     }
 
+    public toString() {
+        let result = this.name
+
+        let states = JSON.stringify(this.states).replace(/"/g, '').replace(/:/g, '=').replace(/\{/g, '[').replace(/\}/g, ']')
+        if (states !== '[]') {
+            result += states
+        }
+
+        if (this.nbt !== undefined) {
+            result += this.nbt.toString()
+        }
+
+        return result
+    }
+
     /**
      * Parses the block name.
      * @returns The end of the name. (The index of the char before `[`, `{` or ``.)
@@ -24,6 +39,8 @@ export class BlockState {
             name += input.charAt(index)
             index += 1
         }
+
+        name = completeNamespace(name)
 
         this.name = name
 

@@ -1,8 +1,8 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Commands113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
-import { escape } from '../utils/utils';
-import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt';
+import { escape, completeNamespace } from '../utils/utils'
+import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
 
 export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
@@ -39,7 +39,7 @@ export default class Updater113To114 extends Updater {
     public upArgument(input: string, updater: string): string {
         switch (updater) {
             case 'spgoding:pre_tick_time':
-                return this.upPreTickTime(input)
+                return this.upSpgodingPreTickTime(input)
             default:
                 return super.upArgument(input, updater)
         }
@@ -47,6 +47,41 @@ export default class Updater113To114 extends Updater {
 
     protected upSpgodingCommand(input: string): string {
         return WheelChief.update(input, Commands113.commands, new SpuScriptExecutor113To114(), this)
+    }
+
+    protected upSpgodingBlockName(input: string): string {
+        input = completeNamespace(input)
+
+        const mapping: [string, string][] = [
+            ['minecraft:sign', 'minecraft:oak_sign'],
+            ['minecraft:wall_sign', 'minecraft:oak_wall_sign'],
+            ['minecraft:stone_slab', 'minecraft:smooth_stone_slab']
+        ]
+
+        const result = mapping.find(v => v[0] === input)
+
+        if (result) {
+            input = result[1]
+        }
+
+        return input
+    }
+
+    protected upSpgodingItemName(input: string): string {
+        input = completeNamespace(input)
+
+        const mapping: [string, string][] = [
+            ['minecraft:sign', 'minecraft:oak_sign'],
+            ['minecraft:stone_slab', 'minecraft:smooth_stone_slab']
+        ]
+
+        const result = mapping.find(v => v[0] === input)
+
+        if (result) {
+            input = result[1]
+        }
+
+        return input
     }
 
     protected upSpgodingItemTagNbt(input: NbtCompound): NbtCompound {
@@ -67,7 +102,7 @@ export default class Updater113To114 extends Updater {
         }
     }
 
-    private upPreTickTime(input: string) {
+    private upSpgodingPreTickTime(input: string) {
         return `${input}t`
     }
 }

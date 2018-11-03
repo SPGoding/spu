@@ -35,6 +35,18 @@ export function getNbtList(str: string, version: 'before 1.12' | 'after 1.12' = 
 }
 
 /**
+ * Set the namespace to `minecraft:` if no namespace.
+ * @param input A string.
+ */
+export function completeNamespace(input: string) {
+    if (input.indexOf(':') === -1) {
+        input = `minecraft:${input}`
+    }
+
+    return input
+}
+
+/**
  * Get UUIDMost and UUIDLeast froom a UUID pair.
  */
 export function getUuidLeastUuidMost(uuid: string) {

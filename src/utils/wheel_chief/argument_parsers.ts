@@ -1,6 +1,7 @@
 import { isNumeric, getNbtCompound } from '../utils'
-import { BlockState } from '../blockstate';
+import { BlockState } from '../block_state';
 import { TargetSelector } from '../target_selector';
+import { ItemStack } from '../item_stack';
 
 const ResourceLocation = /^(\w+:)?\w+$/
 const BlockStateOrItemStack = /^(\w+:)?\w+(\[.*\])?({.*})?$/
@@ -419,10 +420,20 @@ export class MinecraftItemPredicateParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        // TODO: ItemStack
-        if (BlockStateOrItemStack.test(splited[index])) {
+        let join = splited[index]
+        try {
+            new ItemStack(join)
             return 1
-        } else {
+        } catch {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                try {
+                    new ItemStack(join)
+                    return i - index + 1
+                } catch {
+                    continue
+                }
+            }
             return 0
         }
     }
@@ -604,10 +615,20 @@ export class MinecraftItemStackParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        // TODO: ItemStack
-        if (BlockStateOrItemStack.test(splited[index])) {
+        let join = splited[index]
+        try {
+            new ItemStack(join)
             return 1
-        } else {
+        } catch {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                try {
+                    new ItemStack(join)
+                    return i - index + 1
+                } catch {
+                    continue
+                }
+            }
             return 0
         }
     }
@@ -669,7 +690,7 @@ export class MinecraftNbtParser implements ArgumentParser {
             let test = splited.slice(index, endIndex).join(' ')
             try {
                 getNbtCompound(test)
-                return endIndex - index + 1
+                return endIndex - index
             } catch {
                 continue
             }
