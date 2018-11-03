@@ -1,4 +1,4 @@
-import Updater from './updater'
+import { Updater19To111 } from './updater'
 import Selector from './selector'
 import Spuses from '../111to112/mappings/spuses'
 import { isNumeric } from '../../utils/utils'
@@ -61,7 +61,7 @@ export default class Checker {
             input = input.slice(1)
         }
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater.getResultMap(input, spusOld)
+            let map = Updater19To111.getResultMap(input, spusOld)
             if (map) {
                 return true
             }

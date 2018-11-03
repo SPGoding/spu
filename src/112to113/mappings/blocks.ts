@@ -1,7 +1,6 @@
-import { NbtCompound, NbtList, NbtString, NbtInt, NbtByte, NbtValue, NbtShort } from '../../../utils/nbt/nbt'
-import Updater from '../updater'
+import { NbtCompound, NbtList, NbtString, NbtInt, NbtByte, NbtValue, NbtShort } from '../../utils/nbt/nbt'
 import Items from './items'
-import { getNbtCompound, escape } from '../../../utils/utils'
+import { getNbtCompound, completeNamespace } from '../../utils/utils'
 import { Number_Number_String_StringArray } from './mapping';
 
 export class StdBlock {
@@ -91,9 +90,7 @@ export default class Blocks {
                 throw `Unknown block ID: '${id}:${data}'.`
             }
         } else if (name && !id) {
-            if (name.slice(0, 10) !== 'minecraft:') {
-                name = `minecraft:${name}`
-            }
+            name = completeNamespace(name)
             ansName = name
             if (!nbt) {
                 nbt = '{}'
@@ -167,12 +164,6 @@ export default class Blocks {
         switch (ansName) {
             case 'minecraft:black_banner':
             case 'minecraft:white_banner': {
-                /* CustomName */ {
-                    const customName = ansNbt.get('CustomName')
-                    if (customName instanceof NbtString) {
-                        customName.set(Updater.upPreJson(customName.get()))
-                    }
-                }
                 /* Base */ {
                     const base = ansNbt.get('Base')
                     ansNbt.del('Base')
@@ -196,12 +187,6 @@ export default class Blocks {
                 break
             }
             case 'minecraft:white_wall_banner': {
-                /* CustomName */ {
-                    const customName = ansNbt.get('CustomName')
-                    if (customName instanceof NbtString) {
-                        customName.set(Updater.upPreJson(customName.get()))
-                    }
-                }
                 /* Base */ {
                     const base = ansNbt.get('Base')
                     ansNbt.del('Base')
@@ -224,76 +209,12 @@ export default class Blocks {
                 }
                 break
             }
-            case 'minecraft:enchanting_table': {
-                /* CustomName */ {
-                    const customName = ansNbt.get('CustomName')
-                    if (customName instanceof NbtString) {
-                        customName.set(Updater.upPreJson(customName.get()))
-                    }
-                }
-                break
-            }
             case 'minecraft:red_bed': {
                 /* color */ {
                     const color = ansNbt.get('color')
                     ansNbt.del('color')
                     if (color instanceof NbtInt) {
                         ansName = Items.toNominalColor(color.get(), 'bed')
-                    }
-                }
-                break
-            }
-            case 'minecraft:cauldron': {
-                /* Items */ {
-                    const items = ansNbt.get('Items')
-                    if (items instanceof NbtList) {
-                        for (let i = 0; i < items.length; i++) {
-                            let item = items.get(i)
-                            item = Updater.upItemNbt(item)
-                            items.set(i, item)
-                        }
-                    }
-                }
-                break
-            }
-            case 'minecraft:brewing_stand':
-            case 'minecraft:chest':
-            case 'minecraft:dispenser':
-            case 'minecraft:dropper':
-            case 'minecraft:furnance':
-            case 'minecraft:hopper':
-            case 'minecraft:shulker_box': {
-                /* CustomName */ {
-                    const customName = ansNbt.get('CustomName')
-                    if (customName instanceof NbtString) {
-                        customName.set(Updater.upPreJson(customName.get()))
-                    }
-                }
-                /* Items */ {
-                    const items = ansNbt.get('Items')
-                    if (items instanceof NbtList) {
-                        for (let i = 0; i < items.length; i++) {
-                            let item = items.get(i)
-                            item = Updater.upItemNbt(item)
-                            items.set(i, item)
-                        }
-                    }
-                }
-                break
-            }
-            case 'minecraft:command_block':
-            case 'minecraft:repeating_command_block':
-            case 'minecraft:chain_command_block': {
-                /* CustomName */ {
-                    const customName = ansNbt.get('CustomName')
-                    if (customName instanceof NbtString) {
-                        customName.set(Updater.upPreJson(customName.get()))
-                    }
-                }
-                /* Command */ {
-                    const command = ansNbt.get('Command')
-                    if (command instanceof NbtString) {
-                        command.set(Updater.upCommand(command.get(), false))
                     }
                 }
                 break
@@ -313,38 +234,6 @@ export default class Blocks {
             case 'minecraft:jukebox': {
                 /* Record */ {
                     ansNbt.del('Record')
-                }
-                /* RecordItem */ {
-                    let item = ansNbt.get('RecordItem')
-                    if (item instanceof NbtString) {
-                        item = Updater.upItemNbt(item)
-                        ansNbt.set('RecordItem', item)
-                    }
-                }
-                break
-            }
-            case 'minecraft:mob_spawner': {
-                /* SpawnPotentials */ {
-                    const spawnPotentials = ansNbt.get('SpawnPotentials')
-                    if (spawnPotentials instanceof NbtList) {
-                        for (let i = 0; i < spawnPotentials.length; i++) {
-                            const potential = spawnPotentials.get(i)
-                            if (potential instanceof NbtCompound) {
-                                let entity = potential.get('Entity')
-                                if (entity instanceof NbtCompound) {
-                                    entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
-                                    potential.set('Entity', entity)
-                                }
-                            }
-                        }
-                    }
-                }
-                /* SpawnData */ {
-                    let spawnData = ansNbt.get('SpawnData')
-                    if (spawnData instanceof NbtCompound) {
-                        spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
-                        ansNbt.set('SpawnData', spawnData)
-                    }
                 }
                 break
             }
@@ -377,33 +266,6 @@ export default class Blocks {
                     if (blockID instanceof NbtInt && (blockData instanceof NbtInt || blockData === undefined)) {
                         const blockState = Blocks.upNumericToBlockState(blockID, blockData)
                         ansNbt.set('blockState', blockState)
-                    }
-                }
-                break
-            }
-            case 'minecraft:sign': {
-                /* Text1 */ {
-                    const text = ansNbt.get('Text1')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                /* Text2 */ {
-                    const text = ansNbt.get('Text2')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                /* Text3 */ {
-                    const text = ansNbt.get('Text3')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
-                    }
-                }
-                /* Text4 */ {
-                    const text = ansNbt.get('Text4')
-                    if (text instanceof NbtString) {
-                        text.set(Updater.upJson(text.get()))
                     }
                 }
                 break
@@ -501,7 +363,7 @@ export default class Blocks {
         return blockState
     }
 
-    public static upStringToBlockState(id: NbtString, data?: NbtByte | NbtInt) {
+    public static upSpgodingBlockState(id: NbtString, data?: NbtByte | NbtInt) {
         const blockState = new NbtCompound()
         const name = new NbtString()
         const properties = new NbtCompound()

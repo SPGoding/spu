@@ -1,15 +1,15 @@
-import CharReader from '../utils/char_reader'
-import Updater from './updater'
-import { isWhiteSpace, getNbtCompound } from '../../utils/utils'
-import { NbtCompound } from '../../utils/nbt/nbt'
-import Entities from './mappings/entities'
+import CharReader from '../bad_practice/utils/char_reader'
+import Updater from '../bad_practice/112to113/updater'
+import { isWhiteSpace, getNbtCompound } from '../utils/utils'
+import { NbtCompound } from '../utils/nbt/nbt'
+import Entities from '../bad_practice/112to113/mappings/entities'
 
 /**
  * Represent a target selector.
  * Provides methods to operate it.
  * @author SPGoding
  */
-export default class Selector {
+export class TargetSelector {
     private variable: 'a' | 'e' | 'p' | 'r' | 's'
     private dx: number
     private dy: number
@@ -127,7 +127,7 @@ export default class Selector {
             if (['a', 'e', 'p', 'r', 's', ']'].indexOf(input.slice(-1)) === -1) {
                 return false
             }
-            let sel = new Selector()
+            let sel = new TargetSelector()
             sel.parse112(input)
         } catch (ignored) {
             return false

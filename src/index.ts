@@ -1,8 +1,8 @@
-import Updater18To19 from './bad_practice/18to19/updater'
-import Updater19To111 from './bad_practice/19to111/updater'
-import Updater111To112 from './bad_practice/111to112/updater'
-import Updater112To113 from './bad_practice/112to113/updater'
-import Updater113To114 from './113to114/updater'
+import { Updater18To19 } from './bad_practice/18to19/updater'
+import { Updater19To111 } from './bad_practice/19to111/updater'
+import { Updater111To112 } from './bad_practice/111to112/updater'
+import { UpdaterTo113 } from './112to113/updater'
+import { UpdaterTo114 } from './113to114/updater'
 
 function $(id: string) {
     return <HTMLElement>document.getElementById(id)
@@ -40,7 +40,11 @@ $('button').onclick = () => {
             for (let line of lines) {
                 number = lines.indexOf(line)
 
-                if (from === '18' && to === '19') {
+                if (to === '114') {
+                    line = UpdaterTo114.upLine(line, from)
+                } else if (to === '113') {
+                    line = UpdaterTo113.upLine(line, from)
+                } else if (from === '18' && to === '19') {
                     line = Updater18To19.upLine(line)
                 } else if (from === '18' && to === '111') {
                     line = Updater19To111.upLine(
@@ -52,64 +56,14 @@ $('button').onclick = () => {
                             Updater18To19.upLine(line)
                         )
                     )
-                } else if (from === '18' && to === '113') {
-                    line = Updater112To113.upLine(
-                        Updater111To112.upLine(
-                            Updater19To111.upLine(
-                                Updater18To19.upLine(line)
-                            )
-                        )
-                    )
-                } else if (from === '18' && to === '114') {
-                    line = Updater113To114.upLine(
-                        Updater112To113.upLine(
-                            Updater111To112.upLine(
-                                Updater19To111.upLine(
-                                    Updater18To19.upLine(line)
-                                )
-                            )
-                        ), from
-                    )
                 } else if (from === '19' && to === '111') {
                     line = Updater19To111.upLine(line)
                 } else if (from === '19' && to === '112') {
                     line = Updater111To112.upLine(
                         Updater19To111.upLine(line)
                     )
-                } else if (from === '19' && to === '113') {
-                    line = Updater112To113.upLine(
-                        Updater111To112.upLine(
-                            Updater19To111.upLine(line)
-                        )
-                    )
-                } else if (from === '19' && to === '114') {
-                    line = Updater113To114.upLine(
-                        Updater112To113.upLine(
-                            Updater111To112.upLine(
-                                Updater19To111.upLine(line)
-                            )
-                        ), from
-                    )
                 } else if (from === '111' && to === '112') {
                     line = Updater111To112.upLine(line)
-                } else if (from === '111' && to === '113') {
-                    line = Updater112To113.upLine(
-                        Updater111To112.upLine(line)
-                    )
-                } else if (from === '111' && to === '114') {
-                    line = Updater113To114.upLine(
-                        Updater112To113.upLine(
-                            Updater111To112.upLine(line)
-                        ), from
-                    )
-                } else if (from === '112' && to === '113') {
-                    line = Updater112To113.upLine(line)
-                } else if (from === '112' && to === '114') {
-                    line = Updater113To114.upLine(
-                        Updater112To113.upLine(line), from
-                    )
-                } else if (from === '113' && to === '114') {
-                    line = Updater113To114.upLine(line, from)
                 } else {
                     line = ' !> Please select the target version!'
                 }

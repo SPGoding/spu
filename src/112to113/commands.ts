@@ -495,12 +495,10 @@ export class Commands112To113 {
                             amount: 'multiple',
                             type: 'entities'
                         },
-                        updater: 'spgoding:as_entity',
                         children: {
                             pos: {
                                 type: 'argument',
                                 parser: 'minecraft:vec3',
-                                updater: 'spgoding:positioned_pos',
                                 children: {
                                     command: {
                                         type: 'argument',
@@ -533,14 +531,14 @@ export class Commands112To113 {
                                 children: {
                                     states: {
                                         type: 'argument',
-                                        parser: 'bragadier:string',
+                                        parser: 'brigadier:string',
                                         properties: {
                                             type: 'word'
                                         },
                                         children: {
                                             command: {
                                                 type: 'argument',
-                                                parser: 'bragadier:string',
+                                                parser: 'brigadier:string',
                                                 properties: {
                                                     type: 'greedy'
                                                 },
@@ -761,19 +759,19 @@ export class Commands112To113 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:item_tag_nbt',
                                                         executable: true,
-                                                        spu_script: '%0 %1 $addNameDataNbtToItemStack%2%4%5 %3'
+                                                        spu_script: '%0 %1 $setNameDataNbtToItemStack%2%4%5 %3'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 $addNameDataToItemStack%2%4 %3'
+                                                spu_script: '%0 %1 $setNameDataToItemStack%2%4 %3'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: '%0 %1 $addNameToItemStack%2 %3'
+                                        spu_script: '%0 %1 $setNameToItemStack%2 %3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: '%0 %1 $addNameToItemStack%2'
+                                spu_script: '%0 %1 $setNameToItemStack%2'
                             }
                         }
                     }
@@ -2448,7 +2446,7 @@ export class Commands112To113 {
                             block: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:block_nbt',
+                                updater: 'spgoding:block_name',
                                 children: {
                                     data: {
                                         type: 'argument',

@@ -7,7 +7,7 @@ import Selector from "./selector";
 import { getNbtCompound } from "../../utils/utils";
 import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../../utils/nbt/nbt";
 
-export default class Updater {
+export class Updater19To111 {
     /**
         Returns an result map from an 1.12 command and an 1.12 spus.
         @param cmd An 1.12 minecraft command.
@@ -40,7 +40,7 @@ export default class Updater {
             end = cmdSplited.length
 
             if (spusArg[0] === '%') {
-                map.set(`%${cnt++}`, Updater.upArgument(cmdArg, spusArg))
+                map.set(`%${cnt++}`, Updater19To111.upArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
@@ -57,7 +57,7 @@ export default class Updater {
         if (/^\s*$/.test(input)) {
             return input
         } else {
-            return Updater.upCommand(input)
+            return Updater19To111.upCommand(input)
         }
     }
 
@@ -70,7 +70,7 @@ export default class Updater {
         }
 
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater.getResultMap(input, spusOld)
+            let map = Updater19To111.getResultMap(input, spusOld)
             if (map) {
                 let spusNew = Spuses.pairs.get(spusOld)
                 if (spusNew) {
@@ -90,23 +90,23 @@ export default class Updater {
     private static upArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
             case 'block_nbt':
-                return Updater.upBlockNbt(arg)
+                return Updater19To111.upBlockNbt(arg)
             case 'bool':
                 return arg
             case 'command':
-                return Updater.upCommand(arg)
+                return Updater19To111.upCommand(arg)
             case 'entity':
-                return Updater.upEntity(arg)
+                return Updater19To111.upEntity(arg)
             case 'entity_nbt':
-                return Updater.upEntityNbt(arg)
+                return Updater19To111.upEntityNbt(arg)
             case 'entity_type':
-                return Updater.upEntityType(arg)
+                return Updater19To111.upEntityType(arg)
             case 'item_nbt':
-                return Updater.upItemNbt(arg)
+                return Updater19To111.upItemNbt(arg)
             case 'item_tag_nbt':
-                return Updater.upItemTagNbt(arg)
+                return Updater19To111.upItemTagNbt(arg)
             case 'json':
-                return Updater.upJson(arg)
+                return Updater19To111.upJson(arg)
             case 'literal':
                 return arg
             case 'num':
@@ -137,7 +137,7 @@ export default class Updater {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(Updater19To111.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -147,7 +147,7 @@ export default class Updater {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(Updater19To111.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -179,7 +179,7 @@ export default class Updater {
             if (passengers instanceof NbtList) {
                 for (let i = 0; i < passengers.length; i++) {
                     let passenger = passengers.get(i)
-                    passenger = getNbtCompound(Updater.upEntityNbt(passenger.toString()))
+                    passenger = getNbtCompound(Updater19To111.upEntityNbt(passenger.toString()))
                     passengers.set(i, passenger)
                 }
             }
@@ -191,7 +191,7 @@ export default class Updater {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbtCompound(Updater.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(Updater19To111.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -201,7 +201,7 @@ export default class Updater {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbtCompound(Updater.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(Updater19To111.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -298,7 +298,7 @@ export default class Updater {
         /* tag */ {
             let tag = nbt.get('tag')
             if (tag instanceof NbtCompound) {
-                tag = getNbtCompound(Updater.upItemTagNbt(tag.toString()))
+                tag = getNbtCompound(Updater19To111.upItemTagNbt(tag.toString()))
                 nbt.set('tag', tag)
             }
         }
@@ -310,14 +310,14 @@ export default class Updater {
         /* EntityTag */ {
             let entityTag = nbt.get('EntityTag')
             if (entityTag instanceof NbtCompound) {
-                entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
+                entityTag = getNbtCompound(Updater19To111.upEntityNbt(entityTag.toString()))
                 nbt.set('EntityTag', entityTag)
             }
         }
         /* BlockEntityTag */ {
             let blockEntityTag = nbt.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = getNbtCompound(Updater.upBlockNbt(blockEntityTag.toString()))
+                blockEntityTag = getNbtCompound(Updater19To111.upBlockNbt(blockEntityTag.toString()))
                 nbt.set('BlockEntityTag', blockEntityTag)
             }
         }
@@ -331,7 +331,7 @@ export default class Updater {
             let json = JSON.parse(input)
             let result: string[] = []
             for (const i of json) {
-                result.push(Updater.upJson(JSON.stringify(i)))
+                result.push(Updater19To111.upJson(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
@@ -348,11 +348,11 @@ export default class Updater {
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
                 json.clickEvent.value && json.clickEvent.value.slice(0, 1) === '/' && Checker.isCommand(json.clickEvent.value)
             ) {
-                json.clickEvent.value = Updater.upCommand(json.clickEvent.value)
+                json.clickEvent.value = Updater19To111.upCommand(json.clickEvent.value)
             }
 
             if (json.extra) {
-                json.extra = JSON.parse(Updater.upJson(JSON.stringify(json.extra)))
+                json.extra = JSON.parse(Updater19To111.upJson(JSON.stringify(json.extra)))
             }
 
             return JSON.stringify(json).replace(/§/g, '\\u00a7')

@@ -1,4 +1,4 @@
-import Updater from './updater'
+import { Updater18To19 } from './updater'
 import Selector from './selector'
 import Spuses from '../111to112/mappings/spuses'
 import { isNumeric } from '../../utils/utils'
@@ -61,7 +61,7 @@ export default class Checker {
             input = input.slice(1)
         }
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater.getResultMap(input, spusOld)
+            let map = Updater18To19.getResultMap(input, spusOld)
             if (map) {
                 return true
             }
@@ -74,11 +74,11 @@ export default class Checker {
     }
 
     public static isJsonElement(input: string) {
-        return this.isNbtCompound(input) || 
-        this.isNbtList(input) || 
-        (input.slice(0, 1) === '"' && input.slice(-1) === '"') || 
-        this.isNum(input) || 
-        this.isBool(input)
+        return this.isNbtCompound(input) ||
+            this.isNbtList(input) ||
+            (input.slice(0, 1) === '"' && input.slice(-1) === '"') ||
+            this.isNum(input) ||
+            this.isBool(input)
     }
 
     public static isWord(input: string) {
@@ -135,7 +135,7 @@ export default class Checker {
             return false
         }
     }
-    
+
     public static isNbtList(input: string) {
         try {
             let tokenizer = new NbtTokenizer()

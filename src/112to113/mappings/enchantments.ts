@@ -1,8 +1,8 @@
 import { Number_String } from './mapping'
 
-export default class Enches {
+export default class Enchantments {
     public static to113(input: number) {
-        const arr = Enches.Numeric_Nominal.find(v => v[0] === input)
+        const arr = Enchantments.Numeric_Nominal.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
