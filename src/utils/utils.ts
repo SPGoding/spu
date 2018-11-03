@@ -20,7 +20,8 @@ export function getNbtCompound(str: string, version: 'before 1.12' | 'after 1.12
     const tokenizer = new NbtTokenizer()
     const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
-    return parser.parseCompounds(tokens, version)
+    const nbt = parser.parseCompounds(tokens, version)
+    return nbt
 }
 
 /**

@@ -71,7 +71,10 @@ export class Tokenizer {
     }
 
     private skipWhiteSpace(nbt: string, pos: number) {
-        while (isWhiteSpace(nbt.substr(pos, 1))) {
+        while (isWhiteSpace(nbt.charAt(pos))) {
+            if (nbt.charAt(pos) === '') {
+                return pos
+            }
             pos += 1
         }
         return pos

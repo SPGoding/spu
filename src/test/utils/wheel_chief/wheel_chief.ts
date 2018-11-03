@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
 
-describe('WheelChief tests', () => {
+describe.only('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
         it('should parse literal', () => {
             const input: ParseResult = {
@@ -25,7 +25,7 @@ describe('WheelChief tests', () => {
             }
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
-            assert.deepEqual(actual.command.args, ['literal'])
+            assert.deepEqual(actual.command.args, [{ value: 'literal' }])
         })
 
         it('should parse recursion children', () => {
@@ -59,7 +59,11 @@ describe('WheelChief tests', () => {
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
-            assert.deepEqual(actual.command.args, ['first', 'second', 'the_last_child'])
+            assert.deepEqual(actual.command.args, [
+                { value: 'first' },
+                { value: 'second' },
+                { value: 'the_last_child' }
+            ])
         })
 
         it('should parse same level children', () => {
@@ -105,7 +109,7 @@ describe('WheelChief tests', () => {
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
-            assert.deepEqual(actual.command.args, ['b', 'b'])
+            assert.deepEqual(actual.command.args, [{ value: 'b' }, { value: 'b' }])
         })
 
         it('should parse argument', () => {
@@ -144,7 +148,11 @@ describe('WheelChief tests', () => {
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
-            assert.deepEqual(actual.command.args, ['test', 'true', '233'])
+            assert.deepEqual(actual.command.args, [
+                { value: 'test' },
+                { value: 'true', updater: undefined },
+                { value: '233', updater: undefined }
+            ])
         })
 
         it('should parse redirect', () => {
@@ -177,7 +185,7 @@ describe('WheelChief tests', () => {
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
-            assert.deepEqual(actual.command.args, ['spg', 'test'])
+            assert.deepEqual(actual.command.args, [{ value: 'spg' }, { value: 'test' }])
         })
 
         it(`shouldn't parse out-range number`, () => {
@@ -273,7 +281,13 @@ describe('WheelChief tests', () => {
             }
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
-            assert.deepEqual(actual.command.args, ['test', 'word', 'phrase', '"phrase phrase"', 'g r e e d y'])
+            assert.deepEqual(actual.command.args, [
+                { value: 'test' },
+                { value: 'word', updater: undefined },
+                { value: 'phrase', updater: undefined },
+                { value: '"phrase phrase"', updater: undefined },
+                { value: 'g r e e d y', updater: undefined }
+            ])
         })
 
         it('should parse execute run', () => {
@@ -305,7 +319,13 @@ describe('WheelChief tests', () => {
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
 
-            assert.deepEqual(actual.command.args, ['execute', 'run', 'execute', 'run', 'spg'])
+            assert.deepEqual(actual.command.args, [
+                { value: 'execute' },
+                { value: 'run' },
+                { value: 'execute' },
+                { value: 'run' },
+                { value: 'spg' }
+            ])
         })
 
         it(`should parse nbt`, () => {
@@ -346,7 +366,12 @@ describe('WheelChief tests', () => {
             }
 
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
-            assert.deepEqual(actual.command.args, ['test', '{}', '{foo : bar }', '{spg:rbq}'])
+            assert.deepEqual(actual.command.args, [
+                { value: 'test' },
+                { value: '{}', updater: undefined },
+                { value: '{foo : bar }', updater: undefined },
+                { value: '{spg:rbq}', updater: undefined }
+            ])
         })
     })
 })

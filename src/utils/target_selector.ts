@@ -1,5 +1,5 @@
-import { NbtCompound } from "./nbt/nbt"
-import { getNbtCompound } from "./utils";
+import { NbtCompound } from './nbt/nbt'
+import { getNbtCompound } from './utils'
 
 export class TargetSelector {
     public variable: string
@@ -31,16 +31,16 @@ export class TargetSelector {
 
     private parseHead(input: string) {
         if (input.charAt(0) !== '@') {
-            throw `Expected '@' at [0] but get '${input.charAt(0)}'.`;
+            throw `Expected '@' at [0] but get '${input.charAt(0)}'.`
         }
         if (/^[aeprs]$/.test(input.charAt(1))) {
-            this.variable = input.charAt(1);
+            this.variable = input.charAt(1)
         } else {
-            throw `Expected '/^[aeprs]$/' at [1] but get '${input.charAt(1)}'.`;
+            throw `Expected '/^[aeprs]$/' at [1] but get '${input.charAt(1)}'.`
         }
         if (!/^$|^\[$/.test(input.charAt(2))) {
             // Neither empty nor open square bracket.
-            throw `Expected '/^$|^\[$/' at [2] but get '${input.charAt(2)}'.`;
+            throw `Expected '/^$|^\[$/' at [2] but get '${input.charAt(2)}'.`
         }
     }
 
@@ -211,6 +211,7 @@ export class TargetSelector {
         if (input.charAt(index) === '{') {
             const result = {}
             index = this.parseAdvancementCriterias(input, index, result)
+            index += 1
             this.advancements.set(advancement, result)
         } else {
             let value = ''
@@ -300,7 +301,6 @@ export class TargetSelector {
         while (input.charAt(endIndex) !== '') {
             let nbt = new NbtCompound()
             try {
-                console.log(input.slice(index, endIndex))
                 nbt = getNbtCompound(input.slice(index, endIndex))
             } catch {
                 endIndex += 1
@@ -310,10 +310,9 @@ export class TargetSelector {
             return endIndex
         }
 
-        throw `Can't parse as nbt argument: '${input}[${index}]'.`
+        throw `Can't parse as nbt argument: '${input}'[${index}].`
     }
 }
-
 
 /**
  * Represents a range in a target selector.

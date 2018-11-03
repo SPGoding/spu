@@ -2,7 +2,7 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { TargetSelector } from '../../utils/target_selector'
-import { NbtByte } from '../../utils/nbt/nbt';
+import { NbtByte } from '../../utils/nbt/nbt'
 
 describe.only('TargetSelector tests', () => {
     describe('constructor() tests', () => {
@@ -35,12 +35,13 @@ describe.only('TargetSelector tests', () => {
             assert(actual.distance.max === 2 && actual.distance.max === 2)
         })
         it('should parse scores', () => {
-            const input = '@e[scores={foobar=0..2}]'
+            const input = '@e[scores={foo=0..2,bar=1..}]'
 
             const actual = new TargetSelector(input)
-            const foobar = actual.scores.get('foobar')
+            const foo = actual.scores.get('foo')
+            const bar = actual.scores.get('bar')
 
-            assert(foobar && foobar.min === 0 && foobar.max === 2)
+            assert(foo && foo.min === 0 && foo.max === 2 && bar && bar.min === 1 && bar.max === null)
         })
         it('should parse nbt', () => {
             const input = '@e[nbt={foobar:1b}]'
@@ -54,12 +55,11 @@ describe.only('TargetSelector tests', () => {
             const input = '@e[advancements={foo=false,bar={baz=true}}]'
 
             const actual = new TargetSelector(input)
-            console.log(actual.toString())
             const foo = actual.advancements.get('foo')
             const bar = actual.advancements.get('bar')
 
             assert(foo === 'false')
-            assert.deepEqual(bar, {baz: 'true'})
+            assert.deepEqual(bar, { baz: 'true' })
         })
     })
 })
