@@ -22,6 +22,7 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
                     case 'setNameToBlockState':
                     case 'setNameStatesToBlockState':
                     case 'setNameStatesNbtToBlockState':
+                    case 'setNbtToSelector':
                         splited[i] = `${args[parseInt(params[1])]}t`
                         break
                     default:
@@ -34,25 +35,29 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     }
 }
 
-export default class Updater113To114 extends Updater {
+export class Updater112To113 extends Updater {
     public static upLine(input: string, from: string) {
         if (from !== '113') {
             // TODO: Recursion update.
             // input = Updater112To113.upLine(input, from)
         }
-        return new Updater113To114().upSpgodingCommand(input)
+        return new Updater112To113().upSpgodingCommand(input)
     }
 
     public upArgument(input: string, updater: string): string {
         switch (updater) {
-            case 'minecraft:item_slot':
+            case 'minecraft:item_slot':// TODO: Add to base
             case 'spgoding:as_entity':
             case 'spgoding:difficulty':
             case 'spgoding:effect':
             case 'spgoding:enchantment':
             case 'spgoding:gamemode':
             case 'spgoding:particle':
+            case 'spgoding:points_or_levels':
             case 'spgoding:positioned_pos':
+            case 'spgoding:pre_json':
+            case 'spgoding:scoreboard_criteria':
+            case 'spgoding:single_selector':
             case 'spgoding:sound':
                 return this.upSpgodingPreTickTime(input)
             default:

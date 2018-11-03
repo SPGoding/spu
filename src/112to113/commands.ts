@@ -1798,7 +1798,642 @@ export class Commands112To113 {
                     }
                 }
             },
-            // TODO: scoreboard here.
+            scoreboard: {
+                type: 'literal',
+                children: {
+                    objectives: {
+                        type: 'literal',
+                        children: {
+                            list: {
+                                type: 'literal',
+                                executable: true
+                            },
+                            add: {
+                                type: 'literal',
+                                children: {
+                                    name: {
+                                        type: 'argument',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        children: {
+                                            criteria: {
+                                                type: 'argument',
+                                                parser: 'brigadier:string',
+                                                properties: {
+                                                    type: 'word'
+                                                },
+                                                updater: 'spgoding:scoreboard_criteria',
+                                                children: {
+                                                    displayName: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:string',
+                                                        properties: {
+                                                            type: 'greedy'
+                                                        },
+                                                        updater: 'spgoding:pre_json',
+                                                        executable: true
+                                                    }
+                                                },
+                                                executable: true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            remove: {
+                                type: 'literal',
+                                children: {
+                                    name: {
+                                        type: 'argument',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        executable: true
+                                    }
+                                }
+                            },
+                            setdisplay: {
+                                type: 'literal',
+                                children: {
+                                    slot: {
+                                        type: 'argument',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'brigadier:string',
+                                                properties: {
+                                                    type: 'word'
+                                                },
+                                            }
+                                        },
+                                        executable: true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    players: {
+                        type: 'literal',
+                        children: {
+                            tag: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:entity',
+                                        properties: {
+                                            amount: 'multiple',
+                                            type: 'entities'
+                                        },
+                                        children: {
+                                            add: {
+                                                type: 'literal',
+                                                children: {
+                                                    name: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:string',
+                                                        properties: {
+                                                            type: 'word'
+                                                        },
+                                                        children: {
+                                                            nbt: {
+                                                                type: 'argument',
+                                                                parser: 'minecraft:nbt',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                spu_script: 'tag %3 $setNbtToSelector%4%6 %5'
+                                                            }
+                                                        },
+                                                        executable: true,
+                                                        spu_script: 'tag %3 %4 %5'
+                                                    }
+                                                }
+                                            },
+                                            list: {
+                                                type: 'literal',
+                                                executable: true,
+                                                spu_script: 'tag %3 %4'
+                                            },
+                                            remove: {
+                                                type: 'literal',
+                                                children: {
+                                                    name: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:string',
+                                                        properties: {
+                                                            type: 'word'
+                                                        },
+                                                        children: {
+                                                            nbt: {
+                                                                type: 'argument',
+                                                                parser: 'minecraft:nbt',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                spu_script: 'tag %3 $setNbtToSelector%4%6 %5'
+                                                            }
+                                                        },
+                                                        executable: true,
+                                                        spu_script: 'tag %3 %4 %5'
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            add: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    score: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:integer',
+                                                        properties: {
+                                                            min: 0
+                                                        },
+                                                        children: {
+                                                            nbt: {
+                                                                type: 'argument',
+                                                                parser: 'minecraft:nbt',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
+                                                            }
+                                                        },
+                                                        executable: true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            enable: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    nbt: {
+                                                        type: 'argument',
+                                                        parser: 'minecraft:nbt',
+                                                        updater: 'spgoding:entity_nbt',
+                                                        executable: true,
+                                                        spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
+                                                    }
+                                                },
+                                                executable: true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            get: {
+                                type: 'literal',
+                                children: {
+                                    target: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'single'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    nbt: {
+                                                        type: 'argument',
+                                                        parser: 'minecraft:nbt',
+                                                        updater: 'spgoding:entity_nbt',
+                                                        executable: true,
+                                                        spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
+                                                    }
+                                                },
+                                                executable: true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            list: {
+                                type: 'literal',
+                                children: {
+                                    target: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'single'
+                                        },
+                                        executable: true
+                                    }
+                                },
+                                executable: true
+                            },
+                            operation: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        children: {
+                                            targetObjective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    operation: {
+                                                        type: 'argument',
+                                                        parser: 'minecraft:operation',
+                                                        children: {
+                                                            source: {
+                                                                type: 'argument',
+                                                                parser: 'minecraft:score_holder',
+                                                                properties: {
+                                                                    amount: 'multiple'
+                                                                },
+                                                                children: {
+                                                                    sourceObjective: {
+                                                                        type: 'argument',
+                                                                        parser: 'minecraft:objective',
+                                                                        children: {
+                                                                            nbt: {
+                                                                                type: 'argument',
+                                                                                parser: 'minecraft:nbt',
+                                                                                updater: 'spgoding:entity_nbt',
+                                                                                executable: true,
+                                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%8 %4 %5 %6 %7'
+                                                                            }
+                                                                        },
+                                                                        executable: true
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            remove: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    score: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:integer',
+                                                        properties: {
+                                                            min: 0
+                                                        },
+                                                        children: {
+                                                            nbt: {
+                                                                type: 'argument',
+                                                                parser: 'minecraft:nbt',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
+                                                            }
+                                                        },
+                                                        executable: true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            reset: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                executable: true
+                                            }
+                                        },
+                                        executable: true
+                                    }
+                                }
+                            },
+                            set: {
+                                type: 'literal',
+                                children: {
+                                    targets: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    score: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:integer',
+                                                        children: {
+                                                            nbt: {
+                                                                type: 'argument',
+                                                                parser: 'minecraft:nbt',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
+                                                            }
+                                                        },
+                                                        executable: true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    teams: {
+                        type: 'literal',
+                        children: {
+                            add: {
+                                type: 'literal',
+                                children: {
+                                    team: {
+                                        type: 'argument',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        children: {
+                                            displayName: {
+                                                type: 'argument',
+                                                parser: 'brigadier:string',
+                                                properties: {
+                                                    type: 'greedy'
+                                                },
+                                                updater: 'spgoding:pre_json',
+                                                executable: true,
+                                                spu_script: 'team %2 %3 %4'
+                                            }
+                                        },
+                                        executable: true,
+                                        spu_script: 'team %2 %3'
+                                    }
+                                }
+                            },
+                            empty: {
+                                type: 'literal',
+                                children: {
+                                    team: {
+                                        type: 'argument',
+                                        parser: 'minecraft:team',
+                                        executable: true,
+                                        spu_script: 'team %2 %3'
+                                    }
+                                }
+                            },
+                            join: {
+                                type: 'literal',
+                                children: {
+                                    team: {
+                                        type: 'argument',
+                                        parser: 'minecraft:team',
+                                        children: {
+                                            members: {
+                                                type: 'argument',
+                                                parser: 'minecraft:score_holder',
+                                                properties: {
+                                                    amount: 'multiple'
+                                                },
+                                                executable: true,
+                                                spu_script: 'team %2 %3 %4'
+                                            }
+                                        },
+                                        executable: true,
+                                        spu_script: 'team %2 %3'
+                                    }
+                                }
+                            },
+                            leave: {
+                                type: 'literal',
+                                children: {
+                                    members: {
+                                        type: 'argument',
+                                        parser: 'minecraft:score_holder',
+                                        properties: {
+                                            amount: 'multiple'
+                                        },
+                                        executable: true,
+                                        spu_script: 'team %2 %3'
+                                    }
+                                }
+                            },
+                            list: {
+                                type: 'literal',
+                                children: {
+                                    team: {
+                                        type: 'argument',
+                                        parser: 'minecraft:team',
+                                        executable: true,
+                                        spu_script: 'team %2 %3'
+                                    }
+                                },
+                                executable: true,
+                                spu_script: 'team %2'
+                            },
+                            option: {
+                                type: 'literal',
+                                children: {
+                                    team: {
+                                        type: 'argument',
+                                        parser: 'minecraft:team',
+                                        children: {
+                                            collisionRule: {
+                                                type: 'literal',
+                                                children: {
+                                                    always: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    never: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    pushOtherTeams: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    pushOwnTeam: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    }
+                                                }
+                                            },
+                                            color: {
+                                                type: 'literal',
+                                                children: {
+                                                    value: {
+                                                        type: 'argument',
+                                                        parser: 'minecraft:color',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    }
+                                                }
+                                            },
+                                            deathMessageVisibility: {
+                                                type: 'literal',
+                                                children: {
+                                                    always: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    hideForOtherTeams: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    hideForOwnTeam: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    never: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    }
+                                                }
+                                            },
+                                            displayName: {
+                                                type: 'literal',
+                                                children: {
+                                                    displayName: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:string',
+                                                        properties: {
+                                                            type: 'greedy'
+                                                        },
+                                                        updater: 'spgoding:pre_json',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    }
+                                                }
+                                            },
+                                            friendlyfire: {
+                                                type: 'literal',
+                                                children: {
+                                                    allowed: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:bool',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 friendlyFire %5'
+                                                    }
+                                                }
+                                            },
+                                            nametagVisibility: {
+                                                type: 'literal',
+                                                children: {
+                                                    always: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    hideForOtherTeams: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    hideForOwnTeam: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    },
+                                                    never: {
+                                                        type: 'literal',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    }
+                                                }
+                                            },
+                                            seeFriendlyInvisibles: {
+                                                type: 'literal',
+                                                children: {
+                                                    allowed: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:bool',
+                                                        executable: true,
+                                                        spu_script: 'team modify %3 %4 %5'
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            remove: {
+                                type: 'literal',
+                                children: {
+                                    team: {
+                                        type: 'argument',
+                                        parser: 'minecraft:team',
+                                        executable: true
+                                    }
+                                }
+                            }
+                        },
+                    }
+                }
+            },
             seed: {
                 type: 'literal',
                 executable: true
@@ -2227,7 +2862,102 @@ export class Commands112To113 {
                     }
                 }
             },
-            // TODO: testfor, testforblock, testforblocks here
+            testfor: {
+                type: 'literal',
+                children: {
+                    entity: {
+                        type: 'argument',
+                        parser: 'minecraft:entity',
+                        properties: {
+                            amount: 'multiple',
+                            type: 'entities'
+                        },
+                        children: {
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true,
+                                spu_script: 'execute if entity $setNbtToSelector%1%2'
+                            }
+                        },
+                        executable: true,
+                        spu_script: 'execute if entity %1'
+                    }
+                }
+            },
+            testforblock: {
+                type: 'literal',
+                children: {
+                    pos: {
+                        type: 'argument',
+                        parser: 'minecraft:block_pos',
+                        children: {
+                            name: {
+                                type: 'argument',
+                                parser: 'minecraft:resource_location',
+                                updater: 'spgoding:block_name',
+                                children: {
+                                    states: {
+                                        type: 'argument',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        children: {
+                                            nbt: {
+                                                type: 'argument',
+                                                parser: 'minecraft:nbt',
+                                                updater: 'spgoding:block_nbt',
+                                                executable: true,
+                                                spu_script: 'execute if block %1 $setNameStatesNbtToBlockState%2%3%4'
+                                            }
+                                        },
+                                        executable: true,
+                                        spu_script: 'execute if block %1 $setNameStatesToBlockState%2%3'
+                                    }
+                                },
+                                executable: true,
+                                spu_script: 'execute if block %1 $setNameToBlockState%2'
+                            }
+                        }
+                    }
+                }
+            },
+            testforblocks: {
+                type: 'literal',
+                children: {
+                    begin: {
+                        type: 'argument',
+                        parser: 'minecraft:block_pos',
+                        children: {
+                            end: {
+                                type: 'argument',
+                                parser: 'minecraft:block_pos',
+                                children: {
+                                    target: {
+                                        type: 'argument',
+                                        parser: 'minecraft:block_pos',
+                                        children: {
+                                            string: {
+                                                type: 'argument',
+                                                parser: 'brigadier:string',
+                                                properties: {
+                                                    type: 'word'
+                                                },
+                                                executable: true,
+                                                spu_script: 'execute if blocks %1 %2 %3 %4'
+                                            }
+                                        },
+                                        executable: true,
+                                        spu_script: 'execute if blocks %1 %2 %3 all'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             time: {
                 type: 'literal',
                 children: {
@@ -2381,7 +3111,54 @@ export class Commands112To113 {
                 executable: true,
                 spu_script: `weather clear !> 'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear.`
             },
-            // TODO: tp here
+            tp: {
+                type: 'literal',
+                children: {
+                    pos: {
+                        type: 'argument',
+                        parser: 'minecraft:vec3',
+                        executable: true,
+                        spu_script: 'teleport %1'
+                    },
+                    entity: {
+                        type: 'argument',
+                        parser: 'minecraft:entity',
+                        properties: {
+                            amount: 'multiple',
+                            type: 'entities'
+                        },
+                        children: {
+                            entity: {
+                                type: 'argument',
+                                parser: 'minecraft:entity',
+                                properties: {
+                                    amount: 'multiple',
+                                    type: 'entities'
+                                },
+                                updater: 'spgoding:single_selector',
+                                executable: true,
+                                spu_script: 'teleport %1 %2'
+                            },
+                            pos: {
+                                type: 'argument',
+                                parser: 'minecraft:vec3',
+                                children: {
+                                    rotation: {
+                                        type: 'argument',
+                                        parser: 'minecraft:vec2',
+                                        executable: true,
+                                        spu_script: 'execute as %1 at @s run teleport @s %2 %3'
+                                    }
+                                },
+                                executable: true,
+                                spu_script: 'execute as %1 at @s run teleport @s %2'
+                            }
+                        },
+                        executable: true,
+                        spu_script: 'teleport %1'
+                    }
+                }
+            },
             trigger: {
                 type: 'literal',
                 children: {
@@ -2638,7 +3415,33 @@ export class Commands112To113 {
                     }
                 }
             },
-            // TODO: Add xp here
+            xp: {
+                type: 'literal',
+                children: {
+                    level: {
+                        type: 'argument',
+                        parser: 'brigadier:string',
+                        properties: {
+                            type: 'word'
+                        },
+                        updater: 'spgoding:points_or_levels',
+                        children: {
+                            entity: {
+                                type: 'argument',
+                                parser: 'minecraft:entity',
+                                properties: {
+                                    amount: 'multiple',
+                                    type: 'players'
+                                },
+                                executable: true,
+                                spu_script: 'experience add %2 %1'
+                            }
+                        },
+                        executable: true,
+                        spu_script: 'experience add @s %1'
+                    }
+                }
+            }
         }
     }
 }

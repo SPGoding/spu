@@ -3,6 +3,7 @@ import { Commands113To114 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
+import { Updater112To113 } from '../112to113/updater';
 
 export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
@@ -27,8 +28,7 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
 export default class Updater113To114 extends Updater {
     public static upLine(input: string, from: string) {
         if (from !== '113') {
-            // TODO: Recursion update.
-            // input = Updater112To113.upLine(input, from)
+            input = Updater112To113.upLine(input, from)
         }
         return new Updater113To114().upSpgodingCommand(input)
     }
