@@ -1,5 +1,6 @@
 import { isNumeric, getNbtCompound } from '../utils'
 import { BlockState } from '../blockstate';
+import { TargetSelector } from '../target_selector';
 
 const ResourceLocation = /^(\w+:)?\w+$/
 const BlockStateOrItemStack = /^(\w+:)?\w+(\[.*\])?({.*})?$/
@@ -301,13 +302,34 @@ export class MinecraftComponentParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftEntityParser implements ArgumentParser {
-    public constructor(amount: 'single' | 'multiple', type: 'players' | 'entities') { }
+    private amount: 'single' | 'multiple'
+    private type: 'players' | 'entities'
+
+    public constructor(amount: 'single' | 'multiple', type: 'players' | 'entities') {
+        this.amount = amount
+        this.type = type
+    }
 
     public canParse(splited: string[], index: number): number {
-        // TODO: Try to parse it as entity selector.
-        if (true) {
+        let join = splited[index]
+
+        if (join.charAt(0) !== '@') {
             return 1
-        } else {
+        }
+
+        try {
+            new TargetSelector(join)
+            return 1
+        } catch {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                try {
+                    new TargetSelector(join)
+                    return i - index + 1
+                } catch {
+                    continue
+                }
+            }
             return 0
         }
     }
@@ -369,8 +391,7 @@ export class MinecraftGameProfileParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        // FIXME: Try to load game profile.
-        return 1
+        return (new MinecraftEntityParser('multiple', 'players')).canParse(splited, index)
     }
 }
 
@@ -398,6 +419,7 @@ export class MinecraftItemPredicateParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
+        // TODO: ItemStack
         if (BlockStateOrItemStack.test(splited[index])) {
             return 1
         } else {
@@ -582,6 +604,7 @@ export class MinecraftItemStackParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
+        // TODO: ItemStack
         if (BlockStateOrItemStack.test(splited[index])) {
             return 1
         } else {
@@ -642,22 +665,16 @@ export class MinecraftNbtParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        let join = splited[index]
-        try {
-            getNbtCompound(join)
-            return 1
-        } catch {
-            for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
-                try {
-                    getNbtCompound(join)
-                    return i - index + 1
-                } catch {
-                    continue
-                }
+        for (let endIndex = splited.length; endIndex > index; endIndex--) {
+            let test = splited.slice(index, endIndex).join(' ')
+            try {
+                getNbtCompound(test)
+                return endIndex - index + 1
+            } catch {
+                continue
             }
-            return 0
         }
+        return 0
     }
 }
 
@@ -821,11 +838,14 @@ export class MinecraftRotationParser implements ArgumentParser {
  * @property amount Can be one of the following values: `single` and `multiple`.
  */
 export class MinecraftScoreHolderParser implements ArgumentParser {
-    public constructor(amount: 'single' | 'multiple') { }
+    private amount: 'single' | 'multiple'
+
+    public constructor(amount: 'single' | 'multiple') {
+        this.amount = amount
+    }
 
     public canParse(splited: string[], index: number): number {
-        // TODO: Try to parse score holder.
-        return 1
+        return (new MinecraftEntityParser(this.amount, 'entities')).canParse(splited, index)
     }
 }
 

@@ -1,6 +1,8 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Commands113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
+import { escape } from '../utils/utils';
+import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt';
 
 export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
@@ -27,11 +29,11 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
 
 export default class Updater113To114 extends Updater {
     public static upLine(input: string, from: string) {
-        // TODO: Recursion Update
-        // if (from !== '113') {
-        //     input = Updater112To113.upLine(input, from)
-        // }
-        return new Updater113To114().upCommand(input)
+        if (from !== '113') {
+            // TODO: Recursion update.
+            // input = Updater112To113.upLine(input, from)
+        }
+        return new Updater113To114().upSpgodingCommand(input)
     }
 
     public upArgument(input: string, updater: string): string {
@@ -43,8 +45,26 @@ export default class Updater113To114 extends Updater {
         }
     }
 
-    protected upCommand(input: string): string {
+    protected upSpgodingCommand(input: string): string {
         return WheelChief.update(input, Commands113.commands, new SpuScriptExecutor113To114(), this)
+    }
+
+    protected upSpgodingItemTagNbt(input: NbtCompound): NbtCompound {
+        input = super.upSpgodingItemTagNbt(input)
+
+        /* display.Lore */ {
+            let display = input.get('display')
+            if (display instanceof NbtCompound) {
+                let lore = display.get('Lore')
+                if (lore instanceof NbtList) {
+                    lore.forEach((line: NbtString) => {
+                        line.set(`{"text":"${escape(line.get())}"}`)
+                    })
+                }
+            }
+
+            return input
+        }
     }
 
     private upPreTickTime(input: string) {

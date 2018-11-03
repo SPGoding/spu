@@ -106,7 +106,7 @@ export class WheelChief {
 
         let result = ''
 
-        // 对参数根据 updater 进行升级
+        // 对参数根据 updater/parser 进行升级
         for (const arg of command.args) {
             if (arg.updater) {
                 arg.value = updater.upArgument(arg.value, arg.updater)
@@ -172,7 +172,7 @@ export class WheelChief {
                 } else {
                     result.command.args.push({
                         value: input.splited.slice(input.index, input.index + canBeParsed).join(' '),
-                        updater: node.updater
+                        updater: node.updater ? node.updater : node.parser
                     })
                     result.index += canBeParsed
                 }

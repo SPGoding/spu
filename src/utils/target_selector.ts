@@ -29,6 +29,57 @@ export class TargetSelector {
         this.parseArgument(input, 3)
     }
 
+    public toString() {
+        let result = `@${this.variable}[`;
+
+        ['tag', 'team', 'gamemode', 'name', 'type'].forEach((key: 'tag' | 'team' | 'gamemode' | 'name' | 'type') => {
+            if (this[key].length > 0) {
+                for (const i of this[key]) {
+                    result += `${key}=${i},`
+                }
+            }
+        });
+
+        ['distance', 'level', 'x_rotation', 'y_rotation', 'limit', 'x', 'y', 'z', 'dx', 'dy', 'dz', 'sort'].forEach(
+            (key: 'distance' | 'level' | 'x_rotation' | 'y_rotation' | 'limit' | 'x' | 'y' | 'z' | 'dx' | 'dy' | 'dz' | 'sort') => {
+                if (this[key] !== undefined) {
+                    result += `${key}=${this[key].toString()},`
+                }
+            })
+
+        if (this.nbt !== undefined) {
+            result += `nbt=${this.nbt.toString()},`
+        }
+
+        if (this.scores.size > 0) {
+            result += `scores={`
+            for (const [objective, value] of this.scores) {
+                result += `${objective}=${value.toString()},`
+            }
+            result = result.slice(0, -1)
+            result += `},`
+        }
+
+        if (this.advancements.size > 0) {
+            result += `advancements={`
+            for (const [advancement, value] of this.advancements) {
+                if (typeof value === 'string') {
+                    result += `${advancement}=${value},`
+                } else {
+                    result += `${advancement}=${JSON.stringify(value).replace(/"/g, '').replace(/:/g, '=')},`
+                }
+            }
+            result = result.slice(0, -1)
+            result += `},`
+        }
+
+        result = result.slice(0, -1)
+        if (result.length > 2) {
+            result += ']'
+        }
+        return result
+    }
+
     private parseHead(input: string) {
         if (input.charAt(0) !== '@') {
             throw `Expected '@' at [0] but got '${input.charAt(0)}'.`
@@ -202,6 +253,9 @@ export class TargetSelector {
 
         let advancement = ''
         while (input.charAt(index) !== '=') {
+            if (input.charAt(index) === '') {
+                throw `Expected '=' but got EOF.`
+            }
             advancement += input.charAt(index)
             index += 1
         }

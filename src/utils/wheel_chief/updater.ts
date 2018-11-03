@@ -5,16 +5,22 @@ import { TargetSelector } from '../target_selector'
 export class Updater {
     public upArgument(input: string, updater: string): string {
         switch (updater) {
+            case 'minecraft:component':
+                return this.upMinecraftComponent(input)
+            case 'minecraft:entity':
+                return this.upMinecraftEntity(input)
+            case 'minecraft:entity_summon':
+                return this.upMinecraftEntitySummon(input)
+            case 'minecraft:message':
+                return this.upMinecraftMessage(input)
             case 'spgoding:command':
-                return this.upCommand(input)
+                return this.upSpgodingCommand(input)
             case 'spgoding:entity_nbt':
-                return this.upEntityNbt(input)
-            case 'spgoding:entity_type':
-                return this.upEntitySummon(input)
+                return this.upSpgodingEntityNbt(getNbtCompound(input)).toString()
             case 'spgoding:item_nbt':
-                return this.upItemNbt(input)
-            case 'spgoding:json_text':
-                return this.upJsonText(input)
+                return this.upSpgodingItemNbt(getNbtCompound(input)).toString()
+            case 'spgoding:item_tag_nbt':
+                return this.upSpgodingItemTagNbt(getNbtCompound(input)).toString()
             default:
                 return input
         }
@@ -24,60 +30,73 @@ export class Updater {
         return input
     }
 
-    protected upBlockNbt(input: string) {
-        const root = getNbtCompound(input)
+    protected upBlockNbt(root: NbtCompound) {
 
         /* Command */ {
             const command = root.get('Command')
             if (command instanceof NbtString) {
-                command.set(this.upCommand(command.get()))
+                command.set(this.upSpgodingCommand(command.get()))
             }
         }
         /* Items */ {
             const items = root.get('Items')
             if (items instanceof NbtList) {
-                items.forEach((item: NbtString) => {
-                    item.set(this.upItemNbt(item.get()))
-                })
+                for (let i = 0; i < items.length; i++) {
+                    let item = items.get(i)
+                    if (item instanceof NbtCompound) {
+                        item = this.upSpgodingItemNbt(item)
+                        items.set(i, item)
+                    }
+                }
             }
         }
         /* RecordItem */ {
             let item = root.get('RecordItem')
-            if (item instanceof NbtString) {
-                item.set(this.upItemNbt(item.get()))
+            if (item instanceof NbtCompound) {
+                item = this.upSpgodingItemNbt(item)
             }
         }
 
-        return root.toString()
+        return root
     }
 
-    protected upCommand(input: string) {
+    protected upSpgodingCommand(input: string) {
         return input
     }
 
-    protected upEntityNbt(input: string) {
-        const root = getNbtCompound(input)
+    protected upMinecraftEntity(input: string) {
+        try {
+            const selector = new TargetSelector(input)
+            return this.upTargetSelector(selector)
+        } catch {
+            return input
+        }
+    }
 
+
+    protected upSpgodingEntityNbt(input: NbtCompound) {
         /* id */ {
-            const id = root.get('id')
+            const id = input.get('id')
             if (id instanceof NbtString) {
-                id.set(this.upEntitySummon(id.get()))
+                id.set(this.upMinecraftEntitySummon(id.get()))
             }
         }
         /* Passengers */ {
-            const passengers = root.get('Passengers')
+            const passengers = input.get('Passengers')
             if (passengers instanceof NbtList) {
                 for (let i = 0; i < passengers.length; i++) {
                     let passenger = passengers.get(i)
-                    passenger = getNbtCompound(this.upEntityNbt(passenger.toString()))
-                    passengers.set(i, passenger)
+                    if (passenger instanceof NbtCompound) {
+                        passenger = this.upSpgodingEntityNbt(passenger)
+                        passengers.set(i, passenger)
+                    }
                 }
             }
         }
         /* Offers.Recipes[n].buy &
            Offers.Recipes[n].buyB & 
            Offers.Recipes[n].sell */ {
-            const offers = root.get('Offers')
+            const offers = input.get('Offers')
             if (offers instanceof NbtCompound) {
                 const recipes = offers.get('Recipes')
                 if (recipes instanceof NbtList) {
@@ -87,15 +106,15 @@ export class Updater {
                             let buyB = v.get('buyB')
                             let sell = v.get('sell')
                             if (buy instanceof NbtCompound) {
-                                buy = getNbtCompound(this.upItemNbt(buy.toString()))
+                                buy = this.upSpgodingItemNbt(buy)
                                 v.set('buy', buy)
                             }
                             if (buyB instanceof NbtCompound) {
-                                buyB = getNbtCompound(this.upItemNbt(buyB.toString()))
+                                buyB = this.upSpgodingItemNbt(buyB)
                                 v.set('buyB', buyB)
                             }
                             if (sell instanceof NbtCompound) {
-                                sell = getNbtCompound(this.upItemNbt(sell.toString()))
+                                sell = this.upSpgodingItemNbt(sell)
                                 v.set('sell', sell)
                             }
                         }
@@ -104,103 +123,110 @@ export class Updater {
             }
         }
         /* HandItems */ {
-            const handItems = root.get('HandItems')
+            const handItems = input.get('HandItems')
             if (handItems instanceof NbtList) {
                 for (let i = 0; i < handItems.length; i++) {
                     let item = handItems.get(i)
-                    item = getNbtCompound(this.upItemNbt(item.toString()))
-
-                    handItems.set(i, item)
+                    if (item instanceof NbtCompound) {
+                        item = this.upSpgodingItemNbt(item)
+                        handItems.set(i, item)
+                    }
                 }
             }
         }
         /* ArmorItems */ {
-            const armorItems = root.get('ArmorItems')
+            const armorItems = input.get('ArmorItems')
             if (armorItems instanceof NbtList) {
                 for (let i = 0; i < armorItems.length; i++) {
                     let item = armorItems.get(i)
-                    item = getNbtCompound(this.upItemNbt(item.toString()))
-                    armorItems.set(i, item)
+                    if (item instanceof NbtCompound) {
+                        item = this.upSpgodingItemNbt(item)
+                        armorItems.set(i, item)
+                    }
                 }
             }
         }
         /* ArmorItem */ {
-            let armorItem = root.get('ArmorItem')
+            let armorItem = input.get('ArmorItem')
             if (armorItem instanceof NbtCompound) {
-                armorItem = getNbtCompound(this.upItemNbt(armorItem.toString()))
-                root.set('ArmorItem', armorItem)
+                armorItem = this.upSpgodingItemNbt(armorItem)
+                input.set('ArmorItem', armorItem)
             }
         }
         /* SaddleItem */ {
-            let saddleItem = root.get('SaddleItem')
+            let saddleItem = input.get('SaddleItem')
             if (saddleItem instanceof NbtCompound) {
-                saddleItem = getNbtCompound(this.upItemNbt(saddleItem.toString()))
-                root.set('SaddleItem', saddleItem)
+                saddleItem = this.upSpgodingItemNbt(saddleItem)
+                input.set('SaddleItem', saddleItem)
             }
         }
         /* Items */ {
-            const items = root.get('Items')
+            const items = input.get('Items')
             if (items instanceof NbtList) {
                 for (let i = 0; i < items.length; i++) {
                     let item = items.get(i)
-                    item = getNbtCompound(this.upItemNbt(item.toString()))
-                    items.set(i, item)
+                    if (item instanceof NbtCompound) {
+                        item = this.upSpgodingItemNbt(item)
+                        items.set(i, item)
+                    }
                 }
             }
         }
         /* DecorItem */ {
-            let decorItem = root.get('DecorItem')
+            let decorItem = input.get('DecorItem')
             if (decorItem instanceof NbtCompound) {
-                decorItem = getNbtCompound(this.upItemNbt(decorItem.toString()))
-                root.set('DecorItem', decorItem)
+                decorItem = this.upSpgodingItemNbt(decorItem)
+                input.set('DecorItem', decorItem)
             }
         }
         /* Inventory */ {
-            const inventory = root.get('Inventory')
+            const inventory = input.get('Inventory')
             if (inventory instanceof NbtList) {
                 for (let i = 0; i < inventory.length; i++) {
                     let item = inventory.get(i)
-                    item = getNbtCompound(this.upItemNbt(item.toString()))
-                    inventory.set(i, item)
+                    if (item instanceof NbtCompound) {
+                        item = this.upSpgodingItemNbt(item)
+                        inventory.set(i, item)
+                    }
                 }
             }
         }
         /* Item */ {
-            let item = root.get('Item')
+            let item = input.get('Item')
             if (item instanceof NbtCompound) {
-                item = getNbtCompound(this.upItemNbt(item.toString()))
-                root.set('Item', item)
+                item = this.upSpgodingItemNbt(item)
+                input.set('Item', item)
             }
         }
         /* SelectedItem */ {
-            let selectedItem = root.get('SelectedItem')
+            let selectedItem = input.get('SelectedItem')
             if (selectedItem instanceof NbtCompound) {
-                selectedItem = getNbtCompound(this.upItemNbt(selectedItem.toString()))
-                root.set('SelectedItem', selectedItem)
+                selectedItem = this.upSpgodingItemNbt(selectedItem)
+                input.set('SelectedItem', selectedItem)
             }
         }
         /* FireworksItem */ {
-            let fireworksItem = root.get('FireworksItem')
+            let fireworksItem = input.get('FireworksItem')
             if (fireworksItem instanceof NbtCompound) {
-                fireworksItem = getNbtCompound(this.upItemNbt(fireworksItem.toString()))
-                root.set('FireworksItem', fireworksItem)
+                fireworksItem = this.upSpgodingItemNbt(fireworksItem)
+                input.set('FireworksItem', fireworksItem)
             }
         }
         /* Command */ {
-            const command = root.get('Command')
+            const command = input.get('Command')
             if (command instanceof NbtString) {
-                command.set(this.upCommand(command.get()))
+                command.set(this.upSpgodingCommand(command.get()))
             }
         }
         /* SpawnPotentials */ {
-            const spawnPotentials = root.get('SpawnPotentials')
+            const spawnPotentials = input.get('SpawnPotentials')
             if (spawnPotentials instanceof NbtList) {
                 for (let i = 0; i < spawnPotentials.length; i++) {
                     const potential = spawnPotentials.get(i)
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbtCompound(this.upEntityNbt(entity.toString()))
+                            entity = this.upSpgodingEntityNbt(entity)
                             potential.set('Entity', entity)
                         }
                     }
@@ -208,49 +234,59 @@ export class Updater {
             }
         }
         /* SpawnData */ {
-            let spawnData = root.get('SpawnData')
+            let spawnData = input.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbtCompound(this.upEntityNbt(spawnData.toString()))
-                root.set('SpawnData', spawnData)
+                spawnData = this.upSpgodingEntityNbt(spawnData)
+                input.set('SpawnData', spawnData)
             }
         }
 
-        return root.toString()
-    }
-
-    protected upEntitySummon(input: string) {
         return input
     }
 
-    protected upItemNbt(input: string) {
-        const root = getNbtCompound(input)
+    protected upMinecraftEntitySummon(input: string) {
+        return input
+    }
 
+    protected upSpgodingItemNbt(input: NbtCompound) {
+        /* tag */ {
+            let tag = input.get('tag')
+            if (tag instanceof NbtCompound) {
+                tag = this.upSpgodingItemTagNbt(tag)
+                input.set('tag', tag)
+            }
+        }
+
+        return input
+    }
+
+    protected upSpgodingItemTagNbt(input: NbtCompound) {
         /* BlockEntityTag */ {
-            let blockEntityTag = root.get('BlockEntityTag')
+            let blockEntityTag = input.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = getNbtCompound(this.upBlockNbt(input))
-                root.set('BlockEntityTag', blockEntityTag)
+                blockEntityTag = this.upBlockNbt(input)
+                input.set('BlockEntityTag', blockEntityTag)
             }
         }
         /* EntityTag */ {
-            let entityTag = root.get('EntityTag')
+            let entityTag = input.get('EntityTag')
             if (entityTag instanceof NbtCompound) {
-                entityTag = getNbtCompound(this.upEntityNbt(entityTag.toString()))
-                root.set('EntityTag', entityTag)
+                entityTag = this.upSpgodingEntityNbt(entityTag)
+                input.set('EntityTag', entityTag)
             }
         }
 
-        return root.toString()
+        return input
     }
 
-    protected upJsonText(input: string) {
+    protected upMinecraftComponent(input: string) {
         if (input.slice(0, 1) === '"') {
             return input
         } else if (input.slice(0, 1) === '[') {
             let json = JSON.parse(input)
             let result: string[] = []
             for (const i of json) {
-                result.push(this.upJsonText(JSON.stringify(i)))
+                result.push(this.upMinecraftComponent(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
@@ -267,23 +303,42 @@ export class Updater {
                 json.clickEvent.value.slice(0, 1) === '/'
             ) {
                 try {
-                    json.clickEvent.value = this.upCommand(json.clickEvent.value)
+                    json.clickEvent.value = this.upSpgodingCommand(json.clickEvent.value)
                 } catch {
                     // That's ok. Take it easy.
                 }
             }
 
             if (json.extra) {
-                json.extra = JSON.parse(this.upJsonText(JSON.stringify(json.extra)))
+                json.extra = JSON.parse(this.upMinecraftComponent(JSON.stringify(json.extra)))
             }
 
             return JSON.stringify(json).replace(/§/g, '\\u00a7')
         }
     }
 
-    protected upTargetSelector(input: string) {
-        let selector = new TargetSelector(input)
-        selector.nbt = getNbtCompound(this.upEntityNbt(selector.nbt.toString()))
+    protected upMinecraftMessage(input: string) {
+        let parts = input.split('@')
+        for (let i = 1; i < parts.length; i++) {
+            try {
+                const selector = new TargetSelector(`@${parts[i]}`)
+                parts[i] = this.upTargetSelector(selector)
+            } catch {
+                continue
+            }
+        }
+
+        return parts.join('@')
+    }
+
+    protected upTargetSelector(input: string | TargetSelector) {
+        let selector: TargetSelector
+        if (typeof input === 'string') {
+            selector = new TargetSelector(input)
+        } else {
+            selector = input
+        }
+        selector.nbt = this.upSpgodingEntityNbt(selector.nbt)
         return selector.toString()
     }
 }

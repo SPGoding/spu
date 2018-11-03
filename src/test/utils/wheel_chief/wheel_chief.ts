@@ -3,7 +3,7 @@ import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
 
-describe.only('WheelChief tests', () => {
+describe('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
         it('should parse literal', () => {
             const input: ParseResult = {
@@ -150,8 +150,8 @@ describe.only('WheelChief tests', () => {
 
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
-                { value: 'true', updater: undefined },
-                { value: '233', updater: undefined }
+                { value: 'true', updater: 'brigadier:bool' },
+                { value: '233', updater: 'brigadier:integer' }
             ])
         })
 
@@ -283,10 +283,10 @@ describe.only('WheelChief tests', () => {
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
-                { value: 'word', updater: undefined },
-                { value: 'phrase', updater: undefined },
-                { value: '"phrase phrase"', updater: undefined },
-                { value: 'g r e e d y', updater: undefined }
+                { value: 'word', updater: 'brigadier:string' },
+                { value: 'phrase', updater: 'brigadier:string' },
+                { value: '"phrase phrase"', updater: 'brigadier:string' },
+                { value: 'g r e e d y', updater: 'brigadier:string' }
             ])
         })
 
@@ -368,9 +368,9 @@ describe.only('WheelChief tests', () => {
             const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
-                { value: '{}', updater: undefined },
-                { value: '{foo : bar }', updater: undefined },
-                { value: '{spg:rbq}', updater: undefined }
+                { value: '{}', updater: 'minecraft:nbt' },
+                { value: '{foo : bar }', updater: 'minecraft:nbt' },
+                { value: '{spg:rbq}', updater: 'minecraft:nbt' }
             ])
         })
 
