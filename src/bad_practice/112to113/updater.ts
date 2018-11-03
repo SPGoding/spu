@@ -49,7 +49,7 @@ export default class Updater {
             begin = end
             end = cmdSplited.length
 
-            if (spusArg.charAt(0) === '%') {
+            if (spusArg[0] === '%') {
                 map.set(`%${cnt++}`, Updater.upArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()

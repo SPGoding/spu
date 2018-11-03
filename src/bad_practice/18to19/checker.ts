@@ -7,7 +7,7 @@ import { Parser as NbtParser } from '../../utils/nbt/parser'
 
 export default class Checker {
     public static isArgumentMatch(cmdArg: string, spusArg: string) {
-        if (spusArg.charAt(0) === '%') {
+        if (spusArg[0] === '%') {
             switch (spusArg.slice(1)) {
                 case 'block_nbt':
                     return Checker.isNbtCompound(cmdArg)

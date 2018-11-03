@@ -1,4 +1,5 @@
 import { isNumeric, getNbtCompound } from '../utils'
+import { BlockState } from '../blockstate';
 
 const ResourceLocation = /^(\w+:)?\w+$/
 const BlockStateOrItemStack = /^(\w+:)?\w+(\[.*\])?({.*})?$/
@@ -24,7 +25,7 @@ export interface ArgumentParser {
  * @property N/A
  */
 export class BrigadierBoolParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (['false', 'true'].indexOf(splited[index]) !== -1) {
@@ -162,7 +163,7 @@ export class BrigadierStringParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftBlockPosParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
@@ -178,12 +179,23 @@ export class MinecraftBlockPosParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftBlockPredicateParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        if (BlockStateOrItemStack.test(splited[index])) {
+        let join = splited[index]
+        try {
+            new BlockState(join)
             return 1
-        } else {
+        } catch {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                try {
+                    new BlockState(join)
+                    return i - index + 1
+                } catch {
+                    continue
+                }
+            }
             return 0
         }
     }
@@ -194,12 +206,23 @@ export class MinecraftBlockPredicateParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftBlockStateParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        if (BlockStateOrItemStack.test(splited[index])) {
+        let join = splited[index]
+        try {
+            new BlockState(join)
             return 1
-        } else {
+        } catch {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                try {
+                    new BlockState(join)
+                    return i - index + 1
+                } catch {
+                    continue
+                }
+            }
             return 0
         }
     }
@@ -210,7 +233,7 @@ export class MinecraftBlockStateParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftColorParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (
@@ -245,7 +268,7 @@ export class MinecraftColorParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftColumnPosParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
@@ -261,7 +284,7 @@ export class MinecraftColumnPosParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftComponentParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         try {
@@ -278,7 +301,7 @@ export class MinecraftComponentParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftEntityParser implements ArgumentParser {
-    public constructor(amount: 'single' | 'multiple', type: 'players' | 'entities') {}
+    public constructor(amount: 'single' | 'multiple', type: 'players' | 'entities') { }
 
     public canParse(splited: string[], index: number): number {
         // TODO: Try to parse it as entity selector.
@@ -295,7 +318,7 @@ export class MinecraftEntityParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftEntityAnchorParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (['eyes', 'feet'].indexOf(splited[index]) !== -1) {
@@ -311,7 +334,7 @@ export class MinecraftEntityAnchorParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftEntitySummonParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -327,7 +350,7 @@ export class MinecraftEntitySummonParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftFunctionParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -343,7 +366,7 @@ export class MinecraftFunctionParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftGameProfileParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         // FIXME: Try to load game profile.
@@ -356,7 +379,7 @@ export class MinecraftGameProfileParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftItemEnchantmentParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -372,7 +395,7 @@ export class MinecraftItemEnchantmentParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftItemPredicateParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (BlockStateOrItemStack.test(splited[index])) {
@@ -388,7 +411,7 @@ export class MinecraftItemPredicateParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftItemSlotParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (
@@ -556,7 +579,7 @@ export class MinecraftItemSlotParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftItemStackParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (BlockStateOrItemStack.test(splited[index])) {
@@ -572,7 +595,7 @@ export class MinecraftItemStackParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftMessageParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         return splited.length - index
@@ -584,7 +607,7 @@ export class MinecraftMessageParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftMobeffectParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -600,7 +623,7 @@ export class MinecraftMobeffectParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftMobEffectParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -616,7 +639,7 @@ export class MinecraftMobEffectParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftNbtParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         let join = splited[index]
@@ -643,7 +666,7 @@ export class MinecraftNbtParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftNbtPathParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (/(^.*\.?)+$/.test(splited[index])) {
@@ -659,7 +682,7 @@ export class MinecraftNbtPathParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftObjectiveParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (/^\w+$/.test(splited[index])) {
@@ -675,7 +698,7 @@ export class MinecraftObjectiveParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftObjectiveCriteriaParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ScoreboardCriteria.test(splited[index])) {
@@ -691,7 +714,7 @@ export class MinecraftObjectiveCriteriaParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftOperationParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (['+=', '-=', '*=', '/=', '%=', '=', '<', '>', '><'].indexOf(splited[index]) !== -1) {
@@ -707,7 +730,7 @@ export class MinecraftOperationParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftParticleParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -750,7 +773,7 @@ export class MinecraftParticleParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftIntRangeParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (IntRange.test(splited[index])) {
@@ -766,7 +789,7 @@ export class MinecraftIntRangeParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftResourceLocationParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (ResourceLocation.test(splited[index])) {
@@ -782,7 +805,7 @@ export class MinecraftResourceLocationParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftRotationParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
@@ -798,7 +821,7 @@ export class MinecraftRotationParser implements ArgumentParser {
  * @property amount Can be one of the following values: `single` and `multiple`.
  */
 export class MinecraftScoreHolderParser implements ArgumentParser {
-    public constructor(amount: 'single' | 'multiple') {}
+    public constructor(amount: 'single' | 'multiple') { }
 
     public canParse(splited: string[], index: number): number {
         // TODO: Try to parse score holder.
@@ -811,7 +834,7 @@ export class MinecraftScoreHolderParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftScoreboardSlotParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (
@@ -849,7 +872,7 @@ export class MinecraftScoreboardSlotParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftSwizzleParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (Swizzle.test(splited[index])) {
@@ -865,7 +888,7 @@ export class MinecraftSwizzleParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftTeamParser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (/^\w+$/.test(splited[index])) {
@@ -881,7 +904,7 @@ export class MinecraftTeamParser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftVec2Parser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
@@ -897,7 +920,7 @@ export class MinecraftVec2Parser implements ArgumentParser {
  * @property N/A
  */
 export class MinecraftVec3Parser implements ArgumentParser {
-    public constructor() {}
+    public constructor() { }
 
     public canParse(splited: string[], index: number): number {
         if (Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {

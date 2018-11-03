@@ -21,13 +21,13 @@ export class Tokenizer {
 
     private readAToken(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadTokenResult {
         pos = this.skipWhiteSpace(nbt, pos)
-        switch (nbt.substr(pos, 1)) {
+        switch (nbt.charAt(pos)) {
             case '{':
                 return { token: { type: 'BeginCompound', value: '{' }, pos: pos + 1 }
             case '}':
                 return { token: { type: 'EndCompound', value: '}' }, pos: pos + 1 }
             case '[':
-                switch (nbt.substr(pos, 3)) {
+                switch (nbt.slice(pos, pos + 4)) {
                     case '[I;':
                         return {
                             token: { type: 'BeginIntArray', value: '[I;' },
@@ -104,8 +104,8 @@ export class Tokenizer {
     private readUnquoted(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadStringResult {
         let str = ''
 
-        while ([',', ']', '}', ':', ''].indexOf(nbt.substr(pos, 1)) === -1) {
-            const char = nbt.substr(pos, 1)
+        while ([',', ']', '}', ':', ''].indexOf(nbt.charAt(pos)) === -1) {
+            const char = nbt.charAt(pos)
             if (version === 'before 1.12') {
                 str += char
             } else if (version === 'after 1.12' && /[a-zA-Z0-9\._+\-\s]/.test(char)) {

@@ -80,11 +80,11 @@ export interface SpuScriptExecutor {
  */
 export class WheelChief {
     public static update(input: string, rootNode: CmdNode, executor: SpuScriptExecutor, updater: Updater) {
-        if (input.slice(0, 1) === '#' || isWhiteSpace(input)) {
+        if (input.charAt(0) === '#' || isWhiteSpace(input)) {
             return input
         }
 
-        const slash = input.slice(0, 1) === '/'
+        const slash = input.charAt(0) === '/'
         if (slash) {
             input = input.slice(1)
         }
@@ -146,7 +146,13 @@ export class WheelChief {
         }
         if (node.type === 'root') {
             if (node.children) {
-                result = this.parseChildren(node.children, result, rootNode)
+                if (node.children[input.splited[input.index]]) {
+                    result.command.args.push({ value: input.splited[input.index] })
+                    result.index += 1
+                    result = WheelChief.recurse(result, input, node.children[input.splited[input.index]], rootNode)
+                } else {
+                    throw `Unknown command: '${input.splited[input.index]}'.`
+                }
             } else {
                 throw `Expected 'children' for the root node.`
             }

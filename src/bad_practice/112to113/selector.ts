@@ -402,7 +402,6 @@ export default class Selector {
                         this.parseAdvancements1_13(val)
                         break
                     case 'nbt':
-                        // FIXME: NBT reading error, for , .
                         this.nbt = getNbtCompound(val)
                         break
                     default:
