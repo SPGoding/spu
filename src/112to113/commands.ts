@@ -468,55 +468,65 @@ export class Commands112To113 {
                         type: 'argument',
                         parser: 'spgoding:old_entity',
                         children: {
-                            '~ ~ ~': {
+                            '~': {
                                 type: 'literal',
                                 children: {
-                                    detect: {
+                                    '~': {
                                         type: 'literal',
                                         children: {
-                                            pos: {
-                                                type: 'argument',
-                                                parser: 'minecraft:block_pos',
+                                            '~': {
+                                                type: 'literal',
                                                 children: {
-                                                    block: {
-                                                        type: 'argument',
-                                                        parser: 'minecraft:resource_location',
-                                                        updater: 'spgoding:block_name',
+                                                    detect: {
+                                                        type: 'literal',
                                                         children: {
-                                                            states: {
+                                                            pos: {
                                                                 type: 'argument',
-                                                                parser: 'brigadier:string',
-                                                                properties: {
-                                                                    type: 'word'
-                                                                },
+                                                                parser: 'minecraft:block_pos',
                                                                 children: {
-                                                                    command: {
+                                                                    block: {
                                                                         type: 'argument',
-                                                                        parser: 'brigadier:string',
-                                                                        properties: {
-                                                                            type: 'greedy'
-                                                                        },
-                                                                        updater: 'spgoding:command',
-                                                                        executable: true,
-                                                                        spu_script: 'execute as %1 at @s if block %4 $setNameStatesToBlockState%5%6 run %7'
+                                                                        parser: 'minecraft:resource_location',
+                                                                        updater: 'spgoding:block_name',
+                                                                        children: {
+                                                                            states: {
+                                                                                type: 'argument',
+                                                                                parser: 'brigadier:string',
+                                                                                properties: {
+                                                                                    type: 'word'
+                                                                                },
+                                                                                children: {
+                                                                                    command: {
+                                                                                        type: 'argument',
+                                                                                        parser: 'brigadier:string',
+                                                                                        properties: {
+                                                                                            type: 'greedy'
+                                                                                        },
+                                                                                        updater: 'spgoding:command',
+                                                                                        executable: true,
+                                                                                        spu_script: 'execute as %1 at @s if block %6 $setNameStatesToBlockState%7%8 run %9'
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
                                                                     }
                                                                 }
                                                             }
                                                         }
+                                                    },
+                                                    command: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:string',
+                                                        properties: {
+                                                            type: 'greedy'
+                                                        },
+                                                        updater: 'spgoding:command',
+                                                        executable: true,
+                                                        spu_script: 'execute as %1 at @s run %5'
                                                     }
                                                 }
                                             }
                                         }
-                                    },
-                                    command: {
-                                        type: 'argument',
-                                        parser: 'brigadier:string',
-                                        properties: {
-                                            type: 'greedy'
-                                        },
-                                        updater: 'spgoding:command',
-                                        executable: true,
-                                        spu_script: 'execute as %1 at @s run %3'
                                     }
                                 }
                             },
@@ -988,6 +998,7 @@ export class Commands112To113 {
                                 properties: {
                                     type: 'word'
                                 },
+                                executable: true,
                                 spu_script: `# %0 %1 %2 !> Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
                             }
                         },

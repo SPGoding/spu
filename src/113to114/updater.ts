@@ -27,13 +27,23 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
 
 export class UpdaterTo114 extends Updater {
     public static upLine(input: string, from: string) {
+        let trail = ''
         if (['18', '19', '111', '112'].indexOf(from) !== -1) {
             input = UpdaterTo113.upLine(input, from)
+            if (input.indexOf(' !> ') !== -1) {
+                trail = input.split(' !> ').slice(-1)[0]
+                input = input.split(' !> ').slice(0, -1).join(' !> ')
+            }
         } else if (from !== '113') {
             throw `Expected version: '18', '19', '111', '112' or '113' but got '${from}'.`
         }
 
-        return new UpdaterTo114().upSpgodingCommand(input)
+        let result = new UpdaterTo114().upSpgodingCommand(input)
+        if (trail && result.indexOf(' !> ') === -1) {
+            result = `${result} !> ${trail}`
+        }
+
+        return result
     }
 
     public upArgument(input: string, updater: string): string {
