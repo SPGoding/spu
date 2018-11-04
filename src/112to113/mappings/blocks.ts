@@ -100,7 +100,8 @@ export default class Blocks {
                 if (arr) {
                     ansStates = arr[3]
                 } else {
-                    throw `Unknown block ID: '${name}'.`
+                    ansStates = []
+                    // throw `Unknown block ID: '${name}'.`
                 }
             } else if (!data && state) {
                 const arr = Blocks.ID_Data_Name_States.find(v => v[2] === name)
@@ -108,7 +109,8 @@ export default class Blocks {
                     const defaultStates = arr[3]
                     ansStates = Blocks.combineStates(defaultStates, state.split(','))
                 } else {
-                    throw `Unknown block ID: '${name}'.`
+                    ansStates = []
+                    // throw `Unknown block ID: '${name}'.`
                 }
             } else if (data && !state) {
                 if (data === -1) {
@@ -131,7 +133,8 @@ export default class Blocks {
                         ansStates = arr[3]
                     }
                 } else {
-                    throw `Unknown block ID: '${name}:${data}'.`
+                    ansStates = []
+                    // throw `Unknown block ID: '${name}:${data}'.`
                 }
             } else {
                 throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${

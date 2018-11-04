@@ -38,7 +38,7 @@ export class TargetSelector {
      * Parses this selector according to a string in 1.12.
      * @param str An string representing a target selector.
      */
-    public parse112(str: string) {
+    public parse(str: string) {
         let charReader = new CharReader(str)
         let char: string
 
@@ -51,62 +51,18 @@ export class TargetSelector {
         this.parseVariable(char, str)
 
         char = charReader.next()
-        this.parseProperties1_12(char, charReader, str)
-    }
-
-    /**
-     * Parses this selector according to a string in 1.13.
-     * @param str An string representing a target selector.
-     */
-    public parse113(str: string) {
-        let charReader = new CharReader(str)
-        let char: string
-
-        char = charReader.next()
-        if (char !== '@') {
-            throw `First char should be '@': ${str}`
-        }
-
-        char = charReader.next()
-        this.parseVariable(char, str)
-
-        char = charReader.next()
-        this.parseProperties1_13(char, charReader, str)
-    }
-
-    /**
-     * Gets a string that can represent this target selector in 1.12.
-     */
-    public to112() {
-        let result = '@'
-
-        result = this.getVariable1_12(result)
-
-        result += '['
-
-        result = this.getProperties1_12(result)
-
-        // Close the square brackets.
-        if (result.slice(-1) === ',') {
-            result = result.slice(0, -1) + ']'
-        } else if (result.slice(-1) === '[') {
-            result = result.slice(0, -1)
-        }
-
-        return result
+        this.parseProperties(char, charReader, str)
     }
 
     /**
      * Gets a string that can represent this target selector in 1.13.
      */
     public to113() {
-        let result = '@'
-
-        result = this.getVariable1_13(result)
+        let result = `@${this.variable}`
 
         result += '['
 
-        result = this.getProperties1_13(result)
+        result = this.getProperties(result)
 
         // Close the square brackets.
         if (result.slice(-1) === ',') {
@@ -128,42 +84,11 @@ export class TargetSelector {
                 return false
             }
             let sel = new TargetSelector()
-            sel.parse112(input)
+            sel.parse(input)
         } catch (ignored) {
             return false
         }
         return true
-    }
-
-    public addFinishedAdvancement(adv: string, crit?: string) {
-        if (crit) {
-            if (this.advancements.has(adv)) {
-                let val = this.advancements.get(adv)
-                if (typeof val === 'boolean') {
-                    // The adv has a boolean value, doesn't need to add a crit.
-                    return
-                } else {
-                    if (!val) {
-                        val = new Map<string, boolean>()
-                    }
-                    val.set(crit, true)
-                }
-            } else {
-                this.advancements.set(adv, new Map([[crit, true]]))
-            }
-        } else {
-            this.advancements.set(adv, true)
-        }
-    }
-
-    public setNbt(nbt: string) {
-        this.nbt = getNbtCompound(nbt)
-    }
-
-    public setLimit() {
-        if (this.variable === 'a' || this.variable === 'e') {
-            this.limit = 1
-        }
     }
 
     private parseVariable(char: string, str: string) {
@@ -180,7 +105,7 @@ export class TargetSelector {
         }
     }
 
-    private parseProperties1_12(char: string, charReader: CharReader, str: string) {
+    private parseProperties(char: string, charReader: CharReader, str: string) {
         if (!char) {
             return
         }
@@ -196,7 +121,7 @@ export class TargetSelector {
                 //char = charReader.next()
                 if (key.length > 6 && key.slice(0, 6) === 'score_') {
                     // Deal with scores.
-                    this.parseScore1_12(key, val)
+                    this.parseScore(key, val)
                 } else {
                     // Deal with normal properties.
                     switch (key) {
@@ -305,248 +230,7 @@ export class TargetSelector {
         }
     }
 
-    private parseProperties1_13(char: string, charReader: CharReader, str: string) {
-        if (char === '') {
-            return
-        } else if (char === '[') {
-            let key: string
-            let val: string
-            while (char !== ']') {
-                key = ''
-                val = ''
-                char = charReader.next()
-                key = charReader.readUntil(['='])
-                char = charReader.next()
-                let depth = 0
-                while (depth !== 0 || (char !== ',' && char !== ']')) {
-                    // Read value.
-                    if (isWhiteSpace(char)) {
-                        char = charReader.next()
-                        continue
-                    }
-                    if (char === '{' || char === '[') {
-                        depth += 1
-                    } else if (char === '}' || char === ']') {
-                        depth -= 1
-                    }
-                    val += char
-                    char = charReader.next()
-                }
-
-                // Deal with normal properties.
-                let range: Range
-                switch (key) {
-                    case 'sort':
-                        this.sort = val
-                        break
-                    case 'dx':
-                        this.dx = Number(val)
-                        break
-                    case 'dy':
-                        this.dy = Number(val)
-                        break
-                    case 'dz':
-                        this.dz = Number(val)
-                        break
-                    case 'tag':
-                        this.tag.push(val)
-                        break
-                    case 'team':
-                        this.team.push(val)
-                        break
-                    case 'name':
-                        this.name.push(val)
-                        break
-                    case 'type':
-                        this.type.push(val)
-                        break
-                    case 'gamemode':
-                        this.gamemode.push(val)
-                        break
-                    case 'limit':
-                        this.limit = Number(val)
-                        break
-                    case 'level':
-                        range = new Range(null, null)
-                        range.parse1_13(val)
-                        this.level = range
-                        break
-                    case 'distance':
-                        range = new Range(null, null)
-                        range.parse1_13(val)
-                        this.distance = range
-                        break
-                    case 'x_rotation':
-                        range = new Range(null, null)
-                        range.parse1_13(val)
-                        this.x_rotation = range
-                        break
-                    case 'y_rotation':
-                        range = new Range(null, null)
-                        range.parse1_13(val)
-                        this.y_rotation = range
-                        break
-                    case 'x':
-                        this.x = Number(val)
-                        break
-                    case 'y':
-                        this.y = Number(val)
-                        break
-                    case 'z':
-                        this.z = Number(val)
-                        break
-                    case 'scores':
-                        this.parseScores1_13(val)
-                        break
-                    case 'advancements':
-                        this.parseAdvancements1_13(val)
-                        break
-                    case 'nbt':
-                        this.nbt = getNbtCompound(val)
-                        break
-                    default:
-                        break
-                }
-            }
-        } else {
-            throw `Unexpected token: ${str}`
-        }
-    }
-
-    private parseAdvancements1_13(val: string) {
-        let charReader = new CharReader(val)
-        let char = charReader.next()
-        let adv: string
-        let crit: string
-        let bool: string
-        let map: Map<string, boolean>
-
-        if (char !== '{') {
-            throw `Advancements should start with '{', but got '${char}' at '${val}'`
-        }
-
-        char = charReader.next()
-
-        if (char === '}') {
-            return
-        }
-
-        while (char) {
-            adv = ''
-            bool = ''
-
-            adv = charReader.readUntil(['='])
-
-            char = charReader.next()
-
-            if (char === '{') {
-                map = new Map<string, boolean>()
-                while (char !== '}') {
-                    char = charReader.next()
-
-                    crit = ''
-                    bool = ''
-
-                    crit = charReader.readUntil(['='])
-                    char = charReader.next()
-                    bool = charReader.readUntil(['}', ','])
-                    // Correct the char of 'char'. FIXME: Historical issues.
-                    charReader.back()
-                    char = charReader.next()
-
-                    map.set(crit, Boolean(bool))
-                }
-                this.advancements.set(adv, map)
-            } else {
-                bool = charReader.readUntil(['}', ','])
-                // Correct the char of 'char'. FIXME: Historical issues.
-                charReader.back()
-                char = charReader.next()
-            }
-
-            char = charReader.next()
-            this.advancements.set(adv, Boolean(bool))
-        }
-    }
-
-    private getVariable1_12 = (result: string) => (result += this.variable)
-    private getVariable1_13 = (result: string) => (result += this.variable)
-
-    private getProperties1_12(result: string) {
-        if (this.dx !== undefined) {
-            result += `dx=${this.dx},`
-        }
-        if (this.dy !== undefined) {
-            result += `dy=${this.dy},`
-        }
-        if (this.dz !== undefined) {
-            result += `dz=${this.dz},`
-        }
-        if (this.limit !== undefined) {
-            if (this.sort === 'furthest') {
-                result += `c=-${this.limit},`
-            } else {
-                result += `c=${this.limit},`
-            }
-        }
-        if (this.x !== undefined) {
-            result += `x=${this.x},`
-        }
-        if (this.y !== undefined) {
-            result += `y=${this.y},`
-        }
-        if (this.z !== undefined) {
-            result += `z=${this.z},`
-        }
-        for (const i of this.tag) {
-            result += `tag=${i},`
-        }
-        for (const i of this.team) {
-            result += `team=${i},`
-        }
-        for (const i of this.name) {
-            result += `name=${i},`
-        }
-        for (const i of this.type) {
-            result += `type=${i},`
-        }
-        for (const i of this.gamemode) {
-            result += `m=${i},`
-        }
-        let tmp
-        if ((tmp = this.level.getMax())) {
-            result += `l=${tmp},`
-        }
-        if ((tmp = this.level.getMin())) {
-            result += `lm=${tmp},`
-        }
-        if ((tmp = this.distance.getMax())) {
-            result += `r=${tmp},`
-        }
-        if ((tmp = this.distance.getMin())) {
-            result += `rm=${tmp},`
-        }
-        if ((tmp = this.x_rotation.getMax())) {
-            result += `rx=${tmp},`
-        }
-        if ((tmp = this.x_rotation.getMin())) {
-            result += `rxm=${tmp},`
-        }
-        if ((tmp = this.y_rotation.getMax())) {
-            result += `ry=${tmp},`
-        }
-        if ((tmp = this.y_rotation.getMin())) {
-            result += `rym=${tmp},`
-        }
-        if ((tmp = this.getScores1_12())) {
-            result += `scores=${tmp},`
-        }
-        if (this.sort === 'random') {
-            result = `@r${result.slice(2)}`
-        }
-        return result
-    }
-    private getProperties1_13(result: string) {
+    private getProperties(result: string) {
         if (this.dx !== undefined) {
             result += `dx=${this.dx},`
         }
@@ -599,10 +283,10 @@ export class TargetSelector {
         if ((tmp = this.y_rotation.get1_13())) {
             result += `y_rotation=${tmp},`
         }
-        if ((tmp = this.getScores1_13())) {
+        if ((tmp = this.getScores())) {
             result += `scores=${tmp},`
         }
-        if ((tmp = this.getAdvancements1_13())) {
+        if ((tmp = this.getAdvancements())) {
             result += `advancements=${tmp},`
         }
         if ((tmp = this.nbt.toString()) !== '{}') {
@@ -636,7 +320,7 @@ export class TargetSelector {
         }
     }
 
-    private parseScore1_12(key: string, val: string) {
+    private parseScore(key: string, val: string) {
         // Deal with scores.
         let objective: string
         if (key.slice(-4) === '_min') {
@@ -650,61 +334,7 @@ export class TargetSelector {
         }
     }
 
-    /**
-     * Sets the 'scores' field with a string.
-     * @param str The value of 'scores' in target selector in 1.13.
-     * @example
-     * this.parseScores1_13('{}')
-     * this.parseScores1_13('{foo=1,bar=1..5,fuck=2..,me=..10}')
-     */
-    private parseScores1_13(str: string) {
-        let charReader = new CharReader(str)
-        let char = charReader.next()
-        let objective: string
-        let rangeStr: string
-        let range: Range
-
-        if (char !== '{') {
-            throw `Unexpected 'scores' value begins: ${char} at ${str}.`
-        }
-
-        char = charReader.next()
-
-        while (char) {
-            objective = ''
-            rangeStr = ''
-            range = new Range(null, null)
-
-            objective = charReader.readUntil(['='])
-
-            char = charReader.next()
-
-            rangeStr = charReader.readUntil([',', '}'])
-
-            char = charReader.next()
-
-            range.parse1_13(rangeStr)
-            this.scores.set(objective, range)
-        }
-    }
-
-    private getScores1_12() {
-        let result = ''
-
-        for (const i of this.scores.keys()) {
-            let score = this.scores.get(i)
-            if (score && score.getMax() !== null) {
-                result += `score_${i}=${score.getMax()},`
-            }
-            if (score && score.getMin() !== null) {
-                result += `score_${i}_min=${score.getMin()},`
-            }
-        }
-
-        return result
-    }
-
-    private getScores1_13() {
+    private getScores() {
         let result = '{'
 
         for (const i of this.scores.keys()) {
@@ -724,7 +354,7 @@ export class TargetSelector {
         return result
     }
 
-    private getAdvancements1_13() {
+    private getAdvancements() {
         let result = '{'
 
         for (const i of this.advancements.keys()) {

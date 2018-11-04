@@ -82,9 +82,11 @@ export class BlockState {
                 if (input.charAt(index) !== '=') {
                     throw `Expected '=' but got '${input.charAt(index)}' after several spaces.`
                 }
-            } else {
+            } else if (/\w+/.test(input.charAt(index))) {
                 stateKey += input.charAt(index)
                 index += 1
+            } else {
+                throw `Expected /\\w+/ but got '${input[index]}'.`
             }
         }
 
@@ -102,15 +104,17 @@ export class BlockState {
                 if (input.charAt(index) !== ']' && input.charAt(index) !== ',') {
                     throw `Expected ']' or ',' but got '${input.charAt(index)}' after several spaces.`
                 }
-            } else {
+            } else if (/\w+/.test(input.charAt(index))) {
                 value += input.charAt(index)
                 index += 1
+            } else {
+                throw `Expected /\\w+/ but got '${input[index]}'.`
             }
         }
 
         if (input.charAt(index) === ',') {
             if (input[index + 1] !== ']') {
-                this.parseAState(input, index + 1)
+                index = this.parseAState(input, index + 1)
             } else {
                 index += 1
             }
@@ -140,6 +144,8 @@ export class BlockState {
     private parseNbt(input: string, index: number) {
         if (input.charAt(index) === '{') {
             this.nbt = getNbtCompound(input.slice(index))
+        } else if (input.charAt(index) !== '') {
+            throw `Expected EOF but got '${input[index]}'.`
         }
 
         return index

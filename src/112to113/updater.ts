@@ -72,7 +72,7 @@ export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
                         break
                     case 'setNbtToSelector':
                         let sel112 = new TargetSelector112()
-                        sel112.parse112(param1)
+                        sel112.parse(param1)
                         let sel113 = new TargetSelector113(sel112.to113())
                         sel113.nbt = getNbtCompound(param2)
                         splited[i] = sel113.toString()
@@ -107,7 +107,7 @@ export class UpdaterTo113 extends Updater {
 
         return new UpdaterTo113().upSpgodingCommand(input)
     }
-    
+
     public upArgument(input: string, updater: string) {
         switch (updater) {
             case 'spgoding:difficulty':
@@ -118,6 +118,10 @@ export class UpdaterTo113 extends Updater {
                 return this.upSpgodingEnchantment(input)
             case 'spgoding:gamemode':
                 return this.upSpgodingGamemode(input)
+            case 'spgoding:item_slot':
+                return this.upSpgodingItemSlot(input)
+                case 'spgoding:old_entity':
+                    return this.upSpgodingOldEntity(input)
             case 'spgoding:particle':
                 return this.upSpgodingParticle(input)
             case 'spgoding:points_or_levels':
@@ -130,19 +134,10 @@ export class UpdaterTo113 extends Updater {
                 return this.upSpgodingSingleSelector(input)
             case 'spgoding:sound':
                 return this.upSpgodingSound(input)
+            case 'spgoding:to_literal_replace':
+                return this.upSpgodingToLiteralReplace(input)
             default:
                 return super.upArgument(input, updater)
-        }
-    }
-
-    protected upMinecraftEntity(input: string) {
-        try {
-            const sel112 = new TargetSelector112()
-            sel112.parse112(input)
-            const sel113 = new TargetSelector113(sel112.to113())
-            return this.upSpgodingTargetSelector(sel113).toString()
-        } catch {
-            return input
         }
     }
 
@@ -152,12 +147,6 @@ export class UpdaterTo113 extends Updater {
         input = Entities.to113(input)
 
         return input
-    }
-
-    protected upMinecraftItemSlot(input: string) {
-        input = super.upMinecraftItemSlot(input)
-
-        return input.slice(5)
     }
 
     protected upSpgodingBlockName(input: string) {
@@ -463,6 +452,21 @@ export class UpdaterTo113 extends Updater {
         return Items.to113(Items.std112(parseInt(input.split(' ')[0]), undefined, parseInt(input.split(' ')[1]))).getNominal()
     }
 
+    protected upSpgodingItemSlot(input: string) {
+        return input.slice(5)
+    }
+
+    protected upSpgodingOldEntity(input: string) {
+        try {
+            const sel112 = new TargetSelector112()
+            sel112.parse(input)
+            const sel113 = new TargetSelector113(sel112.to113())
+            return this.upSpgodingTargetSelector(sel113).toString()
+        } catch {
+            return input
+        }
+    }
+
     protected upSpgodingParticle(input: string) {
         return Particles.to113(input)
     }
@@ -543,5 +547,13 @@ export class UpdaterTo113 extends Updater {
             .replace('minecraft:entity.enderdragon', 'minecraft:entity.ender_dragon')
 
         return input
+    }
+
+    protected upSpgodingToLiteralReplace(input: string) {
+        if (['replace', 'keep', 'destroy'].indexOf(input) !== -1) {
+            return input
+        } else {
+            return 'replace'
+        }
     }
 }

@@ -16,11 +16,7 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'players'
-                                },
+                                parser: 'spgoding:old_entity',
                                 children: {
                                     everything: {
                                         type: 'literal',
@@ -85,11 +81,7 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'players'
-                                },
+                                parser: 'spgoding:old_entity',
                                 children: {
                                     everything: {
                                         type: 'literal',
@@ -207,11 +199,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             item: {
                                 type: 'argument',
@@ -378,11 +366,7 @@ export class Commands112To113 {
                 children: {
                     target: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             clear: {
                                 type: 'literal',
@@ -432,11 +416,7 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             ench: {
                                 type: 'argument',
@@ -463,11 +443,7 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             '{}': {
                                 type: 'literal',
@@ -490,16 +466,101 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
+                            '~ ~ ~': {
+                                type: 'literal',
+                                children: {
+                                    detect: {
+                                        type: 'literal',
+                                        children: {
+                                            pos: {
+                                                type: 'argument',
+                                                parser: 'minecraft:block_pos',
+                                                children: {
+                                                    block: {
+                                                        type: 'argument',
+                                                        parser: 'minecraft:resource_location',
+                                                        updater: 'spgoding:block_name',
+                                                        children: {
+                                                            states: {
+                                                                type: 'argument',
+                                                                parser: 'brigadier:string',
+                                                                properties: {
+                                                                    type: 'word'
+                                                                },
+                                                                children: {
+                                                                    command: {
+                                                                        type: 'argument',
+                                                                        parser: 'brigadier:string',
+                                                                        properties: {
+                                                                            type: 'greedy'
+                                                                        },
+                                                                        updater: 'spgoding:command',
+                                                                        executable: true,
+                                                                        spu_script: 'execute as %1 at @s if block %4 $setNameStatesToBlockState%5%6 run %7'
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    command: {
+                                        type: 'argument',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'greedy'
+                                        },
+                                        updater: 'spgoding:command',
+                                        executable: true,
+                                        spu_script: 'execute as %1 at @s run %3'
+                                    }
+                                }
+                            },
                             pos: {
                                 type: 'argument',
                                 parser: 'minecraft:vec3',
                                 children: {
+                                    detect: {
+                                        type: 'literal',
+                                        children: {
+                                            pos: {
+                                                type: 'argument',
+                                                parser: 'minecraft:block_pos',
+                                                children: {
+                                                    block: {
+                                                        type: 'argument',
+                                                        parser: 'minecraft:resource_location',
+                                                        updater: 'spgoding:block_name',
+                                                        children: {
+                                                            states: {
+                                                                type: 'argument',
+                                                                parser: 'brigadier:string',
+                                                                properties: {
+                                                                    type: 'word'
+                                                                },
+                                                                children: {
+                                                                    command: {
+                                                                        type: 'argument',
+                                                                        parser: 'brigadier:string',
+                                                                        properties: {
+                                                                            type: 'greedy'
+                                                                        },
+                                                                        updater: 'spgoding:command',
+                                                                        executable: true,
+                                                                        spu_script: 'execute as %1 at @s positioned %2 if block %4 $setNameStatesToBlockState%5%6 run %7'
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
                                     command: {
                                         type: 'argument',
                                         parser: 'brigadier:string',
@@ -509,44 +570,6 @@ export class Commands112To113 {
                                         updater: 'spgoding:command',
                                         executable: true,
                                         spu_script: 'execute as %1 at @s positioned %2 run %3'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            // See the 'detect' command as an root command.
-            detect: {
-                type: 'literal',
-                children: {
-                    pos: {
-                        type: 'argument',
-                        parser: 'minecraft:block_pos',
-                        children: {
-                            block: {
-                                type: 'argument',
-                                parser: 'minecraft:resource_location',
-                                updater: 'spgoding:block_name',
-                                children: {
-                                    states: {
-                                        type: 'argument',
-                                        parser: 'brigadier:string',
-                                        properties: {
-                                            type: 'word'
-                                        },
-                                        children: {
-                                            command: {
-                                                type: 'argument',
-                                                parser: 'brigadier:string',
-                                                properties: {
-                                                    type: 'greedy'
-                                                },
-                                                updater: 'spgoding:command',
-                                                executable: true,
-                                                spu_script: 'execute if block %1 $setNameStatesToBlockState%2%3 run %4'
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -648,11 +671,7 @@ export class Commands112To113 {
                                 children: {
                                     entity: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'entities'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         executable: true,
                                         spu_script: 'execute %2 entity %3 run %0 %1'
                                     }
@@ -676,11 +695,7 @@ export class Commands112To113 {
                         children: {
                             entity: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'players'
-                                },
+                                parser: 'spgoding:old_entity',
                                 executable: true
                             }
                         },
@@ -707,6 +722,259 @@ export class Commands112To113 {
                         executable: true,
                         spu_script: `# %0 %1 !> The rule 'gameLoopFunction' has been removed.`
                     },
+                    announceAdvancements: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    commandBlockOutput: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    disableElytraMovementCheck: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doDaylightCycle: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doEntityDrops: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doFireTick: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doLimitedCrafting: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doMobLoot: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doMobSpawning: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doTileDrops: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    doWeatherCycle: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    keepInventory: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    logAdminCommands: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    maxCommandChainLength: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:integer',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    maxEntityCramming: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:integer',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    mobGriefing: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    naturalRegeneration: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    randomTickSpeed: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:integer',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    reducedDebugInfo: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    sendCommandFeedback: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    showDeathMessages: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    spawnRadius: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:integer',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
+                    spectatorsGenerateChunks: {
+                        type: 'literal',
+                        children: {
+                            value: {
+                                type: 'argument',
+                                parser: 'brigadier:bool',
+                                executable: true
+                            }
+                        },
+                        executable: true
+                    },
                     rule: {
                         type: 'argument',
                         parser: 'brigadier:string',
@@ -720,10 +988,11 @@ export class Commands112To113 {
                                 properties: {
                                     type: 'word'
                                 },
-                                executable: true
+                                spu_script: `# %0 %1 %2 !> Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
                             }
                         },
-                        executable: true
+                        executable: true,
+                        spu_script: `# %0 %1 !> Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
                     }
                 }
             },
@@ -732,11 +1001,7 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             item: {
                                 type: 'argument',
@@ -796,11 +1061,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             reason: {
                                 type: 'argument',
@@ -817,11 +1078,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         executable: true
                     }
                 },
@@ -906,11 +1163,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             message: {
                                 type: 'argument',
@@ -993,11 +1246,7 @@ export class Commands112To113 {
                                                                 children: {
                                                                     entity: {
                                                                         type: 'argument',
-                                                                        parser: 'minecraft:entity',
-                                                                        properties: {
-                                                                            amount: 'multiple',
-                                                                            type: 'players'
-                                                                        },
+                                                                        parser: 'spgoding:old_entity',
                                                                         children: {
                                                                             param: {
                                                                                 type: 'argument',
@@ -1046,11 +1295,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1099,11 +1344,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1152,11 +1393,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1205,11 +1442,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1258,11 +1491,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1311,11 +1540,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1364,11 +1589,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1417,11 +1638,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1470,11 +1687,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1523,11 +1736,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'players'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             pos: {
                                                 type: 'argument',
@@ -1598,11 +1807,7 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'players'
-                                },
+                                parser: 'spgoding:old_entity',
                                 children: {
                                     '*': {
                                         type: 'literal',
@@ -1622,11 +1827,7 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'players'
-                                },
+                                parser: 'spgoding:old_entity',
                                 children: {
                                     '*': {
                                         type: 'literal',
@@ -1659,7 +1860,11 @@ export class Commands112To113 {
                                 children: {
                                     slot: {
                                         type: 'argument',
-                                        parser: 'minecraft:item_slot',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        updater: 'spgoding:item_slot',
                                         children: {
                                             item: {
                                                 type: 'argument',
@@ -1711,15 +1916,15 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'entities'
-                                },
+                                parser: 'spgoding:old_entity',
                                 children: {
                                     slot: {
                                         type: 'argument',
-                                        parser: 'minecraft:item_slot',
+                                        parser: 'brigadier:string',
+                                        properties: {
+                                            type: 'word'
+                                        },
+                                        updater: 'spgoding:item_slot',
                                         children: {
                                             item: {
                                                 type: 'argument',
@@ -1885,11 +2090,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        properties: {
-                                            amount: 'multiple',
-                                            type: 'entities'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             add: {
                                                 type: 'literal',
@@ -2462,6 +2663,7 @@ export class Commands112To113 {
                                                 properties: {
                                                     type: 'word'
                                                 },
+                                                updater: 'spgoding:to_literal_replace',
                                                 children: {
                                                     nbt: {
                                                         type: 'argument',
@@ -2515,11 +2717,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             pos: {
                                 type: 'argument',
@@ -2559,11 +2757,7 @@ export class Commands112To113 {
                                                 children: {
                                                     targets: {
                                                         type: 'argument',
-                                                        parser: 'minecraft:entity',
-                                                        properties: {
-                                                            amount: 'multiple',
-                                                            type: 'entities'
-                                                        },
+                                                        parser: 'spgoding:old_entity',
                                                         executable: true
                                                     }
                                                 }
@@ -2599,11 +2793,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             '*': {
                                 type: 'literal',
@@ -2735,7 +2925,7 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity_summon',
+                        parser: 'minecraft:entity',
                         children: {
                             pos: {
                                 type: 'argument',
@@ -2760,11 +2950,7 @@ export class Commands112To113 {
                 children: {
                     destination: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'single',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         executable: true
                     },
                     location: {
@@ -2774,19 +2960,11 @@ export class Commands112To113 {
                     },
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             destination: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'single',
-                                    type: 'entities'
-                                },
+                                parser: 'spgoding:old_entity',
                                 executable: true
                             },
                             location: {
@@ -2801,11 +2979,7 @@ export class Commands112To113 {
                                                 children: {
                                                     facingEntity: {
                                                         type: 'argument',
-                                                        parser: 'minecraft:entity',
-                                                        properties: {
-                                                            amount: 'single',
-                                                            type: 'entities'
-                                                        },
+                                                        parser: 'spgoding:old_entity',
                                                         children: {
                                                             facingAnchor: {
                                                                 type: 'argument',
@@ -2845,11 +3019,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             message: {
                                 type: 'argument',
@@ -2865,11 +3035,7 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             nbt: {
                                 type: 'argument',
@@ -3025,11 +3191,7 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'players'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             actionbar: {
                                 type: 'literal',
@@ -3120,19 +3282,11 @@ export class Commands112To113 {
                     },
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'multiple',
-                            type: 'entities'
-                        },
+                        parser: 'spgoding:old_entity',
                         children: {
                             entity: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'entities'
-                                },
+                                parser: 'spgoding:old_entity',
                                 updater: 'spgoding:single_selector',
                                 executable: true,
                                 spu_script: 'teleport %1 %2'
@@ -3426,11 +3580,7 @@ export class Commands112To113 {
                         children: {
                             entity: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
-                                properties: {
-                                    amount: 'multiple',
-                                    type: 'players'
-                                },
+                                parser: 'spgoding:old_entity',
                                 executable: true,
                                 spu_script: 'experience add %2 %1'
                             }

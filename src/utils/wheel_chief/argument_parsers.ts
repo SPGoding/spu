@@ -1,10 +1,10 @@
 import { isNumeric, getNbtCompound } from '../utils'
 import { BlockState } from '../block_state';
-import { TargetSelector } from '../target_selector';
+import { TargetSelector as TargetSelector112 } from '../../112to113/target_selector';
+import { TargetSelector as TargetSelector113 } from '../target_selector';
 import { ItemStack } from '../item_stack';
 
 const ResourceLocation = /^(\w+:)?[\w\.]+$/
-const BlockStateOrItemStack = /^(\w+:)?\w+(\[.*\])?({.*})?$/
 const ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
 const IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
 const Swizzle = /^[xyz]+$/
@@ -33,7 +33,7 @@ export class BrigadierBoolParser implements ArgumentParser {
         if (['false', 'true'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
-            return 0
+            throw `Expected 'true' or 'false' but got '${splited[index]}'.`
         }
     }
 }
@@ -53,14 +53,16 @@ export class BrigadierDoubleParser implements ArgumentParser {
     }
 
     public canParse(splited: string[], index: number): number {
-        if (
-            isNumeric(splited[index]) &&
-            (this.min === undefined || parseFloat(splited[index]) >= this.min) &&
-            (this.max === undefined || parseFloat(splited[index]) <= this.max)
-        ) {
-            return 1
+        if (isNumeric(splited[index])) {
+            if ((this.min === undefined || parseFloat(splited[index]) >= this.min) &&
+                (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+                return 1
+            }
+            else {
+                throw `Should between ${this.min}..${this.max} but got '${splited[index]}'.`
+            }
         } else {
-            return 0
+            throw `Expected a number but got '${splited[index]}'.`
         }
     }
 }
@@ -80,14 +82,16 @@ export class BrigadierFloatParser implements ArgumentParser {
     }
 
     public canParse(splited: string[], index: number): number {
-        if (
-            isNumeric(splited[index]) &&
-            (this.min === undefined || parseFloat(splited[index]) >= this.min) &&
-            (this.max === undefined || parseFloat(splited[index]) <= this.max)
-        ) {
-            return 1
+        if (isNumeric(splited[index])) {
+            if ((this.min === undefined || parseFloat(splited[index]) >= this.min) &&
+                (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+                return 1
+            }
+            else {
+                throw `Should between ${this.min}..${this.max} but got '${splited[index]}'.`
+            }
         } else {
-            return 0
+            throw `Expected a number but got '${splited[index]}'.`
         }
     }
 }
@@ -107,15 +111,20 @@ export class BrigadierIntegerParser implements ArgumentParser {
     }
 
     public canParse(splited: string[], index: number): number {
-        if (
-            isNumeric(splited[index]) &&
-            parseInt(splited[index]) === parseFloat(splited[index]) &&
-            (this.min === undefined || parseFloat(splited[index]) >= this.min) &&
-            (this.max === undefined || parseFloat(splited[index]) <= this.max)
-        ) {
-            return 1
+        if (isNumeric(splited[index])) {
+            if (parseInt(splited[index]) === parseFloat(splited[index])) {
+                if ((this.min === undefined || parseFloat(splited[index]) >= this.min) &&
+                    (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+                    return 1
+                }
+                else {
+                    throw `Should between ${this.min}..${this.max} but got '${splited[index]}'.`
+                }
+            } else {
+                throw `Expected an integer but got double '${splited[index]}'.`
+            }
         } else {
-            return 0
+            throw `Expected a number but got '${splited[index]}'.`
         }
     }
 }
@@ -148,7 +157,7 @@ export class BrigadierStringParser implements ArgumentParser {
                     if (endIndex !== undefined) {
                         return endIndex - index + 1
                     } else {
-                        return 0
+                        throw `Should be closed with '"'.`
                     }
                 } else {
                     return 1
@@ -171,7 +180,7 @@ export class MinecraftBlockPosParser implements ArgumentParser {
         if (Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
-            return 0
+            throw `Expected a block pos.`
         }
     }
 }
@@ -185,20 +194,23 @@ export class MinecraftBlockPredicateParser implements ArgumentParser {
 
     public canParse(splited: string[], index: number): number {
         let join = splited[index]
+        let exception
         try {
             new BlockState(join)
             return 1
-        } catch {
+        } catch (e) {
+            exception = e
             for (let i = index + 1; i < splited.length; i++) {
                 join += ' ' + splited[i]
                 try {
                     new BlockState(join)
                     return i - index + 1
-                } catch {
+                } catch (e) {
+                    exception = e
                     continue
                 }
             }
-            return 0
+            throw exception
         }
     }
 }
@@ -212,20 +224,24 @@ export class MinecraftBlockStateParser implements ArgumentParser {
 
     public canParse(splited: string[], index: number): number {
         let join = splited[index]
+        let exception
+
         try {
             new BlockState(join)
             return 1
-        } catch {
+        } catch (e) {
+            exception = e
             for (let i = index + 1; i < splited.length; i++) {
                 join += ' ' + splited[i]
                 try {
                     new BlockState(join)
                     return i - index + 1
-                } catch {
+                } catch (e) {
+                    exception = e
                     continue
                 }
             }
-            return 0
+            throw exception
         }
     }
 }
@@ -260,7 +276,9 @@ export class MinecraftColorParser implements ArgumentParser {
         ) {
             return 1
         } else {
-            return 0
+            throw `Expected 'black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple'` +
+            `, 'gold', 'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow' or 'white' ` +
+            `but got '${splited[index]}'.`
         }
     }
 }
@@ -276,7 +294,7 @@ export class MinecraftColumnPosParser implements ArgumentParser {
         if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
-            return 0
+            throw `Expected a column pos.`
         }
     }
 }
@@ -293,14 +311,16 @@ export class MinecraftComponentParser implements ArgumentParser {
             JSON.parse(splited[index])
             return 1
         } catch {
-            return 0
+            throw `Expected a valid JSON.`
         }
     }
 }
 
 /**
  * minecraft:entity
- * @property N/A
+ * @property
+ * amount: `single` | `multiple`  
+ * type: `players` | `entities`
  */
 export class MinecraftEntityParser implements ArgumentParser {
     private amount: 'single' | 'multiple'
@@ -318,20 +338,45 @@ export class MinecraftEntityParser implements ArgumentParser {
             return 1
         }
 
+        let exception
+
         try {
-            new TargetSelector(join)
+            const sel = new TargetSelector113(join)
+            if (this.amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
+                throw `Expected a single target.`
+            }
+            if (this.amount === 'single' && parseInt(sel.limit) > 1) {
+                throw `Expected a single target.`
+            }
+            if (this.type === 'players' && sel.variable === 'e' &&
+                sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
+                throw `Expected player(s).`
+            }
+
             return 1
-        } catch {
+        } catch (e) {
+            exception = e
             for (let i = index + 1; i < splited.length; i++) {
                 join += ' ' + splited[i]
                 try {
-                    new TargetSelector(join)
+                    const sel = new TargetSelector113(join)
+                    if (this.amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
+                        throw `Expected a single target.`
+                    }
+                    if (this.amount === 'single' && parseInt(sel.limit) > 1) {
+                        throw `Expected a single target.`
+                    }
+                    if (this.type === 'players' && sel.variable === 'e' &&
+                        sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
+                        throw `Expected player(s).`
+                    }
                     return i - index + 1
-                } catch {
+                } catch (e) {
+                    exception = e
                     continue
                 }
             }
-            return 0
+            throw exception
         }
     }
 }
@@ -347,7 +392,7 @@ export class MinecraftEntityAnchorParser implements ArgumentParser {
         if (['eyes', 'feet'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
-            return 0
+            throw `Expected 'eyes' or 'feet' but got '${splited[index]}'.`
         }
     }
 }
@@ -363,7 +408,7 @@ export class MinecraftEntitySummonParser implements ArgumentParser {
         if (ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -379,7 +424,7 @@ export class MinecraftFunctionParser implements ArgumentParser {
         if (ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -407,7 +452,7 @@ export class MinecraftItemEnchantmentParser implements ArgumentParser {
         if (ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -421,20 +466,23 @@ export class MinecraftItemPredicateParser implements ArgumentParser {
 
     public canParse(splited: string[], index: number): number {
         let join = splited[index]
+        let exception
         try {
             new ItemStack(join)
             return 1
-        } catch {
+        } catch (e) {
+            exception = e
             for (let i = index + 1; i < splited.length; i++) {
                 join += ' ' + splited[i]
                 try {
                     new ItemStack(join)
                     return i - index + 1
-                } catch {
+                } catch (e) {
+                    exception = e
                     continue
                 }
             }
-            return 0
+            throw exception
         }
     }
 }
@@ -602,7 +650,7 @@ export class MinecraftItemSlotParser implements ArgumentParser {
         ) {
             return 1
         } else {
-            return 0
+            throw `Expected a slot.`
         }
     }
 }
@@ -616,20 +664,23 @@ export class MinecraftItemStackParser implements ArgumentParser {
 
     public canParse(splited: string[], index: number): number {
         let join = splited[index]
+        let exception
         try {
             new ItemStack(join)
             return 1
-        } catch {
+        } catch (e) {
+            exception = e
             for (let i = index + 1; i < splited.length; i++) {
                 join += ' ' + splited[i]
                 try {
                     new ItemStack(join)
                     return i - index + 1
-                } catch {
+                } catch (e) {
+                    exception = e
                     continue
                 }
             }
-            return 0
+            throw exception
         }
     }
 }
@@ -657,7 +708,7 @@ export class MinecraftMobeffectParser implements ArgumentParser {
         if (ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -673,7 +724,7 @@ export class MinecraftMobEffectParser implements ArgumentParser {
         if (ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -686,16 +737,18 @@ export class MinecraftNbtParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
+        let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
             let test = splited.slice(index, endIndex).join(' ')
             try {
                 getNbtCompound(test)
                 return endIndex - index
-            } catch {
+            } catch (e) {
+                exception = e
                 continue
             }
         }
-        return 0
+        throw exception
     }
 }
 
@@ -710,7 +763,7 @@ export class MinecraftNbtPathParser implements ArgumentParser {
         if (/(^.*\.?)+$/.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected a NBT path.`
         }
     }
 }
@@ -726,7 +779,7 @@ export class MinecraftObjectiveParser implements ArgumentParser {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an objective.`
         }
     }
 }
@@ -742,7 +795,7 @@ export class MinecraftObjectiveCriteriaParser implements ArgumentParser {
         if (ScoreboardCriteria.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected a scoreboard criteria.`
         }
     }
 }
@@ -758,7 +811,7 @@ export class MinecraftOperationParser implements ArgumentParser {
         if (['+=', '-=', '*=', '/=', '%=', '=', '<', '>', '><'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
-            return 0
+            throw `Expected '+=', '-=', '*=', '/=', '%=', '=', '<', '>' or '><' but got '${splited[index]}'.`
         }
     }
 }
@@ -789,19 +842,53 @@ export class MinecraftParticleParser implements ArgumentParser {
                 ) {
                     return 5
                 } else {
-                    return 0
+                    throw `Expected four floats between 0.0..1.0 after particle 'minecraft:dust'.`
                 }
-            } else if (['item', 'minecraft:item', 'block', 'minecraft:block'].indexOf(splited[index]) !== -1) {
-                if (BlockStateOrItemStack.test(splited[index + 1])) {
+            } else if (['item', 'minecraft:item'].indexOf(splited[index]) !== -1) {
+                let join = splited[index + 1]
+                let exception
+                try {
+                    new ItemStack(join)
                     return 2
-                } else {
-                    return 0
+                } catch (e) {
+                    exception = e
+                    for (let i = index + 2; i < splited.length; i++) {
+                        join += ' ' + splited[i]
+                        try {
+                            new ItemStack(join)
+                            return i - index + 1
+                        } catch (e) {
+                            exception = e
+                            continue
+                        }
+                    }
+                    throw exception
+                }
+            } else if (['block', 'minecraft:block'].indexOf(splited[index]) !== -1) {
+                let join = splited[index + 1]
+                let exception
+                try {
+                    new BlockState(join)
+                    return 2
+                } catch (e) {
+                    exception = e
+                    for (let i = index + 2; i < splited.length; i++) {
+                        join += ' ' + splited[i]
+                        try {
+                            new BlockState(join)
+                            return i - index + 1
+                        } catch (e) {
+                            exception = e
+                            continue
+                        }
+                    }
+                    throw exception
                 }
             } else {
                 return 1
             }
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -817,7 +904,7 @@ export class MinecraftIntRangeParser implements ArgumentParser {
         if (IntRange.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an int range.`
         }
     }
 }
@@ -833,7 +920,7 @@ export class MinecraftResourceLocationParser implements ArgumentParser {
         if (ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected an resource location.`
         }
     }
 }
@@ -849,14 +936,14 @@ export class MinecraftRotationParser implements ArgumentParser {
         if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
-            return 0
+            throw `Expected vec2.`
         }
     }
 }
 
 /**
  * minecraft:score_holder
- * @property amount Can be one of the following values: `single` and `multiple`.
+ * @property amount: `single` | `multiple`.
  */
 export class MinecraftScoreHolderParser implements ArgumentParser {
     private amount: 'single' | 'multiple'
@@ -903,7 +990,7 @@ export class MinecraftScoreboardSlotParser implements ArgumentParser {
         ) {
             return 1
         } else {
-            return 0
+            throw `Expected a scoreboard display slot.`
         }
     }
 }
@@ -919,7 +1006,7 @@ export class MinecraftSwizzleParser implements ArgumentParser {
         if (Swizzle.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected combination of 'x' 'y' and 'z'.`
         }
     }
 }
@@ -935,7 +1022,7 @@ export class MinecraftTeamParser implements ArgumentParser {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
-            return 0
+            throw `Expected a team.`
         }
     }
 }
@@ -951,7 +1038,7 @@ export class MinecraftVec2Parser implements ArgumentParser {
         if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
-            return 0
+            throw `Expected a vec2.`
         }
     }
 }
@@ -967,7 +1054,39 @@ export class MinecraftVec3Parser implements ArgumentParser {
         if (Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
-            return 0
+            throw `Expected a vec3.`
+        }
+    }
+}
+
+
+
+/**
+ * spgoding:old_entity
+ * @property N/A
+ */
+export class SpgodingOldEntityParser implements ArgumentParser {
+    public constructor() { }
+
+    public canParse(splited: string[], index: number): number {
+        let join = splited[index]
+
+        if (join.charAt(0) !== '@') {
+            return 1
+        }
+
+        if (TargetSelector112.isValid(join)) {
+            return 1
+        } else {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                if (TargetSelector112.isValid(join)) {
+                    return i - index + 1
+                } else {
+                    continue
+                }
+            }
+            throw `Expected an old entity selector.`
         }
     }
 }

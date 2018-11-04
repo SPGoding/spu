@@ -13,6 +13,8 @@ export class Updater {
             case 'minecraft:component':
                 return this.upMinecraftComponent(input)
             case 'minecraft:entity':
+            case 'minecraft:game_profile':
+            case 'minecraft:score_holder':
                 return this.upMinecraftEntity(input)
             case 'minecraft:entity_summon':
                 return this.upMinecraftEntitySummon(input)
@@ -124,7 +126,7 @@ export class Updater {
         for (let i = 1; i < parts.length; i++) {
             try {
                 const selector = new TargetSelector(`@${parts[i]}`)
-                parts[i] = this.upSpgodingTargetSelector(selector).toString()
+                parts[i] = this.upSpgodingTargetSelector(selector).toString().slice(1)
             } catch {
                 continue
             }
