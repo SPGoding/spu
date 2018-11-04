@@ -1,9 +1,7 @@
-import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../../../utils/nbt/nbt'
-import { getNbtCompound, escape } from '../../../utils/utils'
+import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../../utils/nbt/nbt'
+import { getNbtCompound, escape, completeNamespace } from '../../utils/utils'
 import { Number_String } from './mapping'
-import Blocks from './blocks'
 import Enchantments from './enchantments'
-import Updater from '../updater'
 import Entities from './entities';
 
 export class StdItem1_12 {
@@ -14,9 +12,7 @@ export class StdItem1_12 {
     private slot: NbtValue | undefined
 
     public constructor(name: string, data: number, tag: NbtCompound, count?: NbtValue, slot?: NbtValue) {
-        if (name.slice(0, 10) !== 'minecraft:') {
-            name = `minecraft:${name}`
-        }
+        name = completeNamespace(name)
         if (data === -1) {
             data = 0
         }
@@ -59,9 +55,7 @@ export class StdItem1_13 {
     private slot: NbtValue | undefined
 
     public constructor(name: string, nbt: NbtCompound, count?: NbtValue, slot?: NbtValue) {
-        if (name.slice(0, 10) !== 'minecraft:') {
-            name = `minecraft:${name}`
-        }
+        name = completeNamespace(name)
         this.name = name
         this.tag = nbt
         this.count = count
@@ -162,9 +156,7 @@ export default class Items {
             }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
         }
 
-        if (ansName.slice(0, 10) !== 'minecraft:') {
-            ansName = `minecraft:${ansName}`
-        }
+        ansName = completeNamespace(ansName)
 
         return new StdItem1_12(ansName, ansData, ansTag, ansCount, ansSlot)
     }
@@ -187,109 +179,10 @@ export default class Items {
             }
         }
 
-        /* CanDestroy */ {
-            const canDestroy = ansTag.get('CanDestroy')
-            if (canDestroy instanceof NbtList) {
-                for (let i = 0; i < canDestroy.length; i++) {
-                    const block = canDestroy.get(i)
-                    if (block instanceof NbtString) {
-                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
-                        canDestroy.set(i, block)
-                    }
-                }
-                ansTag.set('CanDestroy', canDestroy)
-            }
-        }
-        /* CanPlaceOn */ {
-            const canPlaceOn = ansTag.get('CanPlaceOn')
-            if (canPlaceOn instanceof NbtList) {
-                for (let i = 0; i < canPlaceOn.length; i++) {
-                    const block = canPlaceOn.get(i)
-                    if (block instanceof NbtString) {
-                        block.set(Blocks.to113(Blocks.std112(undefined, block.get(), 0)).getName())
-                    }
-                    canPlaceOn.set(i, block)
-                }
-                ansTag.set('CanPlaceOn', canPlaceOn)
-            }
-        }
-        /* BlockEntityTag */ {
-            let blockEntityTag = ansTag.get('BlockEntityTag')
-            if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = Blocks.to113(
-                    Blocks.std112(undefined, ansName === 'minecraft:sign' ? 'minecraft:standing_sign' : ansName, undefined, undefined, blockEntityTag.toString())
-                ).getNbt()
-                ansTag.set('BlockEntityTag', blockEntityTag)
-            }
-        }
-        /* ench */ {
-            const enchantments = ansTag.get('ench')
-            ansTag.del('ench')
-            if (enchantments instanceof NbtList) {
-                for (let i = 0; i < enchantments.length; i++) {
-                    const enchantment = enchantments.get(i)
-                    if (enchantment instanceof NbtCompound) {
-                        let id = enchantment.get('id')
-                        if (id instanceof NbtShort || id instanceof NbtInt) {
-                            const strID = Enchantments.to113(id.get())
-                            id = new NbtString()
-                            id.set(strID)
-                            enchantment.set('id', id)
-                        }
-                        enchantments.set(i, enchantment)
-                    }
-                }
-                ansTag.set('Enchantments', enchantments)
-            }
-        }
-        /* StoredEnchantments */ {
-            const storedEnchantments = ansTag.get('StoredEnchantments')
-            if (storedEnchantments instanceof NbtList) {
-                for (let i = 0; i < storedEnchantments.length; i++) {
-                    const enchantment = storedEnchantments.get(i)
-                    if (enchantment instanceof NbtCompound) {
-                        let id = enchantment.get('id')
-                        if (id instanceof NbtShort || id instanceof NbtInt) {
-                            const strID = Enchantments.to113(id.get())
-                            id = new NbtString()
-                            id.set(strID)
-                            enchantment.set('id', id)
-                        }
-                        storedEnchantments.set(i, enchantment)
-                    }
-                }
-                ansTag.set('StoredEnchantments', storedEnchantments)
-            }
-        }
-        /* display.(Name|LocName) */ {
-            const display = ansTag.get('display')
-            if (display instanceof NbtCompound) {
-                const name = display.get('Name')
-                if (name instanceof NbtString) {
-                    name.set(`{"text": "${escape(name.get())}"}`)
-                    display.set('Name', name)
-                }
-                const locName = display.get('LocName')
-                display.del('LocName')
-                if (locName instanceof NbtString) {
-                    locName.set(`{"translate": "${locName.get()}"}`)
-                    display.set('Name', locName)
-                }
-                ansTag.set('display', display)
-            }
-        }
         /* EntityTag */ {
-            if (ansName === 'minecraft:armor_stand') {
+            if (ansName === 'minecraft:spawn_egg') {
                 let entityTag = ansTag.get('EntityTag')
                 if (entityTag instanceof NbtCompound) {
-                    entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
-                    ansTag.set('EntityTag', entityTag)
-                }
-            } else if (ansName === 'minecraft:spawn_egg') {
-                let entityTag = ansTag.get('EntityTag')
-                if (entityTag instanceof NbtCompound) {
-                    entityTag = getNbtCompound(Updater.upEntityNbt(entityTag.toString()))
-                    ansTag.set('EntityTag', entityTag)
                     const id = entityTag.get('id')
                     if (id instanceof NbtString) {
                         const after = Entities.to113(id.get())

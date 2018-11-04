@@ -57,6 +57,16 @@ describe('BlockState tests', () => {
             assert.deepEqual(actual.states, { foo: 'bar' })
             assert(baz && baz.toString() === '"qux"')
         })
+        it(`shouldn't parse unfinished blockstate`, () => {
+            const input = 'minecraft:command_block[conditional=false,facing=down]{Command:"fill'
+
+            try {
+                new BlockState(input).toString()
+                assert(false)
+            } catch {
+                // Take it easy
+            }
+        })
     })
     describe('toString() tests', () => {
         it('should return name', () => {

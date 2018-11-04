@@ -1,8 +1,9 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
-import { Commands113 } from './commands'
+import { Commands113To114 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
+import { UpdaterTo113 } from '../112to113/updater';
 
 export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
@@ -14,9 +15,6 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
             } else if (splited[i].slice(0, 1) === '$') {
                 let params = splited[i].slice(1).split('%')
                 switch (params[0]) {
-                    case 'toTick':
-                        splited[i] = `${args[parseInt(params[1])]}t`
-                        break
                     default:
                         throw `Unexpected script method: '${params[0]}'.`
                 }
@@ -27,13 +25,15 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     }
 }
 
-export default class Updater113To114 extends Updater {
+export class UpdaterTo114 extends Updater {
     public static upLine(input: string, from: string) {
-        if (from !== '113') {
-            // TODO: Recursion update.
-            // input = Updater112To113.upLine(input, from)
+        if (['18', '19', '111', '112'].indexOf(from) !== -1) {
+            input = UpdaterTo113.upLine(input, from)
+        } else if (from !== '113') {
+            throw `Expected version: '18', '19', '111', '112' or '113' but got '${from}'.`
         }
-        return new Updater113To114().upSpgodingCommand(input)
+
+        return new UpdaterTo114().upSpgodingCommand(input)
     }
 
     public upArgument(input: string, updater: string): string {
@@ -46,7 +46,7 @@ export default class Updater113To114 extends Updater {
     }
 
     protected upSpgodingCommand(input: string): string {
-        return WheelChief.update(input, Commands113.commands, new SpuScriptExecutor113To114(), this)
+        return WheelChief.update(input, Commands113To114.commands, new SpuScriptExecutor113To114(), this)
     }
 
     protected upSpgodingBlockName(input: string): string {

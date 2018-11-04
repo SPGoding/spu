@@ -13,12 +13,16 @@ export class Updater {
             case 'minecraft:component':
                 return this.upMinecraftComponent(input)
             case 'minecraft:entity':
+            case 'minecraft:game_profile':
+            case 'minecraft:score_holder':
                 return this.upMinecraftEntity(input)
             case 'minecraft:entity_summon':
                 return this.upMinecraftEntitySummon(input)
             case 'minecraft:item_predicate':
             case 'minecraft:item_stack':
                 return this.upMinecraftItemStack(new ItemStack(input)).toString()
+            case 'minecraft:item_slot':
+                return this.upMinecraftItemSlot(input)
             case 'minecraft:message':
                 return this.upMinecraftMessage(input)
             case 'spgoding:block_name':
@@ -46,7 +50,9 @@ export class Updater {
 
     protected upMinecraftBlockState(input: BlockState) {
         input.name = this.upSpgodingBlockName(input.name)
-        input.nbt = this.upSpgodingBlockNbt(input.nbt)
+        if (input.nbt !== undefined) {
+            input.nbt = this.upSpgodingBlockNbt(input.nbt)
+        }
 
         return input
     }
@@ -104,8 +110,14 @@ export class Updater {
 
     protected upMinecraftItemStack(input: ItemStack) {
         input.name = this.upSpgodingItemName(input.name)
-        input.nbt = this.upSpgodingItemNbt(input.nbt)
+        if (input.nbt !== undefined) {
+            input.nbt = this.upSpgodingItemTagNbt(input.nbt)
+        }
 
+        return input
+    }
+
+    protected upMinecraftItemSlot(input: string) {
         return input
     }
 
@@ -114,7 +126,7 @@ export class Updater {
         for (let i = 1; i < parts.length; i++) {
             try {
                 const selector = new TargetSelector(`@${parts[i]}`)
-                parts[i] = this.upSpgodingTargetSelector(selector).toString()
+                parts[i] = this.upSpgodingTargetSelector(selector).toString().slice(1)
             } catch {
                 continue
             }
@@ -150,6 +162,24 @@ export class Updater {
             let item = input.get('RecordItem')
             if (item instanceof NbtCompound) {
                 item = this.upSpgodingItemNbt(item)
+            }
+        }
+        /* TextN */ {
+            let text1 = input.get('Text1')
+            let text2 = input.get('Text2')
+            let text3 = input.get('Text3')
+            let text4 = input.get('Text4')
+            if (text1 instanceof NbtString) {
+                text1.set(this.upMinecraftComponent(text1.get()))
+            }
+            if (text2 instanceof NbtString) {
+                text2.set(this.upMinecraftComponent(text2.get()))
+            }
+            if (text3 instanceof NbtString) {
+                text3.set(this.upMinecraftComponent(text3.get()))
+            }
+            if (text4 instanceof NbtString) {
+                text4.set(this.upMinecraftComponent(text4.get()))
             }
         }
 
@@ -335,6 +365,12 @@ export class Updater {
     }
 
     protected upSpgodingItemNbt(input: NbtCompound) {
+        /* id */ {
+            let id = input.get('id')
+            if (id instanceof NbtString) {
+                id.set(this.upSpgodingItemName(id.get()))
+            }
+        }
         /* tag */ {
             let tag = input.get('tag')
             if (tag instanceof NbtCompound) {
@@ -390,7 +426,9 @@ export class Updater {
     }
 
     protected upSpgodingTargetSelector(input: TargetSelector) {
-        input.nbt = this.upSpgodingEntityNbt(input.nbt)
+        if (input.nbt !== undefined) {
+            input.nbt = this.upSpgodingEntityNbt(input.nbt)
+        }
         return input
     }
 }

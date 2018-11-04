@@ -1,5 +1,5 @@
-import Updater from './updater'
-import Selector from '../112to113/selector'
+import { Updater111To112 } from './updater'
+import { TargetSelector } from '../../112to113/target_selector'
 import Spuses from './mappings/spuses'
 import { isNumeric } from '../../utils/utils'
 import { Tokenizer as NbtTokenizer } from '../../utils/nbt/tokenizer'
@@ -61,7 +61,7 @@ export default class Checker {
             input = input.slice(1)
         }
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater.getResultMap(input, spusOld)
+            let map = Updater111To112.getResultMap(input, spusOld)
             if (map) {
                 return true
             }
@@ -114,7 +114,7 @@ export default class Checker {
     }
 
     public static isSelector(input: string) {
-        return Selector.isValid(input)
+        return TargetSelector.isValid(input)
     }
 
     public static isUuid(input: string) {

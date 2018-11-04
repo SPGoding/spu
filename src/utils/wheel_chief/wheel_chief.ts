@@ -35,7 +35,8 @@ import {
     MinecraftSwizzleParser,
     MinecraftTeamParser,
     MinecraftVec2Parser,
-    MinecraftVec3Parser
+    MinecraftVec3Parser,
+    SpgodingOldEntityParser
 } from './argument_parsers'
 import { isWhiteSpace } from '../utils'
 import { Updater } from './updater'
@@ -158,7 +159,11 @@ export class WheelChief {
             }
         } else if (node.type === 'literal') {
             if (nodeName === input.splited[input.index]) {
-                result.command.args.push({ value: nodeName })
+                if (node.updater) {
+                    result.command.args.push({ value: nodeName, updater: node.updater })
+                } else {
+                    result.command.args.push({ value: nodeName })
+                }
                 result.index += 1
                 result = WheelChief.recurse(result, input, node, rootNode)
             } else {
@@ -166,15 +171,15 @@ export class WheelChief {
             }
         } else if (node.type === 'argument') {
             if (node.parser) {
-                let canBeParsed = WheelChief.canBeParsed(input.splited, input.index, node.parser, node.properties)
-                if (canBeParsed === 0) {
-                    throw `Parser '${node.parser}' failed to parse '${input.splited.slice(input.index).join(' ')}'.`
-                } else {
+                try {
+                    let canBeParsed = WheelChief.canBeParsed(input.splited, input.index, node.parser, node.properties)
                     result.command.args.push({
                         value: input.splited.slice(input.index, input.index + canBeParsed).join(' '),
                         updater: node.updater ? node.updater : node.parser
                     })
                     result.index += canBeParsed
+                } catch (e) {
+                    throw `Parser '${node.parser}' failed to parse '${input.splited.slice(input.index).join(' ')}': ${e}`
                 }
                 result = WheelChief.recurse(result, input, node, rootNode)
             } else {
@@ -216,6 +221,8 @@ export class WheelChief {
                 } else {
                     throw `Expected 'children' for the root node.`
                 }
+            } else if (node.executable === true) {
+                throw `Expected EOF but got trailing data.`
             } else {
                 if (rootNode.children) {
                     result = WheelChief.parseChildren(rootNode.children, result, rootNode)
@@ -228,7 +235,7 @@ export class WheelChief {
     }
 
     /**
-     * 尝试解析按一整个 `children` 解析。
+     * 尝试按一整个 `children` 解析。
      * @param children `children`。
      * @param result 输出（可被直接舍弃，不对原输入造成影响）。
      * @param rootNode 根节点。
@@ -244,19 +251,20 @@ export class WheelChief {
                     operated = true
                     break
                 } catch (e) {
-                    exception.push(e.replace(/Can't match: \<br \/\>/g, ''))
+                    exception.push(e.replace(/Failed to parse '.*': \<br \/\>/g, ''))
                     continue
                 }
             }
         }
         if (!operated) {
-            throw `Can't match: <br />${exception.join('<br />')}`
+            throw `Failed to parse '${result.splited.join(' ')}': <br />${exception.join('<br />')}`
         }
         return result
     }
 
     /**
      * @returns Parsed `splited` count.
+     * @throws The reason why failed to parse.
      */
     public static canBeParsed(splited: string[], index: number, parser: string, properties: Property = {}) {
         let canBeParsed = 0
@@ -408,6 +416,10 @@ export class WheelChief {
             }
             case 'minecraft:vec3': {
                 canBeParsed = new MinecraftVec3Parser().canParse(splited, index)
+                break
+            }
+            case 'spgoding:old_entity': {
+                canBeParsed = new SpgodingOldEntityParser().canParse(splited, index)
                 break
             }
             default:

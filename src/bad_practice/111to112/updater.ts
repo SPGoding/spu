@@ -4,7 +4,7 @@ import ArgumentReader from "../utils/argument_reader";
 import Checker from "../111to112/checker";
 import { getNbtCompound } from "../../utils/utils";
 
-export default class Updater {
+export class Updater111To112 {
     /**
 Returns an result map from an 1.12 command and an 1.12 spus.
 @param cmd An 1.12 minecraft command.
@@ -37,7 +37,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
             end = cmdSplited.length
 
             if (spusArg[0] === '%') {
-                map.set(`%${cnt++}`, Updater.upArgument(cmdArg, spusArg))
+                map.set(`%${cnt++}`, Updater111To112.upArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
@@ -54,7 +54,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
         if (/^\s*$/.test(input)) {
             return input
         } else {
-            return Updater.upCommand(input)
+            return Updater111To112.upCommand(input)
         }
     }
 
@@ -67,7 +67,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
         }
 
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater.getResultMap(input, spusOld)
+            let map = Updater111To112.getResultMap(input, spusOld)
             if (map) {
                 let spusNew = Spuses.pairs.get(spusOld)
                 if (spusNew) {
@@ -91,7 +91,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
             case 'bool':
                 return arg
             case 'command':
-                return Updater.upCommand(arg)
+                return Updater111To112.upCommand(arg)
             case 'entity':
                 return arg
             case 'entity_nbt':
