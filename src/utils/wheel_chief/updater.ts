@@ -1,4 +1,4 @@
-import { getNbtCompound } from '../utils'
+import { getNbtCompound, UpdateResult } from '../utils'
 import { NbtString, NbtList, NbtCompound, NbtValue } from '../nbt/nbt'
 import { TargetSelector } from '../target_selector'
 import { BlockState } from '../block_state';
@@ -44,8 +44,8 @@ export class Updater {
         }
     }
 
-    public static upLine(input: string, from: string) {
-        return input
+    public static upLine(input: string, from: string): UpdateResult {
+        return { command: input, warnings: [] }
     }
 
     protected upMinecraftBlockState(input: BlockState) {

@@ -1,6 +1,6 @@
-import { Updater19To111 } from './updater'
-import Selector from './selector'
-import Spuses from '../111to112/mappings/spuses'
+import { UpdaterTo112 } from './updater'
+import { TargetSelector } from '../../to113/target_selector'
+import Spuses from './mappings/spuses'
 import { isNumeric } from '../../utils/utils'
 import { Tokenizer as NbtTokenizer } from '../../utils/nbt/tokenizer'
 import { Parser as NbtParser } from '../../utils/nbt/parser'
@@ -22,7 +22,7 @@ export default class Checker {
                 case 'entity_nbt':
                     return Checker.isNbt(cmdArg)
                 case 'entity_type':
-                    return Checker.isWord(cmdArg)
+                    return Checker.isStringID(cmdArg)
                 case 'item_nbt':
                 case 'item_tag_nbt':
                     return Checker.isNbt(cmdArg)
@@ -61,7 +61,7 @@ export default class Checker {
             input = input.slice(1)
         }
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater19To111.getResultMap(input, spusOld)
+            let map = UpdaterTo112.getResultMap(input, spusOld)
             if (map) {
                 return true
             }
@@ -114,7 +114,7 @@ export default class Checker {
     }
 
     public static isSelector(input: string) {
-        return Selector.isValid(input)
+        return TargetSelector.isValid(input)
     }
 
     public static isUuid(input: string) {

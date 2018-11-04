@@ -56,6 +56,11 @@ export function getUuidLeastUuidMost(uuid: string) {
     return { L: uuidLeast, M: uuidMost }
 }
 
+export interface UpdateResult {
+    command: string,
+    warnings: string[]
+}
+
 /**
  * For escape & unescape.
  *

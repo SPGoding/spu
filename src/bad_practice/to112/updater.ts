@@ -1,10 +1,11 @@
 import Spuses from "./mappings/spuses";
 import SpuScript from "../spu_script";
 import ArgumentReader from "../utils/argument_reader";
-import Checker from "../111to112/checker";
-import { getNbtCompound } from "../../utils/utils";
+import Checker from "./checker";
+import { getNbtCompound, UpdateResult } from "../../utils/utils";
+import { UpdaterTo111 } from "../to111/updater";
 
-export class Updater111To112 {
+export class UpdaterTo112 {
     /**
 Returns an result map from an 1.12 command and an 1.12 spus.
 @param cmd An 1.12 minecraft command.
@@ -37,7 +38,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
             end = cmdSplited.length
 
             if (spusArg[0] === '%') {
-                map.set(`%${cnt++}`, Updater111To112.upArgument(cmdArg, spusArg))
+                map.set(`%${cnt++}`, UpdaterTo112.upArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
@@ -50,12 +51,25 @@ Returns an result map from an 1.12 command and an 1.12 spus.
         }
     }
 
-    public static upLine(input: string) {
-        if (/^\s*$/.test(input)) {
-            return input
-        } else {
-            return Updater111To112.upCommand(input)
+    public static upLine(input: string, from: string): UpdateResult {
+        const ans: UpdateResult = { command: input, warnings: []}
+
+        if (['18', '19'].indexOf(from) !== -1) {
+            const result = UpdaterTo111.upLine(ans.command, from)
+            ans.command = result.command
+            ans.warnings = result.warnings
+        } else if (from !== '111') {
+            throw `Expected from version: '18', '19' or '111' but got '${from}'.`
         }
+
+        ans.command = UpdaterTo112.upCommand(ans.command)
+
+        if (ans.command.indexOf(' !> ') !== -1) {
+            ans.warnings.push(ans.command.split(' !> ').slice(-1)[0])
+            ans.command = ans.command.split(' !> ').slice(0, -1).join(' !> ')
+        }
+
+        return ans
     }
 
     private static upCommand(input: string) {
@@ -67,7 +81,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
         }
 
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater111To112.getResultMap(input, spusOld)
+            let map = UpdaterTo112.getResultMap(input, spusOld)
             if (map) {
                 let spusNew = Spuses.pairs.get(spusOld)
                 if (spusNew) {
@@ -91,7 +105,7 @@ Returns an result map from an 1.12 command and an 1.12 spus.
             case 'bool':
                 return arg
             case 'command':
-                return Updater111To112.upCommand(arg)
+                return UpdaterTo112.upCommand(arg)
             case 'entity':
                 return arg
             case 'entity_nbt':

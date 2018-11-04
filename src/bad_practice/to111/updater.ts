@@ -4,10 +4,11 @@ import ArgumentReader from "../utils/argument_reader";
 import Checker from "./checker";
 import Entities from "./mappings/entities";
 import Selector from "./selector";
-import { getNbtCompound } from "../../utils/utils";
+import { getNbtCompound, UpdateResult } from "../../utils/utils";
 import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../../utils/nbt/nbt";
+import { UpdaterTo19 } from "../to19/updater";
 
-export class Updater19To111 {
+export class UpdaterTo111 {
     /**
         Returns an result map from an 1.12 command and an 1.12 spus.
         @param cmd An 1.12 minecraft command.
@@ -40,7 +41,7 @@ export class Updater19To111 {
             end = cmdSplited.length
 
             if (spusArg[0] === '%') {
-                map.set(`%${cnt++}`, Updater19To111.upArgument(cmdArg, spusArg))
+                map.set(`%${cnt++}`, UpdaterTo111.upArgument(cmdArg, spusArg))
             }
             spusArg = spusReader.next()
             cmdArg = cmdSplited.slice(begin, end).join(' ')
@@ -53,12 +54,25 @@ export class Updater19To111 {
         }
     }
 
-    public static upLine(input: string) {
-        if (/^\s*$/.test(input)) {
-            return input
-        } else {
-            return Updater19To111.upCommand(input)
+    public static upLine(input: string, from: string): UpdateResult {
+        const ans: UpdateResult = { command: input, warnings: []}
+
+        if (['18'].indexOf(from) !== -1) {
+            const result = UpdaterTo19.upLine(ans.command, from)
+            ans.command = result.command
+            ans.warnings = result.warnings
+        } else if (from !== '19') {
+            throw `Expected from version: '18' or '19' but got '${from}'.`
         }
+
+        ans.command = UpdaterTo111.upCommand(ans.command)
+
+        if (ans.command.indexOf(' !> ') !== -1) {
+            ans.warnings.push(ans.command.split(' !> ').slice(-1)[0])
+            ans.command = ans.command.split(' !> ').slice(0, -1).join(' !> ')
+        }
+
+        return ans
     }
 
     private static upCommand(input: string) {
@@ -70,7 +84,7 @@ export class Updater19To111 {
         }
 
         for (const spusOld of Spuses.pairs.keys()) {
-            let map = Updater19To111.getResultMap(input, spusOld)
+            let map = UpdaterTo111.getResultMap(input, spusOld)
             if (map) {
                 let spusNew = Spuses.pairs.get(spusOld)
                 if (spusNew) {
@@ -90,23 +104,23 @@ export class Updater19To111 {
     private static upArgument(arg: string, spus: string) {
         switch (spus.slice(1)) {
             case 'block_nbt':
-                return Updater19To111.upBlockNbt(arg)
+                return UpdaterTo111.upBlockNbt(arg)
             case 'bool':
                 return arg
             case 'command':
-                return Updater19To111.upCommand(arg)
+                return UpdaterTo111.upCommand(arg)
             case 'entity':
-                return Updater19To111.upEntity(arg)
+                return UpdaterTo111.upEntity(arg)
             case 'entity_nbt':
-                return Updater19To111.upEntityNbt(arg)
+                return UpdaterTo111.upEntityNbt(arg)
             case 'entity_type':
-                return Updater19To111.upEntityType(arg)
+                return UpdaterTo111.upEntityType(arg)
             case 'item_nbt':
-                return Updater19To111.upItemNbt(arg)
+                return UpdaterTo111.upItemNbt(arg)
             case 'item_tag_nbt':
-                return Updater19To111.upItemTagNbt(arg)
+                return UpdaterTo111.upItemTagNbt(arg)
             case 'json':
-                return Updater19To111.upJson(arg)
+                return UpdaterTo111.upJson(arg)
             case 'literal':
                 return arg
             case 'num':
@@ -137,7 +151,7 @@ export class Updater19To111 {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbtCompound(Updater19To111.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(UpdaterTo111.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -147,7 +161,7 @@ export class Updater19To111 {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbtCompound(Updater19To111.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(UpdaterTo111.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -179,7 +193,7 @@ export class Updater19To111 {
             if (passengers instanceof NbtList) {
                 for (let i = 0; i < passengers.length; i++) {
                     let passenger = passengers.get(i)
-                    passenger = getNbtCompound(Updater19To111.upEntityNbt(passenger.toString()))
+                    passenger = getNbtCompound(UpdaterTo111.upEntityNbt(passenger.toString()))
                     passengers.set(i, passenger)
                 }
             }
@@ -191,7 +205,7 @@ export class Updater19To111 {
                     if (potential instanceof NbtCompound) {
                         let entity = potential.get('Entity')
                         if (entity instanceof NbtCompound) {
-                            entity = getNbtCompound(Updater19To111.upEntityNbt(entity.toString()))
+                            entity = getNbtCompound(UpdaterTo111.upEntityNbt(entity.toString()))
                             potential.set('Entity', entity)
                         }
                     }
@@ -201,7 +215,7 @@ export class Updater19To111 {
         /* SpawnData */ {
             let spawnData = nbt.get('SpawnData')
             if (spawnData instanceof NbtCompound) {
-                spawnData = getNbtCompound(Updater19To111.upEntityNbt(spawnData.toString()))
+                spawnData = getNbtCompound(UpdaterTo111.upEntityNbt(spawnData.toString()))
                 nbt.set('SpawnData', spawnData)
             }
         }
@@ -298,7 +312,7 @@ export class Updater19To111 {
         /* tag */ {
             let tag = nbt.get('tag')
             if (tag instanceof NbtCompound) {
-                tag = getNbtCompound(Updater19To111.upItemTagNbt(tag.toString()))
+                tag = getNbtCompound(UpdaterTo111.upItemTagNbt(tag.toString()))
                 nbt.set('tag', tag)
             }
         }
@@ -310,14 +324,14 @@ export class Updater19To111 {
         /* EntityTag */ {
             let entityTag = nbt.get('EntityTag')
             if (entityTag instanceof NbtCompound) {
-                entityTag = getNbtCompound(Updater19To111.upEntityNbt(entityTag.toString()))
+                entityTag = getNbtCompound(UpdaterTo111.upEntityNbt(entityTag.toString()))
                 nbt.set('EntityTag', entityTag)
             }
         }
         /* BlockEntityTag */ {
             let blockEntityTag = nbt.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = getNbtCompound(Updater19To111.upBlockNbt(blockEntityTag.toString()))
+                blockEntityTag = getNbtCompound(UpdaterTo111.upBlockNbt(blockEntityTag.toString()))
                 nbt.set('BlockEntityTag', blockEntityTag)
             }
         }
@@ -331,7 +345,7 @@ export class Updater19To111 {
             let json = JSON.parse(input)
             let result: string[] = []
             for (const i of json) {
-                result.push(Updater19To111.upJson(JSON.stringify(i)))
+                result.push(UpdaterTo111.upJson(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
@@ -348,11 +362,11 @@ export class Updater19To111 {
                 (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
                 json.clickEvent.value && json.clickEvent.value.slice(0, 1) === '/' && Checker.isCommand(json.clickEvent.value)
             ) {
-                json.clickEvent.value = Updater19To111.upCommand(json.clickEvent.value)
+                json.clickEvent.value = UpdaterTo111.upCommand(json.clickEvent.value)
             }
 
             if (json.extra) {
-                json.extra = JSON.parse(Updater19To111.upJson(JSON.stringify(json.extra)))
+                json.extra = JSON.parse(UpdaterTo111.upJson(JSON.stringify(json.extra)))
             }
 
             return JSON.stringify(json).replace(/§/g, '\\u00a7')

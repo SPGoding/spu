@@ -1,11 +1,9 @@
-import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
+import { SpuScriptExecutor, WheelChief, Argument, ParseResult } from '../utils/wheel_chief/wheel_chief'
 import { Commands112To113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
-import { escape, completeNamespace, isNumeric, getNbtCompound, getUuidLeastUuidMost } from '../utils/utils'
+import { escape, completeNamespace, isNumeric, getNbtCompound, getUuidLeastUuidMost, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtLong, NbtList } from '../utils/nbt/nbt'
-import { Updater111To112 } from '../bad_practice/111to112/updater'
-import { Updater19To111 } from '../bad_practice/19to111/updater'
-import { Updater18To19 } from '../bad_practice/18to19/updater'
+import { UpdaterTo112 } from '../bad_practice/to112/updater'
 import { TargetSelector as TargetSelector112 } from './target_selector'
 import { TargetSelector as TargetSelector113 } from '../utils/target_selector'
 import Blocks from './mappings/blocks'
@@ -88,24 +86,25 @@ export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
 }
 
 export class UpdaterTo113 extends Updater {
-    public static upLine(input: string, from: string) {
-        if (from === '18') {
-            input = Updater111To112.upLine(
-                Updater19To111.upLine(
-                    Updater18To19.upLine(input)
-                )
-            )
-        } else if (from === '19') {
-            input = Updater111To112.upLine(
-                Updater19To111.upLine(input)
-            )
-        } else if (from === '111') {
-            input = Updater111To112.upLine(input)
+    public static upLine(input: string, from: string): UpdateResult {
+        const ans: UpdateResult = { command: input, warnings: []}
+
+        if (['18', '19', '111'].indexOf(from) !== -1) {
+            const result = UpdaterTo112.upLine(ans.command, from)
+            ans.command = result.command
+            ans.warnings = result.warnings
         } else if (from !== '112') {
-            throw `Expected version: '18', '19', '111' or '112' but got '${from}'.`
+            throw `Expected from version: '18', '19', '111' or '112' but got '${from}'.`
         }
 
-        return new UpdaterTo113().upSpgodingCommand(input)
+        ans.command = new UpdaterTo113().upSpgodingCommand(ans.command)
+
+        if (ans.command.indexOf(' !> ') !== -1) {
+            ans.warnings.push(ans.command.split(' !> ').slice(-1)[0])
+            ans.command = ans.command.split(' !> ').slice(0, -1).join(' !> ')
+        }
+
+        return ans
     }
 
     public upArgument(input: string, updater: string) {
@@ -220,7 +219,7 @@ export class UpdaterTo113 extends Updater {
             const inTile = input.get('inTile')
             input.del('inTile')
             if (inTile instanceof NbtString) {
-                const inBlockState = Blocks.upSpgodingBlockState(inTile)
+                const inBlockState = Blocks.upStringToBlockState(inTile)
                 input.set('inBlockState', inBlockState)
             }
         }
@@ -233,7 +232,7 @@ export class UpdaterTo113 extends Updater {
                 block instanceof NbtString &&
                 (data instanceof NbtByte || data instanceof NbtInt || typeof data === 'undefined')
             ) {
-                const blockState = Blocks.upSpgodingBlockState(block, data)
+                const blockState = Blocks.upStringToBlockState(block, data)
                 input.set('BlockState', blockState)
             }
 
@@ -258,7 +257,7 @@ export class UpdaterTo113 extends Updater {
                 displayTile instanceof NbtString &&
                 (displayData instanceof NbtInt || typeof displayData === 'undefined')
             ) {
-                const displayState = Blocks.upSpgodingBlockState(displayTile, displayData)
+                const displayState = Blocks.upStringToBlockState(displayTile, displayData)
                 input.set('DisplayState', displayState)
             }
         }

@@ -101,7 +101,6 @@ export default class Blocks {
                     ansStates = arr[3]
                 } else {
                     ansStates = []
-                    // throw `Unknown block ID: '${name}'.`
                 }
             } else if (!data && state) {
                 const arr = Blocks.ID_Data_Name_States.find(v => v[2] === name)
@@ -110,7 +109,6 @@ export default class Blocks {
                     ansStates = Blocks.combineStates(defaultStates, state.split(','))
                 } else {
                     ansStates = []
-                    // throw `Unknown block ID: '${name}'.`
                 }
             } else if (data && !state) {
                 if (data === -1) {
@@ -133,8 +131,12 @@ export default class Blocks {
                         ansStates = arr[3]
                     }
                 } else {
-                    ansStates = []
-                    // throw `Unknown block ID: '${name}:${data}'.`
+                    const brr = Blocks.ID_Data_Name_States.find(v =>v[2] === name)
+                    if (brr) {
+                        throw `Block '${name}' doesn't have such data value: '${data}'.`
+                    } else {
+                        ansStates = []
+                    }
                 }
             } else {
                 throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${
@@ -366,7 +368,7 @@ export default class Blocks {
         return blockState
     }
 
-    public static upSpgodingBlockState(id: NbtString, data?: NbtByte | NbtInt) {
+    public static upStringToBlockState(id: NbtString, data?: NbtByte | NbtInt) {
         const blockState = new NbtCompound()
         const name = new NbtString()
         const properties = new NbtCompound()

@@ -1,6 +1,6 @@
 import { isNumeric, getNbtCompound } from '../utils'
 import { BlockState } from '../block_state';
-import { TargetSelector as TargetSelector112 } from '../../112to113/target_selector';
+import { TargetSelector as TargetSelector112 } from '../../to113/target_selector';
 import { TargetSelector as TargetSelector113 } from '../target_selector';
 import { ItemStack } from '../item_stack';
 

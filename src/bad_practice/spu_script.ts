@@ -1,11 +1,8 @@
 import CharReader from './utils/char_reader'
 import ArgumentReader from './utils/argument_reader'
-import { TargetSelector as TargetSelector112To113 } from '../112to113/target_selector'
-import Selector19To111 from './19to111/selector'
-import Items from '../112to113/mappings/items'
-import { isNumeric, getNbtCompound } from '../utils/utils'
-import Blocks from '../112to113/mappings/blocks'
-import { Updater19To111 } from './19to111/updater';
+import Selector19To111 from './to111/selector'
+import { getNbtCompound } from '../utils/utils'
+import { UpdaterTo111 } from './to111/updater';
 
 /**
  * Represents a spu script.
@@ -68,14 +65,14 @@ export default class SpuScript {
                 })
                 switch (name) {
                     case '[19to111]CombineEntityTypeWithNbt': {
-                        const ans = Updater19To111.upEntityNbtWithType(getNbtCompound(params[0]), source)
+                        const ans = UpdaterTo111.upEntityNbtWithType(getNbtCompound(params[0]), source)
                         source = ans.entityType
                         break
                     }
                     case '[19to111]CombineSelectorWithNbt': {
                         const sel = new Selector19To111()
                         sel.parse(source)
-                        const ans = Updater19To111.upEntityNbtWithType(getNbtCompound(params[0]), sel.getType())
+                        const ans = UpdaterTo111.upEntityNbtWithType(getNbtCompound(params[0]), sel.getType())
                         sel.setType(ans.entityType)
                         source = sel.to111()
                         break

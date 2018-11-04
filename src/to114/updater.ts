@@ -1,9 +1,9 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Commands113To114 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
-import { escape, completeNamespace } from '../utils/utils'
+import { escape, completeNamespace, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
-import { UpdaterTo113 } from '../112to113/updater';
+import { UpdaterTo113 } from '../to113/updater';
 
 export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
@@ -26,24 +26,25 @@ export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
 }
 
 export class UpdaterTo114 extends Updater {
-    public static upLine(input: string, from: string) {
-        let trail = ''
+    public static upLine(input: string, from: string): UpdateResult {
+        const ans: UpdateResult = { command: input, warnings: []}
+
         if (['18', '19', '111', '112'].indexOf(from) !== -1) {
-            input = UpdaterTo113.upLine(input, from)
-            if (input.indexOf(' !> ') !== -1) {
-                trail = input.split(' !> ').slice(-1)[0]
-                input = input.split(' !> ').slice(0, -1).join(' !> ')
-            }
+            const result = UpdaterTo113.upLine(ans.command, from)
+            ans.command = result.command
+            ans.warnings = result.warnings
         } else if (from !== '113') {
-            throw `Expected version: '18', '19', '111', '112' or '113' but got '${from}'.`
+            throw `Expected from version: '18', '19', '111', '112' or '113' but got '${from}'.`
         }
 
-        let result = new UpdaterTo114().upSpgodingCommand(input)
-        if (trail && result.indexOf(' !> ') === -1) {
-            result = `${result} !> ${trail}`
+        ans.command = new UpdaterTo114().upSpgodingCommand(ans.command)
+
+        if (ans.command.indexOf(' !> ') !== -1) {
+            ans.warnings.push(ans.command.split(' !> ').slice(-1)[0])
+            ans.command = ans.command.split(' !> ').slice(0, -1).join(' !> ')
         }
 
-        return result
+        return ans
     }
 
     public upArgument(input: string, updater: string): string {
