@@ -12,7 +12,7 @@ Type [https://spgoding.github.io/spu](https://spgoding.github.io/spu) in the web
 
 ## How it Works
 
-### After 113to114
+### After 112to113
 
 The *WheelChief* will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
 
@@ -22,56 +22,81 @@ interface CmdNode {
     children?: { [nodeName: string]: CmdNode }
     parser?: string
     properties?: { [propertyName: string]: any }
+    updater?: string
     executable?: boolean
     redirect?: string[]
     spu_script?: string
 }
 ```
 
-e.g. You input `time add 233` and it can be parsed in the following nodes:
+e.g. You type `foobar @a {baz:qux}` and it can be parsed in the following nodes:
 
 ```TypeScript
 {
     type: 'root',
     children: {
-        time: {
+        foobar: {
             type: 'literal',
             children: {
-                add: {
-                    type: 'literal',
+                entity: {
+                    type: 'argument',
+                    parser: 'minecraft:entity',
+                    properties: {
+                        amount: 'multiple',
+                        type: 'entities'
+                    },
                     children: {
-                        time: {
+                        nbt: {
                             type: 'argument',
-                            parser: 'brigadier:integer',
-                            properties: {
-                                min: 0
-                            },
+                            parser: 'minecraft:nbt',
+                            updater: 'spgoding:entity_nbt',
                             executable: true,
-                            spu_script: '%0 %1 $toTick%2'
+                            spu_script: '%0 $setNbtToSelector%1%2'
                         }
                     }
-                },
+                }
             }
         }
     }
 }
 ```
 
-And then the WheelChief will return this:
+And then the WheelChief will return this (if no `updater` is specific in the `CmdNode`, the WheelChief will store its `parser` in `updater`):
 
 ```TypeScript
 {
     command: {
-        args: ['time', 'add', '233'],
-        spu_script: '%0 %1 $toTick%2'
+        args: [
+            { value: 'foobar', updater: undefined }, 
+            { value: '@a', updater: 'minecraft:entity' }, 
+            { value: '{baz:qux}', updater: 'spgoding:entity_nbt' }
+        ],
+        spu_script: '%0 $setNbtToSelector%1%2'
     },
     ...
 }
 ```
 
-The WheelChief will notice that there is a `spu_script` which needs to be executed. `%0` will be replaced with the first argument of the command(`args[0]`), `%1` will be the second(`args[1]`), and so on. A token that begins with `$` will be executed as a spu script method with following `%n` as its parameter(s). So finally you will get `time add 233t`. Is that amazing?
+The WheelChief will update every argument according to its `updater`. All updaters are defined in `src/utils/wheel_chief/updater.ts` and `src/**to**/updater.ts`. After updating all arguments we will get this (well, it just adds some quotes):
 
-### Before 112to113 (bad_practice)
+
+```TypeScript
+{
+    command: {
+        args: [
+            { value: 'foobar', updater: undefined }, 
+            { value: '@a', updater: 'minecraft:entity' }, 
+            { value: '{baz:"qux"}', updater: 'spgoding:entity_nbt' }
+        ],
+        spu_script: '%0 $setNbtToSelector%1%2'
+    },
+    ...
+}
+```
+
+Finally the `spu_script` will be executed. `%0` will be replaced with the first argument of the command(`args[0].value`), `%1` will be the second(`args[1].value`), and so on. A token that begins with `$` will be executed as a function with following `%n` as its parameter(s). So finally you will get `foobar @a[tag={baz:"qux"}]`. Is that amazing?
+
+### Before 111to112 (bad_practice)
 
 When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be called. This method will do the following things:
 

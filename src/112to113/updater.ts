@@ -92,15 +92,15 @@ export class UpdaterTo113 extends Updater {
         if (from === '18') {
             input = Updater111To112.upLine(
                 Updater19To111.upLine(
-                    Updater18To19.upLine(input).split(' !> ').slice(0, -1).join(' !> ')
-                ).split(' !> ').slice(0, -1).join(' !> ')
-            ).split(' !> ').slice(0, -1).join(' !> ')
+                    Updater18To19.upLine(input)
+                )
+            )
         } else if (from === '19') {
             input = Updater111To112.upLine(
-                Updater19To111.upLine(input).split(' !> ').slice(0, -1).join(' !> ')
-            ).split(' !> ').slice(0, -1).join(' !> ')
+                Updater19To111.upLine(input)
+            )
         } else if (from === '111') {
-            input = Updater111To112.upLine(input).split(' !> ').slice(0, -1).join(' !> ')
+            input = Updater111To112.upLine(input)
         } else if (from !== '112') {
             throw `Expected version: '18', '19', '111' or '112' but got '${from}'.`
         }
