@@ -9,17 +9,23 @@ export class Tokenizer {
     public tokenize(nbt: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
         let tokens: Token[] = []
 
-        let result = this.readAToken(nbt, 0, version)
+        let result = this.readAToken(nbt, 0, version, 0)
         tokens.push(result.token)
         while (result.token.type !== 'EndOfDocument') {
-            result = this.readAToken(nbt, result.pos, version)
+            if (result.token.type === 'Colon') {
+                result = this.readAToken(nbt, result.pos, version, 1)
+            } else if (['BeginByteArray', 'BeginIntArray', 'BeginLongArray', 'BeginList'].indexOf(result.token.type) !== -1) {
+                result = this.readAToken(nbt, result.pos, version, 2)
+            } else {
+                result = this.readAToken(nbt, result.pos, version, 0)
+            }
             tokens.push(result.token)
         }
 
         return tokens
     }
 
-    private readAToken(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadTokenResult {
+    private readAToken(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12', unquotedDealingWay: number): ReadTokenResult {
         pos = this.skipWhiteSpace(nbt, pos)
         switch (nbt.charAt(pos)) {
             case '{':
@@ -61,7 +67,7 @@ export class Tokenizer {
             }
             default: {
                 // Unquoted.
-                const readResult = this.readUnquoted(nbt, pos, version)
+                const readResult = this.readUnquoted(nbt, pos, version, unquotedDealingWay)
                 return {
                     token: { type: 'Thing', value: readResult.str },
                     pos: readResult.pos + 1
@@ -101,11 +107,27 @@ export class Tokenizer {
         return { str: str, pos: pos }
     }
 
-    private readUnquoted(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12'): ReadStringResult {
+    /**
+     * 
+     * @param nbt 
+     * @param pos 
+     * @param version 
+     * @param unquotedDealingWay 0 - Doesn't allow colon
+     * 
+     * 1 - Allow colon
+     * 
+     * 2 - Allow colon after none numbers
+     */
+    private readUnquoted(nbt: string, pos: number, version: 'before 1.12' | 'after 1.12', unquotedDealingWay: number): ReadStringResult {
         let str = ''
+        let metNonNumber = false
 
-        while ([',', ']', '}', ':', ''].indexOf(nbt.charAt(pos)) === -1) {
+        while ([',', ']', '}', ''].indexOf(nbt.charAt(pos)) === -1 &&
+            (unquotedDealingWay === 1 || nbt[pos] !== ':' || (unquotedDealingWay === 2 && metNonNumber))) {
             const char = nbt.charAt(pos)
+            if (!isNumeric(char)) {
+                metNonNumber = true
+            }
             if (version === 'before 1.12') {
                 str += char
             } else if (version === 'after 1.12' && /[a-zA-Z0-9\._+\-\s]/.test(char)) {
