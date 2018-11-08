@@ -494,7 +494,7 @@ export class Parser {
         let num: number
         let result = new NbtFloat()
 
-        if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 'l') {
+        if (isNumeric(token.value.slice(0, -1)) && token.value.slice(-1).toLowerCase() === 'f') {
             num = parseFloat(token.value)
         } else {
             return null

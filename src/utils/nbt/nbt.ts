@@ -119,7 +119,13 @@ export class NbtFloat {
         this.value = value
     }
 
-    public toString = () => `${this.value}f`
+    public toString() {
+        if (parseInt(this.value.toString()) === parseFloat(this.value.toString())) {
+            return `${this.value}.0f`
+        } else {
+            return `${this.value}f`
+        }
+    }
 }
 
 export class NbtDouble {
@@ -137,7 +143,13 @@ export class NbtDouble {
         this.value = value
     }
 
-    public toString = () => `${this.value}d`
+    public toString() {
+        if (parseInt(this.value.toString()) === parseFloat(this.value.toString())) {
+            return `${this.value}.0d`
+        } else {
+            return `${this.value}d`
+        }
+    }
 }
 
 export class NbtCompound {
