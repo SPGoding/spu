@@ -8,7 +8,7 @@
         "test": "src/tests/"
     },
     "dependencies": {
-        "npm": "^6.2.0"
+        "npm": "^6.4.1"
     },
     "devDependencies": {
         "@types/mocha": "^5.2.0",
