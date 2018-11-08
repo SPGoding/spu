@@ -148,7 +148,10 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:game_profile',
+                        parser: 'brigadier:string',
+                        properties: {
+                            type: 'word'
+                        },
                         children: {
                             reason: {
                                 type: 'argument',
@@ -1190,7 +1193,10 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:game_profile',
+                        parser: 'brigadier:string',
+                        properties: {
+                            type: 'word'
+                        },
                         executable: true
                     }
                 }
@@ -1200,7 +1206,10 @@ export class Commands112To113 {
                 children: {
                     targets: {
                         type: 'argument',
-                        parser: 'minecraft:game_profile',
+                        parser: 'brigadier:string',
+                        properties: {
+                            type: 'word'
+                        },
                         executable: true
                     }
                 }
@@ -2163,10 +2172,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             objective: {
                                                 type: 'argument',
@@ -2200,10 +2206,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             objective: {
                                                 type: 'argument',
@@ -2228,10 +2231,7 @@ export class Commands112To113 {
                                 children: {
                                     target: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'single'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             objective: {
                                                 type: 'argument',
@@ -2256,10 +2256,7 @@ export class Commands112To113 {
                                 children: {
                                     target: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'single'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         executable: true
                                     }
                                 },
@@ -2270,10 +2267,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             targetObjective: {
                                                 type: 'argument',
@@ -2285,10 +2279,7 @@ export class Commands112To113 {
                                                         children: {
                                                             source: {
                                                                 type: 'argument',
-                                                                parser: 'minecraft:score_holder',
-                                                                properties: {
-                                                                    amount: 'multiple'
-                                                                },
+                                                                parser: 'spgoding:old_entity',
                                                                 children: {
                                                                     sourceObjective: {
                                                                         type: 'argument',
@@ -2319,10 +2310,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             objective: {
                                                 type: 'argument',
@@ -2356,10 +2344,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             objective: {
                                                 type: 'argument',
@@ -2376,10 +2361,7 @@ export class Commands112To113 {
                                 children: {
                                     targets: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         children: {
                                             objective: {
                                                 type: 'argument',
@@ -2456,10 +2438,7 @@ export class Commands112To113 {
                                         children: {
                                             members: {
                                                 type: 'argument',
-                                                parser: 'minecraft:score_holder',
-                                                properties: {
-                                                    amount: 'multiple'
-                                                },
+                                                parser: 'spgoding:old_entity',
                                                 executable: true,
                                                 spu_script: 'team %2 %3 %4'
                                             }
@@ -2474,10 +2453,7 @@ export class Commands112To113 {
                                 children: {
                                     members: {
                                         type: 'argument',
-                                        parser: 'minecraft:score_holder',
-                                        properties: {
-                                            amount: 'multiple'
-                                        },
+                                        parser: 'spgoding:old_entity',
                                         executable: true,
                                         spu_script: 'team %2 %3'
                                     }
@@ -3416,7 +3392,10 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:game_profile',
+                                parser: 'brigadier:string',
+                                properties: {
+                                    type: 'word'
+                                },
                                 executable: true
                             }
                         }
@@ -3442,7 +3421,10 @@ export class Commands112To113 {
                         children: {
                             targets: {
                                 type: 'argument',
-                                parser: 'minecraft:game_profile',
+                                parser: 'brigadier:string',
+                                properties: {
+                                    type: 'word'
+                                },
                                 executable: true
                             }
                         }
