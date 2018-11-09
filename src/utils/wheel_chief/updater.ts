@@ -70,7 +70,7 @@ export class Updater {
         } else {
             let json = JSON.parse(input)
             if (json.selector) {
-                json.selector = this.upSpgodingTargetSelector(json.selector)
+                json.selector = this.upMinecraftEntity(json.selector)
             }
 
             if (

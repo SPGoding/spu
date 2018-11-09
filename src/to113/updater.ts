@@ -87,7 +87,7 @@ export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
 
 export class UpdaterTo113 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {
-        const ans: UpdateResult = { command: input, warnings: []}
+        const ans: UpdateResult = { command: input, warnings: [] }
 
         if (['18', '19', '111'].indexOf(from) !== -1) {
             const result = UpdaterTo112.upLine(ans.command, from)
@@ -119,8 +119,8 @@ export class UpdaterTo113 extends Updater {
                 return this.upSpgodingGamemode(input)
             case 'spgoding:item_slot':
                 return this.upSpgodingItemSlot(input)
-                case 'spgoding:old_entity':
-                    return this.upSpgodingOldEntity(input)
+            case 'spgoding:old_entity':
+                return this.upSpgodingOldEntity(input)
             case 'spgoding:particle':
                 return this.upSpgodingParticle(input)
             case 'spgoding:points_or_levels':
@@ -148,8 +148,59 @@ export class UpdaterTo113 extends Updater {
         return input
     }
 
+    protected upMinecraftComponent(input: string) {
+        if (input.slice(0, 1) === '"') {
+            return input
+        } else if (input.slice(0, 1) === '[') {
+            let json = JSON.parse(input)
+            let result: string[] = []
+            for (const i of json) {
+                result.push(this.upMinecraftComponent(JSON.stringify(i)))
+            }
+            return `[${result.join()}]`
+        } else {
+            let json = JSON.parse(input)
+            if (json.selector) {
+                json.selector = this.upSpgodingOldEntity(json.selector)
+            }
+
+            if (
+                json.clickEvent &&
+                json.clickEvent.action &&
+                (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
+                json.clickEvent.value &&
+                json.clickEvent.value.slice(0, 1) === '/'
+            ) {
+                try {
+                    json.clickEvent.value = this.upSpgodingCommand(json.clickEvent.value)
+                } catch {
+                    // That's ok. Take it easy.
+                }
+            }
+
+            if (json.extra) {
+                json.extra = JSON.parse(this.upMinecraftComponent(JSON.stringify(json.extra)))
+            }
+
+            return JSON.stringify(json).replace(/§/g, '\\u00a7')
+        }
+    }
+
     protected upSpgodingBlockName(input: string) {
         return Blocks.to113(Blocks.std112(undefined, input)).getName()
+    }
+
+    protected upSpgodingBlockNbt(input: NbtCompound) {
+        let ans = super.upSpgodingBlockNbt(input)
+
+        /* CustomName */{
+            let customName = ans.get('CustomName')
+            if (customName instanceof NbtString) {
+                customName.set(this.upSpgodingPreJson(customName.get()))
+            }
+        }
+
+        return ans
     }
 
     protected upSpgodingBlockParam(input: string) {
@@ -200,43 +251,43 @@ export class UpdaterTo113 extends Updater {
     }
 
     protected upSpgodingEntityNbt(input: NbtCompound) {
-        input = super.upSpgodingEntityNbt(input)
+        let ans = super.upSpgodingEntityNbt(input)
 
         /* carried & carriedData */ {
-            const carried = input.get('carried')
-            const carriedData = input.get('carriedData')
-            input.del('carried')
-            input.del('carriedData')
+            const carried = ans.get('carried')
+            const carriedData = ans.get('carriedData')
+            ans.del('carried')
+            ans.del('carriedData')
             if (
                 (carried instanceof NbtShort || carried instanceof NbtInt) &&
                 (carriedData instanceof NbtShort || carriedData instanceof NbtInt || typeof carriedData === 'undefined')
             ) {
                 const carriedBlockState = this.upBlockNumericIDToBlockState(carried, carriedData)
-                input.set('carriedBlockState', carriedBlockState)
+                ans.set('carriedBlockState', carriedBlockState)
             }
         }
         /* inTile */ {
-            const inTile = input.get('inTile')
-            input.del('inTile')
+            const inTile = ans.get('inTile')
+            ans.del('inTile')
             if (inTile instanceof NbtString) {
                 const inBlockState = Blocks.upStringToBlockState(inTile)
-                input.set('inBlockState', inBlockState)
+                ans.set('inBlockState', inBlockState)
             }
         }
         /* Block & Data & TileEntityData */ {
-            const block = input.get('Block')
-            const data = input.get('Data')
-            input.del('Block')
-            input.del('Data')
+            const block = ans.get('Block')
+            const data = ans.get('Data')
+            ans.del('Block')
+            ans.del('Data')
             if (
                 block instanceof NbtString &&
                 (data instanceof NbtByte || data instanceof NbtInt || typeof data === 'undefined')
             ) {
                 const blockState = Blocks.upStringToBlockState(block, data)
-                input.set('BlockState', blockState)
+                ans.set('BlockState', blockState)
             }
 
-            let tileEntityData = input.get('TileEntityData')
+            let tileEntityData = ans.get('TileEntityData')
             if (
                 block instanceof NbtString &&
                 tileEntityData instanceof NbtCompound &&
@@ -245,28 +296,28 @@ export class UpdaterTo113 extends Updater {
                 tileEntityData = Blocks.to113(
                     Blocks.std112(undefined, block.get(), data ? data.get() : 0, undefined, tileEntityData.toString())
                 ).getNbt()
-                input.set('TileEntityData', tileEntityData)
+                ans.set('TileEntityData', tileEntityData)
             }
         }
         /* DisplayTile & DisplayData */ {
-            const displayTile = input.get('DisplayTile')
-            const displayData = input.get('DisplayData')
-            input.del('DisplayTile')
-            input.del('DisplayData')
+            const displayTile = ans.get('DisplayTile')
+            const displayData = ans.get('DisplayData')
+            ans.del('DisplayTile')
+            ans.del('DisplayData')
             if (
                 displayTile instanceof NbtString &&
                 (displayData instanceof NbtInt || typeof displayData === 'undefined')
             ) {
                 const displayState = Blocks.upStringToBlockState(displayTile, displayData)
-                input.set('DisplayState', displayState)
+                ans.set('DisplayState', displayState)
             }
         }
         /* Particle & ParticleParam1 & ParticleParam2 */ {
-            const particle = input.get('Particle')
-            const particleParam1 = input.get('ParticleParam1')
-            const particleParam2 = input.get('ParticleParam2')
-            input.del('ParticleParam1')
-            input.del('ParticleParam2')
+            const particle = ans.get('Particle')
+            const particleParam1 = ans.get('ParticleParam1')
+            const particleParam2 = ans.get('ParticleParam2')
+            ans.del('ParticleParam1')
+            ans.del('ParticleParam2')
             if (particle instanceof NbtString) {
                 particle.set(this.upSpgodingParticle(particle.get()))
                 if (particle.get() === 'block') {
@@ -287,8 +338,8 @@ export class UpdaterTo113 extends Updater {
             }
         }
         /* Owner */ {
-            let owner = input.get('Owner')
-            input.del('Owner')
+            let owner = ans.get('Owner')
+            ans.del('Owner')
             if (owner instanceof NbtString) {
                 const uuid = getUuidLeastUuidMost(owner.get())
                 const m = new NbtLong(uuid.M)
@@ -296,12 +347,12 @@ export class UpdaterTo113 extends Updater {
                 owner = new NbtCompound()
                 owner.set('M', m)
                 owner.set('L', l)
-                input.set('Owner', owner)
+                ans.set('Owner', owner)
             }
         }
         /* owner */ {
-            let owner = input.get('owner')
-            input.del('owner')
+            let owner = ans.get('owner')
+            ans.del('owner')
             if (owner instanceof NbtString) {
                 const uuid = getUuidLeastUuidMost(owner.get())
                 const m = new NbtLong(uuid.M)
@@ -309,12 +360,12 @@ export class UpdaterTo113 extends Updater {
                 owner = new NbtCompound()
                 owner.set('M', m)
                 owner.set('L', l)
-                input.set('owner', owner)
+                ans.set('owner', owner)
             }
         }
         /* Thrower */ {
-            let thrower = input.get('Thrower')
-            input.del('Thrower')
+            let thrower = ans.get('Thrower')
+            ans.del('Thrower')
             if (thrower instanceof NbtString) {
                 const uuid = getUuidLeastUuidMost(thrower.get())
                 const m = new NbtLong(uuid.M)
@@ -322,11 +373,17 @@ export class UpdaterTo113 extends Updater {
                 thrower = new NbtCompound()
                 thrower.set('M', m)
                 thrower.set('L', l)
-                input.set('Thrower', thrower)
+                ans.set('Thrower', thrower)
             }
         }
+        /* CustomName */{
+            let customName = ans.get('CustomName')
+            if (customName instanceof NbtString) {
+                customName.set(this.upSpgodingPreJson(customName.get()))
+            }
 
-        return input
+            return ans
+        }
     }
 
     private upBlockNumericIDToBlockState(id: NbtShort | NbtInt, data?: NbtShort | NbtInt) {

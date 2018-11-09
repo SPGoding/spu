@@ -307,12 +307,7 @@ export class MinecraftComponentParser implements ArgumentParser {
     public constructor() { }
 
     public canParse(splited: string[], index: number): number {
-        try {
-            JSON.parse(splited[index])
-            return 1
-        } catch {
-            throw `Expected a valid JSON.`
-        }
+        return splited.length - index
     }
 }
 
