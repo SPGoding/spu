@@ -180,16 +180,16 @@ export default class Items {
         }
 
         /* EntityTag */ {
-            if (ansName === 'minecraft:spawn_egg') {
-                let entityTag = ansTag.get('EntityTag')
+            if (ansName === 'minecraft:bat_spawn_egg') {
+                const entityTag = ansTag.get('EntityTag')
                 if (entityTag instanceof NbtCompound) {
                     const id = entityTag.get('id')
                     if (id instanceof NbtString) {
                         const after = Entities.to113(id.get())
+                        // `after` contains `minecraft:` already.
                         if (Items.SpawnEgges.indexOf(`${after}_spawn_egg`) !== -1) {
                             ansName = `${after}_spawn_egg`
                         } else {
-                            ansName = `bat_spawn_egg`
                             let display = new NbtCompound()
                             display.set('Name', new NbtString(`{"text":"${after.replace('minecraft:', '')}_spawn_egg","italic":false}`))
                             ansTag.set('display', display)
@@ -985,6 +985,7 @@ export default class Items {
         ['minecraft:web.0', 'minecraft:cobweb'],
         ['minecraft:snow.0', 'minecraft:snow_block'],
         ['minecraft:snow_layer.0', 'minecraft:snow'],
+        ['minecraft:spawn_egg.0', 'minecraft:bat_spawn_egg'],
         ['minecraft:record_11.0', 'minecraft:music_disc_11'],
         ['minecraft:record_13.0', 'minecraft:music_disc_13'],
         ['minecraft:record_blocks.0', 'minecraft:music_disc_blocks'],
