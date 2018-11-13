@@ -2918,7 +2918,7 @@ export class Commands112To113 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
+                        parser: 'minecraft:entity_summon',
                         children: {
                             pos: {
                                 type: 'argument',

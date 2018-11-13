@@ -2663,7 +2663,7 @@ export class Commands111To112 {
                 children: {
                     entity: {
                         type: 'argument',
-                        parser: 'minecraft:entity',
+                        parser: 'minecraft:entity_summon',
                         children: {
                             pos: {
                                 type: 'argument',

@@ -3,6 +3,7 @@ import { UpdaterTo111 } from './bad_practice/to111/updater'
 import { UpdaterTo112 } from './to112/updater'
 import { UpdaterTo113 } from './to113/updater'
 import { UpdaterTo114 } from './to114/updater'
+import { isWhiteSpace, UpdateResult } from './utils/utils';
 
 function $(id: string) {
     return <HTMLElement>document.getElementById(id)
@@ -39,23 +40,27 @@ $('button').onclick = () => {
             for (const line of lines) {
                 number = lines.indexOf(line)
 
-                let result
+                let result: UpdateResult
 
-                if (to === '114') {
-                    result = UpdaterTo114.upLine(line, from)
-                } else if (to === '113') {
-                    result = UpdaterTo113.upLine(line, from)
-                } else if (to === '112') {
-                    result = UpdaterTo112.upLine(line, from)
-                } else if (to === '111') {
-                    result = UpdaterTo111.upLine(line, from)
-                } else if (to === '19') {
-                    result = UpdaterTo19.upLine(line, from)
+                if (line[0] === '#' || isWhiteSpace(line)) {
+                    result = { command: line, warnings: [] }
                 } else {
-                    throw `Unknown to version: '${to}'.`
+                    if (to === '114') {
+                        result = UpdaterTo114.upLine(line, from)
+                    } else if (to === '113') {
+                        result = UpdaterTo113.upLine(line, from)
+                    } else if (to === '112') {
+                        result = UpdaterTo112.upLine(line, from)
+                    } else if (to === '111') {
+                        result = UpdaterTo111.upLine(line, from)
+                    } else if (to === '19') {
+                        result = UpdaterTo19.upLine(line, from)
+                    } else {
+                        throw `Unknown to version: '${to}'.`
+                    }
                 }
 
-                result.warnings.filter(v => v)
+                result.warnings = result.warnings.filter(v => !isWhiteSpace(v))
 
                 if (result.warnings.length > 0) {
                     frame = 'warning'
@@ -68,8 +73,8 @@ $('button').onclick = () => {
             }
 
             ans = ans.slice(0, -1) // Remove the last line.
-            let timeAfter = (new Date()).getTime()
-            let timeDelta = timeAfter - timeBefore
+            const timeAfter = (new Date()).getTime()
+            const timeDelta = timeAfter - timeBefore
             msg = `Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).<br />${msg}`
         }
     } catch (ex) {

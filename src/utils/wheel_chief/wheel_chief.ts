@@ -45,10 +45,6 @@ export interface SpuScriptExecutor {
 export class WheelChief {
     public static update(input: string, rootNode: CmdNode,
         parser: ArgumentParser, updater: Updater, executor: SpuScriptExecutor): UpdateResult {
-        if (input.charAt(0) === '#' || isWhiteSpace(input)) {
-            return { command: input, warnings: [] }
-        }
-
         const slash = input.charAt(0) === '/'
         if (slash) {
             input = input.slice(1)
