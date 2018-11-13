@@ -2,6 +2,7 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
+import { ArgumentParser } from '../../../utils/wheel_chief/argument_parsers';
 
 describe('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
@@ -9,7 +10,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['literal']
@@ -24,7 +26,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
             assert.deepEqual(actual.command.args, [{ value: 'literal' }])
         })
 
@@ -32,7 +34,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['first', 'second', 'the_last_child']
@@ -57,7 +60,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
 
             assert.deepEqual(actual.command.args, [
                 { value: 'first' },
@@ -70,7 +73,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['b', 'b']
@@ -107,7 +111,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
 
             assert.deepEqual(actual.command.args, [{ value: 'b' }, { value: 'b' }])
         })
@@ -116,7 +120,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['test', 'true', '233']
@@ -146,7 +151,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
 
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
@@ -159,7 +164,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['spg', 'test']
@@ -183,7 +189,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
 
             assert.deepEqual(actual.command.args, [{ value: 'spg' }, { value: 'test' }])
         })
@@ -192,7 +198,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['test', '233']
@@ -217,7 +224,7 @@ describe('WheelChief tests', () => {
             }
 
             try {
-                WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+                WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
             } catch {
                 return
             }
@@ -229,7 +236,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['test', 'word', 'phrase', '"phrase', 'phrase"', 'g', 'r', 'e', 'e', 'd', 'y']
@@ -280,7 +288,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
                 { value: 'word', updater: 'brigadier:string' },
@@ -294,7 +302,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['execute', 'run', 'execute', 'run', 'spg']
@@ -317,7 +326,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
 
             assert.deepEqual(actual.command.args, [
                 { value: 'execute' },
@@ -332,7 +341,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['test', '{}', '{foo', ':', 'bar', '}', '{spg:rbq}']
@@ -365,7 +375,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
                 { value: '{}', updater: 'minecraft:nbt' },
@@ -378,7 +388,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['test', '{foo:bar}']
@@ -400,7 +411,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
             assert.deepEqual(actual.command.args, [
                 { value: 'test' },
                 { value: '{foo:bar}', updater: 'spgoding:entity_nbt' }
@@ -411,7 +422,8 @@ describe('WheelChief tests', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: ['test']
@@ -427,7 +439,7 @@ describe('WheelChief tests', () => {
                 }
             }
 
-            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode)
+            const actual = WheelChief.parseCmdNode(input, 'N/A', rootNode, rootNode, new ArgumentParser())
             assert.deepEqual(actual.command.args, [{ value: 'test' }])
             assert(actual.command.spuScript === '$test%0')
         })

@@ -1,6 +1,6 @@
 import { UpdaterTo19 } from './bad_practice/to19/updater'
 import { UpdaterTo111 } from './bad_practice/to111/updater'
-import { UpdaterTo112 } from './bad_practice/to112/updater'
+import { UpdaterTo112 } from './to112/updater'
 import { UpdaterTo113 } from './to113/updater'
 import { UpdaterTo114 } from './to114/updater'
 
@@ -54,6 +54,8 @@ $('button').onclick = () => {
                 } else {
                     throw `Unknown to version: '${to}'.`
                 }
+
+                result.warnings.filter(v => v)
 
                 if (result.warnings.length > 0) {
                     frame = 'warning'

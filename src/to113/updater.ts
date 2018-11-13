@@ -3,7 +3,7 @@ import { Commands112To113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace, isNumeric, getNbtCompound, getUuidLeastUuidMost, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtLong, NbtList } from '../utils/nbt/nbt'
-import { UpdaterTo112 } from '../bad_practice/to112/updater'
+import { UpdaterTo112 } from '../to112/updater'
 import { TargetSelector as TargetSelector112 } from './target_selector'
 import { TargetSelector as TargetSelector113 } from '../utils/target_selector'
 import Blocks from './mappings/blocks'
@@ -13,8 +13,9 @@ import Effects from './mappings/effects'
 import Enchantments from './mappings/enchantments'
 import Particles from './mappings/particles'
 import Entities from './mappings/entities'
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
 
-export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
+class SpuScriptExecutor112To113 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
         let splited = script.split(' ')
 
@@ -85,6 +86,39 @@ export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
     }
 }
 
+class ArgumentParser112To113 extends ArgumentParser {
+    public parseArgument(parser: string, splited: string[], index: number, properties: any) {
+        switch (parser) {
+            case 'spgoding:old_entity':
+                return this.parseSpgodingOldEntity(splited, index)
+            default:
+                return super.parseArgument(parser, splited, index, properties)
+        }
+    }
+
+    private parseSpgodingOldEntity(splited: string[], index: number): number {
+        let join = splited[index]
+
+        if (join.charAt(0) !== '@') {
+            return 1
+        }
+
+        if (TargetSelector112.isValid(join)) {
+            return 1
+        } else {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                if (TargetSelector112.isValid(join)) {
+                    return i - index + 1
+                } else {
+                    continue
+                }
+            }
+            throw `Expected an old entity selector.`
+        }
+    }
+}
+
 export class UpdaterTo113 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {
         const ans: UpdateResult = { command: input, warnings: [] }
@@ -97,12 +131,10 @@ export class UpdaterTo113 extends Updater {
             throw `Expected from version: '18', '19', '111' or '112' but got '${from}'.`
         }
 
-        ans.command = new UpdaterTo113().upSpgodingCommand(ans.command)
+        const result = new UpdaterTo113().upSpgodingCommand(ans.command)
 
-        if (ans.command.indexOf(' !> ') !== -1) {
-            ans.warnings.push(ans.command.split(' !> ').slice(-1)[0])
-            ans.command = ans.command.split(' !> ').slice(0, -1).join(' !> ')
-        }
+        ans.command = result.command
+        ans.warnings = ans.warnings.concat(result.warnings)
 
         return ans
     }
@@ -207,8 +239,10 @@ export class UpdaterTo113 extends Updater {
         return Blocks.to113(Blocks.std112(parseInt(input))).getFull()
     }
 
-    protected upSpgodingCommand(input: string): string {
-        return WheelChief.update(input, Commands112To113.commands, new SpuScriptExecutor112To113(), this)
+    protected upSpgodingCommand(input: string) {
+        const result = WheelChief.update(input, Commands112To113.commands,
+            new ArgumentParser112To113(), this, new SpuScriptExecutor112To113())
+        return { command: result.command, warnings: result.warnings }
     }
 
     protected upSpgodingDifficulty(input: string) {

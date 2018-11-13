@@ -30,7 +30,7 @@ export class Updater {
             case 'spgoding:block_nbt':
                 return this.upSpgodingBlockNbt(getNbtCompound(input)).toString()
             case 'spgoding:command':
-                return this.upSpgodingCommand(input)
+                return this.upSpgodingCommand(input).command
             case 'spgoding:entity_nbt':
                 return this.upSpgodingEntityNbt(getNbtCompound(input)).toString()
             case 'spgoding:item_name':
@@ -143,7 +143,7 @@ export class Updater {
         /* Command */ {
             const command = input.get('Command')
             if (command instanceof NbtString) {
-                command.set(this.upSpgodingCommand(command.get()))
+                command.set(this.upSpgodingCommand(command.get()).command)
             }
         }
         /* Items */ {
@@ -186,8 +186,8 @@ export class Updater {
         return input
     }
 
-    protected upSpgodingCommand(input: string) {
-        return input
+    protected upSpgodingCommand(input: string): UpdateResult {
+        return { command: input, warnings: [] }
     }
 
     protected upSpgodingEntityNbt(input: NbtCompound) {
@@ -331,7 +331,7 @@ export class Updater {
         /* Command */ {
             const command = input.get('Command')
             if (command instanceof NbtString) {
-                command.set(this.upSpgodingCommand(command.get()))
+                command.set(this.upSpgodingCommand(command.get()).command)
             }
         }
         /* SpawnPotentials */ {

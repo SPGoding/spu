@@ -4,121 +4,145 @@ import { TargetSelector as TargetSelector112 } from '../../to113/target_selector
 import { TargetSelector as TargetSelector113 } from '../target_selector';
 import { ItemStack } from '../item_stack';
 
-const ResourceLocation = /^(\w+:)?[\w\.]+$/
-const ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
-const IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
-const Swizzle = /^[xyz]+$/
 
-// The vec regex is coppied from
-// https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
-// Dressed pca, I love you!!!
-const Vec2 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d+)|(~))(\s|$)){2})$/
-const Vec3 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/
+export class ArgumentParser {
+    private ResourceLocation = /^(\w+:)?[\w\.]+$/
+    private ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
+    private IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
+    private Swizzle = /^[xyz]+$/
+    
+    // The vec regex is coppied from
+    // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
+    // Dressed pca, I love you!!!
+    private Vec2 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d+)|(~))(\s|$)){2})$/
+    private Vec3 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/
 
-/**
- * A brigadier parser.
- */
-export interface ArgumentParser {
-    canParse(splited: string[], index: number): number
-}
+    public parseArgument(parser: string, splited: string[], index: number, properties: any): number {
+        switch (parser) {
+            case 'brigadier:bool':
+                return this.parseBrigadierBool(splited, index)
+            case 'brigadier:double':
+                return this.parseBrigadierDouble(splited, index, properties.min, properties.max)
+            case 'brigadier:float':
+                return this.parseBrigadierFloat(splited, index, properties.min, properties.max)
+            case 'brigadier:integer':
+                return this.parseBrigadierInteger(splited, index, properties.min, properties.max)
+            case 'brigadier:string':
+                return this.parseBrigadierString(splited, index, properties.type)
+            case 'minecraft:block_pos':
+                return this.parseMinecraftBlockPos(splited, index)
+            case 'minecraft:block_predicate':
+                return this.parseBlockPredicate(splited, index)
+            case 'minecraft:block_state':
+                return this.parseBlockState(splited, index)
+            case 'minecraft:color':
+                return this.parseMinecraftColor(splited, index)
+            case 'minecraft:column_pos':
+                return this.parseMinecraftColumnPos(splited, index)
+            case 'minecraft:component':
+                return this.parseMinecraftComponent(splited, index)
+            case 'minecraft:entity':
+                return this.parseMinecraftEntity(splited, index, properties.amount, properties.type)
+            case 'minecraft:entity_anchor':
+                return this.parseMinecraftEntityAnchor(splited, index)
+            case 'minecraft:entity_summon':
+                return this.parseMinecraftEntitySummon(splited, index)
+            case 'minecraft:function':
+                return this.parseMinecraftFunction(splited, index)
+            case 'minecraft:game_profile':
+                return this.parseMinecraftGameProfile(splited, index)
+            case 'minecraft:int_range':
+                return this.parseMinecraftIntRange(splited, index)
+            case 'minecraft:item_enchantment':
+                return this.parseMinecraftItemEnchantment(splited, index)
+            case 'minecraft:item_predicate':
+                return this.parseMinecraftItemPredicate(splited, index)
+            case 'minecraft:item_slot':
+                return this.parseMinecraftItemSlot(splited, index)
+            case 'minecraft:item_stack':
+                return this.parseMinecraftItemStack(splited, index)
+            case 'minecraft:message':
+                return this.parseMinecraftMessage(splited, index)
+            case 'minecraft:mob_effect':
+                return this.parseMinecraftMobEffect(splited, index)
+            case 'minecraft:nbt':
+                return this.parseMinecraftNbt(splited, index)
+            case 'minecraft:nbt_path':
+                return this.parseMinecraftNbtPath(splited, index)
+            case 'minecraft:objective':
+                return this.parseMinecraftObjective(splited, index)
+            case 'minecraft:objective_criteria':
+                return this.parseMinecraftObjectiveCriteria(splited, index)
+            case 'minecraft:operation':
+                return this.parseMinecraftOperation(splited, index)
+            case 'minecraft:particle':
+                return this.parseMinecraftParticle(splited, index)
+            case 'minecraft:resource_location':
+                return this.parseMinecraftResourceLocation(splited, index)
+            case 'minecraft:rotation':
+                return this.parseMinecraftRotation(splited, index)
+            case 'minecraft:score_holder':
+                return this.parseMinecraftScoreHolder(splited, index, properties.amount)
+            case 'minecraft:scoreboard_slot':
+                return this.parseMinecraftScoreboardSlot(splited, index)
+            case 'minecraft:swizzle':
+                return this.parseMinecraftSwizzle(splited, index)
+            case 'minecraft:team':
+                return this.parseMinecraftTeam(splited, index)
+            case 'minecraft:vec2':
+                return this.parseMinecraftVec2(splited, index)
+            case 'minecraft:vec3':
+                return this.parseMinecraftVec3(splited, index)
+            default:
+                throw `Unknown parser: '${parser}'.`
+        }
+    }
 
-/**
- * brigadier:bool
- * @property N/A
- */
-export class BrigadierBoolParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseBrigadierBool(splited: string[], index: number): number {
         if (['false', 'true'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
             throw `Expected 'true' or 'false' but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * brigadier:double
- * @property min
- * @property max
- */
-export class BrigadierDoubleParser implements ArgumentParser {
-    private min: number | undefined
-    private max: number | undefined
-
-    public constructor(min?: number, max?: number) {
-        this.min = min
-        this.max = max
-    }
-
-    public canParse(splited: string[], index: number): number {
+    private parseBrigadierDouble(splited: string[], index: number, min: number, max: number): number {
         if (isNumeric(splited[index])) {
-            if ((this.min === undefined || parseFloat(splited[index]) >= this.min) &&
-                (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+            if ((min === undefined || parseFloat(splited[index]) >= min) &&
+                (max === undefined || parseFloat(splited[index]) <= max)) {
                 return 1
             }
             else {
-                throw `Should between ${this.min}..${this.max} but got '${splited[index]}'.`
+                throw `Should between ${min}..${max} but got '${splited[index]}'.`
             }
         } else {
             throw `Expected a number but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * brigadier:float
- * @property min
- * @property max
- */
-export class BrigadierFloatParser implements ArgumentParser {
-    private min: number | undefined
-    private max: number | undefined
-
-    public constructor(min?: number, max?: number) {
-        this.min = min
-        this.max = max
-    }
-
-    public canParse(splited: string[], index: number): number {
+    private parseBrigadierFloat(splited: string[], index: number, min: number, max: number): number {
         if (isNumeric(splited[index])) {
-            if ((this.min === undefined || parseFloat(splited[index]) >= this.min) &&
-                (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+            if ((min === undefined || parseFloat(splited[index]) >= min) &&
+                (max === undefined || parseFloat(splited[index]) <= max)) {
                 return 1
             }
             else {
-                throw `Should between ${this.min}..${this.max} but got '${splited[index]}'.`
+                throw `Should between ${min}..${max} but got '${splited[index]}'.`
             }
         } else {
             throw `Expected a number but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * brigadier:integer
- * @property min
- * @property max
- */
-export class BrigadierIntegerParser implements ArgumentParser {
-    private min: number | undefined
-    private max: number | undefined
-
-    public constructor(min?: number, max?: number) {
-        this.min = min
-        this.max = max
-    }
-
-    public canParse(splited: string[], index: number): number {
+    private parseBrigadierInteger(splited: string[], index: number, min: number, max: number): number {
         if (isNumeric(splited[index])) {
             if (parseInt(splited[index]) === parseFloat(splited[index])) {
-                if ((this.min === undefined || parseFloat(splited[index]) >= this.min) &&
-                    (this.max === undefined || parseFloat(splited[index]) <= this.max)) {
+                if ((min === undefined || parseFloat(splited[index]) >= min) &&
+                    (max === undefined || parseFloat(splited[index]) <= max)) {
                     return 1
                 }
                 else {
-                    throw `Should between ${this.min}..${this.max} but got '${splited[index]}'.`
+                    throw `Should between ${min}..${max} but got '${splited[index]}'.`
                 }
             } else {
                 throw `Expected an integer but got double '${splited[index]}'.`
@@ -127,21 +151,9 @@ export class BrigadierIntegerParser implements ArgumentParser {
             throw `Expected a number but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * brigadier:string
- * @property type: Can be one of the following values: 'greedy', 'phrase' and 'word'.
- */
-export class BrigadierStringParser implements ArgumentParser {
-    private type: 'greedy' | 'phrase' | 'word' | undefined
-
-    public constructor(type: 'greedy' | 'phrase' | 'word' = 'word') {
-        this.type = type
-    }
-
-    public canParse(splited: string[], index: number): number {
-        switch (this.type) {
+    private parseBrigadierString(splited: string[], index: number, type: string): number {
+        switch (type) {
             case 'greedy':
                 return splited.length - index
             case 'phrase':
@@ -167,32 +179,16 @@ export class BrigadierStringParser implements ArgumentParser {
                 return 1
         }
     }
-}
 
-/**
- * minecraft:block_pos
- * @property N/A
- */
-export class MinecraftBlockPosParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
+    private parseMinecraftBlockPos(splited: string[], index: number): number {
+        if (this.Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
             throw `Expected a block pos.`
         }
     }
-}
 
-/**
- * minecraft:block_predicate
- * @property N/A
- */
-export class MinecraftBlockPredicateParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseBlockPredicate(splited: string[], index: number): number {
         let join = splited[index]
         let exception
         try {
@@ -213,16 +209,8 @@ export class MinecraftBlockPredicateParser implements ArgumentParser {
             throw exception
         }
     }
-}
 
-/**
- * minecraft:block_state
- * @property N/A
- */
-export class MinecraftBlockStateParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseBlockState(splited: string[], index: number): number {
         let join = splited[index]
         let exception
 
@@ -244,16 +232,8 @@ export class MinecraftBlockStateParser implements ArgumentParser {
             throw exception
         }
     }
-}
 
-/**
- * minecraft:color
- * @property N/A
- */
-export class MinecraftColorParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftColor(splited: string[], index: number): number {
         if (
             [
                 'black',
@@ -281,52 +261,20 @@ export class MinecraftColorParser implements ArgumentParser {
             `but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * minecraft:column_pos
- * @property N/A
- */
-export class MinecraftColumnPosParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
+    private parseMinecraftColumnPos(splited: string[], index: number): number {
+        if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
             throw `Expected a column pos.`
         }
     }
-}
 
-/**
- * minecraft:component
- * @property N/A
- */
-export class MinecraftComponentParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftComponent(splited: string[], index: number): number {
         return splited.length - index
     }
-}
 
-/**
- * minecraft:entity
- * @property
- * amount: `single` | `multiple`  
- * type: `players` | `entities`
- */
-export class MinecraftEntityParser implements ArgumentParser {
-    private amount: 'single' | 'multiple'
-    private type: 'players' | 'entities'
-
-    public constructor(amount: 'single' | 'multiple', type: 'players' | 'entities') {
-        this.amount = amount
-        this.type = type
-    }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftEntity(splited: string[], index: number, amount: 'single' | 'multiple', type: 'players' | 'entities'): number {
         let join = splited[index]
 
         if (join.charAt(0) !== '@') {
@@ -337,13 +285,13 @@ export class MinecraftEntityParser implements ArgumentParser {
 
         try {
             const sel = new TargetSelector113(join)
-            if (this.amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
+            if (amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
                 throw `Expected a single target.`
             }
-            if (this.amount === 'single' && parseInt(sel.limit) > 1) {
+            if (amount === 'single' && parseInt(sel.limit) > 1) {
                 throw `Expected a single target.`
             }
-            if (this.type === 'players' && sel.variable === 'e' &&
+            if (type === 'players' && sel.variable === 'e' &&
                 sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
                 throw `Expected player(s).`
             }
@@ -355,13 +303,13 @@ export class MinecraftEntityParser implements ArgumentParser {
                 join += ' ' + splited[i]
                 try {
                     const sel = new TargetSelector113(join)
-                    if (this.amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
+                    if (amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
                         throw `Expected a single target.`
                     }
-                    if (this.amount === 'single' && parseInt(sel.limit) > 1) {
+                    if (amount === 'single' && parseInt(sel.limit) > 1) {
                         throw `Expected a single target.`
                     }
-                    if (this.type === 'players' && sel.variable === 'e' &&
+                    if (type === 'players' && sel.variable === 'e' &&
                         sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
                         throw `Expected player(s).`
                     }
@@ -374,92 +322,44 @@ export class MinecraftEntityParser implements ArgumentParser {
             throw exception
         }
     }
-}
 
-/**
- * minecraft:entity_anchor
- * @property N/A
- */
-export class MinecraftEntityAnchorParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftEntityAnchor(splited: string[], index: number): number {
         if (['eyes', 'feet'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
             throw `Expected 'eyes' or 'feet' but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * minecraft:entity_summon
- * @property N/A
- */
-export class MinecraftEntitySummonParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftEntitySummon(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:function
- * @property N/A
- */
-export class MinecraftFunctionParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftFunction(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:game_profile
- * @property N/A
- */
-export class MinecraftGameProfileParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        return (new MinecraftEntityParser('multiple', 'players')).canParse(splited, index)
+    private parseMinecraftGameProfile(splited: string[], index: number): number {
+        return this.parseMinecraftEntity(splited, index, 'multiple', 'players')
     }
-}
 
-/**
- * minecraft:item_enchantment
- * @property N/A
- */
-export class MinecraftItemEnchantmentParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftItemEnchantment(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:item_predicate
- * @property N/A
- */
-export class MinecraftItemPredicateParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftItemPredicate(splited: string[], index: number): number {
         let join = splited[index]
         let exception
         try {
@@ -480,16 +380,8 @@ export class MinecraftItemPredicateParser implements ArgumentParser {
             throw exception
         }
     }
-}
 
-/**
- * minecraft:item_slot
- * @property N/A
- */
-export class MinecraftItemSlotParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftItemSlot(splited: string[], index: number): number {
         if (
             [
                 'armor.chest',
@@ -648,16 +540,8 @@ export class MinecraftItemSlotParser implements ArgumentParser {
             throw `Expected a slot.`
         }
     }
-}
 
-/**
- * minecraft:item_stack
- * @property N/A
- */
-export class MinecraftItemStackParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftItemStack(splited: string[], index: number): number {
         let join = splited[index]
         let exception
         try {
@@ -678,60 +562,28 @@ export class MinecraftItemStackParser implements ArgumentParser {
             throw exception
         }
     }
-}
 
-/**
- * minecraft:message
- * @property N/A
- */
-export class MinecraftMessageParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftMessage(splited: string[], index: number): number {
         return splited.length - index
     }
-}
 
-/**
- * minecraft:mob_effect
- * @property N/A
- */
-export class MinecraftMobeffectParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftMobeffect(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:mob_effect
- * @property N/A
- */
-export class MinecraftMobEffectParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftMobEffect(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:nbt
- * @property N/A
- */
-export class MinecraftNbtParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftNbt(splited: string[], index: number): number {
         let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
             let test = splited.slice(index, endIndex).join(' ')
@@ -745,81 +597,41 @@ export class MinecraftNbtParser implements ArgumentParser {
         }
         throw exception
     }
-}
 
-/**
- * minecraft:nbt_path
- * @property N/A
- */
-export class MinecraftNbtPathParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftNbtPath(splited: string[], index: number): number {
         if (/(^.*\.?)+$/.test(splited[index])) {
             return 1
         } else {
             throw `Expected a NBT path.`
         }
     }
-}
 
-/**
- * minecraft:objective
- * @property N/A
- */
-export class MinecraftObjectiveParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftObjective(splited: string[], index: number): number {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
             throw `Expected an objective.`
         }
     }
-}
 
-/**
- * minecraft:objective_criteria
- * @property N/A
- */
-export class MinecraftObjectiveCriteriaParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ScoreboardCriteria.test(splited[index])) {
+    private parseMinecraftObjectiveCriteria(splited: string[], index: number): number {
+        if (this.ScoreboardCriteria.test(splited[index])) {
             return 1
         } else {
             throw `Expected a scoreboard criteria.`
         }
     }
-}
 
-/**
- * minecraft:operation
- * @property N/A
- */
-export class MinecraftOperationParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftOperation(splited: string[], index: number): number {
         if (['+=', '-=', '*=', '/=', '%=', '=', '<', '>', '><'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
             throw `Expected '+=', '-=', '*=', '/=', '%=', '=', '<', '>' or '><' but got '${splited[index]}'.`
         }
     }
-}
 
-/**
- * minecraft:particle
- * @property N/A
- */
-export class MinecraftParticleParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftParticle(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             if (['dust', 'minecraft:dust'].indexOf(splited[index]) !== -1) {
                 if (
                     isNumeric(splited[index + 1]) &&
@@ -886,80 +698,36 @@ export class MinecraftParticleParser implements ArgumentParser {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:int_range
- * @property N/A
- */
-export class MinecraftIntRangeParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (IntRange.test(splited[index])) {
+    private parseMinecraftIntRange(splited: string[], index: number): number {
+        if (this.IntRange.test(splited[index])) {
             return 1
         } else {
             throw `Expected an int range.`
         }
     }
-}
 
-/**
- * minecraft:resource_location
- * @property N/A
- */
-export class MinecraftResourceLocationParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (ResourceLocation.test(splited[index])) {
+    private parseMinecraftResourceLocation(splited: string[], index: number): number {
+        if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
             throw `Expected an resource location.`
         }
     }
-}
 
-/**
- * minecraft:rotation
- * @property N/A
- */
-export class MinecraftRotationParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
+    private parseMinecraftRotation(splited: string[], index: number): number {
+        if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
             throw `Expected vec2.`
         }
     }
-}
 
-/**
- * minecraft:score_holder
- * @property amount: `single` | `multiple`.
- */
-export class MinecraftScoreHolderParser implements ArgumentParser {
-    private amount: 'single' | 'multiple'
-
-    public constructor(amount: 'single' | 'multiple') {
-        this.amount = amount
+    private parseMinecraftScoreHolder(splited: string[], index: number, amount: 'single' | 'multiple'): number {
+        return this.parseMinecraftEntity(splited, index, amount, 'entities')
     }
 
-    public canParse(splited: string[], index: number): number {
-        return (new MinecraftEntityParser(this.amount, 'entities')).canParse(splited, index)
-    }
-}
-
-/**
- * minecraft:scoreboard_slot
- * @property N/A
- */
-export class MinecraftScoreboardSlotParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftScoreboardSlot(splited: string[], index: number): number {
         if (
             [
                 'list',
@@ -988,100 +756,36 @@ export class MinecraftScoreboardSlotParser implements ArgumentParser {
             throw `Expected a scoreboard display slot.`
         }
     }
-}
 
-/**
- * minecraft:swizzle
- * @property N/A
- */
-export class MinecraftSwizzleParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (Swizzle.test(splited[index])) {
+    private parseMinecraftSwizzle(splited: string[], index: number): number {
+        if (this.Swizzle.test(splited[index])) {
             return 1
         } else {
             throw `Expected combination of 'x' 'y' and 'z'.`
         }
     }
-}
 
-/**
- * minecraft:team
- * @property N/A
- */
-export class MinecraftTeamParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
+    private parseMinecraftTeam(splited: string[], index: number): number {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
             throw `Expected a team.`
         }
     }
-}
 
-/**
- * minecraft:vec2
- * @property N/A
- */
-export class MinecraftVec2Parser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
+    private parseMinecraftVec2(splited: string[], index: number): number {
+        if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
             throw `Expected a vec2.`
         }
     }
-}
 
-/**
- * minecraft:vec3
- * @property N/A
- */
-export class MinecraftVec3Parser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        if (Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
+    private parseMinecraftVec3(splited: string[], index: number): number {
+        if (this.Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
             throw `Expected a vec3.`
-        }
-    }
-}
-
-
-
-/**
- * spgoding:old_entity
- * @property N/A
- */
-export class SpgodingOldEntityParser implements ArgumentParser {
-    public constructor() { }
-
-    public canParse(splited: string[], index: number): number {
-        let join = splited[index]
-
-        if (join.charAt(0) !== '@') {
-            return 1
-        }
-
-        if (TargetSelector112.isValid(join)) {
-            return 1
-        } else {
-            for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
-                if (TargetSelector112.isValid(join)) {
-                    return i - index + 1
-                } else {
-                    continue
-                }
-            }
-            throw `Expected an old entity selector.`
         }
     }
 }

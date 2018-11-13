@@ -4,8 +4,9 @@ import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
 import { UpdaterTo113 } from '../to113/updater';
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
 
-export class SpuScriptExecutor113To114 implements SpuScriptExecutor {
+class SpuScriptExecutor113To114 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]): string {
         let splited = script.split(' ')
 
@@ -37,12 +38,10 @@ export class UpdaterTo114 extends Updater {
             throw `Expected from version: '18', '19', '111', '112' or '113' but got '${from}'.`
         }
 
-        ans.command = new UpdaterTo114().upSpgodingCommand(ans.command)
+        const result = new UpdaterTo114().upSpgodingCommand(ans.command)
 
-        if (ans.command.indexOf(' !> ') !== -1) {
-            ans.warnings.push(ans.command.split(' !> ').slice(-1)[0])
-            ans.command = ans.command.split(' !> ').slice(0, -1).join(' !> ')
-        }
+        ans.command = result.command
+        ans.warnings = ans.warnings.concat(result.warnings)
 
         return ans
     }
@@ -56,8 +55,8 @@ export class UpdaterTo114 extends Updater {
         }
     }
 
-    protected upSpgodingCommand(input: string): string {
-        return WheelChief.update(input, Commands113To114.commands, new SpuScriptExecutor113To114(), this)
+    protected upSpgodingCommand(input: string): UpdateResult {
+        return WheelChief.update(input, Commands113To114.commands, new ArgumentParser(), this, new SpuScriptExecutor113To114())
     }
 
     protected upSpgodingBlockName(input: string): string {

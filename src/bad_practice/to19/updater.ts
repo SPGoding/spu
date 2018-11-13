@@ -55,7 +55,7 @@ export class UpdaterTo19 {
     }
 
     public static upLine(input: string, from: string): UpdateResult {
-        const ans: UpdateResult = { command: input, warnings: []}
+        const ans: UpdateResult = { command: input, warnings: [] }
 
         ans.command = UpdaterTo19.upCommand(ans.command)
 
@@ -202,14 +202,29 @@ export class UpdaterTo19 {
             if (equipment instanceof NbtList) {
                 const armorItems = new NbtList()
                 const handItems = new NbtList()
-                armorItems.set(0, getNbtCompound(UpdaterTo19.upItemNbt(equipment.get(0).toString())))
-                armorItems.set(1, getNbtCompound(UpdaterTo19.upItemNbt(equipment.get(1).toString())))
-                armorItems.set(2, getNbtCompound(UpdaterTo19.upItemNbt(equipment.get(2).toString())))
-                armorItems.set(3, getNbtCompound(UpdaterTo19.upItemNbt(equipment.get(3).toString())))
-                handItems.set(0, getNbtCompound(UpdaterTo19.upItemNbt(equipment.get(4).toString())))
-                handItems.set(1, new NbtCompound())
+                const handItem0 = equipment.get(0)
+                const armorItem0 = equipment.get(1)
+                const armorItem1 = equipment.get(2)
+                const armorItem2 = equipment.get(3)
+                const armorItem3 = equipment.get(4)
+                if (handItem0 instanceof NbtCompound) {
+                    handItems.set(0, getNbtCompound(UpdaterTo19.upItemNbt(handItem0.toString())))
+                    handItems.set(1, new NbtCompound())
+                    nbt.set('HandItems', handItems)
+                }
+                if (armorItem0 instanceof NbtCompound) {
+                    armorItems.set(0, getNbtCompound(UpdaterTo19.upItemNbt(armorItem0.toString())))
+                }
+                if (armorItem1 instanceof NbtCompound) {
+                    armorItems.set(1, getNbtCompound(UpdaterTo19.upItemNbt(armorItem1.toString())))
+                }
+                if (armorItem2 instanceof NbtCompound) {
+                    armorItems.set(2, getNbtCompound(UpdaterTo19.upItemNbt(armorItem2.toString())))
+                }
+                if (armorItem3 instanceof NbtCompound) {
+                    armorItems.set(3, getNbtCompound(UpdaterTo19.upItemNbt(armorItem3.toString())))
+                }
                 nbt.set('ArmorItems', armorItems)
-                nbt.set('HandItems', handItems)
             }
         }
         /* Properties (Type) */ {

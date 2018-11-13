@@ -1,44 +1,5 @@
-import {
-    BrigadierBoolParser,
-    MinecraftColumnPosParser,
-    BrigadierDoubleParser,
-    BrigadierFloatParser,
-    BrigadierIntegerParser,
-    BrigadierStringParser,
-    MinecraftBlockPosParser,
-    MinecraftBlockPredicateParser,
-    MinecraftBlockStateParser,
-    MinecraftColorParser,
-    MinecraftComponentParser,
-    MinecraftEntityParser,
-    MinecraftEntityAnchorParser,
-    MinecraftEntitySummonParser,
-    MinecraftFunctionParser,
-    MinecraftGameProfileParser,
-    MinecraftItemEnchantmentParser,
-    MinecraftItemPredicateParser,
-    MinecraftItemSlotParser,
-    MinecraftItemStackParser,
-    MinecraftMessageParser,
-    MinecraftMobEffectParser,
-    MinecraftNbtParser,
-    MinecraftNbtPathParser,
-    MinecraftObjectiveParser,
-    MinecraftIntRangeParser,
-    MinecraftObjectiveCriteriaParser,
-    MinecraftOperationParser,
-    MinecraftParticleParser,
-    MinecraftResourceLocationParser,
-    MinecraftRotationParser,
-    MinecraftScoreHolderParser,
-    MinecraftScoreboardSlotParser,
-    MinecraftSwizzleParser,
-    MinecraftTeamParser,
-    MinecraftVec2Parser,
-    MinecraftVec3Parser,
-    SpgodingOldEntityParser
-} from './argument_parsers'
-import { isWhiteSpace } from '../utils'
+import { ArgumentParser } from './argument_parsers'
+import { isWhiteSpace, UpdateResult } from '../utils'
 import { Updater } from './updater'
 
 export type Property = { [propertyName: string]: any }
@@ -53,11 +14,13 @@ export interface CmdNode {
     executable?: boolean
     redirect?: string[]
     spu_script?: string
+    warning?: string
 }
 
 export interface Command {
     args: Argument[]
     spuScript: string
+    warning: string
 }
 
 export interface Argument {
@@ -80,9 +43,10 @@ export interface SpuScriptExecutor {
  * 「旅长」命令解析系统的轮子 —— 「轮长」命令解析系统
  */
 export class WheelChief {
-    public static update(input: string, rootNode: CmdNode, executor: SpuScriptExecutor, updater: Updater) {
+    public static update(input: string, rootNode: CmdNode,
+        parser: ArgumentParser, updater: Updater, executor: SpuScriptExecutor): UpdateResult {
         if (input.charAt(0) === '#' || isWhiteSpace(input)) {
-            return input
+            return { command: input, warnings: [] }
         }
 
         const slash = input.charAt(0) === '/'
@@ -95,17 +59,19 @@ export class WheelChief {
             {
                 command: {
                     args: [],
-                    spuScript: ''
+                    spuScript: '',
+                    warning: ''
                 },
                 index: 0,
                 splited: input.split(' ')
             },
             'N/A',
             rootNode,
-            rootNode
+            rootNode,
+            parser
         ).command
 
-        let result = ''
+        let ans = ''
 
         // 对参数根据 updater/parser 进行升级
         for (const arg of command.args) {
@@ -116,19 +82,19 @@ export class WheelChief {
 
         // 最后执行针对整条命令的 spu script 以调整命令语序以及其他内容
         if (command.spuScript) {
-            result = executor.execute(command.spuScript, command.args)
+            ans = executor.execute(command.spuScript, command.args)
         } else {
             for (const argument of command.args) {
-                result += `${argument.value} `
+                ans += `${argument.value} `
             }
-            result = result.slice(0, -1)
+            ans = ans.slice(0, -1)
         }
 
         if (slash) {
-            result = `/${result}`
+            ans = `/${ans}`
         }
 
-        return result
+        return { command: ans, warnings: [command.warning] }
     }
 
     /**
@@ -139,9 +105,9 @@ export class WheelChief {
      * @param rootNode 根节点。可以理解为整个 `commands.json`，用于 `redirect` 的正确操作。
      * @throws 如果该节点不能解析此处的命令参数，将会抛出异常。异常应由 `parseChildren()` 捕获。
      */
-    public static parseCmdNode(input: ParseResult, nodeName: string, node: CmdNode, rootNode: CmdNode): ParseResult {
+    public static parseCmdNode(input: ParseResult, nodeName: string, node: CmdNode, rootNode: CmdNode, parser: ArgumentParser): ParseResult {
         let result: ParseResult = {
-            command: { args: input.command.args.slice(0), spuScript: input.command.spuScript },
+            command: { args: input.command.args.slice(0), spuScript: input.command.spuScript, warning: input.command.warning },
             index: input.index,
             splited: input.splited.slice(0)
         }
@@ -150,7 +116,7 @@ export class WheelChief {
                 if (node.children[input.splited[input.index]]) {
                     result.command.args.push({ value: input.splited[input.index] })
                     result.index += 1
-                    result = WheelChief.recurse(result, input, node.children[input.splited[input.index]], rootNode)
+                    result = WheelChief.recurse(result, input, node.children[input.splited[input.index]], rootNode, parser)
                 } else {
                     throw `Unknown command: '${input.splited[input.index]}'.`
                 }
@@ -165,14 +131,14 @@ export class WheelChief {
                     result.command.args.push({ value: nodeName })
                 }
                 result.index += 1
-                result = WheelChief.recurse(result, input, node, rootNode)
+                result = WheelChief.recurse(result, input, node, rootNode, parser)
             } else {
                 throw `Expected literal '${nodeName}' but got '${input.splited[input.index]}'.`
             }
         } else if (node.type === 'argument') {
             if (node.parser) {
                 try {
-                    let canBeParsed = WheelChief.canBeParsed(input.splited, input.index, node.parser, node.properties)
+                    let canBeParsed = parser.parseArgument(node.parser, input.splited, input.index, node.properties)
                     result.command.args.push({
                         value: input.splited.slice(input.index, input.index + canBeParsed).join(' '),
                         updater: node.updater ? node.updater : node.parser
@@ -181,7 +147,7 @@ export class WheelChief {
                 } catch (e) {
                     throw `Parser '${node.parser}' failed to parse '${input.splited.slice(input.index).join(' ')}': ${e}`
                 }
-                result = WheelChief.recurse(result, input, node, rootNode)
+                result = WheelChief.recurse(result, input, node, rootNode, parser)
             } else {
                 throw `Expected 'parser' for the argument node.`
             }
@@ -198,23 +164,26 @@ export class WheelChief {
      * @param node 当前节点。
      * @param rootNode 根节点。
      */
-    private static recurse(result: ParseResult, input: ParseResult, node: CmdNode, rootNode: CmdNode) {
+    private static recurse(result: ParseResult, input: ParseResult, node: CmdNode, rootNode: CmdNode, parser: ArgumentParser) {
         if (result.index >= input.splited.length) {
             if (node.executable) {
                 if (node.spu_script) {
                     result.command.spuScript = node.spu_script
+                }
+                if (node.warning) {
+                    result.command.warning = node.warning
                 }
             } else {
                 throw `Expected executable command but got EOF.`
             }
         } else {
             if (node.children) {
-                result = WheelChief.parseChildren(node.children, result, rootNode)
+                result = WheelChief.parseChildren(node.children, result, rootNode, parser)
             } else if (node.redirect) {
                 if (rootNode.children) {
                     let children = rootNode.children[node.redirect[0]].children
                     if (children) {
-                        result = WheelChief.parseChildren(children, result, rootNode)
+                        result = WheelChief.parseChildren(children, result, rootNode, parser)
                     } else {
                         throw `Expected redirect node: '${node.redirect[0]}' but got nothing.`
                     }
@@ -225,7 +194,7 @@ export class WheelChief {
                 throw `Expected EOF but got trailing data.`
             } else {
                 if (rootNode.children) {
-                    result = WheelChief.parseChildren(rootNode.children, result, rootNode)
+                    result = WheelChief.parseChildren(rootNode.children, result, rootNode, parser)
                 } else {
                     throw `Expected 'children' for the root node.`
                 }
@@ -240,14 +209,14 @@ export class WheelChief {
      * @param result 输出（可被直接舍弃，不对原输入造成影响）。
      * @param rootNode 根节点。
      */
-    private static parseChildren(children: Children, result: ParseResult, rootNode: CmdNode) {
+    private static parseChildren(children: Children, result: ParseResult, rootNode: CmdNode, parser: ArgumentParser) {
         let operated = false
         let exception: string[] = []
         for (const name in children) {
             if (children.hasOwnProperty(name)) {
                 const child = children[name]
                 try {
-                    result = WheelChief.parseCmdNode(result, name, child, rootNode)
+                    result = WheelChief.parseCmdNode(result, name, child, rootNode, parser)
                     operated = true
                     break
                 } catch (e) {
@@ -260,172 +229,5 @@ export class WheelChief {
             throw `Failed to parse '${result.splited.join(' ')}': <br />${exception.join('<br />')}`
         }
         return result
-    }
-
-    /**
-     * @returns Parsed `splited` count.
-     * @throws The reason why failed to parse.
-     */
-    public static canBeParsed(splited: string[], index: number, parser: string, properties: Property = {}) {
-        let canBeParsed = 0
-
-        switch (parser) {
-            case 'brigadier:bool': {
-                canBeParsed = new BrigadierBoolParser().canParse(splited, index)
-                break
-            }
-            case 'brigadier:double': {
-                canBeParsed = new BrigadierDoubleParser(properties.min, properties.max).canParse(splited, index)
-                break
-            }
-            case 'brigadier:float': {
-                canBeParsed = new BrigadierFloatParser(properties.min, properties.max).canParse(splited, index)
-                break
-            }
-            case 'brigadier:integer': {
-                canBeParsed = new BrigadierIntegerParser(properties.min, properties.max).canParse(splited, index)
-                break
-            }
-            case 'brigadier:string': {
-                canBeParsed = new BrigadierStringParser(properties.type).canParse(splited, index)
-                break
-            }
-            case 'minecraft:block_pos': {
-                canBeParsed = new MinecraftBlockPosParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:block_predicate': {
-                canBeParsed = new MinecraftBlockPredicateParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:block_state': {
-                canBeParsed = new MinecraftBlockStateParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:color': {
-                canBeParsed = new MinecraftColorParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:column_pos': {
-                canBeParsed = new MinecraftColumnPosParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:component': {
-                canBeParsed = new MinecraftComponentParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:entity': {
-                canBeParsed = new MinecraftEntityParser(properties.amount, properties.type).canParse(splited, index)
-                break
-            }
-            case 'minecraft:entity_anchor': {
-                canBeParsed = new MinecraftEntityAnchorParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:entity_summon': {
-                canBeParsed = new MinecraftEntitySummonParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:function': {
-                canBeParsed = new MinecraftFunctionParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:game_profile': {
-                canBeParsed = new MinecraftGameProfileParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:int_range': {
-                canBeParsed = new MinecraftIntRangeParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:item_enchantment': {
-                canBeParsed = new MinecraftItemEnchantmentParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:item_predicate': {
-                canBeParsed = new MinecraftItemPredicateParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:item_slot': {
-                canBeParsed = new MinecraftItemSlotParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:item_stack': {
-                canBeParsed = new MinecraftItemStackParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:message': {
-                canBeParsed = new MinecraftMessageParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:mob_effect': {
-                canBeParsed = new MinecraftMobEffectParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:nbt': {
-                canBeParsed = new MinecraftNbtParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:nbt_path': {
-                canBeParsed = new MinecraftNbtPathParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:objective': {
-                canBeParsed = new MinecraftObjectiveParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:objective_criteria': {
-                canBeParsed = new MinecraftObjectiveCriteriaParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:operation': {
-                canBeParsed = new MinecraftOperationParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:particle': {
-                canBeParsed = new MinecraftParticleParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:resource_location': {
-                canBeParsed = new MinecraftResourceLocationParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:rotation': {
-                canBeParsed = new MinecraftRotationParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:score_holder': {
-                canBeParsed = new MinecraftScoreHolderParser(properties.amount).canParse(splited, index)
-                break
-            }
-            case 'minecraft:scoreboard_slot': {
-                canBeParsed = new MinecraftScoreboardSlotParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:swizzle': {
-                canBeParsed = new MinecraftSwizzleParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:team': {
-                canBeParsed = new MinecraftTeamParser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:vec2': {
-                canBeParsed = new MinecraftVec2Parser().canParse(splited, index)
-                break
-            }
-            case 'minecraft:vec3': {
-                canBeParsed = new MinecraftVec3Parser().canParse(splited, index)
-                break
-            }
-            case 'spgoding:old_entity': {
-                canBeParsed = new SpgodingOldEntityParser().canParse(splited, index)
-                break
-            }
-            default:
-                throw `Unknown parser: '${parser}'.`
-        }
-
-        return canBeParsed
     }
 }

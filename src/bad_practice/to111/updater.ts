@@ -55,7 +55,7 @@ export class UpdaterTo111 {
     }
 
     public static upLine(input: string, from: string): UpdateResult {
-        const ans: UpdateResult = { command: input, warnings: []}
+        const ans: UpdateResult = { command: input, warnings: [] }
 
         if (['18'].indexOf(from) !== -1) {
             const result = UpdaterTo19.upLine(ans.command, from)
