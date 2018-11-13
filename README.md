@@ -4,15 +4,15 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/CommandBlockLogic/spu.svg)
 ![license](https://img.shields.io/github/license/CommandBlockLogic/spu.svg)
 
-Also called 'spu'. An online tool that can help you convert minecraft commands from 1.12 to 1.13.
+Also called 'spu'. An online tool that can help you update minecraft commands.
 
 ## How to Use
 
-Type [https://spgoding.github.io/spu](https://spgoding.github.io/spu) in the web browser, or open the [./docs/index.html](https://github.com/CommandBlockLogic/spu/blob/master/docs/index.html) locally.
+Type [https://spu.spgoding.com](https://spu.spgoding.com) in the web browser, or open the [./docs/index.html](https://github.com/CommandBlockLogic/spu/blob/master/docs/index.html) locally.
 
 ## How it Works
 
-### After 112to113
+### After 111to112
 
 The *WheelChief* will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
 
@@ -96,7 +96,7 @@ The WheelChief will update every argument according to its `updater`. All update
 
 Finally the `spu_script` will be executed. `%0` will be replaced with the first argument of the command(`args[0].value`), `%1` will be the second(`args[1].value`), and so on. A token that begins with `$` will be executed as a function with following `%n` as its parameter(s). So finally you will get `foobar @a[nbt={baz:"qux"}]`. Is that amazing?
 
-### Before 111to112 (bad_practice)
+### Before 19to111 (bad_practice)
 
 When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be called. This method will do the following things:
 
