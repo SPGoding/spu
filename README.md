@@ -12,8 +12,6 @@ Type [https://spu.spgoding.com](https://spu.spgoding.com) in the web browser, or
 
 ## How it Works
 
-### After 111to112
-
 The *WheelChief* will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
 
 ```TypeScript
@@ -95,59 +93,6 @@ The WheelChief will update every argument according to its `updater`. All update
 ```
 
 Finally the `spu_script` will be executed. `%0` will be replaced with the first argument of the command(`args[0].value`), `%1` will be the second(`args[1].value`), and so on. A token that begins with `$` will be executed as a function with following `%n` as its parameter(s). So finally you will get `foobar @a[nbt={baz:"qux"}]`. Is that amazing?
-
-### Before 19to111 (bad_practice)
-
-When you click the "Convert" button, `cvtLine()` from `./converter.ts` will be called. This method will do the following things:
-
-1.  Match each command with a _spu script_ defined in `Spuses.pairs.keys()` from `./spuses.ts`.
-
-2.  Each command will be parsed into an _result map_ which stores all converted values according to a matched _spu script_.
-
-    For example, a command
-
-    ```
-    advancement test @p[score_foo=10] minecraft:story/root
-    ```
-
-    will be parsed according to a _spu script_
-
-    ```
-    advancement test %entity %adv
-    ```
-
-    into an _result map_
-
-    ```TypeScript
-    {
-        '%0': '@p[scores={foo=..10}]',
-        '%1': 'minecraft:story/root'
-    }
-    ```
-
-3.  Combine the _result map_ with a _spu script_ defined in `Spuses.pairs.values()` from `./spuses.ts`.
-
-    For example, the _result map_ in last step, will be combined with this spu script
-
-    ```
-    execute if entity %0$addAdvToEntity%1
-    ```
-
-    So we'll get this
-
-    ```
-    execute if entity @p[scores={foo=..10}]$addAdvToEntityminecraft:story/root
-    ```
-
-4.  Execute the _spu scrpt_.
-
-    For example, the result of last step contains `$addAdvToEntity` which is called _spu script method_. We'll execute this method and get this
-
-    ```
-    execute if entity @p[scores={foo=..10},advancements={minecraft:story/root=true}]
-    ```
-
-5.  **Congratulations!**
 
 ## How to Contribute
 
