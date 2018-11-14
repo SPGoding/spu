@@ -208,16 +208,16 @@ export class UpdaterTo19 extends Updater {
 
         /* Healf */ {
             const healF = ans.get('HealF')
-            ans.del('HealF')
             if (healF instanceof NbtFloat || healF instanceof NbtInt) {
+                ans.del('HealF')
                 const health = new NbtInt(healF.get())
                 ans.set('Health', health)
             }
         }
         /* DropChances */ {
             const dropChances = ans.get('DropChances')
-            ans.del('DropChances')
             if (dropChances instanceof NbtList) {
+                ans.del('DropChances')
                 const armorDropChances = new NbtList()
                 const handDropChances = new NbtList()
                 armorDropChances.set(0, dropChances.get(0))
@@ -232,8 +232,8 @@ export class UpdaterTo19 extends Updater {
         }
         /* Equipment */ {
             const equipment = ans.get('Equipment')
-            ans.del('Equipment')
             if (equipment instanceof NbtList) {
+                ans.del('Equipment')
                 const armorItems = new NbtList()
                 const handItems = new NbtList()
                 const handItem0 = equipment.get(0)
@@ -248,27 +248,36 @@ export class UpdaterTo19 extends Updater {
                 }
                 if (armorItem0 instanceof NbtCompound) {
                     armorItems.set(0, this.upSpgodingItemNbt(armorItem0))
+                    if (armorItem1 instanceof NbtCompound) {
+                        armorItems.set(1, this.upSpgodingItemNbt(armorItem1))
+                        if (armorItem2 instanceof NbtCompound) {
+                            armorItems.set(2, this.upSpgodingItemNbt(armorItem2))
+                            if (armorItem3 instanceof NbtCompound) {
+                                armorItems.set(3, this.upSpgodingItemNbt(armorItem3))
+                            } else {
+                                armorItems.set(3, new NbtCompound())
+                            }
+                        } else {
+                            armorItems.set(2, new NbtCompound())
+                            armorItems.set(3, new NbtCompound())
+                        }
+                    } else {
+                        armorItems.set(1, new NbtCompound())
+                        armorItems.set(2, new NbtCompound())
+                        armorItems.set(3, new NbtCompound())
+                    }
+                    ans.set('ArmorItems', armorItems)
                 }
-                if (armorItem1 instanceof NbtCompound) {
-                    armorItems.set(1, this.upSpgodingItemNbt(armorItem1))
-                }
-                if (armorItem2 instanceof NbtCompound) {
-                    armorItems.set(2, this.upSpgodingItemNbt(armorItem2))
-                }
-                if (armorItem3 instanceof NbtCompound) {
-                    armorItems.set(3, this.upSpgodingItemNbt(armorItem3))
-                }
-                ans.set('ArmorItems', armorItems)
             }
         }
         /* Properties (Type) */ {
             const properties = ans.get('Properties')
-            ans.del('Properties')
             if (properties instanceof NbtCompound) {
+                ans.del('Properties')
                 const type = ans.get('Type')
-                ans.del('Type')
                 const spawnData = properties
                 if (type instanceof NbtString) {
+                    ans.del('Type')
                     spawnData.set('id', type)
                 }
                 ans.set('SpawnData', spawnData)
@@ -276,8 +285,8 @@ export class UpdaterTo19 extends Updater {
         }
         /* Type */ {
             const type = ans.get('Type')
-            ans.del('Type')
             if (type instanceof NbtString) {
+                ans.del('Type')
                 const spawnData = new NbtCompound()
                 spawnData.set('id', type)
                 ans.set('SpawnData', spawnData)
@@ -326,15 +335,15 @@ export class UpdaterTo19 extends Updater {
         }
         /* carried */ {
             const carried = ans.get('carried')
-            ans.del('carried')
             if (carried instanceof NbtInt) {
+                ans.del('carried')
                 ans.set('carried', new NbtString(Items.to19(carried.get())))
             }
         }
         /* DecorItem */ {
             let decorItem = ans.get('DecorItem')
-            ans.del('DecorItem')
             if (decorItem instanceof NbtCompound) {
+                ans.del('DecorItem')
                 ans.set('DecorItem', decorItem)
             }
         }
@@ -352,8 +361,8 @@ export class UpdaterTo19 extends Updater {
         }
         /* inTile */ {
             const inTile = ans.get('inTile')
-            ans.del('inTile')
             if (inTile instanceof NbtInt) {
+                ans.del('inTile')
                 ans.set('inTile', new NbtString(Blocks.to19(inTile.get())))
             }
         }
@@ -380,8 +389,8 @@ export class UpdaterTo19 extends Updater {
         }
         /* TileID & TileEntityData */ {
             const tileId = ans.get('TileID')
-            ans.del('TileID')
             if (tileId instanceof NbtInt) {
+                ans.del('TileID')
                 ans.set('TileID', new NbtString(Blocks.to19(tileId.get())))
             }
 
@@ -393,8 +402,8 @@ export class UpdaterTo19 extends Updater {
         }
         /* DisplayTile */ {
             const displayTile = ans.get('DisplayTile')
-            ans.del('DisplayTile')
             if (displayTile instanceof NbtInt) {
+                ans.del('DisplayTile')
                 ans.set('DisplayTile', new NbtString(Blocks.to19(displayTile.get())))
             }
         }
@@ -417,15 +426,17 @@ export class UpdaterTo19 extends Updater {
     }
 
     protected upSpgodingItemNbt(input: NbtCompound) {
-        let ans = super.upSpgodingItemNbt(input)
+        let ans = input
 
         /* id */ {
             let id = ans.get('id')
-            ans.del('id')
             if (id instanceof NbtInt) {
+                ans.del('id')
                 ans.set('id', new NbtString(Items.to19(id.get())))
             }
         }
+
+        ans = super.upSpgodingItemNbt(input)
 
         return ans
     }
