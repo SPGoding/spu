@@ -17,7 +17,42 @@ class SpuScriptExecutor18To19 implements SpuScriptExecutor {
                 splited[i] = args[parseInt(splited[i].slice(1))].value
             } else if (splited[i].slice(0, 1) === '$') {
                 let params = splited[i].slice(1).split('%')
+                let index1 = parseInt(params[1])
+                let index2 = parseInt(params[2])
+                let param1 = args[index1] ? args[index1].value : ''
+                let param2 = args[index2] ? args[index2].value : ''
                 switch (params[0]) {
+                    case 'setTypeByNbt': {
+                        const nbt = getNbtCompound(param1)
+                        const riding = nbt.get('Riding')
+                        if (riding instanceof NbtCompound) {
+                            const id = riding.get('id')
+                            if (id instanceof NbtString) {
+                                splited[i] = id.get()
+                            } else {
+                                splited[i] = 'spgoding:undefined'
+                            }
+                        } else {
+                            splited[i] = 'spgoding:undefined'
+                        }
+                        break
+                    }
+                    case 'setNbtWithType': {
+                        const passenger = getNbtCompound(param1)
+                        const ridden = passenger.get('Riding')
+                        passenger.del('Riding')
+                        passenger.set('id', new NbtString(param2))
+                        if (ridden instanceof NbtCompound) {
+                            ridden.del('id')
+                            const passengers = new NbtList()
+                            passengers.add(passenger)
+                            ridden.set('Passengers', passengers)
+                            splited[i] = ridden.toString()
+                        } else {
+                            splited[i] = '{}'
+                        }
+                        break
+                    }
                     default:
                         throw `Unexpected script method: '${params[0]}'.`
                 }
@@ -29,6 +64,15 @@ class SpuScriptExecutor18To19 implements SpuScriptExecutor {
 }
 
 class ArgumentParser18To19 extends ArgumentParser {
+    public parseArgument(parser: string, splited: string[], index: number, properties: any) {
+        switch (parser) {
+            case 'spgoding:nbt_contains_riding':
+                return this.parseSpgodingNbtContainsRiding(splited, index)
+            default:
+                return super.parseArgument(parser, splited, index, properties)
+        }
+    }
+
     protected parseMinecraftEntity(splited: string[], index: number): number {
         let join = splited[index]
         let result = ''
@@ -62,6 +106,25 @@ class ArgumentParser18To19 extends ArgumentParser {
             try {
                 getNbtCompound(test, 'before 1.12')
                 return endIndex - index
+            } catch (e) {
+                exception = e
+                continue
+            }
+        }
+        throw exception
+    }
+
+    protected parseSpgodingNbtContainsRiding(splited: string[], index: number): number {
+        let exception
+        for (let endIndex = splited.length; endIndex > index; endIndex--) {
+            let test = splited.slice(index, endIndex).join(' ')
+            try {
+                const nbt = getNbtCompound(test, 'before 1.12')
+                if (nbt.get('Riding') instanceof NbtCompound) {
+                    return endIndex - index
+                } else {
+                    throw `Should contain 'Riding'.`
+                }
             } catch (e) {
                 exception = e
                 continue
@@ -125,15 +188,15 @@ export class UpdaterTo19 extends Updater {
                     // Take it easy.
                 }
             }
-            
+
             if (json.extra) {
                 json.extra = JSON.parse(this.upMinecraftComponent(JSON.stringify(json.extra)))
             }
-            
+
             return JSON.stringify(json).replace(/§/g, '\\u00a7')
         }
     }
-    
+
     protected upSpgodingCommand(input: string) {
         const result = WheelChief.update(input, Commands18To19.commands,
             new ArgumentParser18To19(), this, new SpuScriptExecutor18To19())
@@ -339,6 +402,13 @@ export class UpdaterTo19 extends Updater {
             const command = ans.get('Command')
             if (command instanceof NbtString) {
                 command.set(this.upSpgodingCommand(command.get()).command)
+            }
+        }
+        /* Riding */ {
+            let riding = ans.get('Riding')
+            if (riding instanceof NbtCompound) {
+                riding = this.upSpgodingEntityNbt(riding)
+                ans.set('Riding', riding)
             }
         }
 

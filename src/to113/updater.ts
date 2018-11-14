@@ -30,12 +30,6 @@ class SpuScriptExecutor112To113 implements SpuScriptExecutor {
                 let param1 = args[index1] ? args[index1].value : ''
                 let param2 = args[index2] ? args[index2].value : ''
                 let param3 = args[index3] ? args[index3].value : ''
-                if (args[parseInt(params[2])]) {
-                    param2 = args[parseInt(params[2])].value
-                }
-                if (args[parseInt(params[3])]) {
-                    param3 = args[parseInt(params[3])].value
-                }
                 switch (params[0]) {
                     case 'setBlockParam':
                         splited[i] = Blocks.to113(Blocks.std112(parseInt(param1))).getFull()

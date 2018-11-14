@@ -345,6 +345,13 @@ export class Commands18To19 {
                                 type: 'literal',
                                 executable: true,
                             },
+                            nbt_contains_riding: {
+                                type: 'argument',
+                                parser: 'spgoding:nbt_contains_riding',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true,
+                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                            },
                             nbt: {
                                 type: 'argument',
                                 parser: 'minecraft:nbt',
@@ -1223,6 +1230,13 @@ export class Commands18To19 {
                                                             type: 'word'
                                                         },
                                                         children: {
+                                                            nbt_contains_riding: {
+                                                                type: 'argument',
+                                                                parser: 'spgoding:nbt_contains_riding',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                            },
                                                             nbt: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:nbt',
@@ -1248,6 +1262,13 @@ export class Commands18To19 {
                                                             type: 'word'
                                                         },
                                                         children: {
+                                                            nbt_contains_riding: {
+                                                                type: 'argument',
+                                                                parser: 'spgoding:nbt_contains_riding',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                            },
                                                             nbt: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:nbt',
@@ -1281,6 +1302,13 @@ export class Commands18To19 {
                                                             min: 0
                                                         },
                                                         children: {
+                                                            nbt_contains_riding: {
+                                                                type: 'argument',
+                                                                parser: 'spgoding:nbt_contains_riding',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                            },
                                                             nbt: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:nbt',
@@ -1307,6 +1335,13 @@ export class Commands18To19 {
                                                 type: 'argument',
                                                 parser: 'minecraft:objective',
                                                 children: {
+                                                    nbt_contains_riding: {
+                                                        type: 'argument',
+                                                        parser: 'spgoding:nbt_contains_riding',
+                                                        updater: 'spgoding:entity_nbt',
+                                                        executable: true,
+                                                        warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                    },
                                                     nbt: {
                                                         type: 'argument',
                                                         parser: 'minecraft:nbt',
@@ -1331,6 +1366,13 @@ export class Commands18To19 {
                                                 type: 'argument',
                                                 parser: 'minecraft:objective',
                                                 children: {
+                                                    nbt_contains_riding: {
+                                                        type: 'argument',
+                                                        parser: 'spgoding:nbt_contains_riding',
+                                                        updater: 'spgoding:entity_nbt',
+                                                        executable: true,
+                                                        warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                    },
                                                     nbt: {
                                                         type: 'argument',
                                                         parser: 'minecraft:nbt',
@@ -1378,6 +1420,13 @@ export class Commands18To19 {
                                                                         type: 'argument',
                                                                         parser: 'minecraft:objective',
                                                                         children: {
+                                                                            nbt_contains_riding: {
+                                                                                type: 'argument',
+                                                                                parser: 'spgoding:nbt_contains_riding',
+                                                                                updater: 'spgoding:entity_nbt',
+                                                                                executable: true,
+                                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                            },
                                                                             nbt: {
                                                                                 type: 'argument',
                                                                                 parser: 'minecraft:nbt',
@@ -1415,6 +1464,13 @@ export class Commands18To19 {
                                                             min: 0
                                                         },
                                                         children: {
+                                                            nbt_contains_riding: {
+                                                                type: 'argument',
+                                                                parser: 'spgoding:nbt_contains_riding',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                            },
                                                             nbt: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:nbt',
@@ -1462,6 +1518,13 @@ export class Commands18To19 {
                                                         type: 'argument',
                                                         parser: 'brigadier:integer',
                                                         children: {
+                                                            nbt_contains_riding: {
+                                                                type: 'argument',
+                                                                parser: 'spgoding:nbt_contains_riding',
+                                                                updater: 'spgoding:entity_nbt',
+                                                                executable: true,
+                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                            },
                                                             nbt: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:nbt',
@@ -1843,6 +1906,13 @@ export class Commands18To19 {
                                 type: 'argument',
                                 parser: 'minecraft:vec3',
                                 children: {
+                                    nbt_contains_riding: {
+                                        type: 'argument',
+                                        parser: 'spgoding:nbt_contains_riding',
+                                        updater: 'spgoding:entity_nbt',
+                                        executable: true,
+                                        spu_script: '%0 $setTypeByNbt%3 %2 $setNbtWithType%3%1'
+                                    },
                                     nbt: {
                                         type: 'argument',
                                         parser: 'minecraft:nbt',
@@ -1949,6 +2019,13 @@ export class Commands18To19 {
                         type: 'argument',
                         parser: 'minecraft:entity',
                         children: {
+                            nbt_contains_riding: {
+                                type: 'argument',
+                                parser: 'spgoding:nbt_contains_riding',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true,
+                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                            },
                             nbt: {
                                 type: 'argument',
                                 parser: 'minecraft:nbt',
