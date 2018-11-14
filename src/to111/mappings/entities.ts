@@ -1,10 +1,12 @@
+import { completeNamespace } from "../../utils/utils";
+
 export default class Entities {
     public static to111(input: string) {
         const arr = Entities.NominalID19_NominalID111.find(v => v[0] === input)
         if (arr) {
             return arr[1]
         } else {
-            return `minecraft:${input.replace(/([^^])([A-Z])/g, '$1_$2').toLowerCase()}`
+            return completeNamespace(input.replace(/([^^])([A-Z])/g, '$1_$2').toLowerCase())
         }
     }
 

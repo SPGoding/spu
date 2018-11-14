@@ -6,6 +6,7 @@ import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
 import { TargetSelector } from '../to19/target_selector'
 import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtValue, NbtByte } from '../utils/nbt/nbt';
 import Entities from './mappings/entities';
+import { UpdaterTo19 } from '../to19/updater';
 
 class SpuScriptExecutor19To111 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
@@ -107,6 +108,14 @@ class ArgumentParser19To111 extends ArgumentParser {
 export class UpdaterTo111 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {
         const ans: UpdateResult = { command: input, warnings: [] }
+
+        if (['18'].indexOf(from) !== -1) {
+            const result = UpdaterTo19.upLine(ans.command, from)
+            ans.command = result.command
+            ans.warnings = result.warnings
+        } else if (from !== '19') {
+            throw `Expected from version: '18' or '19' but got '${from}'.`
+        }
 
         const result = new UpdaterTo111().upSpgodingCommand(ans.command)
 

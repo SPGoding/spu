@@ -1,5 +1,5 @@
 import { getNbtCompound, UpdateResult, isNumeric } from '../utils'
-import { NbtString, NbtList, NbtCompound, NbtValue } from '../nbt/nbt'
+import { NbtString, NbtList, NbtCompound, NbtValue, NbtByte } from '../nbt/nbt'
 import { TargetSelector } from '../target_selector'
 import { BlockState } from '../block_state';
 import { ItemStack } from '../item_stack';
@@ -363,10 +363,14 @@ export class Updater {
     }
 
     protected upSpgodingItemNbt(input: NbtCompound) {
-        /* id */ {
+        /* id & Count */ {
             let id = input.get('id')
             if (id instanceof NbtString) {
                 id.set(this.upSpgodingItemName(id.get()))
+            }
+            let count = input.get('Count')
+            if (id !== undefined && count === undefined) {
+                input.set('Count', new NbtByte(1))
             }
         }
         /* tag */ {
