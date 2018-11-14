@@ -1,5 +1,5 @@
 import { UpdaterTo19 } from './to19/updater'
-import { UpdaterTo111 } from './bad_practice/to111/updater'
+import { UpdaterTo111 } from './to111/updater'
 import { UpdaterTo112 } from './to112/updater'
 import { UpdaterTo113 } from './to113/updater'
 import { UpdaterTo114 } from './to114/updater'

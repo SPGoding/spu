@@ -2,7 +2,7 @@ import { SpuScriptExecutor, WheelChief, Argument, ParseResult } from '../utils/w
 import { Commands111To112 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { UpdateResult, isNumeric } from '../utils/utils';
-import { UpdaterTo111 } from '../bad_practice/to111/updater';
+import { UpdaterTo111 } from '../to111/updater';
 import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
 import { TargetSelector as TargetSelector112 } from './target_selector';
 

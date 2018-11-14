@@ -1,4 +1,4 @@
-import CharReader from '../bad_practice/utils/char_reader'
+import { CharReader } from '../utils/char_reader'
 import { UpdaterTo113 as Updater } from '../to113/updater'
 import { NbtCompound } from '../utils/nbt/nbt'
 import Entities from '../to113/mappings/entities'
@@ -31,7 +31,7 @@ export class TargetSelector {
     private advancements = new Map<string, boolean | Map<string, boolean>>()
     private nbt = new NbtCompound()
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Parses this selector according to a string in 1.12.

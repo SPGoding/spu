@@ -3,7 +3,7 @@ import { Updater } from '../utils/wheel_chief/updater'
 import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils';
 import { Commands18To19 } from './commands';
 import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
-import { TargetSelector as TargetSelector19 } from './target_selector'
+import { TargetSelector } from './target_selector'
 import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtValue } from '../utils/nbt/nbt';
 import Items from './mappings/items';
 import Blocks from './mappings/blocks';
@@ -23,7 +23,7 @@ class SpuScriptExecutor18To19 implements SpuScriptExecutor {
                 let param2 = args[index2] ? args[index2].value : ''
                 switch (params[0]) {
                     case 'setTypeByNbt': {
-                        const nbt = getNbtCompound(param1)
+                        const nbt = getNbtCompound(param1, "before 1.12")
                         const riding = nbt.get('Riding')
                         if (riding instanceof NbtCompound) {
                             const id = riding.get('id')
@@ -38,7 +38,7 @@ class SpuScriptExecutor18To19 implements SpuScriptExecutor {
                         break
                     }
                     case 'setNbtWithType': {
-                        const passenger = getNbtCompound(param1)
+                        const passenger = getNbtCompound(param1, "before 1.12")
                         const ridden = passenger.get('Riding')
                         passenger.del('Riding')
                         passenger.set('id', new NbtString(param2))
@@ -81,14 +81,14 @@ class ArgumentParser18To19 extends ArgumentParser {
             return 1
         }
 
-        result = TargetSelector19.tryParse(join)
+        result = TargetSelector.tryParse(join)
 
         if (result === 'VALID') {
             return 1
         } else {
             for (let i = index + 1; i < splited.length; i++) {
                 join += ' ' + splited[i]
-                result = TargetSelector19.tryParse(join)
+                result = TargetSelector.tryParse(join)
                 if (result === 'VALID') {
                     return i - index + 1
                 } else {
@@ -292,47 +292,6 @@ export class UpdaterTo19 extends Updater {
                 ans.set('SpawnData', spawnData)
             }
         }
-        /* Offers.Recipes[n].buy &
-           Offers.Recipes[n].buyB & 
-           Offers.Recipes[n].sell */ {
-            const offers = ans.get('Offers')
-            if (offers instanceof NbtCompound) {
-                const recipes = offers.get('Recipes')
-                if (recipes instanceof NbtList) {
-                    recipes.forEach((v: NbtValue) => {
-                        if (v instanceof NbtCompound) {
-                            let buy = v.get('buy')
-                            let buyB = v.get('buyB')
-                            let sell = v.get('sell')
-                            if (buy instanceof NbtCompound) {
-                                buy = this.upSpgodingItemNbt(buy)
-                                v.set('buy', buy)
-                            }
-                            if (buyB instanceof NbtCompound) {
-                                buyB = this.upSpgodingItemNbt(buyB)
-                                v.set('buyB', buyB)
-                            }
-                            if (sell instanceof NbtCompound) {
-                                sell = this.upSpgodingItemNbt(sell)
-                                v.set('sell', sell)
-                            }
-                        }
-                    })
-                }
-            }
-        }
-        /* Items */ {
-            const items = ans.get('Items')
-            if (items instanceof NbtList) {
-                for (let i = 0; i < items.length; i++) {
-                    let item = items.get(i)
-                    if (item instanceof NbtCompound) {
-                        item = this.upSpgodingItemNbt(item)
-                    }
-                    items.set(i, item)
-                }
-            }
-        }
         /* carried */ {
             const carried = ans.get('carried')
             if (carried instanceof NbtInt) {
@@ -340,51 +299,11 @@ export class UpdaterTo19 extends Updater {
                 ans.set('carried', new NbtString(Items.to19(carried.get())))
             }
         }
-        /* DecorItem */ {
-            let decorItem = ans.get('DecorItem')
-            if (decorItem instanceof NbtCompound) {
-                ans.del('DecorItem')
-                ans.set('DecorItem', decorItem)
-            }
-        }
-        /* Inventory */ {
-            const inventory = ans.get('Inventory')
-            if (inventory instanceof NbtList) {
-                for (let i = 0; i < inventory.length; i++) {
-                    let item = inventory.get(i)
-                    if (item instanceof NbtCompound) {
-                        item = this.upSpgodingItemNbt(item)
-                    }
-                    inventory.set(i, item)
-                }
-            }
-        }
         /* inTile */ {
             const inTile = ans.get('inTile')
             if (inTile instanceof NbtInt) {
                 ans.del('inTile')
                 ans.set('inTile', new NbtString(Blocks.to19(inTile.get())))
-            }
-        }
-        /* Item */ {
-            let item = ans.get('Item')
-            if (item instanceof NbtCompound) {
-                item = this.upSpgodingItemNbt(item)
-                ans.set('Item', item)
-            }
-        }
-        /* SelectedItem */ {
-            let selectedItem = ans.get('SelectedItem')
-            if (selectedItem instanceof NbtCompound) {
-                selectedItem = this.upSpgodingItemNbt(selectedItem)
-                ans.set('SelectedItem', selectedItem)
-            }
-        }
-        /* FireworksItem */ {
-            let fireworksItem = ans.get('FireworksItem')
-            if (fireworksItem instanceof NbtCompound) {
-                fireworksItem = this.upSpgodingItemNbt(fireworksItem)
-                ans.set('FireworksItem', fireworksItem)
             }
         }
         /* TileID & TileEntityData */ {
@@ -405,12 +324,6 @@ export class UpdaterTo19 extends Updater {
             if (displayTile instanceof NbtInt) {
                 ans.del('DisplayTile')
                 ans.set('DisplayTile', new NbtString(Blocks.to19(displayTile.get())))
-            }
-        }
-        /* Command */ {
-            const command = ans.get('Command')
-            if (command instanceof NbtString) {
-                command.set(this.upSpgodingCommand(command.get()).command)
             }
         }
         /* Riding */ {
@@ -442,7 +355,7 @@ export class UpdaterTo19 extends Updater {
     }
 
     protected upSpgodingTargetSelector(input: string) {
-        const sel = new TargetSelector19(input)
+        const sel = new TargetSelector(input)
 
         return sel.toString()
     }

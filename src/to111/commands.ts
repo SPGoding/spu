@@ -343,13 +343,14 @@ export class Commands19To111 {
                         children: {
                             '{}': {
                                 type: 'literal',
-                                executable: true,
+                                executable: true
                             },
                             nbt: {
                                 type: 'argument',
                                 parser: 'minecraft:nbt',
                                 updater: 'spgoding:entity_nbt',
                                 executable: true,
+                                spu_script: '%0 $setTypeWithNbt%1%2 $delVariantNbt%2'
                             }
                         }
                     }
@@ -1723,15 +1724,16 @@ export class Commands19To111 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
+                                                                spu_script: '%0 %1 %2 $setSelectorWithNbt%3%6 %4 %5 $delVariantNbt%6'
                                                             }
                                                         },
-                                                        executable: true,
+                                                        executable: true
                                                     }
                                                 }
                                             },
                                             list: {
                                                 type: 'literal',
-                                                executable: true,
+                                                executable: true
                                             },
                                             remove: {
                                                 type: 'literal',
@@ -1748,9 +1750,10 @@ export class Commands19To111 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
+                                                                spu_script: '%0 %1 %2 $setSelectorWithNbt%3%6 %4 %5 $delVariantNbt%6'
                                                             }
                                                         },
-                                                        executable: true,
+                                                        executable: true
                                                     }
                                                 }
                                             }
@@ -1781,6 +1784,7 @@ export class Commands19To111 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
+                                                                spu_script: '%0 %1 %2 $setSelectorWithNbt%3%6 %4 %5 $delVariantNbt%6'
                                                             }
                                                         },
                                                         executable: true
@@ -1807,6 +1811,7 @@ export class Commands19To111 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:entity_nbt',
                                                         executable: true,
+                                                        spu_script: '%0 %1 %2 $setSelectorWithNbt%3%5 %4 $delVariantNbt%5'
                                                     }
                                                 },
                                                 executable: true
@@ -1831,6 +1836,7 @@ export class Commands19To111 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:entity_nbt',
                                                         executable: true,
+                                                        spu_script: '%0 %1 %2 $setSelectorWithNbt%3%5 %4 $delVariantNbt%5'
                                                     }
                                                 },
                                                 executable: true
@@ -1878,6 +1884,7 @@ export class Commands19To111 {
                                                                                 parser: 'minecraft:nbt',
                                                                                 updater: 'spgoding:entity_nbt',
                                                                                 executable: true,
+                                                                                spu_script: '%0 %1 %2 $setSelectorWithNbt%3%8 %4 %5 %6 %7 %8 $delVariantNbt%8'
                                                                             }
                                                                         },
                                                                         executable: true
@@ -1915,6 +1922,7 @@ export class Commands19To111 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
+                                                                spu_script: '%0 %1 %2 $setSelectorWithNbt%3%6 %4 %5 $delVariantNbt%6'
                                                             }
                                                         },
                                                         executable: true
@@ -1962,6 +1970,7 @@ export class Commands19To111 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
+                                                                spu_script: '%0 %1 %2 $setSelectorWithNbt%3%6 %4 %5 $delVariantNbt%6'
                                                             }
                                                         },
                                                         executable: true
@@ -2474,7 +2483,8 @@ export class Commands19To111 {
                                         type: 'argument',
                                         parser: 'minecraft:nbt',
                                         updater: 'spgoding:entity_nbt',
-                                        executable: true
+                                        executable: true,
+                                        spu_script: '%0 $setTypeWithNbt%1%3 %2 $delVariantNbt%3'
                                     }
                                 },
                                 executable: true
@@ -2581,9 +2591,10 @@ export class Commands19To111 {
                                 parser: 'minecraft:nbt',
                                 updater: 'spgoding:entity_nbt',
                                 executable: true,
+                                spu_script: '%0 $setSelectorWithNbt%1%2 $delVariantNbt%2'
                             }
                         },
-                        executable: true,
+                        executable: true
                     }
                 }
             },
