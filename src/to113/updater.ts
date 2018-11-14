@@ -87,16 +87,7 @@ class SpuScriptExecutor112To113 implements SpuScriptExecutor {
 }
 
 class ArgumentParser112To113 extends ArgumentParser {
-    public parseArgument(parser: string, splited: string[], index: number, properties: any) {
-        switch (parser) {
-            case 'spgoding:old_entity':
-                return this.parseSpgodingOldEntity(splited, index)
-            default:
-                return super.parseArgument(parser, splited, index, properties)
-        }
-    }
-
-    private parseSpgodingOldEntity(splited: string[], index: number): number {
+    protected parseMinecraftEntity(splited: string[], index: number): number {
         let join = splited[index]
 
         if (join.charAt(0) !== '@') {
@@ -114,7 +105,7 @@ class ArgumentParser112To113 extends ArgumentParser {
                     continue
                 }
             }
-            throw `Expected an old entity selector.`
+            throw `Expected an entity selector.`
         }
     }
 }
@@ -151,8 +142,6 @@ export class UpdaterTo113 extends Updater {
                 return this.upSpgodingGamemode(input)
             case 'spgoding:item_slot':
                 return this.upSpgodingItemSlot(input)
-            case 'spgoding:old_entity':
-                return this.upSpgodingOldEntity(input)
             case 'spgoding:particle':
                 return this.upSpgodingParticle(input)
             case 'spgoding:points_or_levels':
@@ -178,44 +167,6 @@ export class UpdaterTo113 extends Updater {
         input = Entities.to113(input)
 
         return input
-    }
-
-    protected upMinecraftComponent(input: string) {
-        if (input.slice(0, 1) === '"') {
-            return input
-        } else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(input)
-            let result: string[] = []
-            for (const i of json) {
-                result.push(this.upMinecraftComponent(JSON.stringify(i)))
-            }
-            return `[${result.join()}]`
-        } else {
-            let json = JSON.parse(input)
-            if (json.selector) {
-                json.selector = this.upSpgodingOldEntity(json.selector)
-            }
-
-            if (
-                json.clickEvent &&
-                json.clickEvent.action &&
-                (json.clickEvent.action === 'run_command' || json.clickEvent.action === 'suggest_command') &&
-                json.clickEvent.value &&
-                json.clickEvent.value.slice(0, 1) === '/'
-            ) {
-                try {
-                    json.clickEvent.value = this.upSpgodingCommand(json.clickEvent.value)
-                } catch {
-                    // That's ok. Take it easy.
-                }
-            }
-
-            if (json.extra) {
-                json.extra = JSON.parse(this.upMinecraftComponent(JSON.stringify(json.extra)))
-            }
-
-            return JSON.stringify(json).replace(/§/g, '\\u00a7')
-        }
     }
 
     protected upSpgodingBlockName(input: string) {
@@ -546,15 +497,11 @@ export class UpdaterTo113 extends Updater {
         return input.slice(5)
     }
 
-    protected upSpgodingOldEntity(input: string) {
-        try {
-            const sel112 = new TargetSelector112()
-            sel112.parse(input)
-            const sel113 = new TargetSelector113(sel112.to113())
-            return this.upSpgodingTargetSelector(sel113).toString()
-        } catch {
-            return input
-        }
+    protected upSpgodingTargetSelector(input: string) {
+        const sel = new TargetSelector112()
+        sel.parse(input)
+        const ans = sel.to113()
+        return ans
     }
 
     protected upSpgodingParticle(input: string) {

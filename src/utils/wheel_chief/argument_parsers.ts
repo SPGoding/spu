@@ -10,7 +10,7 @@ export class ArgumentParser {
     private ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
     private IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
     private Swizzle = /^[xyz]+$/
-    
+
     // The vec regex is coppied from
     // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
     // Dressed pca, I love you!!!
@@ -18,6 +18,9 @@ export class ArgumentParser {
     private Vec3 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/
 
     public parseArgument(parser: string, splited: string[], index: number, properties: any): number {
+        if (properties === undefined) {
+            properties = {}
+        }
         switch (parser) {
             case 'brigadier:bool':
                 return this.parseBrigadierBool(splited, index)
@@ -98,7 +101,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBrigadierBool(splited: string[], index: number): number {
+    protected parseBrigadierBool(splited: string[], index: number): number {
         if (['false', 'true'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
@@ -106,7 +109,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBrigadierDouble(splited: string[], index: number, min: number, max: number): number {
+    protected parseBrigadierDouble(splited: string[], index: number, min: number, max: number): number {
         if (isNumeric(splited[index])) {
             if ((min === undefined || parseFloat(splited[index]) >= min) &&
                 (max === undefined || parseFloat(splited[index]) <= max)) {
@@ -120,7 +123,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBrigadierFloat(splited: string[], index: number, min: number, max: number): number {
+    protected parseBrigadierFloat(splited: string[], index: number, min: number, max: number): number {
         if (isNumeric(splited[index])) {
             if ((min === undefined || parseFloat(splited[index]) >= min) &&
                 (max === undefined || parseFloat(splited[index]) <= max)) {
@@ -134,7 +137,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBrigadierInteger(splited: string[], index: number, min: number, max: number): number {
+    protected parseBrigadierInteger(splited: string[], index: number, min: number, max: number): number {
         if (isNumeric(splited[index])) {
             if (parseInt(splited[index]) === parseFloat(splited[index])) {
                 if ((min === undefined || parseFloat(splited[index]) >= min) &&
@@ -152,7 +155,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBrigadierString(splited: string[], index: number, type: string): number {
+    protected parseBrigadierString(splited: string[], index: number, type: string): number {
         switch (type) {
             case 'greedy':
                 return splited.length - index
@@ -180,7 +183,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftBlockPos(splited: string[], index: number): number {
+    protected parseMinecraftBlockPos(splited: string[], index: number): number {
         if (this.Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
@@ -188,7 +191,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBlockPredicate(splited: string[], index: number): number {
+    protected parseBlockPredicate(splited: string[], index: number): number {
         let join = splited[index]
         let exception
         try {
@@ -210,7 +213,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseBlockState(splited: string[], index: number): number {
+    protected parseBlockState(splited: string[], index: number): number {
         let join = splited[index]
         let exception
 
@@ -233,7 +236,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftColor(splited: string[], index: number): number {
+    protected parseMinecraftColor(splited: string[], index: number): number {
         if (
             [
                 'black',
@@ -262,7 +265,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftColumnPos(splited: string[], index: number): number {
+    protected parseMinecraftColumnPos(splited: string[], index: number): number {
         if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
@@ -270,11 +273,11 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftComponent(splited: string[], index: number): number {
+    protected parseMinecraftComponent(splited: string[], index: number): number {
         return splited.length - index
     }
 
-    private parseMinecraftEntity(splited: string[], index: number, amount: 'single' | 'multiple', type: 'players' | 'entities'): number {
+    protected parseMinecraftEntity(splited: string[], index: number, amount: 'single' | 'multiple', type: 'players' | 'entities'): number {
         let join = splited[index]
 
         if (join.charAt(0) !== '@') {
@@ -323,7 +326,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftEntityAnchor(splited: string[], index: number): number {
+    protected parseMinecraftEntityAnchor(splited: string[], index: number): number {
         if (['eyes', 'feet'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
@@ -331,7 +334,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftEntitySummon(splited: string[], index: number): number {
+    protected parseMinecraftEntitySummon(splited: string[], index: number): number {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
@@ -339,7 +342,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftFunction(splited: string[], index: number): number {
+    protected parseMinecraftFunction(splited: string[], index: number): number {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
@@ -347,11 +350,11 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftGameProfile(splited: string[], index: number): number {
+    protected parseMinecraftGameProfile(splited: string[], index: number): number {
         return this.parseMinecraftEntity(splited, index, 'multiple', 'players')
     }
 
-    private parseMinecraftItemEnchantment(splited: string[], index: number): number {
+    protected parseMinecraftItemEnchantment(splited: string[], index: number): number {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
@@ -359,7 +362,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftItemPredicate(splited: string[], index: number): number {
+    protected parseMinecraftItemPredicate(splited: string[], index: number): number {
         let join = splited[index]
         let exception
         try {
@@ -381,7 +384,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftItemSlot(splited: string[], index: number): number {
+    protected parseMinecraftItemSlot(splited: string[], index: number): number {
         if (
             [
                 'armor.chest',
@@ -541,7 +544,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftItemStack(splited: string[], index: number): number {
+    protected parseMinecraftItemStack(splited: string[], index: number): number {
         let join = splited[index]
         let exception
         try {
@@ -563,11 +566,11 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftMessage(splited: string[], index: number): number {
+    protected parseMinecraftMessage(splited: string[], index: number): number {
         return splited.length - index
     }
 
-    private parseMinecraftMobeffect(splited: string[], index: number): number {
+    protected parseMinecraftMobEffect(splited: string[], index: number): number {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
@@ -575,15 +578,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftMobEffect(splited: string[], index: number): number {
-        if (this.ResourceLocation.test(splited[index])) {
-            return 1
-        } else {
-            throw `Expected an resource location.`
-        }
-    }
-
-    private parseMinecraftNbt(splited: string[], index: number): number {
+    protected parseMinecraftNbt(splited: string[], index: number): number {
         let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
             let test = splited.slice(index, endIndex).join(' ')
@@ -598,7 +593,7 @@ export class ArgumentParser {
         throw exception
     }
 
-    private parseMinecraftNbtPath(splited: string[], index: number): number {
+    protected parseMinecraftNbtPath(splited: string[], index: number): number {
         if (/(^.*\.?)+$/.test(splited[index])) {
             return 1
         } else {
@@ -606,7 +601,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftObjective(splited: string[], index: number): number {
+    protected parseMinecraftObjective(splited: string[], index: number): number {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
@@ -614,7 +609,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftObjectiveCriteria(splited: string[], index: number): number {
+    protected parseMinecraftObjectiveCriteria(splited: string[], index: number): number {
         if (this.ScoreboardCriteria.test(splited[index])) {
             return 1
         } else {
@@ -622,7 +617,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftOperation(splited: string[], index: number): number {
+    protected parseMinecraftOperation(splited: string[], index: number): number {
         if (['+=', '-=', '*=', '/=', '%=', '=', '<', '>', '><'].indexOf(splited[index]) !== -1) {
             return 1
         } else {
@@ -630,7 +625,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftParticle(splited: string[], index: number): number {
+    protected parseMinecraftParticle(splited: string[], index: number): number {
         if (this.ResourceLocation.test(splited[index])) {
             if (['dust', 'minecraft:dust'].indexOf(splited[index]) !== -1) {
                 if (
@@ -699,7 +694,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftIntRange(splited: string[], index: number): number {
+    protected parseMinecraftIntRange(splited: string[], index: number): number {
         if (this.IntRange.test(splited[index])) {
             return 1
         } else {
@@ -707,7 +702,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftResourceLocation(splited: string[], index: number): number {
+    protected parseMinecraftResourceLocation(splited: string[], index: number): number {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
@@ -715,7 +710,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftRotation(splited: string[], index: number): number {
+    protected parseMinecraftRotation(splited: string[], index: number): number {
         if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
@@ -723,11 +718,11 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftScoreHolder(splited: string[], index: number, amount: 'single' | 'multiple'): number {
+    protected parseMinecraftScoreHolder(splited: string[], index: number, amount: 'single' | 'multiple'): number {
         return this.parseMinecraftEntity(splited, index, amount, 'entities')
     }
 
-    private parseMinecraftScoreboardSlot(splited: string[], index: number): number {
+    protected parseMinecraftScoreboardSlot(splited: string[], index: number): number {
         if (
             [
                 'list',
@@ -757,7 +752,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftSwizzle(splited: string[], index: number): number {
+    protected parseMinecraftSwizzle(splited: string[], index: number): number {
         if (this.Swizzle.test(splited[index])) {
             return 1
         } else {
@@ -765,7 +760,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftTeam(splited: string[], index: number): number {
+    protected parseMinecraftTeam(splited: string[], index: number): number {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
@@ -773,7 +768,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftVec2(splited: string[], index: number): number {
+    protected parseMinecraftVec2(splited: string[], index: number): number {
         if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
@@ -781,7 +776,7 @@ export class ArgumentParser {
         }
     }
 
-    private parseMinecraftVec3(splited: string[], index: number): number {
+    protected parseMinecraftVec3(splited: string[], index: number): number {
         if (this.Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {

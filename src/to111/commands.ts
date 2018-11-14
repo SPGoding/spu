@@ -2,145 +2,55 @@ import { CmdNode } from '../utils/wheel_chief/wheel_chief'
 
 /**
  * Written by SPGoding.
- * @version Minecraft: Java Editon 1.12.2
+ * @version Minecraft: Java Editon 1.9.4
  */
-export class Commands112To113 {
+export class Commands19To111 {
     static commands: CmdNode = {
         type: 'root',
         children: {
-            advancement: {
+            achievement: {
                 type: 'literal',
                 children: {
-                    grant: {
+                    give: {
                         type: 'literal',
                         children: {
-                            targets: {
+                            name: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
+                                parser: 'brigadier:string',
+                                properties: {
+                                    type: 'word'
+                                },
                                 children: {
-                                    everything: {
-                                        type: 'literal',
+                                    player: {
+                                        type: 'argument',
+                                        parser: 'minecraft:entity',
                                         executable: true
-                                    },
-                                    from: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                executable: true
-                                            }
-                                        }
-                                    },
-                                    only: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                children: {
-                                                    criterion: {
-                                                        type: 'argument',
-                                                        parser: 'brigadier:string',
-                                                        properties: {
-                                                            type: 'greedy'
-                                                        },
-                                                        executable: true
-                                                    }
-                                                },
-                                                executable: true
-                                            }
-                                        }
-                                    },
-                                    through: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                executable: true
-                                            }
-                                        }
-                                    },
-                                    until: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                executable: true
-                                            }
-                                        }
                                     }
-                                }
+                                },
+                                executable: true
                             }
                         }
                     },
-                    revoke: {
+                    take: {
                         type: 'literal',
                         children: {
-                            targets: {
+                            name: {
                                 type: 'argument',
-                                parser: 'minecraft:entity',
+                                parser: 'brigadier:string',
+                                properties: {
+                                    type: 'word'
+                                },
                                 children: {
-                                    everything: {
-                                        type: 'literal',
+                                    player: {
+                                        type: 'argument',
+                                        parser: 'minecraft:entity',
                                         executable: true
-                                    },
-                                    from: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                executable: true
-                                            }
-                                        }
-                                    },
-                                    only: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                children: {
-                                                    criterion: {
-                                                        type: 'argument',
-                                                        parser: 'brigadier:string',
-                                                        properties: {
-                                                            type: 'greedy'
-                                                        },
-                                                        executable: true
-                                                    }
-                                                },
-                                                executable: true
-                                            }
-                                        }
-                                    },
-                                    through: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                executable: true
-                                            }
-                                        }
-                                    },
-                                    until: {
-                                        type: 'literal',
-                                        children: {
-                                            advancement: {
-                                                type: 'argument',
-                                                parser: 'minecraft:resource_location',
-                                                executable: true
-                                            }
-                                        }
                                     }
-                                }
+                                },
+                                executable: true
                             }
                         }
-                    }
+                    },
                 }
             },
             ban: {
@@ -207,7 +117,6 @@ export class Commands112To113 {
                             item: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:item_name',
                                 children: {
                                     data: {
                                         type: 'argument',
@@ -228,19 +137,15 @@ export class Commands112To113 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:item_tag_nbt',
                                                         executable: true,
-                                                        spu_script: '%0 %1 $setNameDataNbtToItemStack%2%3%5 %4'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 $setNameDataToItemStack%2%3 %4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: '%0 %1 $setNameDataToItemStack%2%3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: '%0 %1 $setNameToItemStack%2'
                             }
                         },
                         executable: true
@@ -280,7 +185,6 @@ export class Commands112To113 {
                                                             block: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:resource_location',
-                                                                updater: 'spgoding:block_name',
                                                                 children: {
                                                                     states: {
                                                                         type: 'argument',
@@ -289,11 +193,9 @@ export class Commands112To113 {
                                                                             type: 'greedy'
                                                                         },
                                                                         executable: true,
-                                                                        spu_script: '%0 %1 %2 %3 %4 $setNameStatesToBlockState%6%7 %5'
                                                                     }
                                                                 },
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 %3 %4 $setNameToBlockState%6 %5'
                                                             }
                                                         },
                                                         executable: true
@@ -332,7 +234,6 @@ export class Commands112To113 {
                         properties: {
                             type: 'word'
                         },
-                        updater: 'spgoding:gamemode',
                         executable: true
                     }
                 }
@@ -359,7 +260,6 @@ export class Commands112To113 {
                         properties: {
                             type: 'word'
                         },
-                        updater: 'spgoding:difficulty',
                         executable: true
                     }
                 }
@@ -374,12 +274,10 @@ export class Commands112To113 {
                             clear: {
                                 type: 'literal',
                                 executable: true,
-                                spu_script: 'effect clear %1'
                             },
                             effect: {
                                 type: 'argument',
                                 parser: 'brigadier:string',
-                                updater: 'spgoding:effect',
                                 properties: {
                                     type: 'word'
                                 },
@@ -396,19 +294,15 @@ export class Commands112To113 {
                                                         type: 'argument',
                                                         parser: 'brigadier:bool',
                                                         executable: true,
-                                                        spu_script: 'effect give %1 %2 %3 %4 %5'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: 'effect give %1 %2 %3 %4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: 'effect give %1 %2 %3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: 'effect give %1 %2'
                             }
                         }
                     }
@@ -427,7 +321,6 @@ export class Commands112To113 {
                                 properties: {
                                     type: 'word'
                                 },
-                                updater: 'spgoding:enchantment',
                                 children: {
                                     level: {
                                         type: 'argument',
@@ -451,14 +344,12 @@ export class Commands112To113 {
                             '{}': {
                                 type: 'literal',
                                 executable: true,
-                                spu_script: 'execute as %1 run data get entity @s'
                             },
                             nbt: {
                                 type: 'argument',
                                 parser: 'minecraft:nbt',
                                 updater: 'spgoding:entity_nbt',
                                 executable: true,
-                                spu_script: 'execute as %1 run data merge entity @s %2'
                             }
                         }
                     }
@@ -471,68 +362,6 @@ export class Commands112To113 {
                         type: 'argument',
                         parser: 'minecraft:entity',
                         children: {
-                            '~': {
-                                type: 'literal',
-                                children: {
-                                    '~': {
-                                        type: 'literal',
-                                        children: {
-                                            '~': {
-                                                type: 'literal',
-                                                children: {
-                                                    detect: {
-                                                        type: 'literal',
-                                                        children: {
-                                                            pos: {
-                                                                type: 'argument',
-                                                                parser: 'minecraft:block_pos',
-                                                                children: {
-                                                                    block: {
-                                                                        type: 'argument',
-                                                                        parser: 'minecraft:resource_location',
-                                                                        updater: 'spgoding:block_name',
-                                                                        children: {
-                                                                            states: {
-                                                                                type: 'argument',
-                                                                                parser: 'brigadier:string',
-                                                                                properties: {
-                                                                                    type: 'word'
-                                                                                },
-                                                                                children: {
-                                                                                    command: {
-                                                                                        type: 'argument',
-                                                                                        parser: 'brigadier:string',
-                                                                                        properties: {
-                                                                                            type: 'greedy'
-                                                                                        },
-                                                                                        updater: 'spgoding:command',
-                                                                                        executable: true,
-                                                                                        spu_script: 'execute as %1 at @s if block %6 $setNameStatesToBlockState%7%8 run %9'
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                    command: {
-                                                        type: 'argument',
-                                                        parser: 'brigadier:string',
-                                                        properties: {
-                                                            type: 'greedy'
-                                                        },
-                                                        updater: 'spgoding:command',
-                                                        executable: true,
-                                                        spu_script: 'execute as %1 at @s run %5'
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
                             pos: {
                                 type: 'argument',
                                 parser: 'minecraft:vec3',
@@ -547,13 +376,13 @@ export class Commands112To113 {
                                                     block: {
                                                         type: 'argument',
                                                         parser: 'minecraft:resource_location',
-                                                        updater: 'spgoding:block_name',
                                                         children: {
-                                                            states: {
+                                                            metadata: {
                                                                 type: 'argument',
-                                                                parser: 'brigadier:string',
+                                                                parser: 'brigadier:integer',
                                                                 properties: {
-                                                                    type: 'word'
+                                                                    min: -1,
+                                                                    max: 15
                                                                 },
                                                                 children: {
                                                                     command: {
@@ -564,7 +393,6 @@ export class Commands112To113 {
                                                                         },
                                                                         updater: 'spgoding:command',
                                                                         executable: true,
-                                                                        spu_script: 'execute as %1 at @s positioned %2 if block %4 $setNameStatesToBlockState%5%6 run %7'
                                                                     }
                                                                 }
                                                             }
@@ -582,7 +410,6 @@ export class Commands112To113 {
                                         },
                                         updater: 'spgoding:command',
                                         executable: true,
-                                        spu_script: 'execute as %1 at @s positioned %2 run %3'
                                     }
                                 }
                             }
@@ -604,13 +431,13 @@ export class Commands112To113 {
                                     block: {
                                         type: 'argument',
                                         parser: 'minecraft:resource_location',
-                                        updater: 'spgoding:block_name',
                                         children: {
-                                            states: {
+                                            metadata: {
                                                 type: 'argument',
-                                                parser: 'brigadier:string',
+                                                parser: 'brigadier:integer',
                                                 properties: {
-                                                    type: 'word'
+                                                    min: 0,
+                                                    max: 15
                                                 },
                                                 children: {
                                                     replace: {
@@ -619,7 +446,6 @@ export class Commands112To113 {
                                                             block: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:resource_location',
-                                                                updater: 'spgoding:block_name',
                                                                 children: {
                                                                     states: {
                                                                         type: 'argument',
@@ -628,11 +454,9 @@ export class Commands112To113 {
                                                                             type: 'word'
                                                                         },
                                                                         executable: true,
-                                                                        spu_script: '%0 %1 %2 $setNameStatesToBlockState%3%4 %5 $setNameStatesToBlockState%6%7'
                                                                     }
                                                                 },
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 $setNameStatesToBlockState%3%4 %5 $setNameToBlockState%6'
                                                             }
                                                         }
                                                     },
@@ -648,50 +472,19 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:block_nbt',
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 $setNameStatesNbtToBlockState%3%4%6 %5'
                                                             }
                                                         },
                                                         executable: true,
-                                                        spu_script: '%0 %1 %2 $setNameStatesToBlockState%3%4 %5'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 %2 $setNameStatesToBlockState%3%4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: '%0 %1 %2 $setNameToBlockState%3'
                                     }
                                 }
                             }
                         }
-                    }
-                }
-            },
-            function: {
-                type: 'literal',
-                children: {
-                    func: {
-                        type: 'argument',
-                        parser: 'minecraft:resource_location',
-                        children: {
-                            condition: {
-                                type: 'argument',
-                                parser: 'brigadier:string',
-                                properties: {
-                                    type: 'word'
-                                },
-                                children: {
-                                    entity: {
-                                        type: 'argument',
-                                        parser: 'minecraft:entity',
-                                        executable: true,
-                                        spu_script: 'execute %2 entity %3 run %0 %1'
-                                    }
-                                }
-                            }
-                        },
-                        executable: true
                     }
                 }
             },
@@ -704,7 +497,6 @@ export class Commands112To113 {
                         properties: {
                             type: 'word'
                         },
-                        updater: 'spgoding:gamemode',
                         children: {
                             entity: {
                                 type: 'argument',
@@ -719,35 +511,6 @@ export class Commands112To113 {
             gamerule: {
                 type: 'literal',
                 children: {
-                    gameLoopFunction: {
-                        type: 'literal',
-                        children: {
-                            value: {
-                                type: 'argument',
-                                parser: 'brigadier:string',
-                                properties: {
-                                    type: 'word'
-                                },
-                                executable: true,
-                                spu_script: '# %0 %1 %2',
-                                warning: `The rule 'gameLoopFunction' has been removed. Please add function %2 to function tag '#minecraft:tick'.`
-                            }
-                        },
-                        executable: true,
-                        spu_script: '# %0 %1',
-                        warning: `The rule 'gameLoopFunction' has been removed.`
-                    },
-                    announceAdvancements: {
-                        type: 'literal',
-                        children: {
-                            value: {
-                                type: 'argument',
-                                parser: 'brigadier:bool',
-                                executable: true
-                            }
-                        },
-                        executable: true
-                    },
                     commandBlockOutput: {
                         type: 'literal',
                         children: {
@@ -803,17 +566,6 @@ export class Commands112To113 {
                         },
                         executable: true
                     },
-                    doLimitedCrafting: {
-                        type: 'literal',
-                        children: {
-                            value: {
-                                type: 'argument',
-                                parser: 'brigadier:bool',
-                                executable: true
-                            }
-                        },
-                        executable: true
-                    },
                     doMobLoot: {
                         type: 'literal',
                         children: {
@@ -847,17 +599,6 @@ export class Commands112To113 {
                         },
                         executable: true
                     },
-                    doWeatherCycle: {
-                        type: 'literal',
-                        children: {
-                            value: {
-                                type: 'argument',
-                                parser: 'brigadier:bool',
-                                executable: true
-                            }
-                        },
-                        executable: true
-                    },
                     keepInventory: {
                         type: 'literal',
                         children: {
@@ -875,28 +616,6 @@ export class Commands112To113 {
                             value: {
                                 type: 'argument',
                                 parser: 'brigadier:bool',
-                                executable: true
-                            }
-                        },
-                        executable: true
-                    },
-                    maxCommandChainLength: {
-                        type: 'literal',
-                        children: {
-                            value: {
-                                type: 'argument',
-                                parser: 'brigadier:integer',
-                                executable: true
-                            }
-                        },
-                        executable: true
-                    },
-                    maxEntityCramming: {
-                        type: 'literal',
-                        children: {
-                            value: {
-                                type: 'argument',
-                                parser: 'brigadier:integer',
                                 executable: true
                             }
                         },
@@ -1004,13 +723,9 @@ export class Commands112To113 {
                                     type: 'word'
                                 },
                                 executable: true,
-                                spu_script: '# %0 %1 %2',
-                                warning: `Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
                             }
                         },
                         executable: true,
-                        spu_script: '# %0 %1',
-                        warning: `Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
                     }
                 }
             },
@@ -1024,7 +739,6 @@ export class Commands112To113 {
                             item: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:item_name',
                                 children: {
                                     num: {
                                         type: 'argument',
@@ -1042,19 +756,15 @@ export class Commands112To113 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:item_tag_nbt',
                                                         executable: true,
-                                                        spu_script: '%0 %1 $setNameDataNbtToItemStack%2%4%5 %3'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 $setNameDataToItemStack%2%4 %3'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: '%0 %1 $setNameToItemStack%2 %3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: '%0 %1 $setNameToItemStack%2'
                             }
                         }
                     }
@@ -1101,7 +811,6 @@ export class Commands112To113 {
                     }
                 },
                 executable: true,
-                spu_script: '%0 @s'
             },
             list: {
                 type: 'literal',
@@ -1112,57 +821,6 @@ export class Commands112To113 {
                     }
                 },
                 executable: true
-            },
-            locate: {
-                type: 'literal',
-                children: {
-                    Buried_Treasure: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    EndCity: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Fortress: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Mansion: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Mineshaft: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Monument: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Ocean_Ruin: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Shipwreck: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Stronghold: {
-                        type: 'literal',
-                        executable: true
-                    },
-                    Temple: {
-                        type: 'literal',
-                        executable: true,
-                        spu_script: '# %0 %1',
-                        warning: `'Temple' has been separated into 'Desert_Pyramid', 'Igloo', 'Jungle_Pyramid' and 'Swamp_hut'`
-                    },
-                    Village: {
-                        type: 'literal',
-                        executable: true
-                    }
-                }
             },
             me: {
                 type: 'literal',
@@ -1238,7 +896,6 @@ export class Commands112To113 {
                     name: {
                         type: 'argument',
                         parser: 'minecraft:resource_location',
-                        updater: 'spgoding:particle',
                         children: {
                             pos: {
                                 type: 'argument',
@@ -1281,11 +938,9 @@ export class Commands112To113 {
                                                                                         type: 'argument',
                                                                                         parser: 'brigadier:int',
                                                                                         executable: true,
-                                                                                        spu_script: '%0 %1 $setItemParams%8%9 %2 %3 %4 %5 %6 %7'
                                                                                     }
                                                                                 },
                                                                                 executable: true,
-                                                                                spu_script: '%0 %1 $setBlockParam%8 %2 %3 %4 %5 %6 %7'
                                                                             }
                                                                         },
                                                                         executable: true
@@ -1313,7 +968,6 @@ export class Commands112To113 {
                     sound: {
                         type: 'argument',
                         parser: 'minecraft:resource_location',
-                        updater: 'spgoding:sound',
                         children: {
                             ambient: {
                                 type: 'literal',
@@ -1824,55 +1478,6 @@ export class Commands112To113 {
                 },
                 executable: true
             },
-            recipe: {
-                type: 'literal',
-                children: {
-                    give: {
-                        type: 'literal',
-                        children: {
-                            targets: {
-                                type: 'argument',
-                                parser: 'minecraft:entity',
-                                children: {
-                                    '*': {
-                                        type: 'literal',
-                                        executable: true
-                                    },
-                                    recipe: {
-                                        type: 'argument',
-                                        parser: 'minecraft:resource_location',
-                                        executable: true
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    take: {
-                        type: 'literal',
-                        children: {
-                            targets: {
-                                type: 'argument',
-                                parser: 'minecraft:entity',
-                                children: {
-                                    '*': {
-                                        type: 'literal',
-                                        executable: true
-                                    },
-                                    recipe: {
-                                        type: 'argument',
-                                        parser: 'minecraft:resource_location',
-                                        executable: true
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            reload: {
-                type: 'literal',
-                executable: true
-            },
             replaceitem: {
                 type: 'literal',
                 children: {
@@ -1889,12 +1494,10 @@ export class Commands112To113 {
                                         properties: {
                                             type: 'word'
                                         },
-                                        updater: 'spgoding:item_slot',
                                         children: {
                                             item: {
                                                 type: 'argument',
                                                 parser: 'minecraft:resource_location',
-                                                updater: 'spgoding:item_name',
                                                 children: {
                                                     count: {
                                                         type: 'argument',
@@ -1916,19 +1519,15 @@ export class Commands112To113 {
                                                                         parser: 'minecraft:nbt',
                                                                         updater: 'spgoding:item_tag_nbt',
                                                                         executable: true,
-                                                                        spu_script: '%0 %1 %2 %3 $setNameDataNbtToItemStack%4%6%7 %5'
                                                                     }
                                                                 },
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 %3 $setNameDataToItemStack%4%6 %5'
                                                             }
                                                         },
                                                         executable: true,
-                                                        spu_script: '%0 %1 %2 %3 $setNameToItemStack%4 %5'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 %2 %3 $setNameToItemStack%4'
                                             }
                                         }
                                     }
@@ -1949,12 +1548,10 @@ export class Commands112To113 {
                                         properties: {
                                             type: 'word'
                                         },
-                                        updater: 'spgoding:item_slot',
                                         children: {
                                             item: {
                                                 type: 'argument',
                                                 parser: 'minecraft:resource_location',
-                                                updater: 'spgoding:item_name',
                                                 children: {
                                                     count: {
                                                         type: 'argument',
@@ -1976,19 +1573,15 @@ export class Commands112To113 {
                                                                         parser: 'minecraft:nbt',
                                                                         updater: 'spgoding:item_tag_nbt',
                                                                         executable: true,
-                                                                        spu_script: '%0 %1 %2 %3 $setNameDataNbtToItemStack%4%6%7 %5'
                                                                     }
                                                                 },
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 %3 $setNameDataToItemStack%4%6 %5'
                                                             }
                                                         },
                                                         executable: true,
-                                                        spu_script: '%0 %1 %2 %3 $setNameToItemStack%4 %5'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 %2 %3 $setNameToItemStack%4'
                                             }
                                         }
                                     }
@@ -2052,7 +1645,6 @@ export class Commands112To113 {
                                                 properties: {
                                                     type: 'word'
                                                 },
-                                                updater: 'spgoding:scoreboard_criteria',
                                                 children: {
                                                     displayName: {
                                                         type: 'argument',
@@ -2060,7 +1652,6 @@ export class Commands112To113 {
                                                         properties: {
                                                             type: 'greedy'
                                                         },
-                                                        updater: 'spgoding:pre_json',
                                                         executable: true
                                                     }
                                                 },
@@ -2132,18 +1723,15 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: 'tag $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true,
-                                                        spu_script: 'tag %3 %4 %5'
                                                     }
                                                 }
                                             },
                                             list: {
                                                 type: 'literal',
                                                 executable: true,
-                                                spu_script: 'tag %3 %4'
                                             },
                                             remove: {
                                                 type: 'literal',
@@ -2160,11 +1748,9 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: 'tag $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true,
-                                                        spu_script: 'tag %3 %4 %5'
                                                     }
                                                 }
                                             }
@@ -2195,7 +1781,6 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true
@@ -2222,7 +1807,6 @@ export class Commands112To113 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:entity_nbt',
                                                         executable: true,
-                                                        spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
                                                     }
                                                 },
                                                 executable: true
@@ -2247,7 +1831,6 @@ export class Commands112To113 {
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:entity_nbt',
                                                         executable: true,
-                                                        spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
                                                     }
                                                 },
                                                 executable: true
@@ -2295,7 +1878,6 @@ export class Commands112To113 {
                                                                                 parser: 'minecraft:nbt',
                                                                                 updater: 'spgoding:entity_nbt',
                                                                                 executable: true,
-                                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%8 %4 %5 %6 %7'
                                                                             }
                                                                         },
                                                                         executable: true
@@ -2333,7 +1915,6 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true
@@ -2381,7 +1962,6 @@ export class Commands112To113 {
                                                                 parser: 'minecraft:nbt',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                spu_script: '%0 %1 %2 $setNbtToSelector%3%6 %4 %5'
                                                             }
                                                         },
                                                         executable: true
@@ -2413,13 +1993,10 @@ export class Commands112To113 {
                                                 properties: {
                                                     type: 'greedy'
                                                 },
-                                                updater: 'spgoding:pre_json',
                                                 executable: true,
-                                                spu_script: 'team %2 %3 %4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: 'team %2 %3'
                                     }
                                 }
                             },
@@ -2430,7 +2007,6 @@ export class Commands112To113 {
                                         type: 'argument',
                                         parser: 'minecraft:team',
                                         executable: true,
-                                        spu_script: 'team %2 %3'
                                     }
                                 }
                             },
@@ -2445,11 +2021,9 @@ export class Commands112To113 {
                                                 type: 'argument',
                                                 parser: 'minecraft:entity',
                                                 executable: true,
-                                                spu_script: 'team %2 %3 %4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: 'team %2 %3'
                                     }
                                 }
                             },
@@ -2460,7 +2034,6 @@ export class Commands112To113 {
                                         type: 'argument',
                                         parser: 'minecraft:entity',
                                         executable: true,
-                                        spu_script: 'team %2 %3'
                                     }
                                 }
                             },
@@ -2471,11 +2044,9 @@ export class Commands112To113 {
                                         type: 'argument',
                                         parser: 'minecraft:team',
                                         executable: true,
-                                        spu_script: 'team %2 %3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: 'team %2'
                             },
                             option: {
                                 type: 'literal',
@@ -2490,22 +2061,18 @@ export class Commands112To113 {
                                                     always: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     never: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     pushOtherTeams: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     pushOwnTeam: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     }
                                                 }
                                             },
@@ -2516,7 +2083,6 @@ export class Commands112To113 {
                                                         type: 'argument',
                                                         parser: 'minecraft:color',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     }
                                                 }
                                             },
@@ -2526,22 +2092,18 @@ export class Commands112To113 {
                                                     always: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     hideForOtherTeams: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     hideForOwnTeam: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     never: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     }
                                                 }
                                             },
@@ -2554,9 +2116,7 @@ export class Commands112To113 {
                                                         properties: {
                                                             type: 'greedy'
                                                         },
-                                                        updater: 'spgoding:pre_json',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     }
                                                 }
                                             },
@@ -2567,7 +2127,6 @@ export class Commands112To113 {
                                                         type: 'argument',
                                                         parser: 'brigadier:bool',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 friendlyFire %5'
                                                     }
                                                 }
                                             },
@@ -2577,22 +2136,18 @@ export class Commands112To113 {
                                                     always: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     hideForOtherTeams: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     hideForOwnTeam: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     },
                                                     never: {
                                                         type: 'literal',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     }
                                                 }
                                             },
@@ -2603,7 +2158,6 @@ export class Commands112To113 {
                                                         type: 'argument',
                                                         parser: 'brigadier:bool',
                                                         executable: true,
-                                                        spu_script: 'team modify %3 %4 %5'
                                                     }
                                                 }
                                             }
@@ -2639,14 +2193,13 @@ export class Commands112To113 {
                             block: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:block_name',
                                 children: {
-                                    states: {
+                                    metadata: {
                                         type: 'argument',
                                         parser: 'brigadier:integer',
                                         properties: {
-                                            min: -1,
-                                            max: 16
+                                            min: 0,
+                                            max: 15
                                         },
                                         children: {
                                             mode: {
@@ -2655,26 +2208,21 @@ export class Commands112To113 {
                                                 properties: {
                                                     type: 'word'
                                                 },
-                                                updater: 'spgoding:to_literal_replace',
                                                 children: {
                                                     nbt: {
                                                         type: 'argument',
                                                         parser: 'minecraft:nbt',
                                                         updater: 'spgoding:block_nbt',
                                                         executable: true,
-                                                        spu_script: '%0 %1 $setNameStatesNbtToBlockState%2%3%5 %4'
                                                     }
                                                 },
                                                 executable: true,
-                                                spu_script: '%0 %1 $setNameStatesToBlockState%2%3 %4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: '%0 %1 $setNameStatesToBlockState%2%3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: '%0 %1 $setNameToBlockState%2'
                             }
                         }
                     }
@@ -2772,8 +2320,6 @@ export class Commands112To113 {
                             type: 'greedy'
                         },
                         executable: true,
-                        spu_script: '# %0 %1',
-                        warning: `Use 'execute store ...'.`
                     }
                 }
             },
@@ -3035,11 +2581,9 @@ export class Commands112To113 {
                                 parser: 'minecraft:nbt',
                                 updater: 'spgoding:entity_nbt',
                                 executable: true,
-                                spu_script: 'execute if entity $setNbtToSelector%1%2'
                             }
                         },
                         executable: true,
-                        spu_script: 'execute if entity %1'
                     }
                 }
             },
@@ -3053,13 +2597,13 @@ export class Commands112To113 {
                             name: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:block_name',
                                 children: {
-                                    states: {
+                                    metadata: {
                                         type: 'argument',
-                                        parser: 'brigadier:string',
+                                        parser: 'brigadier:integer',
                                         properties: {
-                                            type: 'word'
+                                            min: -1,
+                                            max: 16
                                         },
                                         children: {
                                             nbt: {
@@ -3067,15 +2611,12 @@ export class Commands112To113 {
                                                 parser: 'minecraft:nbt',
                                                 updater: 'spgoding:block_nbt',
                                                 executable: true,
-                                                spu_script: 'execute if block %1 $setNameStatesNbtToBlockState%2%3%4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: 'execute if block %1 $setNameStatesToBlockState%2%3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: 'execute if block %1 $setNameToBlockState%2'
                             }
                         }
                     }
@@ -3103,11 +2644,9 @@ export class Commands112To113 {
                                                     type: 'word'
                                                 },
                                                 executable: true,
-                                                spu_script: 'execute if blocks %1 %2 %3 %4'
                                             }
                                         },
                                         executable: true,
-                                        spu_script: 'execute if blocks %1 %2 %3 all'
                                     }
                                 }
                             }
@@ -3186,16 +2725,6 @@ export class Commands112To113 {
                         type: 'argument',
                         parser: 'minecraft:entity',
                         children: {
-                            actionbar: {
-                                type: 'literal',
-                                children: {
-                                    title: {
-                                        type: 'argument',
-                                        parser: 'minecraft:component',
-                                        executable: true
-                                    }
-                                }
-                            },
                             clear: {
                                 type: 'literal',
                                 executable: true
@@ -3262,8 +2791,6 @@ export class Commands112To113 {
             toggledownfall: {
                 type: 'literal',
                 executable: true,
-                spu_script: 'weather clear',
-                warning: `'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear.`
             },
             tp: {
                 type: 'literal',
@@ -3272,7 +2799,6 @@ export class Commands112To113 {
                         type: 'argument',
                         parser: 'minecraft:vec3',
                         executable: true,
-                        spu_script: 'teleport %1'
                     },
                     entity: {
                         type: 'argument',
@@ -3281,9 +2807,7 @@ export class Commands112To113 {
                             entity: {
                                 type: 'argument',
                                 parser: 'minecraft:entity',
-                                updater: 'spgoding:single_selector',
                                 executable: true,
-                                spu_script: 'teleport %1 %2'
                             },
                             pos: {
                                 type: 'argument',
@@ -3293,15 +2817,12 @@ export class Commands112To113 {
                                         type: 'argument',
                                         parser: 'minecraft:vec2',
                                         executable: true,
-                                        spu_script: 'execute as %1 at @s run teleport @s %2 %3'
                                     }
                                 },
                                 executable: true,
-                                spu_script: 'execute as %1 at @s run teleport @s %2'
                             }
                         },
                         executable: true,
-                        spu_script: 'teleport %1'
                     }
                 }
             },
@@ -3576,17 +3097,14 @@ export class Commands112To113 {
                         properties: {
                             type: 'word'
                         },
-                        updater: 'spgoding:points_or_levels',
                         children: {
                             entity: {
                                 type: 'argument',
                                 parser: 'minecraft:entity',
                                 executable: true,
-                                spu_script: 'experience add %2 %1'
                             }
                         },
                         executable: true,
-                        spu_script: 'experience add @s %1'
                     }
                 }
             }

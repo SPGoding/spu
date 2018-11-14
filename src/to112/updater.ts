@@ -1,9 +1,10 @@
 import { SpuScriptExecutor, WheelChief, Argument, ParseResult } from '../utils/wheel_chief/wheel_chief'
 import { Commands111To112 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
-import { TargetSelector as TargetSelector112 } from './target_selector'
-import { UpdateResult } from '../utils/utils';
+import { UpdateResult, isNumeric } from '../utils/utils';
 import { UpdaterTo111 } from '../bad_practice/to111/updater';
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
+import { TargetSelector as TargetSelector112 } from './target_selector';
 
 class SpuScriptExecutor111To112 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
@@ -25,6 +26,30 @@ class SpuScriptExecutor111To112 implements SpuScriptExecutor {
     }
 }
 
+class ArgumentParser111To112 extends ArgumentParser {
+    protected parseMinecraftEntity(splited: string[], index: number): number {
+        let join = splited[index]
+
+        if (join.charAt(0) !== '@') {
+            return 1
+        }
+
+        if (TargetSelector112.isValid(join)) {
+            return 1
+        } else {
+            for (let i = index + 1; i < splited.length; i++) {
+                join += ' ' + splited[i]
+                if (TargetSelector112.isValid(join)) {
+                    return i - index + 1
+                } else {
+                    continue
+                }
+            }
+            throw `Expected an entity selector.`
+        }
+    }
+}
+
 export class UpdaterTo112 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {
         const ans: UpdateResult = { command: input, warnings: [] }
@@ -43,5 +68,15 @@ export class UpdaterTo112 extends Updater {
         ans.warnings = ans.warnings.concat(result.warnings)
 
         return ans
+    }
+
+    protected upSpgodingCommand(input: string) {
+        const result = WheelChief.update(input, Commands111To112.commands,
+            new ArgumentParser111To112(), this, new SpuScriptExecutor111To112())
+        return { command: result.command, warnings: result.warnings }
+    }
+
+    protected upSpgodingTargetSelector(input: string) {
+        return input
     }
 }

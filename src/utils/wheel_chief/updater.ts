@@ -1,4 +1,4 @@
-import { getNbtCompound, UpdateResult } from '../utils'
+import { getNbtCompound, UpdateResult, isNumeric } from '../utils'
 import { NbtString, NbtList, NbtCompound, NbtValue } from '../nbt/nbt'
 import { TargetSelector } from '../target_selector'
 import { BlockState } from '../block_state';
@@ -58,7 +58,7 @@ export class Updater {
     }
 
     protected upMinecraftComponent(input: string) {
-        if (input.slice(0, 1) === '"') {
+        if (input.slice(0, 1) === '"' || isNumeric(input) || input === 'true' || input === 'false') {
             return input
         } else if (input.slice(0, 1) === '[') {
             let json = JSON.parse(input)
@@ -81,7 +81,7 @@ export class Updater {
                 json.clickEvent.value.slice(0, 1) === '/'
             ) {
                 try {
-                    json.clickEvent.value = this.upSpgodingCommand(json.clickEvent.value)
+                    json.clickEvent.value = this.upSpgodingCommand(json.clickEvent.value).command
                 } catch {
                     // That's ok. Take it easy.
                 }
@@ -97,8 +97,7 @@ export class Updater {
 
     protected upMinecraftEntity(input: string) {
         try {
-            const selector = new TargetSelector(input)
-            return this.upSpgodingTargetSelector(selector).toString()
+            return this.upSpgodingTargetSelector(input)
         } catch {
             return input
         }
@@ -125,8 +124,7 @@ export class Updater {
         let parts = input.split('@')
         for (let i = 1; i < parts.length; i++) {
             try {
-                const selector = new TargetSelector(`@${parts[i]}`)
-                parts[i] = this.upSpgodingTargetSelector(selector).toString().slice(1)
+                parts[i] = this.upSpgodingTargetSelector(`@${parts[i]}`).slice(1)
             } catch {
                 continue
             }
@@ -425,10 +423,13 @@ export class Updater {
         return input
     }
 
-    protected upSpgodingTargetSelector(input: TargetSelector) {
-        if (input.nbt !== undefined) {
-            input.nbt = this.upSpgodingEntityNbt(input.nbt)
+    protected upSpgodingTargetSelector(input: string) {
+        const sel = new TargetSelector(input)
+
+        if (sel.nbt !== undefined) {
+            sel.nbt = this.upSpgodingEntityNbt(sel.nbt)
         }
-        return input
+
+        return sel.toString()
     }
 }

@@ -6,7 +6,7 @@ import Entities from "./mappings/entities";
 import Selector from "./selector";
 import { getNbtCompound, UpdateResult } from "../../utils/utils";
 import { NbtCompound, NbtString, NbtList, NbtValue, NbtByte, NbtInt } from "../../utils/nbt/nbt";
-import { UpdaterTo19 } from "../to19/updater";
+import { UpdaterTo19 } from "../../to19/updater";
 
 export class UpdaterTo111 {
     /**

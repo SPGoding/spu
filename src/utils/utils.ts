@@ -66,7 +66,5 @@ export interface UpdateResult {
  *
  * @author pca006132
  */
-const EscapePattern = /([\\"])/g
-const UnescapePattern = /\\([\\"])/g
-export const escape = (s: string) => s.replace(EscapePattern, '\\$1')
-export const unescape = (s: string) => s.replace(UnescapePattern, '$1')
+export const escape = (s: string) => s.replace(/([\\"])/g, '\\$1')
+export const unescape = (s: string) => s.replace(/\\([\\"])/g, '$1')
