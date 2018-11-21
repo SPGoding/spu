@@ -1,7 +1,6 @@
-import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue, NbtList } from '../../utils/nbt/nbt'
-import { getNbtCompound, escape, completeNamespace } from '../../utils/utils'
+import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue } from '../../utils/nbt/nbt'
+import { getNbtCompound, completeNamespace } from '../../utils/utils'
 import { Number_String } from './mapping'
-import Enchantments from './enchantments'
 import Entities from './entities';
 
 export class StdItem1_12 {
@@ -101,6 +100,7 @@ export class StdItem1_13 {
         return this.tag.toString() !== '{}'
     }
 }
+
 /**
  * Providing a map storing old item IDs and new item IDs.
  */

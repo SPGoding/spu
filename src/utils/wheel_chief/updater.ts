@@ -368,10 +368,6 @@ export class Updater {
             if (id instanceof NbtString) {
                 id.set(this.upSpgodingItemName(id.get()))
             }
-            let count = input.get('Count')
-            if (id !== undefined && count === undefined) {
-                input.set('Count', new NbtByte(1))
-            }
         }
         /* tag */ {
             let tag = input.get('tag')
