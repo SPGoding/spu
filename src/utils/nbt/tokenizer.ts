@@ -140,7 +140,7 @@ export class Tokenizer {
 
         pos -= 1 // Return to the char before ',', ']', '}', ' ' or ''.
 
-        return { str: str.replace(/\s/g, ''), pos: pos }
+        return { str: str, pos: pos }
     }
 }
 
