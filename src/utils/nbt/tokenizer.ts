@@ -33,7 +33,7 @@ export class Tokenizer {
             case '}':
                 return { token: { type: 'EndCompound', value: '}' }, pos: pos + 1 }
             case '[':
-                switch (nbt.slice(pos, pos + 4)) {
+                switch (nbt.slice(pos, pos + 3)) {
                     case '[I;':
                         return {
                             token: { type: 'BeginIntArray', value: '[I;' },
