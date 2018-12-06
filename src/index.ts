@@ -9,16 +9,16 @@ function $(id: string) {
     return <HTMLElement>document.getElementById(id)
 }
 
-let from_18 = $('from-18')
-let from_19 = $('from-19')
-let from_111 = $('from-111')
-let from_112 = $('from-112')
-let from_113 = $('from-113')
-let to_19 = $('to-19')
-let to_111 = $('to-111')
-let to_112 = $('to-112')
-let to_113 = $('to-113')
-let to_114 = $('to-114')
+let from18 = $('from-18')
+let from19 = $('from-19')
+let from111 = $('from-111')
+let from112 = $('from-112')
+let from113 = $('from-113')
+let to19 = $('to-19')
+let to111 = $('to-111')
+let to112 = $('to-112')
+let to113 = $('to-113')
+let to114 = $('to-114')
 let info = $('info')
 let from: '18' | '19' | '111' | '112' | '113' = '113'
 let to: '19' | '111' | '112' | '113' | '114' = '114'
@@ -92,100 +92,174 @@ $('button').onclick = () => {
 
 function resetButtonClasses(type: 'from' | 'to') {
     if (type === 'from') {
-        from_18.classList.replace('btn-active', 'btn-default')
-        from_19.classList.replace('btn-active', 'btn-default')
-        from_111.classList.replace('btn-active', 'btn-default')
-        from_112.classList.replace('btn-active', 'btn-default')
-        from_113.classList.replace('btn-active', 'btn-default')
+        from18.classList.replace('btn-active', 'btn-default')
+        from19.classList.replace('btn-active', 'btn-default')
+        from111.classList.replace('btn-active', 'btn-default')
+        from112.classList.replace('btn-active', 'btn-default')
+        from113.classList.replace('btn-active', 'btn-default')
     } else {
-        to_19.classList.replace('btn-active', 'btn-default')
-        to_111.classList.replace('btn-active', 'btn-default')
-        to_112.classList.replace('btn-active', 'btn-default')
-        to_113.classList.replace('btn-active', 'btn-default')
-        to_114.classList.replace('btn-active', 'btn-default')
+        to19.classList.replace('btn-active', 'btn-default')
+        to111.classList.replace('btn-active', 'btn-default')
+        to112.classList.replace('btn-active', 'btn-default')
+        to113.classList.replace('btn-active', 'btn-default')
+        to114.classList.replace('btn-active', 'btn-default')
     }
 }
 
 function resetButtonVisibility() {
-    to_19.style.display = ''
-    to_111.style.display = ''
-    to_112.style.display = ''
-    to_113.style.display = ''
-    to_114.style.display = ''
+    to19.style.display = ''
+    to111.style.display = ''
+    to112.style.display = ''
+    to113.style.display = ''
+    to114.style.display = ''
 }
 
-from_18.onclick = () => {
+function updateLocalStorage() {
+    window.localStorage.setItem('from', from)
+    window.localStorage.setItem('to', to)
+}
+
+let setFrom18 = from18.onclick = () => {
     resetButtonClasses('from')
-    from_18.classList.replace('btn-default', 'btn-active')
+    from18.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
 
     from = '18'
+
+    updateLocalStorage()
 }
-from_19.onclick = () => {
+let setFrom19 = from19.onclick = () => {
     resetButtonClasses('from')
-    from_19.classList.replace('btn-default', 'btn-active')
+    from19.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
-    to_19.style.display = 'none'
+    to19.style.display = 'none'
 
     from = '19'
+
+    updateLocalStorage()
 }
-from_111.onclick = () => {
+let setFrom111 = from111.onclick = () => {
     resetButtonClasses('from')
-    from_111.classList.replace('btn-default', 'btn-active')
+    from111.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
-    to_19.style.display = 'none'
-    to_111.style.display = 'none'
+    to19.style.display = 'none'
+    to111.style.display = 'none'
 
     from = '111'
+
+    updateLocalStorage()
 }
-from_112.onclick = () => {
+let setFrom112 = from112.onclick = () => {
     resetButtonClasses('from')
-    from_112.classList.replace('btn-default', 'btn-active')
+    from112.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
-    to_19.style.display = 'none'
-    to_111.style.display = 'none'
-    to_112.style.display = 'none'
+    to19.style.display = 'none'
+    to111.style.display = 'none'
+    to112.style.display = 'none'
 
     from = '112'
+
+    updateLocalStorage()
 }
-from_113.onclick = () => {
+let setFrom113 = from113.onclick = () => {
     resetButtonClasses('from')
-    from_113.classList.replace('btn-default', 'btn-active')
+    from113.classList.replace('btn-default', 'btn-active')
 
     resetButtonVisibility()
-    to_19.style.display = 'none'
-    to_111.style.display = 'none'
-    to_112.style.display = 'none'
-    to_113.style.display = 'none'
+    to19.style.display = 'none'
+    to111.style.display = 'none'
+    to112.style.display = 'none'
+    to113.style.display = 'none'
 
     from = '113'
+
+    updateLocalStorage()
 }
-to_19.onclick = () => {
+let setTo19 = to19.onclick = () => {
     resetButtonClasses('to')
-    to_19.classList.replace('btn-default', 'btn-active')
+    to19.classList.replace('btn-default', 'btn-active')
     to = '19'
+    updateLocalStorage()
 }
-to_111.onclick = () => {
+let setTo111 = to111.onclick = () => {
     resetButtonClasses('to')
-    to_111.classList.replace('btn-default', 'btn-active')
+    to111.classList.replace('btn-default', 'btn-active')
     to = '111'
+    updateLocalStorage()
 }
-to_112.onclick = () => {
+let setTo112 = to112.onclick = () => {
     resetButtonClasses('to')
-    to_112.classList.replace('btn-default', 'btn-active')
+    to112.classList.replace('btn-default', 'btn-active')
     to = '112'
+    updateLocalStorage()
 }
-to_113.onclick = () => {
+let setTo113 = to113.onclick = () => {
     resetButtonClasses('to')
-    to_113.classList.replace('btn-default', 'btn-active')
+    to113.classList.replace('btn-default', 'btn-active')
     to = '113'
+    updateLocalStorage()
 }
-to_114.onclick = () => {
+let setTo114 = to114.onclick = () => {
     resetButtonClasses('to')
-    to_114.classList.replace('btn-default', 'btn-active')
+    to114.classList.replace('btn-default', 'btn-active')
     to = '114'
+    updateLocalStorage()
 }
+
+function applyLocalStorage() {
+    let from = window.localStorage.getItem('from')
+    let to = window.localStorage.getItem('to')
+
+    if (!from) {
+        from = '113'
+    }
+    if (!to) {
+        to = '114'
+    }
+
+    switch (from) {
+        case '18':
+            setFrom18()
+            break
+        case '19':
+            setFrom19()
+            break
+        case '111':
+            setFrom111()
+            break
+        case '112':
+            setFrom112()
+            break
+        case '113':
+            setFrom113()
+            break
+        default:
+            break
+    }
+
+    switch (to) {
+        case '19':
+            setTo19()
+            break
+        case '111':
+            setTo111()
+            break
+        case '112':
+            setTo112()
+            break
+        case '113':
+            setTo113()
+            break
+        case '114':
+            setTo114()
+            break
+        default:
+            break
+    }
+}
+
+applyLocalStorage()
