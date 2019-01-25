@@ -368,7 +368,7 @@ export default class Blocks {
         return blockState
     }
 
-    public static upStringToBlockState(id: NbtString, data?: NbtByte | NbtInt) {
+    public static upStringToBlockState(id: NbtString, data?: NbtByte | NbtInt | NbtShort) {
         const blockState = new NbtCompound()
         const name = new NbtString()
         const properties = new NbtCompound()

@@ -238,6 +238,12 @@ export class UpdaterTo113 extends Updater {
             ans.del('carried')
             ans.del('carriedData')
             if (
+                (carried instanceof NbtString) &&
+                (carriedData instanceof NbtShort || carriedData instanceof NbtInt || typeof carriedData === 'undefined')
+            ) {
+                const carriedBlockState = Blocks.upStringToBlockState(carried, carriedData)
+                ans.set('carriedBlockState', carriedBlockState)
+            } else if (
                 (carried instanceof NbtShort || carried instanceof NbtInt) &&
                 (carriedData instanceof NbtShort || carriedData instanceof NbtInt || typeof carriedData === 'undefined')
             ) {
