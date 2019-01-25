@@ -35,7 +35,7 @@ export class TargetSelector {
 
         for (const objective in this.scores) {
             const value = this.scores[objective]
-            result += `${objective}=${value},`
+            result += `score_${objective}=${value},`
         }
 
         result = result.slice(0, -1)
