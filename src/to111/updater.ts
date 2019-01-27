@@ -3,8 +3,8 @@ import { Updater } from '../utils/wheel_chief/updater'
 import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils';
 import { Commands19To111 } from './commands';
 import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
-import { TargetSelector } from '../to19/target_selector'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtValue, NbtByte } from '../utils/nbt/nbt';
+import { TargetSelector } from './target_selector'
+import { NbtCompound, NbtInt, NbtString, NbtByte } from '../utils/nbt/nbt';
 import Entities from './mappings/entities';
 import { UpdaterTo19 } from '../to19/updater';
 

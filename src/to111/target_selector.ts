@@ -1,5 +1,5 @@
+import Entities from "./mappings/entities";
 import { isNumeric } from "../utils/utils";
-import { UpdaterTo19 } from "./updater";
 
 export class TargetSelector {
     public variable: string
@@ -29,7 +29,10 @@ export class TargetSelector {
         for (const key in this.arguments) {
             if (['type', 'name', 'team', 'tag', 'c', 'm', 'r', 'rm', 'x', 'y', 'z', 'dx', 'dy',
                 'dz', 'l', 'lm', 'rx', 'rxm', 'ry', 'rym'].indexOf(key) !== -1) {
-                const value = this.arguments[key]
+                let value = this.arguments[key]
+                if (key === 'type') {
+                    value = Entities.to111(value)
+                }
                 result += `${key}=${value},`
             }
         }
