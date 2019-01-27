@@ -310,7 +310,7 @@ export class UpdaterTo19 extends Updater {
             const tileId = ans.get('TileID')
             if (tileId instanceof NbtInt) {
                 ans.del('TileID')
-                ans.set('TileID', new NbtString(Blocks.to19(tileId.get())))
+                ans.set('Block', new NbtString(Blocks.to19(tileId.get())))
             }
 
             let tileEntityData = ans.get('TileEntityData')
