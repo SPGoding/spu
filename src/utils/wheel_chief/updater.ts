@@ -384,7 +384,7 @@ export class Updater {
         /* BlockEntityTag */ {
             let blockEntityTag = input.get('BlockEntityTag')
             if (blockEntityTag instanceof NbtCompound) {
-                blockEntityTag = this.upSpgodingBlockNbt(input)
+                blockEntityTag = this.upSpgodingBlockNbt(blockEntityTag)
                 input.set('BlockEntityTag', blockEntityTag)
             }
         }
