@@ -121,16 +121,20 @@ export class Updater {
     }
 
     protected upMinecraftMessage(input: string) {
-        let parts = input.split('@')
-        for (let i = 1; i < parts.length; i++) {
-            try {
-                parts[i] = this.upSpgodingTargetSelector(`@${parts[i]}`).slice(1)
-            } catch {
-                continue
-            }
-        }
+        // let parts = input.split('@')
+        // for (let i = 1; i < parts.length; i++) {
+        //     try {
+        //         parts[i] = this.upSpgodingTargetSelector(`@${parts[i]}`).slice(1)
+        //     } catch {
+        //         continue
+        //     }
+        // }
+        // return parts.join('@')
 
-        return parts.join('@')
+        // FAILED FAILED FAILED
+        // I have tried my best.
+        // Trust me if you will.
+        return input
     }
 
     protected upSpgodingBlockName(input: string) {
