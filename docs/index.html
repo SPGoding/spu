@@ -6,66 +6,75 @@
 
 <head>
     <title>[CBL|SPGoding]spu</title>
-    <link rel="stylesheet" href="https://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+    <!-- 预加载时显示的圆形滚动条 css -->
+    <style>
+        .position {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .outside {
+            display: inline-block;
+            line-height: 1;
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            animation: rotate 1.4s linear infinite;
+            animation-name: rotate;
+        }
+
+        .svgPrimary {
+            color: #3399cc;
+        }
+
+        .circle {
+            stroke: currentColor;
+            animation: dash 1.4s ease-in-out infinite;
+            animation-name: dash;
+            stroke-dasharray: 80px, 200px;
+            stroke-dashoffset: 0px;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dash {
+            0% {
+                stroke-dasharray: 1px, 200px;
+                stroke-dashoffset: 0px;
+            }
+
+            50% {
+                stroke-dasharray: 100px, 200px;
+                stroke-dashoffset: -15px;
+            }
+
+            100% {
+                stroke-dasharray: 100px, 200px;
+                stroke-dashoffset: -125px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-default" role="navigation" style="text-align: center;">
-        <div>
-            <ul class="nav navbar-nav" style="display: inline-block;float: none;">
-                <li class="active">
-                    <a href="#">spu</a>
-                </li>
-                <li>
-                    <a href="https://github.com/SPGoding/spu" target="_blank">GitHub</a>
-                </li>
-                <li>
-                    <a href="https://afdian.net/@SPGoding" target="_blank">赞助</a>
-                </li>
-                <li>
-                    <a href="http://www.mcbbs.net/thread-786687-1-1.html" target="_blank">论坛帖</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-active" id="from-113">1.13</button>
-                    <button type="button" class="btn btn-default" id="from-112">1.12</button>
-                    <button type="button" class="btn btn-default" id="from-111">1.11</button>
-                    <button type="button" class="btn btn-default" id="from-19">1.9</button>
-                    <button type="button" class="btn btn-default" id="from-18">1.8</button>
-                </div>
-                <div class="pull-right">
-                    <button type="button" id="button" class="btn btn-primary">升级</button>
-                </div>
-                <textarea rows="13" class="form-control" id="input" placeholder="在此输入命令（一行一个）" style="resize: none;" autofocus></textarea>
-            </div>
-            <div class="col-md-6">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-active" id="to-114">1.14[TEST]</button>
-                    <button type="button" class="btn btn-default" id="to-113" style="display: none;">1.13</button>
-                    <button type="button" class="btn btn-default" id="to-112" style="display: none;">1.12</button>
-                    <button type="button" class="btn btn-default" id="to-111" style="display: none;">1.11</button>
-                    <button type="button" class="btn btn-default" id="to-19" style="display: none;">1.9</button>
-                </div>
-                <textarea rows="13" class="form-control" id="output" style="resize: none;"></textarea>
-            </div>
-        </div>
-        <br/>
-        <div class="row">
-            <div class="col-md-6"><!-- Why you don't use offset? --></div>
-            <div class="col-md-6">
-                <div class="alert alert-success" id="info"> </div>
+    <div id="content">
+        <!-- 预加载的圆形滚动条，在页面的 bundle 文件初始化完成后，这部分内容会被 React-DOM 替换掉 -->
+        <div class="position">
+            <div class="outside" style="width: 75px; height: 75px;">
+                <svg class="svgPrimary" viewBox="22 22 44 44">
+                    <circle class="circle" cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"></circle>
+                </svg>
             </div>
         </div>
     </div>
-
-    <script src="./bundle.min.js "></script>
+    <script src="./bundle.min.js"></script>
 </body>
 
 </html>
