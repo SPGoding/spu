@@ -3,8 +3,6 @@
         "moduleResolution": "node",
         "module": "commonjs",
         "target": "es2015",
-        "strict": true,
-        "jsx": "react",
         "rootDir": "src",
         "outDir": "dist",
         "sourceMap": false,

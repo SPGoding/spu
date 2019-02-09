@@ -35,8 +35,8 @@
     "uglify-js-es6": "^2.8.9"
   },
   "scripts": {
-    "build:ui": "browserify ./src/view/mainView.jsx -o ./src/view/mainViewBundle.js -t babelify ",
-    "build:core": "tsc && browserify ./dist/index.js -o ./dist/bundle.js && uglifyjs ./dist/bundle.js -m -c -o ./docs/bundle.min.js",
+    "build:ui": "browserify ./src/view/mainView.jsx -o ./dist/uiBundle.js -t babelify && uglifyjs ./dist/uiBundle.js -m -c -o ./docs/bundle.ui.min.js",
+    "build:core": "tsc && browserify ./dist/index.js -o ./dist/coreBundle.js && uglifyjs ./dist/coreBundle.js -m -c -o ./docs/bundle.core.min.js",
     "build": "npm run build:ui && npm run build:core",
     "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
   },
