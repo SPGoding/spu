@@ -2,7 +2,7 @@
   "name": "spu",
   "version": "1.0.0",
   "description": "A web that can help you convert minecraft commands from the older version to the newer version.",
-  "main": "docs/bundle.core.min.js",
+  "main": "js/index.js",
   "directories": {
     "doc": "docs/",
     "test": "src/tests/"
@@ -35,8 +35,9 @@
     "uglify-js-es6": "^2.8.9"
   },
   "scripts": {
+    "prebuild": "tsc",
     "build:ui": "browserify ./src/view/mainViewRender.jsx -o ./dist/uiBundle.js -t babelify && uglifyjs ./dist/uiBundle.js -m -c -o ./docs/bundle.ui.min.js",
-    "build:core": "tsc && browserify ./dist/index.js -o ./dist/coreBundle.js && uglifyjs ./dist/coreBundle.js -m -c -o ./docs/bundle.core.min.js",
+    "build:core": "browserify ./js/index.js -o ./dist/coreBundle.js && uglifyjs ./dist/coreBundle.js -m -c -o ./docs/bundle.core.min.js",
     "build": "npm run build:ui && npm run build:core",
     "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
   },
