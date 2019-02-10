@@ -2,7 +2,7 @@
   "name": "spu",
   "version": "1.0.0",
   "description": "A web that can help you convert minecraft commands from the older version to the newer version.",
-  "main": "index.js",
+  "main": "docs/bundle.core.min.js",
   "directories": {
     "doc": "docs/",
     "test": "src/tests/"

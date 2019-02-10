@@ -5,24 +5,14 @@ import { UpdaterTo113 } from './to113/updater'
 import { UpdaterTo114 } from './to114/updater'
 import { isWhiteSpace, UpdateResult } from './utils/utils';
 
-function $(id: string) {
-    return <HTMLElement>document.getElementById(id)
-}
-
-let info = $('info')
-
-info.style.display = 'none'
-
 // 转换按钮回调函数
-function transformButtonOnClick(beforeText : string, from: number, to : number ,callBack : any){
-    info.style.display = ''
+function transform(content : string, from: number, to : number ,callBack : (state: string, commands: string[], log: string[]) => void){
     let number = 1
     let frame: 'success' | 'warning' | 'danger' = 'success'
-    let msg = ''
-    let ans = ''
+    let msg : string[] = []
+    let ans : string[] = []
     try {
         let timeBefore = (new Date()).getTime()
-        let content = beforeText
         if (content) {
             const lines = content.toString().split('\n')
 
@@ -53,28 +43,32 @@ function transformButtonOnClick(beforeText : string, from: number, to : number ,
 
                 if (result.warnings.length > 0) {
                     frame = 'warning'
-                    msg += `Line #${number + 1}: <br />`
+                    msg.push(`Line #${number + 1}:`)
                     for (const warning of result.warnings) {
-                        msg += `    ${warning}<br />`
+                        msg.push(`    ${warning}`)
                     }
                 }
-                ans += result.command + '\n'
+                ans.push(result.command)
             }
 
-            ans = ans.slice(0, -1) // Remove the last line.
+            // ans = ans.slice(0, -1) // Remove the last line.
+            // ↑ 这句我拿它没辙，因为我不理解为什么要把最后一行删掉，只能先注释掉。 @langyo
             const timeAfter = (new Date()).getTime()
             const timeDelta = timeAfter - timeBefore
-            msg = `Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).<br />${msg}`
+            msg.push(`Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).`)
         }
     } catch (ex) {
-        frame = 'danger'
-        msg = `Updated error. <br />Line #${number + 1}: ${ex}`
-        ans = ''
+        callBack('danger', [], [`Updated error at line #${number + 1}: ${ex}`])
     } finally {
-        ; (<HTMLInputElement>$('output')).value = ans
-        info.innerHTML = msg
-        info.classList.replace('alert-success', `alert-${frame}`)
-        info.classList.replace('alert-danger', `alert-${frame}`)
-        info.classList.replace('alert-warning', `alert-${frame}`)
+        callBack(frame, ans, msg)
     }
 }
+
+/**
+ * @description 该模块唯一一个可调用的函数，用于升级命令
+ * @param {string} command 欲转换的命令集
+ * @param {number} from 原始命令集的所属游戏版本，传递一个数字进来，例如传递 8 代笔游戏版本 1.8
+ * @param {number} to 欲转换到的游戏版本。也是传递一个数字进来，例如传递 14 代表游戏版本 1.14
+ * @param {(string, string[], string[]) => void} callBack 回调函数，其中的参数分别为状态、转换得到的命令字符串数组、日志字符串数组
+ */
+export let transformCommand = transform
