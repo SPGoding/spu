@@ -76,7 +76,7 @@ const versions = {
   8: "1.8"
 };
 
-class ResponsiveDrawer extends React.Component {
+class MainView extends React.Component {
   state = {
     open: false,
     aboutDialogOpen: false,
@@ -311,10 +311,10 @@ class ResponsiveDrawer extends React.Component {
   }
 }
 
-ResponsiveDrawer.propTypes = {
+MainView.propTypes = {
   classes: PropTypes.object.isRequired,
   container: PropTypes.object,
   theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(ResponsiveDrawer);
+export default withStyles(styles, { withTheme: true })(MainView);

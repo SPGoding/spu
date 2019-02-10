@@ -10,13 +10,11 @@ function $(id: string) {
 }
 
 let info = $('info')
-let from: '18' | '19' | '111' | '112' | '113' = '113'
-let to: '19' | '111' | '112' | '113' | '114' = '114'
 
 info.style.display = 'none'
 
-// 转换按钮
-$('button').onclick = () => {
+// 转换按钮回调函数
+function transformButtonOnClick(beforeText : string, from: number, to : number ,callBack : any){
     info.style.display = ''
     let number = 1
     let frame: 'success' | 'warning' | 'danger' = 'success'
@@ -24,7 +22,7 @@ $('button').onclick = () => {
     let ans = ''
     try {
         let timeBefore = (new Date()).getTime()
-        let content = (<HTMLInputElement>$('input')).value
+        let content = beforeText
         if (content) {
             const lines = content.toString().split('\n')
 
@@ -36,16 +34,16 @@ $('button').onclick = () => {
                 if (line[0] === '#' || isWhiteSpace(line)) {
                     result = { command: line, warnings: [] }
                 } else {
-                    if (to === '114') {
-                        result = UpdaterTo114.upLine(line, from)
-                    } else if (to === '113') {
-                        result = UpdaterTo113.upLine(line, from)
-                    } else if (to === '112') {
-                        result = UpdaterTo112.upLine(line, from)
-                    } else if (to === '111') {
-                        result = UpdaterTo111.upLine(line, from)
-                    } else if (to === '19') {
-                        result = UpdaterTo19.upLine(line, from)
+                    if (to === 14) {
+                        result = UpdaterTo114.upLine(line, '1' + from)
+                    } else if (to === 13) {
+                        result = UpdaterTo113.upLine(line, '1' + from)
+                    } else if (to === 12) {
+                        result = UpdaterTo112.upLine(line, '1' + from)
+                    } else if (to === 11) {
+                        result = UpdaterTo111.upLine(line, '1' + from)
+                    } else if (to === 9) {
+                        result = UpdaterTo19.upLine(line, '1' + from)
                     } else {
                         throw `Unknown to version: '${to}'.`
                     }
