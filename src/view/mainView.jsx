@@ -92,28 +92,6 @@ const versions = {
   8: "1.8"
 };
 
-function getTime(){
-  let date = new Date();
-  let h = date.getHours();
-  let m = date.getMinutes();
-  let s = date.getSeconds();
-
-  let ans = "";
-  if(h == 0) ans += "0";
-  if(h < 10) ans += "0";
-  ans += h + " : ";
-
-  if(m == 0) ans += "0";
-  if(m < 10) ans += "0";
-  ans += m + " : ";
-
-  if(s == 0) ans += "0";
-  if(m < 10) ans += "0";
-  ans += s;
-  
-  return ans;
-}
-
 class ResponsiveDrawer extends React.Component {
   state = {
     open: false,
@@ -382,10 +360,10 @@ class ResponsiveDrawer extends React.Component {
               />
             </Grid>
           </Grid>
-          {/* 消息条，转换成功 */}
+          {/* 消息条，出现日志信息 */}
           <SnackBar
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            open={this.state.resultObject.state === "success" && this.state.snack === true}
+            open={this.state.snack === true}
           >
             <SnackBarContent 
               message={this.state.warningInfoStack.shift()}
