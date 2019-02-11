@@ -41,6 +41,8 @@ import InfoIcon from "mdi-material-ui/InformationOutline";
 import TransferIcon from "mdi-material-ui/TransferRight";
 import MoreIcon from "mdi-material-ui/ChevronDown";
 
+import { transformCommand } from "../../js/index";
+
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -132,6 +134,9 @@ class ResponsiveDrawer extends React.Component {
     this.setState(state => ({
       resultDialogOpen: true
     }));
+    //transformCommand(this.refs.input)
+
+    console.log(this.refs["input"].labelNode.innerText);
   };
 
   handleFromMenuToggle = function(version) {
@@ -211,9 +216,9 @@ class ResponsiveDrawer extends React.Component {
             <Grid item xs />
             <Grid item xs={6}>
               <Paper className={classes.paper}>
-                <Grid container spacing={20}>
+                <Grid container spacing={24}>
                   <Grid item xs />
-                  <Grid item xs={22}>
+                  <Grid item xs>
                     <Button
                       className={classes.button}
                       onClick={this.handleFromMenuOpen}
@@ -301,6 +306,7 @@ class ResponsiveDrawer extends React.Component {
             margin="normal"
             variant="outlined"
             fullWidth
+            ref="input"
           />
           <Dialog
             open={this.state.resultDialogOpen}
