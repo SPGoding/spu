@@ -9,13 +9,13 @@ const updater_2 = require("../to113/updater");
 const argument_parsers_1 = require("../utils/wheel_chief/argument_parsers");
 class SpuScriptExecutor113To114 {
     execute(script, args) {
-        let splited = script.split(' ');
+        const splited = script.split(' ');
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value;
             }
             else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%');
+                const params = splited[i].slice(1).split('%');
                 switch (params[0]) {
                     default:
                         throw `Unexpected script method: '${params[0]}'.`;
@@ -80,9 +80,9 @@ class UpdaterTo114 extends updater_1.Updater {
     upSpgodingItemTagNbt(input) {
         input = super.upSpgodingItemTagNbt(input);
         {
-            let display = input.get('display');
+            const display = input.get('display');
             if (display instanceof nbt_1.NbtCompound) {
-                let lore = display.get('Lore');
+                const lore = display.get('Lore');
                 if (lore instanceof nbt_1.NbtList) {
                     lore.forEach((line) => {
                         line.set(`{"text":"${utils_1.escape(line.get())}"}`);

@@ -10,6 +10,13 @@ Also called 'spu'. An online tool that can help you update minecraft commands.
 
 Type [https://spu.spgoding.com](https://spu.spgoding.com) in the web browser, or open the [./docs/index.html](https://github.com/CommandBlockLogic/spu/blob/master/docs/index.html) locally.
 
+## File Structure
+
+- `src`: Main typescript codes and a few jsx files under `./view/`.
+- `js`: All compiled js files. Files in `/src/view/` will import js from this directory.
+- `dist`: Temp directory.
+- `docs`: The web page showed on https://spu.spgoding.com.
+
 ## How it Works
 
 The *WheelChief* will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:

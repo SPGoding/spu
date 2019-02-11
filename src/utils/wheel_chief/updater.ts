@@ -1,8 +1,8 @@
 import { getNbtCompound, UpdateResult, isNumeric } from '../utils'
 import { NbtString, NbtList, NbtCompound, NbtValue, NbtByte } from '../nbt/nbt'
 import { TargetSelector } from '../target_selector'
-import { BlockState } from '../block_state';
-import { ItemStack } from '../item_stack';
+import { BlockState } from '../block_state'
+import { ItemStack } from '../item_stack'
 
 export class Updater {
     public upArgument(input: string, updater: string): string {
@@ -61,14 +61,14 @@ export class Updater {
         if (input.slice(0, 1) === '"' || isNumeric(input) || input === 'true' || input === 'false') {
             return input
         } else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(input)
-            let result: string[] = []
+            const json = JSON.parse(input)
+            const result: string[] = []
             for (const i of json) {
                 result.push(this.upMinecraftComponent(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
-            let json = JSON.parse(input)
+            const json = JSON.parse(input)
             if (json.selector) {
                 json.selector = this.upMinecraftEntity(json.selector)
             }
@@ -167,10 +167,10 @@ export class Updater {
             }
         }
         /* TextN */ {
-            let text1 = input.get('Text1')
-            let text2 = input.get('Text2')
-            let text3 = input.get('Text3')
-            let text4 = input.get('Text4')
+            const text1 = input.get('Text1')
+            const text2 = input.get('Text2')
+            const text3 = input.get('Text3')
+            const text4 = input.get('Text4')
             if (text1 instanceof NbtString) {
                 text1.set(this.upMinecraftComponent(text1.get()))
             }
@@ -368,7 +368,7 @@ export class Updater {
 
     protected upSpgodingItemNbt(input: NbtCompound) {
         /* id & Count */ {
-            let id = input.get('id')
+            const id = input.get('id')
             if (id instanceof NbtString) {
                 id.set(this.upSpgodingItemName(id.get()))
             }
@@ -400,7 +400,7 @@ export class Updater {
             }
         }
         /* CanPlaceOn */ {
-            let canPlaceOn = input.get('CanPlaceOn')
+            const canPlaceOn = input.get('CanPlaceOn')
             if (canPlaceOn instanceof NbtList) {
                 for (let i = 0; i < canPlaceOn.length; i++) {
                     const block = canPlaceOn.get(i)
@@ -412,7 +412,7 @@ export class Updater {
             }
         }
         /* CanDestroy */ {
-            let canDestroy = input.get('CanDestroy')
+            const canDestroy = input.get('CanDestroy')
             if (canDestroy instanceof NbtList) {
                 for (let i = 0; i < canDestroy.length; i++) {
                     const block = canDestroy.get(i)

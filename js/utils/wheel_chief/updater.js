@@ -59,15 +59,15 @@ class Updater {
             return input;
         }
         else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(input);
-            let result = [];
+            const json = JSON.parse(input);
+            const result = [];
             for (const i of json) {
                 result.push(this.upMinecraftComponent(JSON.stringify(i)));
             }
             return `[${result.join()}]`;
         }
         else {
-            let json = JSON.parse(input);
+            const json = JSON.parse(input);
             if (json.selector) {
                 json.selector = this.upMinecraftEntity(json.selector);
             }
@@ -141,10 +141,10 @@ class Updater {
             }
         }
         {
-            let text1 = input.get('Text1');
-            let text2 = input.get('Text2');
-            let text3 = input.get('Text3');
-            let text4 = input.get('Text4');
+            const text1 = input.get('Text1');
+            const text2 = input.get('Text2');
+            const text3 = input.get('Text3');
+            const text4 = input.get('Text4');
             if (text1 instanceof nbt_1.NbtString) {
                 text1.set(this.upMinecraftComponent(text1.get()));
             }
@@ -334,7 +334,7 @@ class Updater {
     }
     upSpgodingItemNbt(input) {
         {
-            let id = input.get('id');
+            const id = input.get('id');
             if (id instanceof nbt_1.NbtString) {
                 id.set(this.upSpgodingItemName(id.get()));
             }
@@ -364,7 +364,7 @@ class Updater {
             }
         }
         {
-            let canPlaceOn = input.get('CanPlaceOn');
+            const canPlaceOn = input.get('CanPlaceOn');
             if (canPlaceOn instanceof nbt_1.NbtList) {
                 for (let i = 0; i < canPlaceOn.length; i++) {
                     const block = canPlaceOn.get(i);
@@ -376,7 +376,7 @@ class Updater {
             }
         }
         {
-            let canDestroy = input.get('CanDestroy');
+            const canDestroy = input.get('CanDestroy');
             if (canDestroy instanceof nbt_1.NbtList) {
                 for (let i = 0; i < canDestroy.length; i++) {
                     const block = canDestroy.get(i);

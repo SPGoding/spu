@@ -185,7 +185,7 @@ class ArgumentParser {
             return 3;
         }
         else {
-            throw `Expected a block pos.`;
+            throw 'Expected a block pos.';
         }
     }
     parseBlockPredicate(splited, index) {
@@ -198,7 +198,7 @@ class ArgumentParser {
         catch (e) {
             exception = e;
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i];
+                join += ` ${splited[i]}`;
                 try {
                     new block_state_1.BlockState(join);
                     return i - index + 1;
@@ -221,7 +221,7 @@ class ArgumentParser {
         catch (e) {
             exception = e;
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i];
+                join += ` ${splited[i]}`;
                 try {
                     new block_state_1.BlockState(join);
                     return i - index + 1;
@@ -256,8 +256,8 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected 'black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple'` +
-                `, 'gold', 'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow' or 'white' ` +
+            throw "Expected 'black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple'" +
+                ", 'gold', 'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow' or 'white' " +
                 `but got '${splited[index]}'.`;
         }
     }
@@ -266,7 +266,7 @@ class ArgumentParser {
             return 2;
         }
         else {
-            throw `Expected a column pos.`;
+            throw 'Expected a column pos.';
         }
     }
     parseMinecraftComponent(splited, index) {
@@ -281,32 +281,32 @@ class ArgumentParser {
         try {
             const sel = new target_selector_1.TargetSelector(join);
             if (amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
-                throw `Expected a single target.`;
+                throw 'Expected a single target.';
             }
             if (amount === 'single' && parseInt(sel.limit) > 1) {
-                throw `Expected a single target.`;
+                throw 'Expected a single target.';
             }
             if (type === 'players' && sel.variable === 'e' &&
                 sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
-                throw `Expected player(s).`;
+                throw 'Expected player(s).';
             }
             return 1;
         }
         catch (e) {
             exception = e;
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i];
+                join += ` ${splited[i]}`;
                 try {
                     const sel = new target_selector_1.TargetSelector(join);
                     if (amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
-                        throw `Expected a single target.`;
+                        throw 'Expected a single target.';
                     }
                     if (amount === 'single' && parseInt(sel.limit) > 1) {
-                        throw `Expected a single target.`;
+                        throw 'Expected a single target.';
                     }
                     if (type === 'players' && sel.variable === 'e' &&
                         sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
-                        throw `Expected player(s).`;
+                        throw 'Expected player(s).';
                     }
                     return i - index + 1;
                 }
@@ -331,7 +331,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an resource location.`;
+            throw 'Expected an resource location.';
         }
     }
     parseMinecraftFunction(splited, index) {
@@ -339,7 +339,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an resource location.`;
+            throw 'Expected an resource location.';
         }
     }
     parseMinecraftGameProfile(splited, index) {
@@ -350,7 +350,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an resource location.`;
+            throw 'Expected an resource location.';
         }
     }
     parseMinecraftItemPredicate(splited, index) {
@@ -363,7 +363,7 @@ class ArgumentParser {
         catch (e) {
             exception = e;
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i];
+                join += ` ${splited[i]}`;
                 try {
                     new item_stack_1.ItemStack(join);
                     return i - index + 1;
@@ -531,7 +531,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected a slot.`;
+            throw 'Expected a slot.';
         }
     }
     parseMinecraftItemStack(splited, index) {
@@ -544,7 +544,7 @@ class ArgumentParser {
         catch (e) {
             exception = e;
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i];
+                join += ` ${splited[i]}`;
                 try {
                     new item_stack_1.ItemStack(join);
                     return i - index + 1;
@@ -565,13 +565,13 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an resource location.`;
+            throw 'Expected an resource location.';
         }
     }
     parseMinecraftNbt(splited, index) {
         let exception;
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ');
+            const test = splited.slice(index, endIndex).join(' ');
             try {
                 utils_1.getNbtCompound(test);
                 return endIndex - index;
@@ -588,7 +588,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected a NBT path.`;
+            throw 'Expected a NBT path.';
         }
     }
     parseMinecraftObjective(splited, index) {
@@ -596,7 +596,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an objective.`;
+            throw 'Expected an objective.';
         }
     }
     parseMinecraftObjectiveCriteria(splited, index) {
@@ -604,7 +604,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected a scoreboard criteria.`;
+            throw 'Expected a scoreboard criteria.';
         }
     }
     parseMinecraftOperation(splited, index) {
@@ -633,7 +633,7 @@ class ArgumentParser {
                     return 5;
                 }
                 else {
-                    throw `Expected four floats between 0.0..1.0 after particle 'minecraft:dust'.`;
+                    throw "Expected four floats between 0.0..1.0 after particle 'minecraft:dust'.";
                 }
             }
             else if (['item', 'minecraft:item'].indexOf(splited[index]) !== -1) {
@@ -646,7 +646,7 @@ class ArgumentParser {
                 catch (e) {
                     exception = e;
                     for (let i = index + 2; i < splited.length; i++) {
-                        join += ' ' + splited[i];
+                        join += ` ${splited[i]}`;
                         try {
                             new item_stack_1.ItemStack(join);
                             return i - index + 1;
@@ -669,7 +669,7 @@ class ArgumentParser {
                 catch (e) {
                     exception = e;
                     for (let i = index + 2; i < splited.length; i++) {
-                        join += ' ' + splited[i];
+                        join += ` ${splited[i]}`;
                         try {
                             new block_state_1.BlockState(join);
                             return i - index + 1;
@@ -687,7 +687,7 @@ class ArgumentParser {
             }
         }
         else {
-            throw `Expected an resource location.`;
+            throw 'Expected an resource location.';
         }
     }
     parseMinecraftIntRange(splited, index) {
@@ -695,7 +695,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an int range.`;
+            throw 'Expected an int range.';
         }
     }
     parseMinecraftResourceLocation(splited, index) {
@@ -703,7 +703,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected an resource location.`;
+            throw 'Expected an resource location.';
         }
     }
     parseMinecraftRotation(splited, index) {
@@ -711,7 +711,7 @@ class ArgumentParser {
             return 2;
         }
         else {
-            throw `Expected vec2.`;
+            throw 'Expected vec2.';
         }
     }
     parseMinecraftScoreHolder(splited, index, amount) {
@@ -742,7 +742,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected a scoreboard display slot.`;
+            throw 'Expected a scoreboard display slot.';
         }
     }
     parseMinecraftSwizzle(splited, index) {
@@ -750,7 +750,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected combination of 'x' 'y' and 'z'.`;
+            throw "Expected combination of 'x' 'y' and 'z'.";
         }
     }
     parseMinecraftTeam(splited, index) {
@@ -758,7 +758,7 @@ class ArgumentParser {
             return 1;
         }
         else {
-            throw `Expected a team.`;
+            throw 'Expected a team.';
         }
     }
     parseMinecraftVec2(splited, index) {
@@ -766,7 +766,7 @@ class ArgumentParser {
             return 2;
         }
         else {
-            throw `Expected a vec2.`;
+            throw 'Expected a vec2.';
         }
     }
     parseMinecraftVec3(splited, index) {
@@ -774,7 +774,7 @@ class ArgumentParser {
             return 3;
         }
         else {
-            throw `Expected a vec3.`;
+            throw 'Expected a vec3.';
         }
     }
 }

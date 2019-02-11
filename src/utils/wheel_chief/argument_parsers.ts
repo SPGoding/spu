@@ -1,21 +1,21 @@
 import { isNumeric, getNbtCompound } from '../utils'
-import { BlockState } from '../block_state';
-import { TargetSelector as TargetSelector112 } from '../../to113/target_selector';
-import { TargetSelector as TargetSelector113 } from '../target_selector';
-import { ItemStack } from '../item_stack';
+import { BlockState } from '../block_state'
+import { TargetSelector as TargetSelector112 } from '../../to113/target_selector'
+import { TargetSelector as TargetSelector113 } from '../target_selector'
+import { ItemStack } from '../item_stack'
 
 
 export class ArgumentParser {
-    private ResourceLocation = /^(\w+:)?[\w\.]+$/
-    private ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
-    private IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
-    private Swizzle = /^[xyz]+$/
+    private readonly ResourceLocation = /^(\w+:)?[\w\.]+$/
+    private readonly ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
+    private readonly IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
+    private readonly Swizzle = /^[xyz]+$/
 
     // The vec regex is coppied from
     // https://github.com/pca006132/datapack-helper/blob/master/src/command-node/format.ts
     // Dressed pca, I love you!!!
-    private Vec2 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d+)|(~))(\s|$)){2})$/
-    private Vec3 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/
+    private readonly Vec2 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d+)|(~))(\s|$)){2})$/
+    private readonly Vec3 = /^((((~?[+-]?(\d*(\.\d*)?)|\.\d*)|(~))(\s|$)){3}|(\^([+-]?(\d*(\.\d*)?|\.\d*))?(\s|$)){3})$/
 
     public parseArgument(parser: string, splited: string[], index: number, properties: any): number {
         if (properties === undefined) {
@@ -187,7 +187,7 @@ export class ArgumentParser {
         if (this.Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
-            throw `Expected a block pos.`
+            throw 'Expected a block pos.'
         }
     }
 
@@ -200,7 +200,7 @@ export class ArgumentParser {
         } catch (e) {
             exception = e
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
+                join += ` ${splited[i]}`
                 try {
                     new BlockState(join)
                     return i - index + 1
@@ -223,7 +223,7 @@ export class ArgumentParser {
         } catch (e) {
             exception = e
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
+                join += ` ${splited[i]}`
                 try {
                     new BlockState(join)
                     return i - index + 1
@@ -259,8 +259,8 @@ export class ArgumentParser {
         ) {
             return 1
         } else {
-            throw `Expected 'black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple'` +
-            `, 'gold', 'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow' or 'white' ` +
+            throw "Expected 'black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple'" +
+            ", 'gold', 'gray', 'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow' or 'white' " +
             `but got '${splited[index]}'.`
         }
     }
@@ -269,7 +269,7 @@ export class ArgumentParser {
         if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
-            throw `Expected a column pos.`
+            throw 'Expected a column pos.'
         }
     }
 
@@ -289,32 +289,32 @@ export class ArgumentParser {
         try {
             const sel = new TargetSelector113(join)
             if (amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
-                throw `Expected a single target.`
+                throw 'Expected a single target.'
             }
             if (amount === 'single' && parseInt(sel.limit) > 1) {
-                throw `Expected a single target.`
+                throw 'Expected a single target.'
             }
             if (type === 'players' && sel.variable === 'e' &&
                 sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
-                throw `Expected player(s).`
+                throw 'Expected player(s).'
             }
 
             return 1
         } catch (e) {
             exception = e
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
+                join += ` ${splited[i]}`
                 try {
                     const sel = new TargetSelector113(join)
                     if (amount === 'single' && (sel.variable === 'a' || sel.variable === 'e') && parseInt(sel.limit) !== 1) {
-                        throw `Expected a single target.`
+                        throw 'Expected a single target.'
                     }
                     if (amount === 'single' && parseInt(sel.limit) > 1) {
-                        throw `Expected a single target.`
+                        throw 'Expected a single target.'
                     }
                     if (type === 'players' && sel.variable === 'e' &&
                         sel.type.indexOf('player') === -1 && sel.type.indexOf('minecraft:player') === -1) {
-                        throw `Expected player(s).`
+                        throw 'Expected player(s).'
                     }
                     return i - index + 1
                 } catch (e) {
@@ -338,7 +338,7 @@ export class ArgumentParser {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an resource location.`
+            throw 'Expected an resource location.'
         }
     }
 
@@ -346,7 +346,7 @@ export class ArgumentParser {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an resource location.`
+            throw 'Expected an resource location.'
         }
     }
 
@@ -358,7 +358,7 @@ export class ArgumentParser {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an resource location.`
+            throw 'Expected an resource location.'
         }
     }
 
@@ -371,7 +371,7 @@ export class ArgumentParser {
         } catch (e) {
             exception = e
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
+                join += ` ${splited[i]}`
                 try {
                     new ItemStack(join)
                     return i - index + 1
@@ -540,7 +540,7 @@ export class ArgumentParser {
         ) {
             return 1
         } else {
-            throw `Expected a slot.`
+            throw 'Expected a slot.'
         }
     }
 
@@ -553,7 +553,7 @@ export class ArgumentParser {
         } catch (e) {
             exception = e
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
+                join += ` ${splited[i]}`
                 try {
                     new ItemStack(join)
                     return i - index + 1
@@ -574,14 +574,14 @@ export class ArgumentParser {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an resource location.`
+            throw 'Expected an resource location.'
         }
     }
 
     protected parseMinecraftNbt(splited: string[], index: number): number {
         let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ')
+            const test = splited.slice(index, endIndex).join(' ')
             try {
                 getNbtCompound(test)
                 return endIndex - index
@@ -597,7 +597,7 @@ export class ArgumentParser {
         if (/(^.*\.?)+$/.test(splited[index])) {
             return 1
         } else {
-            throw `Expected a NBT path.`
+            throw 'Expected a NBT path.'
         }
     }
 
@@ -605,7 +605,7 @@ export class ArgumentParser {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an objective.`
+            throw 'Expected an objective.'
         }
     }
 
@@ -613,7 +613,7 @@ export class ArgumentParser {
         if (this.ScoreboardCriteria.test(splited[index])) {
             return 1
         } else {
-            throw `Expected a scoreboard criteria.`
+            throw 'Expected a scoreboard criteria.'
         }
     }
 
@@ -644,7 +644,7 @@ export class ArgumentParser {
                 ) {
                     return 5
                 } else {
-                    throw `Expected four floats between 0.0..1.0 after particle 'minecraft:dust'.`
+                    throw "Expected four floats between 0.0..1.0 after particle 'minecraft:dust'."
                 }
             } else if (['item', 'minecraft:item'].indexOf(splited[index]) !== -1) {
                 let join = splited[index + 1]
@@ -655,7 +655,7 @@ export class ArgumentParser {
                 } catch (e) {
                     exception = e
                     for (let i = index + 2; i < splited.length; i++) {
-                        join += ' ' + splited[i]
+                        join += ` ${splited[i]}`
                         try {
                             new ItemStack(join)
                             return i - index + 1
@@ -675,7 +675,7 @@ export class ArgumentParser {
                 } catch (e) {
                     exception = e
                     for (let i = index + 2; i < splited.length; i++) {
-                        join += ' ' + splited[i]
+                        join += ` ${splited[i]}`
                         try {
                             new BlockState(join)
                             return i - index + 1
@@ -690,7 +690,7 @@ export class ArgumentParser {
                 return 1
             }
         } else {
-            throw `Expected an resource location.`
+            throw 'Expected an resource location.'
         }
     }
 
@@ -698,7 +698,7 @@ export class ArgumentParser {
         if (this.IntRange.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an int range.`
+            throw 'Expected an int range.'
         }
     }
 
@@ -706,7 +706,7 @@ export class ArgumentParser {
         if (this.ResourceLocation.test(splited[index])) {
             return 1
         } else {
-            throw `Expected an resource location.`
+            throw 'Expected an resource location.'
         }
     }
 
@@ -714,7 +714,7 @@ export class ArgumentParser {
         if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
-            throw `Expected vec2.`
+            throw 'Expected vec2.'
         }
     }
 
@@ -748,7 +748,7 @@ export class ArgumentParser {
         ) {
             return 1
         } else {
-            throw `Expected a scoreboard display slot.`
+            throw 'Expected a scoreboard display slot.'
         }
     }
 
@@ -756,7 +756,7 @@ export class ArgumentParser {
         if (this.Swizzle.test(splited[index])) {
             return 1
         } else {
-            throw `Expected combination of 'x' 'y' and 'z'.`
+            throw "Expected combination of 'x' 'y' and 'z'."
         }
     }
 
@@ -764,7 +764,7 @@ export class ArgumentParser {
         if (/^\w+$/.test(splited[index])) {
             return 1
         } else {
-            throw `Expected a team.`
+            throw 'Expected a team.'
         }
     }
 
@@ -772,7 +772,7 @@ export class ArgumentParser {
         if (this.Vec2.test(`${splited[index]} ${splited[index + 1]}`)) {
             return 2
         } else {
-            throw `Expected a vec2.`
+            throw 'Expected a vec2.'
         }
     }
 
@@ -780,7 +780,7 @@ export class ArgumentParser {
         if (this.Vec3.test(`${splited[index]} ${splited[index + 1]} ${splited[index + 2]}`)) {
             return 3
         } else {
-            throw `Expected a vec3.`
+            throw 'Expected a vec3.'
         }
     }
 }
