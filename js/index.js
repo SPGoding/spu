@@ -6,7 +6,7 @@ const updater_3 = require("./to112/updater");
 const updater_4 = require("./to113/updater");
 const updater_5 = require("./to114/updater");
 const utils_1 = require("./utils/utils");
-function transform(content, from, to, callBack) {
+function transform(content, from, to) {
     let number = 1;
     let frame = 'success';
     let msg = [];
@@ -15,6 +15,7 @@ function transform(content, from, to, callBack) {
         let timeBefore = (new Date()).getTime();
         if (content) {
             const lines = content.toString().split('\n');
+            console.log("Got lines:", lines);
             for (const line of lines) {
                 number = lines.indexOf(line);
                 let result;
@@ -43,12 +44,14 @@ function transform(content, from, to, callBack) {
                 }
                 result.warnings = result.warnings.filter(v => !utils_1.isWhiteSpace(v));
                 if (result.warnings.length > 0) {
+                    console.warn("检测到在途的编译错误：", msg);
                     frame = 'warning';
                     msg.push(`Line #${number + 1}:`);
                     for (const warning of result.warnings) {
                         msg.push(`    ${warning}`);
                     }
                 }
+                console.log("已转换：", result);
                 ans.push(result.command);
             }
             const timeAfter = (new Date()).getTime();
@@ -57,10 +60,18 @@ function transform(content, from, to, callBack) {
         }
     }
     catch (ex) {
-        callBack('danger', [], [`Updated error at line #${number + 1}: ${ex}`]);
+        return {
+            state: 'danger',
+            commands: [],
+            log: [`Updated error at line #${number + 1}: ${ex}`]
+        };
     }
     finally {
-        callBack(frame, ans, msg);
+        return {
+            state: frame,
+            commands: ans,
+            log: msg
+        };
     }
 }
 exports.transformCommand = transform;

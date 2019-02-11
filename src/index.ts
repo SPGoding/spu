@@ -5,8 +5,10 @@ import { UpdaterTo113 } from './to113/updater'
 import { UpdaterTo114 } from './to114/updater'
 import { isWhiteSpace, UpdateResult } from './utils/utils';
 
+interface Result{state: string, commands: string[], log: string[]}
+
 // 转换按钮回调函数
-function transform(content : string, from: number, to : number ,callBack : (state: string, commands: string[], log: string[]) => void){
+function transform(content : string, from: number, to : number) : Result{
     let number = 1
     let frame: 'success' | 'warning' | 'danger' = 'success'
     let msg : string[] = []
@@ -15,6 +17,7 @@ function transform(content : string, from: number, to : number ,callBack : (stat
         let timeBefore = (new Date()).getTime()
         if (content) {
             const lines = content.toString().split('\n')
+            console.log("Got lines:", lines)
 
             for (const line of lines) {
                 number = lines.indexOf(line)
@@ -56,9 +59,17 @@ function transform(content : string, from: number, to : number ,callBack : (stat
             msg.push(`Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).`)
         }
     } catch (ex) {
-        callBack('danger', [], [`Updated error at line #${number + 1}: ${ex}`])
+        return {
+            state: 'danger',
+            commands: [],
+            log: [`Updated error at line #${number + 1}: ${ex}`]
+        }
     } finally {
-        callBack(frame, ans, msg)
+        return {
+            state: frame,
+            commands: ans,
+            log: msg
+        }
     }
 }
 

@@ -18,6 +18,8 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import SnackBar from "@material-ui/core/SnackBar";
+import SnackBarContent from "@material-ui/core/SnackbarContent";
 import Paper from "@material-ui/core/Paper";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -40,6 +42,7 @@ import MenuIcon from "mdi-material-ui/Menu";
 import InfoIcon from "mdi-material-ui/InformationOutline";
 import TransferIcon from "mdi-material-ui/TransferRight";
 import MoreIcon from "mdi-material-ui/ChevronDown";
+import CloseIcon from "mdi-material-ui/Close";
 
 import { transformCommand } from "../../js/index";
 
@@ -70,7 +73,11 @@ const styles = theme => ({
     padding: 4,
     margin: 4
   },
-  textField: {},
+  center: {
+    width: 240,
+    marginLeft: "auto",
+    marginRight: "auto"
+  },
   progress: {
     margin: 24
   }
@@ -85,22 +92,46 @@ const versions = {
   8: "1.8"
 };
 
+function getTime(){
+  let date = new Date();
+  let h = date.getHours();
+  let m = date.getMinutes();
+  let s = date.getSeconds();
+
+  let ans = "";
+  if(h == 0) ans += "0";
+  if(h < 10) ans += "0";
+  ans += h + " : ";
+
+  if(m == 0) ans += "0";
+  if(m < 10) ans += "0";
+  ans += m + " : ";
+
+  if(s == 0) ans += "0";
+  if(m < 10) ans += "0";
+  ans += s;
+  
+  return ans;
+}
+
 class ResponsiveDrawer extends React.Component {
   state = {
     open: false,
+    snack: false,
     aboutDialogOpen: false,
-    resultDialogOpen: false,
     fromMenuOpen: false,
     toMenuOpen: false,
     anchorEl: null,
 
     fromVersion: 13,
     toVersion: 14,
+    inputCommands: "",
     resultObject: {
-      state: "loading",
+      state: "waiting",
       commands: [],
       log: []
-    }
+    },
+    warningInfoStack: []
   };
 
   handleDrawerToggle = () => {
@@ -114,13 +145,6 @@ class ResponsiveDrawer extends React.Component {
     }));
   };
 
-  handleResultDialogToggle = () => {
-    this.setState(state => ({
-      open: false,
-      resultDialogOpen: !state.resultDialogOpen
-    }));
-  };
-
   handleBeginTransform = () => {
     this.setState(state => ({
       open: false,
@@ -131,15 +155,45 @@ class ResponsiveDrawer extends React.Component {
         log: []
       }
     }));
-    this.setState(state => ({
-      resultDialogOpen: true
-    }));
-    //transformCommand(this.refs.input)
 
-    console.log(this.refs["input"].labelNode.innerText);
+    console.log(this.state.inputCommands)
+
+    let ret = transformCommand(this.state.inputCommands, this.state.fromVersion, this.state.toVersion);
+
+    console.log(ret);
+
+    if(ret.state === 'warning' || ret.state === 'danger'){
+      this.setState(state => ({
+        snack: true,
+        warningInfoStack: (() => {
+          let list = state.warningInfoStack;
+          for(let n of ret.log){
+            list.push(n);
+          }
+          return list;
+        })()
+      }));
+    }
+
+    this.setState(state => ({
+      resultObject: {
+        state: ret.state,
+        commands: ret.commands,
+        log: ret.log
+      }
+    }));
   };
 
-  handleFromMenuToggle = function(version) {
+  handleCloseSnackBar = () => {
+    this.setState(state => ({
+      snack: false
+    }));
+    if(this.state.warningInfoStack.length > 0) this.setState(state => ({
+      snack: true
+    }));
+  }
+
+  handleFromMenuToggle = function (version) {
     return () => {
       this.setState(state => ({
         fromMenuOpen: !state.fromMenuOpen,
@@ -149,7 +203,7 @@ class ResponsiveDrawer extends React.Component {
     };
   };
 
-  handleToMenuToggle = function(version) {
+  handleToMenuToggle = function (version) {
     return () => {
       this.setState(state => ({
         toMenuOpen: !state.toMenuOpen,
@@ -169,6 +223,12 @@ class ResponsiveDrawer extends React.Component {
       anchorEl: event.currentTarget,
       toMenuOpen: true
     });
+
+  handleChangeInputCommand = event => {
+    this.setState({
+      inputCommands: event.target.value
+    });
+  }
 
   render() {
     const { classes, theme } = this.props;
@@ -212,186 +272,137 @@ class ResponsiveDrawer extends React.Component {
         </nav>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Grid container spacing={24}>
-            <Grid item xs />
-            <Grid item xs={6}>
+          <Grid container spacing={8}>
+            <Grid item lg md />
+            <Grid item lg={4} md={8} xs={12}>
               <Paper className={classes.paper}>
-                <Grid container spacing={24}>
-                  <Grid item xs />
-                  <Grid item xs>
-                    <Button
-                      className={classes.button}
-                      onClick={this.handleFromMenuOpen}
-                    >
-                      {versions[this.state.fromVersion]}
-                    </Button>
-                    <Menu
-                      open={this.state.fromMenuOpen}
-                      onClose={this.handleFromMenuToggle()}
-                      anchorEl={this.state.anchorEl}
-                    >
-                      <MenuItem onClick={this.handleFromMenuToggle(13)}>
+                <div className={classes.center}>
+                  <Button
+                    className={classes.button}
+                    onClick={this.handleFromMenuOpen}
+                  >
+                    {versions[this.state.fromVersion]}
+                  </Button>
+                  <Menu
+                    open={this.state.fromMenuOpen}
+                    onClose={this.handleFromMenuToggle()}
+                    anchorEl={this.state.anchorEl}
+                  >
+                    <MenuItem onClick={this.handleFromMenuToggle(13)}>
+                      {versions[13]}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleFromMenuToggle(12)}>
+                      {versions[12]}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleFromMenuToggle(11)}>
+                      {versions[11]}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleFromMenuToggle(9)}>
+                      {versions[9]}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleFromMenuToggle(8)}>
+                      {versions[8]}
+                    </MenuItem>
+                  </Menu>
+                  <Button
+                    className={classes.button}
+                    variant="outlined"
+                    color="primary"
+                    onClick={this.handleBeginTransform}
+                  >
+                    <TransferIcon />
+                  </Button>
+                  <Button
+                    className={classes.button}
+                    onClick={this.handleToMenuOpen}
+                  >
+                    {versions[this.state.toVersion]}
+                  </Button>
+                  <Menu
+                    open={this.state.toMenuOpen}
+                    onClose={this.handleToMenuToggle()}
+                    anchorEl={this.state.anchorEl}
+                  >
+                    {this.state.fromVersion < 14 && (
+                      <MenuItem onClick={this.handleToMenuToggle(14)}>
+                        {versions[14]}
+                      </MenuItem>
+                    )}
+                    {this.state.fromVersion < 13 && (
+                      <MenuItem onClick={this.handleToMenuToggle(13)}>
                         {versions[13]}
                       </MenuItem>
-                      <MenuItem onClick={this.handleFromMenuToggle(12)}>
+                    )}
+                    {this.state.fromVersion < 12 && (
+                      <MenuItem onClick={this.handleToMenuToggle(12)}>
                         {versions[12]}
                       </MenuItem>
-                      <MenuItem onClick={this.handleFromMenuToggle(11)}>
+                    )}
+                    {this.state.fromVersion < 11 && (
+                      <MenuItem onClick={this.handleToMenuToggle(11)}>
                         {versions[11]}
                       </MenuItem>
-                      <MenuItem onClick={this.handleFromMenuToggle(9)}>
+                    )}
+                    {this.state.fromVersion < 9 && (
+                      <MenuItem onClick={this.handleToMenuToggle(9)}>
                         {versions[9]}
                       </MenuItem>
-                      <MenuItem onClick={this.handleFromMenuToggle(8)}>
-                        {versions[8]}
-                      </MenuItem>
-                    </Menu>
-                    <Button
-                      className={classes.button}
-                      variant="outlined"
-                      color="primary"
-                      onClick={this.handleBeginTransform}
-                    >
-                      <TransferIcon />
-                    </Button>
-                    <Button
-                      className={classes.button}
-                      onClick={this.handleToMenuOpen}
-                    >
-                      {versions[this.state.toVersion]}
-                    </Button>
-                    <Menu
-                      open={this.state.toMenuOpen}
-                      onClose={this.handleToMenuToggle()}
-                      anchorEl={this.state.anchorEl}
-                    >
-                      {this.state.fromVersion < 14 && (
-                        <MenuItem onClick={this.handleToMenuToggle(14)}>
-                          {versions[14]}
-                        </MenuItem>
-                      )}
-                      {this.state.fromVersion < 13 && (
-                        <MenuItem onClick={this.handleToMenuToggle(13)}>
-                          {versions[13]}
-                        </MenuItem>
-                      )}
-                      {this.state.fromVersion < 12 && (
-                        <MenuItem onClick={this.handleToMenuToggle(12)}>
-                          {versions[12]}
-                        </MenuItem>
-                      )}
-                      {this.state.fromVersion < 11 && (
-                        <MenuItem onClick={this.handleToMenuToggle(11)}>
-                          {versions[11]}
-                        </MenuItem>
-                      )}
-                      {this.state.fromVersion < 9 && (
-                        <MenuItem onClick={this.handleToMenuToggle(9)}>
-                          {versions[9]}
-                        </MenuItem>
-                      )}
-                    </Menu>
-                  </Grid>
-                  <Grid item xs />
-                </Grid>
+                    )}
+                  </Menu>
+                </div>
               </Paper>
             </Grid>
-            <Grid item xs />
+            <Grid item lg md />
           </Grid>
-          <TextField
-            id="before"
-            multiline
-            label="待转换的指令"
-            className={classes.textField}
-            margin="normal"
-            variant="outlined"
-            fullWidth
-            ref="input"
-          />
-          <Dialog
-            open={this.state.resultDialogOpen}
-            onClose={this.handleResultDialogToggle}
-            scroll="paper"
-            fullWidth={this.state.resultObject.state !== "loading"}
+          <Grid container spacing={8}>
+            <Grid item sm={6} xs={12}>
+              <TextField
+                id="before"
+                multiline
+                label="欲转换的指令"
+                className={classes.textField}
+                margin="normal"
+                variant="outlined"
+                fullWidth
+                onChange={this.handleChangeInputCommand}
+              />
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField
+                id="before"
+                multiline
+                label="转换后的指令"
+                className={classes.textField}
+                margin="normal"
+                variant="outlined"
+                fullWidth
+                value={this.state.resultObject.commands.reduce((ans, n) => ans + n + "\n", "").slice(0, -1) /* 最后的 slice 是为了移除在执行完 reduce 方法后多余的一个空行 */}
+                readOnly
+                ref="output"
+              />
+            </Grid>
+          </Grid>
+          {/* 消息条，转换成功 */}
+          <SnackBar
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            open={this.state.resultObject.state === "success" && this.state.snack === true}
           >
-            {this.state.resultObject.state === "loading" && (
-              <DialogContent>
-                <CircleProgress size={70} className={classes.progress} />
-              </DialogContent>
-            )}
-            {this.state.resultObject.state === "success" && (
-              <div>
-                <DialogTitle>转换结果</DialogTitle>
-                <DialogContent>
-                  <TextField
-                    fullWidth
-                    multiline
-                    variant="outlined"
-                    defaultValue={this.state.resultObject.commands.reduce(
-                      (ans, now) => {
-                        return ans + now + "\n";
-                      },
-                      ""
-                    )}
-                  />
-                </DialogContent>
-              </div>
-            )}
-            {this.state.resultObject.state === "warning" && (
-              <div>
-                <DialogTitle>转换结果</DialogTitle>
-                <DialogContent>
-                  <TextField
-                    fullWidth
-                    multiline
-                    variant="outlined"
-                    defaultValue={this.state.resultObject.commands.reduce(
-                      (ans, now) => {
-                        return ans + now + "\n";
-                      },
-                      ""
-                    )}
-                  />
-                  <ExpansionPanel>
-                    <ExpansionPanelSummary expandIcon={<MoreIcon />}>
-                      <Typography variant="body1">警告信息</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <TextField
-                        fullWidth
-                        multiline
-                        variant="outlined"
-                        defaultValue={this.state.resultObject.log.reduce(
-                          (ans, now) => {
-                            return ans + now + "\n";
-                          },
-                          ""
-                        )}
-                      />
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
-                </DialogContent>
-              </div>
-            )}
-            {this.state.resultObject.state === "danger" && (
-              <div>
-                <DialogTitle>发生错误</DialogTitle>
-                <DialogContent>
-                  <TextField
-                    fullWidth
-                    multiline
-                    variant="outlined"
-                    defaultValue={this.state.resultObject.log.reduce(
-                      (ans, now) => {
-                        return ans + now + "\n";
-                      },
-                      ""
-                    )}
-                  />
-                </DialogContent>
-              </div>
-            )}
-          </Dialog>
+            <SnackBarContent 
+              message={this.state.warningInfoStack.shift()}
+              action={[
+                <IconButton
+                  aria-label="Close"
+                  key={233}
+                  color="inherit"
+                  onClick={this.handleCloseSnackBar}
+                >
+                  <CloseIcon />
+                </IconButton>
+              ]}
+            />
+          </SnackBar>
+
+          {/* 关于窗口 */}
           <Dialog
             open={this.state.aboutDialogOpen}
             onClose={this.handleAboutDialogToggle}

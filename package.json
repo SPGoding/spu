@@ -35,10 +35,9 @@
     "uglify-js-es6": "^2.8.9"
   },
   "scripts": {
-    "prebuild": "echo 如果出稳定版，记得改npm包版本并上传 && tsc",
-    "build:ui": "browserify ./src/view/mainViewRender.jsx -o ./dist/uiBundle.js -t babelify && uglifyjs ./dist/uiBundle.js -m -c -o ./docs/bundle.ui.min.js",
-    "build:core": "browserify ./js/index.js -o ./dist/coreBundle.js && uglifyjs ./dist/coreBundle.js -m -c -o ./docs/bundle.core.min.js",
-    "build": "npm run build:ui && npm run build:core",
+    "build:ts": "echo 如果出稳定版，记得改npm包版本并上传 && tsc",
+    "build:js": "browserify ./src/view/mainViewRender.jsx -o ./dist/uiBundle.js -t babelify && uglifyjs ./dist/uiBundle.js -m -c -o ./docs/bundle.min.js",
+    "build": "npm run build:ts && npm run build:js",
     "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
   },
   "repository": {
