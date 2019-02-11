@@ -51,8 +51,6 @@ function transform(content : string, from: number, to : number ,callBack : (stat
                 ans.push(result.command)
             }
 
-            // ans = ans.slice(0, -1) // Remove the last line.
-            // ↑ 这句我拿它没辙，因为我不理解为什么要把最后一行删掉，只能先注释掉。 @langyo
             const timeAfter = (new Date()).getTime()
             const timeDelta = timeAfter - timeBefore
             msg.push(`Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).`)

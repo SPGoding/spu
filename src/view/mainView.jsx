@@ -7,10 +7,12 @@ import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
+import Grid from "@material-ui/core/Grid";
 import Hidden from "@material-ui/core/Hidden";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
+import CircleProgress from "@material-ui/core/CircularProgress";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -27,12 +29,17 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 
 import MenuIcon from "mdi-material-ui/Menu";
 import InfoIcon from "mdi-material-ui/InformationOutline";
 import TransferIcon from "mdi-material-ui/TransferRight";
+import MoreIcon from "mdi-material-ui/ChevronDown";
 
 const drawerWidth = 240;
 
@@ -47,7 +54,7 @@ const styles = theme => ({
     marginRight: 20
   },
   button: {
-    margin: 10
+    margin: 4
   },
   toolbar: theme.mixins.toolbar,
   drawerPaper: {
@@ -58,17 +65,17 @@ const styles = theme => ({
     padding: theme.spacing.unit * 3
   },
   paper: {
-    padding: theme.spacing.unit * 2,
-    width: "100%"
+    padding: 4,
+    margin: 4
   },
-  textField: {
-    width: "100%",
-    height: "100%"
+  textField: {},
+  progress: {
+    margin: 24
   }
 });
 
 const versions = {
-  14: "1.14[TEST]",
+  14: "1.14(快照)",
   13: "1.13",
   12: "1.12",
   11: "1.11",
@@ -76,7 +83,7 @@ const versions = {
   8: "1.8"
 };
 
-class MainView extends React.Component {
+class ResponsiveDrawer extends React.Component {
   state = {
     open: false,
     aboutDialogOpen: false,
@@ -86,7 +93,12 @@ class MainView extends React.Component {
     anchorEl: null,
 
     fromVersion: 13,
-    toVersion: 14
+    toVersion: 14,
+    resultObject: {
+      state: "loading",
+      commands: [],
+      log: []
+    }
   };
 
   handleDrawerToggle = () => {
@@ -104,6 +116,21 @@ class MainView extends React.Component {
     this.setState(state => ({
       open: false,
       resultDialogOpen: !state.resultDialogOpen
+    }));
+  };
+
+  handleBeginTransform = () => {
+    this.setState(state => ({
+      open: false,
+
+      resultObject: {
+        state: "loading",
+        commands: [],
+        log: []
+      }
+    }));
+    this.setState(state => ({
+      resultDialogOpen: true
     }));
   };
 
@@ -180,84 +207,185 @@ class MainView extends React.Component {
         </nav>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Paper className={classes.paper}>
-            <Button
-              className={classes.button}
-              onClick={this.handleFromMenuOpen}
-            >
-              {versions[this.state.fromVersion]}
-            </Button>
-            <Menu
-              open={this.state.fromMenuOpen}
-              onClose={this.handleFromMenuToggle()}
-              anchorEl={this.state.anchorEl}
-            >
-              <MenuItem onClick={this.handleFromMenuToggle(13)}>
-                {versions[13]}
-              </MenuItem>
-              <MenuItem onClick={this.handleFromMenuToggle(12)}>
-                {versions[12]}
-              </MenuItem>
-              <MenuItem onClick={this.handleFromMenuToggle(11)}>
-                {versions[11]}
-              </MenuItem>
-              <MenuItem onClick={this.handleFromMenuToggle(9)}>
-                {versions[9]}
-              </MenuItem>
-              <MenuItem onClick={this.handleFromMenuToggle(8)}>
-                {versions[8]}
-              </MenuItem>
-            </Menu>
-            <Button
-              className={classes.button}
-              variant="outlined"
-              color="primary"
-            >
-              <TransferIcon />
-            </Button>
-            <Button className={classes.button} onClick={this.handleToMenuOpen}>
-              {versions[this.state.toVersion]}
-            </Button>
-            <Menu
-              open={this.state.toMenuOpen}
-              onClose={this.handleToMenuToggle()}
-              anchorEl={this.state.anchorEl}
-            >
-              {this.state.fromVersion < 14 && (
-                <MenuItem onClick={this.handleToMenuToggle(14)}>
-                  {versions[14]}
-                </MenuItem>
-              )}
-              {this.state.fromVersion < 13 && (
-                <MenuItem onClick={this.handleToMenuToggle(13)}>
-                  {versions[13]}
-                </MenuItem>
-              )}
-              {this.state.fromVersion < 12 && (
-                <MenuItem onClick={this.handleToMenuToggle(12)}>
-                  {versions[12]}
-                </MenuItem>
-              )}
-              {this.state.fromVersion < 11 && (
-                <MenuItem onClick={this.handleToMenuToggle(11)}>
-                  {versions[11]}
-                </MenuItem>
-              )}
-              {this.state.fromVersion < 9 && (
-                <MenuItem onClick={this.handleToMenuToggle(9)}>
-                  {versions[9]}
-                </MenuItem>
-              )}
-            </Menu>
-            <TextField
-              id="before"
-              multiline
-              label="待转换的指令"
-              className={classes.textField}
-              margin="normal"
-              variant="outlined"
-            />
-          </Paper>
+          <Grid container spacing={24}>
+            <Grid item xs />
+            <Grid item xs={6}>
+              <Paper className={classes.paper}>
+                <Grid container spacing={20}>
+                  <Grid item xs />
+                  <Grid item xs={22}>
+                    <Button
+                      className={classes.button}
+                      onClick={this.handleFromMenuOpen}
+                    >
+                      {versions[this.state.fromVersion]}
+                    </Button>
+                    <Menu
+                      open={this.state.fromMenuOpen}
+                      onClose={this.handleFromMenuToggle()}
+                      anchorEl={this.state.anchorEl}
+                    >
+                      <MenuItem onClick={this.handleFromMenuToggle(13)}>
+                        {versions[13]}
+                      </MenuItem>
+                      <MenuItem onClick={this.handleFromMenuToggle(12)}>
+                        {versions[12]}
+                      </MenuItem>
+                      <MenuItem onClick={this.handleFromMenuToggle(11)}>
+                        {versions[11]}
+                      </MenuItem>
+                      <MenuItem onClick={this.handleFromMenuToggle(9)}>
+                        {versions[9]}
+                      </MenuItem>
+                      <MenuItem onClick={this.handleFromMenuToggle(8)}>
+                        {versions[8]}
+                      </MenuItem>
+                    </Menu>
+                    <Button
+                      className={classes.button}
+                      variant="outlined"
+                      color="primary"
+                      onClick={this.handleBeginTransform}
+                    >
+                      <TransferIcon />
+                    </Button>
+                    <Button
+                      className={classes.button}
+                      onClick={this.handleToMenuOpen}
+                    >
+                      {versions[this.state.toVersion]}
+                    </Button>
+                    <Menu
+                      open={this.state.toMenuOpen}
+                      onClose={this.handleToMenuToggle()}
+                      anchorEl={this.state.anchorEl}
+                    >
+                      {this.state.fromVersion < 14 && (
+                        <MenuItem onClick={this.handleToMenuToggle(14)}>
+                          {versions[14]}
+                        </MenuItem>
+                      )}
+                      {this.state.fromVersion < 13 && (
+                        <MenuItem onClick={this.handleToMenuToggle(13)}>
+                          {versions[13]}
+                        </MenuItem>
+                      )}
+                      {this.state.fromVersion < 12 && (
+                        <MenuItem onClick={this.handleToMenuToggle(12)}>
+                          {versions[12]}
+                        </MenuItem>
+                      )}
+                      {this.state.fromVersion < 11 && (
+                        <MenuItem onClick={this.handleToMenuToggle(11)}>
+                          {versions[11]}
+                        </MenuItem>
+                      )}
+                      {this.state.fromVersion < 9 && (
+                        <MenuItem onClick={this.handleToMenuToggle(9)}>
+                          {versions[9]}
+                        </MenuItem>
+                      )}
+                    </Menu>
+                  </Grid>
+                  <Grid item xs />
+                </Grid>
+              </Paper>
+            </Grid>
+            <Grid item xs />
+          </Grid>
+          <TextField
+            id="before"
+            multiline
+            label="待转换的指令"
+            className={classes.textField}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          />
+          <Dialog
+            open={this.state.resultDialogOpen}
+            onClose={this.handleResultDialogToggle}
+            scroll="paper"
+            fullWidth={this.state.resultObject.state !== "loading"}
+          >
+            {this.state.resultObject.state === "loading" && (
+              <DialogContent>
+                <CircleProgress size={70} className={classes.progress} />
+              </DialogContent>
+            )}
+            {this.state.resultObject.state === "success" && (
+              <div>
+                <DialogTitle>转换结果</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    fullWidth
+                    multiline
+                    variant="outlined"
+                    defaultValue={this.state.resultObject.commands.reduce(
+                      (ans, now) => {
+                        return ans + now + "\n";
+                      },
+                      ""
+                    )}
+                  />
+                </DialogContent>
+              </div>
+            )}
+            {this.state.resultObject.state === "warning" && (
+              <div>
+                <DialogTitle>转换结果</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    fullWidth
+                    multiline
+                    variant="outlined"
+                    defaultValue={this.state.resultObject.commands.reduce(
+                      (ans, now) => {
+                        return ans + now + "\n";
+                      },
+                      ""
+                    )}
+                  />
+                  <ExpansionPanel>
+                    <ExpansionPanelSummary expandIcon={<MoreIcon />}>
+                      <Typography variant="body1">警告信息</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                      <TextField
+                        fullWidth
+                        multiline
+                        variant="outlined"
+                        defaultValue={this.state.resultObject.log.reduce(
+                          (ans, now) => {
+                            return ans + now + "\n";
+                          },
+                          ""
+                        )}
+                      />
+                    </ExpansionPanelDetails>
+                  </ExpansionPanel>
+                </DialogContent>
+              </div>
+            )}
+            {this.state.resultObject.state === "danger" && (
+              <div>
+                <DialogTitle>发生错误</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    fullWidth
+                    multiline
+                    variant="outlined"
+                    defaultValue={this.state.resultObject.log.reduce(
+                      (ans, now) => {
+                        return ans + now + "\n";
+                      },
+                      ""
+                    )}
+                  />
+                </DialogContent>
+              </div>
+            )}
+          </Dialog>
           <Dialog
             open={this.state.aboutDialogOpen}
             onClose={this.handleAboutDialogToggle}
@@ -311,10 +439,10 @@ class MainView extends React.Component {
   }
 }
 
-MainView.propTypes = {
+ResponsiveDrawer.propTypes = {
   classes: PropTypes.object.isRequired,
   container: PropTypes.object,
   theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(MainView);
+export default withStyles(styles, { withTheme: true })(ResponsiveDrawer);
