@@ -1,29 +1,29 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Updater } from '../utils/wheel_chief/updater'
-import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils';
-import { Commands18To19 } from './commands';
-import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
+import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils'
+import { Commands18To19 } from './commands'
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
 import { TargetSelector } from './target_selector'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtValue } from '../utils/nbt/nbt';
-import Items from './mappings/items';
-import Blocks from './mappings/blocks';
+import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtValue } from '../utils/nbt/nbt'
+import Items from './mappings/items'
+import Blocks from './mappings/blocks'
 
 class SpuScriptExecutor18To19 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
-        let splited = script.split(' ')
+        const splited = script.split(' ')
 
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value
             } else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%')
-                let index1 = parseInt(params[1])
-                let index2 = parseInt(params[2])
-                let param1 = args[index1] ? args[index1].value : ''
-                let param2 = args[index2] ? args[index2].value : ''
+                const params = splited[i].slice(1).split('%')
+                const index1 = parseInt(params[1])
+                const index2 = parseInt(params[2])
+                const param1 = args[index1] ? args[index1].value : ''
+                const param2 = args[index2] ? args[index2].value : ''
                 switch (params[0]) {
                     case 'setTypeByNbt': {
-                        const nbt = getNbtCompound(param1, "before 1.12")
+                        const nbt = getNbtCompound(param1, 'before 1.12')
                         const riding = nbt.get('Riding')
                         if (riding instanceof NbtCompound) {
                             const id = riding.get('id')
@@ -38,7 +38,7 @@ class SpuScriptExecutor18To19 implements SpuScriptExecutor {
                         break
                     }
                     case 'setNbtWithType': {
-                        const passenger = getNbtCompound(param1, "before 1.12")
+                        const passenger = getNbtCompound(param1, 'before 1.12')
                         const ridden = passenger.get('Riding')
                         passenger.del('Riding')
                         passenger.set('id', new NbtString(param2))
@@ -87,7 +87,7 @@ class ArgumentParser18To19 extends ArgumentParser {
             return 1
         } else {
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
+                join += ` ${splited[i]}`
                 result = TargetSelector.tryParse(join)
                 if (result === 'VALID') {
                     return i - index + 1
@@ -102,7 +102,7 @@ class ArgumentParser18To19 extends ArgumentParser {
     protected parseMinecraftNbt(splited: string[], index: number): number {
         let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ')
+            const test = splited.slice(index, endIndex).join(' ')
             try {
                 getNbtCompound(test, 'before 1.12')
                 return endIndex - index
@@ -117,13 +117,13 @@ class ArgumentParser18To19 extends ArgumentParser {
     protected parseSpgodingNbtContainsRiding(splited: string[], index: number): number {
         let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ')
+            const test = splited.slice(index, endIndex).join(' ')
             try {
                 const nbt = getNbtCompound(test, 'before 1.12')
                 if (nbt.get('Riding') instanceof NbtCompound) {
                     return endIndex - index
                 } else {
-                    throw `Should contain 'Riding'.`
+                    throw "Should contain 'Riding'."
                 }
             } catch (e) {
                 exception = e
@@ -165,14 +165,14 @@ export class UpdaterTo19 extends Updater {
         if (input.slice(0, 1) === '"' || isNumeric(input) || input === 'true' || input === 'false') {
             return input
         } else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(getNbtList(input, 'before 1.12').toJson())
-            let result: string[] = []
+            const json = JSON.parse(getNbtList(input, 'before 1.12').toJson())
+            const result: string[] = []
             for (const i of json) {
                 result.push(this.upMinecraftComponent(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
-            let json = JSON.parse(getNbtCompound(input, 'before 1.12').toJson())
+            const json = JSON.parse(getNbtCompound(input, 'before 1.12').toJson())
             if (json.selector) {
                 json.selector = this.upMinecraftEntity(json.selector)
             }
@@ -342,7 +342,7 @@ export class UpdaterTo19 extends Updater {
         let ans = input
 
         /* id */ {
-            let id = ans.get('id')
+            const id = ans.get('id')
             if (id instanceof NbtInt) {
                 ans.del('id')
                 ans.set('id', new NbtString(Items.to19(id.get())))

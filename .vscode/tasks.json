@@ -1,0 +1,44 @@
+// This file is adapted from vscode-extension-samples which is released under MIT License.
+// Go to https://github.com/Microsoft/vscode-extension-samples/blob/master/LICENSE for full license details.
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "compile",
+			"group": "build",
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"type": "npm",
+			"script": "watch",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			]
+		},
+		{
+			"type": "npm",
+			"script": "test",
+			"isBackground": true,
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		}
+	]
+}

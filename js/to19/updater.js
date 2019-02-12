@@ -11,20 +11,20 @@ const items_1 = require("./mappings/items");
 const blocks_1 = require("./mappings/blocks");
 class SpuScriptExecutor18To19 {
     execute(script, args) {
-        let splited = script.split(' ');
+        const splited = script.split(' ');
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value;
             }
             else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%');
-                let index1 = parseInt(params[1]);
-                let index2 = parseInt(params[2]);
-                let param1 = args[index1] ? args[index1].value : '';
-                let param2 = args[index2] ? args[index2].value : '';
+                const params = splited[i].slice(1).split('%');
+                const index1 = parseInt(params[1]);
+                const index2 = parseInt(params[2]);
+                const param1 = args[index1] ? args[index1].value : '';
+                const param2 = args[index2] ? args[index2].value : '';
                 switch (params[0]) {
                     case 'setTypeByNbt': {
-                        const nbt = utils_1.getNbtCompound(param1, "before 1.12");
+                        const nbt = utils_1.getNbtCompound(param1, 'before 1.12');
                         const riding = nbt.get('Riding');
                         if (riding instanceof nbt_1.NbtCompound) {
                             const id = riding.get('id');
@@ -41,7 +41,7 @@ class SpuScriptExecutor18To19 {
                         break;
                     }
                     case 'setNbtWithType': {
-                        const passenger = utils_1.getNbtCompound(param1, "before 1.12");
+                        const passenger = utils_1.getNbtCompound(param1, 'before 1.12');
                         const ridden = passenger.get('Riding');
                         passenger.del('Riding');
                         passenger.set('id', new nbt_1.NbtString(param2));
@@ -86,7 +86,7 @@ class ArgumentParser18To19 extends argument_parsers_1.ArgumentParser {
         }
         else {
             for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i];
+                join += ` ${splited[i]}`;
                 result = target_selector_1.TargetSelector.tryParse(join);
                 if (result === 'VALID') {
                     return i - index + 1;
@@ -101,7 +101,7 @@ class ArgumentParser18To19 extends argument_parsers_1.ArgumentParser {
     parseMinecraftNbt(splited, index) {
         let exception;
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ');
+            const test = splited.slice(index, endIndex).join(' ');
             try {
                 utils_1.getNbtCompound(test, 'before 1.12');
                 return endIndex - index;
@@ -116,14 +116,14 @@ class ArgumentParser18To19 extends argument_parsers_1.ArgumentParser {
     parseSpgodingNbtContainsRiding(splited, index) {
         let exception;
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ');
+            const test = splited.slice(index, endIndex).join(' ');
             try {
                 const nbt = utils_1.getNbtCompound(test, 'before 1.12');
                 if (nbt.get('Riding') instanceof nbt_1.NbtCompound) {
                     return endIndex - index;
                 }
                 else {
-                    throw `Should contain 'Riding'.`;
+                    throw "Should contain 'Riding'.";
                 }
             }
             catch (e) {
@@ -161,15 +161,15 @@ class UpdaterTo19 extends updater_1.Updater {
             return input;
         }
         else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(utils_1.getNbtList(input, 'before 1.12').toJson());
-            let result = [];
+            const json = JSON.parse(utils_1.getNbtList(input, 'before 1.12').toJson());
+            const result = [];
             for (const i of json) {
                 result.push(this.upMinecraftComponent(JSON.stringify(i)));
             }
             return `[${result.join()}]`;
         }
         else {
-            let json = JSON.parse(utils_1.getNbtCompound(input, 'before 1.12').toJson());
+            const json = JSON.parse(utils_1.getNbtCompound(input, 'before 1.12').toJson());
             if (json.selector) {
                 json.selector = this.upMinecraftEntity(json.selector);
             }
@@ -330,7 +330,7 @@ class UpdaterTo19 extends updater_1.Updater {
     upSpgodingItemNbt(input) {
         let ans = input;
         {
-            let id = ans.get('id');
+            const id = ans.get('id');
             if (id instanceof nbt_1.NbtInt) {
                 ans.del('id');
                 ans.set('id', new nbt_1.NbtString(items_1.default.to19(id.get())));
