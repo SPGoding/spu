@@ -730,12 +730,12 @@ export class Commands112To113 {
                                 },
                                 executable: true,
                                 spu_script: '# %0 %1 %2',
-                                warning: `The rule 'gameLoopFunction' has been removed. Please add function %2 to function tag '#minecraft:tick'.`
+                                warning: "The rule 'gameLoopFunction' has been removed. Please add function %2 to function tag '#minecraft:tick'."
                             }
                         },
                         executable: true,
                         spu_script: '# %0 %1',
-                        warning: `The rule 'gameLoopFunction' has been removed.`
+                        warning: "The rule 'gameLoopFunction' has been removed."
                     },
                     announceAdvancements: {
                         type: 'literal',
@@ -1005,12 +1005,12 @@ export class Commands112To113 {
                                 },
                                 executable: true,
                                 spu_script: '# %0 %1 %2',
-                                warning: `Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
+                                warning: 'Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.'
                             }
                         },
                         executable: true,
                         spu_script: '# %0 %1',
-                        warning: `Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.`
+                        warning: 'Minecraft has stopped supporting custom gamerules since 1.13. Please use scoreboards.'
                     }
                 }
             },
@@ -1156,7 +1156,7 @@ export class Commands112To113 {
                         type: 'literal',
                         executable: true,
                         spu_script: '# %0 %1',
-                        warning: `'Temple' has been separated into 'Desert_Pyramid', 'Igloo', 'Jungle_Pyramid' and 'Swamp_hut'`
+                        warning: "'Temple' has been separated into 'Desert_Pyramid', 'Igloo', 'Jungle_Pyramid' and 'Swamp_hut'"
                     },
                     Village: {
                         type: 'literal',
@@ -2773,7 +2773,7 @@ export class Commands112To113 {
                         },
                         executable: true,
                         spu_script: '# %0 %1',
-                        warning: `Use 'execute store ...'.`
+                        warning: "Use 'execute store ...'."
                     }
                 }
             },
@@ -3263,7 +3263,7 @@ export class Commands112To113 {
                 type: 'literal',
                 executable: true,
                 spu_script: 'weather clear',
-                warning: `'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear.`
+                warning: "'Toggledownfall' could toggle the weather, but 'weather clear' can only set the weather to clear."
             },
             tp: {
                 type: 'literal',

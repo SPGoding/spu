@@ -11,17 +11,17 @@ const entities_1 = require("./mappings/entities");
 const updater_2 = require("../to19/updater");
 class SpuScriptExecutor19To111 {
     execute(script, args) {
-        let splited = script.split(' ');
+        const splited = script.split(' ');
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value;
             }
             else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%');
-                let index1 = parseInt(params[1]);
-                let index2 = parseInt(params[2]);
-                let param1 = args[index1] ? args[index1].value : '';
-                let param2 = args[index2] ? args[index2].value : '';
+                const params = splited[i].slice(1).split('%');
+                const index1 = parseInt(params[1]);
+                const index2 = parseInt(params[2]);
+                const param1 = args[index1] ? args[index1].value : '';
+                const param2 = args[index2] ? args[index2].value : '';
                 switch (params[0]) {
                     case 'setTypeWithNbt': {
                         const result = UpdaterTo111.upEntityNbtWithType(utils_1.getNbtCompound(param2, 'before 1.12'), param1);
@@ -90,7 +90,7 @@ class ArgumentParser19To111 extends argument_parsers_1.ArgumentParser {
     parseMinecraftNbt(splited, index) {
         let exception;
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ');
+            const test = splited.slice(index, endIndex).join(' ');
             try {
                 utils_1.getNbtCompound(test, 'before 1.12');
                 return endIndex - index;
@@ -138,15 +138,15 @@ class UpdaterTo111 extends updater_1.Updater {
             return input;
         }
         else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(utils_1.getNbtList(input, 'before 1.12').toJson());
-            let result = [];
+            const json = JSON.parse(utils_1.getNbtList(input, 'before 1.12').toJson());
+            const result = [];
             for (const i of json) {
                 result.push(this.upMinecraftComponent(JSON.stringify(i)));
             }
             return `[${result.join()}]`;
         }
         else {
-            let json = JSON.parse(utils_1.getNbtCompound(input, 'before 1.12').toJson());
+            const json = JSON.parse(utils_1.getNbtCompound(input, 'before 1.12').toJson());
             if (json.selector) {
                 json.selector = this.upMinecraftEntity(json.selector);
             }
@@ -176,7 +176,7 @@ class UpdaterTo111 extends updater_1.Updater {
     upSpgodingEntityNbt(input) {
         let ans = input;
         {
-            let id = ans.get('id');
+            const id = ans.get('id');
             if (id instanceof nbt_1.NbtString) {
                 id.set(entities_1.default.to111(id.get()));
                 const result = UpdaterTo111.upEntityNbtWithType(ans, id.get());
@@ -238,7 +238,7 @@ class UpdaterTo111 extends updater_1.Updater {
                         case 4:
                         case 5:
                             entityType = 'minecraft:zombie_villager';
-                            let profession = new nbt_1.NbtInt(zombieType.get());
+                            const profession = new nbt_1.NbtInt(zombieType.get());
                             nbt.set('Profession', profession);
                             break;
                         case 6:

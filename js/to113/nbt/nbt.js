@@ -1,25 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("../utils");
+const utils_1 = require("../../utils/utils");
 class NbtString {
     constructor(value) {
         this.get = () => this.value;
+        this.toString = () => `"${utils_1.escape(this.value)}"`;
         if (value !== undefined) {
             this.value = value;
         }
     }
     set(value) {
         this.value = value;
-    }
-    toString() {
-        const single = this.value.indexOf("'");
-        const double = this.value.indexOf('"');
-        if (double >= 0 && double < single) {
-            return `'${utils_1.escape(this.value, "'")}'`;
-        }
-        else {
-            return `"${utils_1.escape(this.value)}"`;
-        }
     }
 }
 exports.NbtString = NbtString;

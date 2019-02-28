@@ -1,14 +1,14 @@
 import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtValue } from '../../utils/nbt/nbt'
 import { getNbtCompound, completeNamespace } from '../../utils/utils'
 import { Number_String } from './mapping'
-import Entities from './entities';
+import Entities from './entities'
 
 export class StdItem1_12 {
-    private name: string
-    private data: number
-    private tag: NbtCompound
-    private count: NbtValue | undefined
-    private slot: NbtValue | undefined
+    private readonly name: string
+    private readonly data: number
+    private readonly tag: NbtCompound
+    private readonly count: NbtValue | undefined
+    private readonly slot: NbtValue | undefined
 
     public constructor(name: string, data: number, tag: NbtCompound, count?: NbtValue, slot?: NbtValue) {
         name = completeNamespace(name)
@@ -48,10 +48,10 @@ export class StdItem1_12 {
 }
 
 export class StdItem1_13 {
-    private name: string
-    private tag: NbtCompound
-    private count: NbtValue | undefined
-    private slot: NbtValue | undefined
+    private readonly name: string
+    private readonly tag: NbtCompound
+    private readonly count: NbtValue | undefined
+    private readonly slot: NbtValue | undefined
 
     public constructor(name: string, nbt: NbtCompound, count?: NbtValue, slot?: NbtValue) {
         name = completeNamespace(name)
@@ -78,7 +78,7 @@ export class StdItem1_13 {
     }
 
     public getNbt() {
-        let nbt = new NbtCompound()
+        const nbt = new NbtCompound()
 
         if (this.name !== 'minecraft:') {
             nbt.set('id', new NbtString(this.name))
@@ -130,7 +130,7 @@ export default class Items {
             const data = nbtC.get('Damage')
             const count = nbtC.get('Count')
             const slot = nbtC.get('Slot')
-            let tagC = nbtC.get('tag')
+            const tagC = nbtC.get('tag')
 
             ansCount = count
             ansSlot = slot
@@ -163,10 +163,10 @@ export default class Items {
 
     public static to113(std: StdItem1_12) {
         let ansName = std.getName()
-        let ansCount = std.getCount()
-        let ansSlot = std.getSlot()
-        let ansTag = std.getTag()
-        let data = std.getData()
+        const ansCount = std.getCount()
+        const ansSlot = std.getSlot()
+        const ansTag = std.getTag()
+        const data = std.getData()
 
         if (Items.DamagableItems.indexOf(ansName) !== -1 && data !== 0) {
             ansTag.set('Damage', new NbtShort(data))
@@ -190,7 +190,7 @@ export default class Items {
                         if (Items.SpawnEgges.indexOf(`${after}_spawn_egg`) !== -1) {
                             ansName = `${after}_spawn_egg`
                         } else {
-                            let display = new NbtCompound()
+                            const display = new NbtCompound()
                             display.set('Name', new NbtString(`{"text":"${after.replace('minecraft:', '')}_spawn_egg","italic":false}`))
                             ansTag.set('display', display)
                         }

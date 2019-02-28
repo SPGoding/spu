@@ -57,7 +57,7 @@ class StdItem1_13 {
         return `${this.name}${nbt}`;
     }
     getNbt() {
-        let nbt = new nbt_1.NbtCompound();
+        const nbt = new nbt_1.NbtCompound();
         if (this.name !== 'minecraft:') {
             nbt.set('id', new nbt_1.NbtString(this.name));
         }
@@ -106,7 +106,7 @@ class Items {
             const data = nbtC.get('Damage');
             const count = nbtC.get('Count');
             const slot = nbtC.get('Slot');
-            let tagC = nbtC.get('tag');
+            const tagC = nbtC.get('tag');
             ansCount = count;
             ansSlot = slot;
             if (tagC instanceof nbt_1.NbtCompound) {
@@ -136,10 +136,10 @@ class Items {
     }
     static to113(std) {
         let ansName = std.getName();
-        let ansCount = std.getCount();
-        let ansSlot = std.getSlot();
-        let ansTag = std.getTag();
-        let data = std.getData();
+        const ansCount = std.getCount();
+        const ansSlot = std.getSlot();
+        const ansTag = std.getTag();
+        const data = std.getData();
         if (Items.DamagableItems.indexOf(ansName) !== -1 && data !== 0) {
             ansTag.set('Damage', new nbt_1.NbtShort(data));
         }
@@ -163,7 +163,7 @@ class Items {
                             ansName = `${after}_spawn_egg`;
                         }
                         else {
-                            let display = new nbt_1.NbtCompound();
+                            const display = new nbt_1.NbtCompound();
                             display.set('Name', new nbt_1.NbtString(`{"text":"${after.replace('minecraft:', '')}_spawn_egg","italic":false}`));
                             ansTag.set('display', display);
                         }

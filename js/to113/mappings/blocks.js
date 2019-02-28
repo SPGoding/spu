@@ -144,7 +144,7 @@ class Blocks {
     static to113(std) {
         let ansName = std.getName();
         let ansStates = std.getStates();
-        let ansNbt = std.getNbt();
+        const ansNbt = std.getNbt();
         if (std.hasBlockTag()) {
             return std;
         }
@@ -312,7 +312,7 @@ class Blocks {
                             ansStates = [`rotation=${rot.get()}`];
                         }
                         else {
-                            ansStates = [`rotation=0`];
+                            ansStates = ['rotation=0'];
                         }
                     }
                     else {
@@ -371,7 +371,7 @@ class Blocks {
         return blockState;
     }
     static getStatesFromNominal(input) {
-        let arr = input.split('[');
+        const arr = input.split('[');
         if (arr.length === 2) {
             return arr[1].slice(0, -1).split(',');
         }
@@ -380,7 +380,7 @@ class Blocks {
         }
     }
     static combineStates(defaultStates, customStates) {
-        let ans = [];
+        const ans = [];
         for (const i of defaultStates) {
             const str = customStates.find(v => v.split('=')[0] === i.split('=')[0]);
             if (str) {

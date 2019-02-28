@@ -18,18 +18,18 @@ export class TargetSelector {
     private y: number
     private z: number
     private sort: string
-    private tag: string[] = []
-    private team: string[] = []
-    private name: string[] = []
-    private type: string[] = []
-    private gamemode: string[] = []
-    private level = new Range(null, null)
-    private distance = new Range(null, null)
-    private x_rotation = new Range(null, null)
-    private y_rotation = new Range(null, null)
-    private scores = new Map<string, Range>()
-    private advancements = new Map<string, boolean | Map<string, boolean>>()
-    private nbt = new NbtCompound()
+    private readonly tag: string[] = []
+    private readonly team: string[] = []
+    private readonly name: string[] = []
+    private readonly type: string[] = []
+    private readonly gamemode: string[] = []
+    private readonly level = new Range(null, null)
+    private readonly distance = new Range(null, null)
+    private readonly x_rotation = new Range(null, null)
+    private readonly y_rotation = new Range(null, null)
+    private readonly scores = new Map<string, Range>()
+    private readonly advancements = new Map<string, boolean | Map<string, boolean>>()
+    private readonly nbt = new NbtCompound()
 
     constructor() {}
 
@@ -38,7 +38,7 @@ export class TargetSelector {
      * @param str An string representing a target selector.
      */
     public parse(str: string) {
-        let charReader = new CharReader(str)
+        const charReader = new CharReader(str)
         let char: string
 
         char = charReader.next()
@@ -82,7 +82,7 @@ export class TargetSelector {
             if (['a', 'e', 'p', 'r', 's', ']'].indexOf(input.slice(-1)) === -1) {
                 return false
             }
-            let sel = new TargetSelector()
+            const sel = new TargetSelector()
             sel.parse(input)
         } catch (ignored) {
             return false
@@ -337,7 +337,7 @@ export class TargetSelector {
         let result = '{'
 
         for (const i of this.scores.keys()) {
-            let score = this.scores.get(i)
+            const score = this.scores.get(i)
             if (score) {
                 result += `${i}=${score.get1_13()},`
             }
@@ -409,7 +409,7 @@ class Range {
     }
 
     parse1_13(str: string) {
-        let arr = str.split('..')
+        const arr = str.split('..')
         if (arr.length === 2) {
             this.min = arr[0] ? Number(arr[0]) : null
             this.max = arr[1] ? Number(arr[1]) : null
@@ -419,8 +419,8 @@ class Range {
     }
 
     get1_13() {
-        let min = this.min
-        let max = this.max
+        const min = this.min
+        const max = this.max
         if (min !== null && max !== null) {
             if (min !== max) {
                 return `${min}..${max}`

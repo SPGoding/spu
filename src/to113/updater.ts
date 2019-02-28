@@ -1,4 +1,4 @@
-import { SpuScriptExecutor, WheelChief, Argument, ParseResult } from '../utils/wheel_chief/wheel_chief'
+import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Commands112To113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace, isNumeric, getNbtCompound, getUuidLeastUuidMost, UpdateResult } from '../utils/utils'
@@ -13,23 +13,23 @@ import Effects from './mappings/effects'
 import Enchantments from './mappings/enchantments'
 import Particles from './mappings/particles'
 import Entities from './mappings/entities'
-import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
 
 class SpuScriptExecutor112To113 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
-        let splited = script.split(' ')
+        const splited = script.split(' ')
 
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value
             } else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%')
-                let index1 = parseInt(params[1])
-                let index2 = parseInt(params[2])
-                let index3 = parseInt(params[3])
-                let param1 = args[index1] ? args[index1].value : ''
-                let param2 = args[index2] ? args[index2].value : ''
-                let param3 = args[index3] ? args[index3].value : ''
+                const params = splited[i].slice(1).split('%')
+                const index1 = parseInt(params[1])
+                const index2 = parseInt(params[2])
+                const index3 = parseInt(params[3])
+                const param1 = args[index1] ? args[index1].value : ''
+                const param2 = args[index2] ? args[index2].value : ''
+                const param3 = args[index3] ? args[index3].value : ''
                 switch (params[0]) {
                     case 'setBlockParam':
                         splited[i] = Blocks.to113(Blocks.std112(parseInt(param1))).getFull()
@@ -64,9 +64,9 @@ class SpuScriptExecutor112To113 implements SpuScriptExecutor {
                         }
                         break
                     case 'setNbtToSelector':
-                        let sel112 = new TargetSelector112()
+                        const sel112 = new TargetSelector112()
                         sel112.parse(param1)
-                        let sel113 = new TargetSelector113(sel112.to113())
+                        const sel113 = new TargetSelector113(sel112.to113())
                         sel113.nbt = getNbtCompound(param2)
                         splited[i] = sel113.toString()
                         break
@@ -99,7 +99,7 @@ class ArgumentParser112To113 extends ArgumentParser {
                     continue
                 }
             }
-            throw `Expected an entity selector.`
+            throw 'Expected an entity selector.'
         }
     }
 }
@@ -168,10 +168,10 @@ export class UpdaterTo113 extends Updater {
     }
 
     protected upSpgodingBlockNbt(input: NbtCompound) {
-        let ans = super.upSpgodingBlockNbt(input)
+        const ans = super.upSpgodingBlockNbt(input)
 
         /* CustomName */{
-            let customName = ans.get('CustomName')
+            const customName = ans.get('CustomName')
             if (customName instanceof NbtString) {
                 customName.set(this.upSpgodingPreJson(customName.get()))
             }
@@ -230,7 +230,7 @@ export class UpdaterTo113 extends Updater {
     }
 
     protected upSpgodingEntityNbt(input: NbtCompound) {
-        let ans = super.upSpgodingEntityNbt(input)
+        const ans = super.upSpgodingEntityNbt(input)
 
         /* carried & carriedData */ {
             const carried = ans.get('carried')
@@ -362,7 +362,7 @@ export class UpdaterTo113 extends Updater {
             }
         }
         /* CustomName */{
-            let customName = ans.get('CustomName')
+            const customName = ans.get('CustomName')
             if (customName instanceof NbtString) {
                 customName.set(this.upSpgodingPreJson(customName.get()))
             }
@@ -570,7 +570,7 @@ export class UpdaterTo113 extends Updater {
     }
 
     protected upSpgodingSingleSelector(input: string) {
-        let sel = new TargetSelector113(input)
+        const sel = new TargetSelector113(input)
         if (sel.limit !== undefined || sel.variable === 'a' || sel.variable === 'e') {
             sel.limit = '1'
         }

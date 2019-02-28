@@ -1,20 +1,20 @@
-import { SpuScriptExecutor, WheelChief, Argument, ParseResult } from '../utils/wheel_chief/wheel_chief'
+import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Commands111To112 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
-import { UpdateResult, isNumeric } from '../utils/utils';
-import { UpdaterTo111 } from '../to111/updater';
-import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
-import { TargetSelector as TargetSelector112 } from './target_selector';
+import { UpdateResult } from '../utils/utils'
+import { UpdaterTo111 } from '../to111/updater'
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
+import { TargetSelector as TargetSelector112 } from './target_selector'
 
 class SpuScriptExecutor111To112 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
-        let splited = script.split(' ')
+        const splited = script.split(' ')
 
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value
             } else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%')
+                const params = splited[i].slice(1).split('%')
                 switch (params[0]) {
                     default:
                         throw `Unexpected script method: '${params[0]}'.`
@@ -45,7 +45,7 @@ class ArgumentParser111To112 extends ArgumentParser {
                     continue
                 }
             }
-            throw `Expected an entity selector.`
+            throw 'Expected an entity selector.'
         }
     }
 }

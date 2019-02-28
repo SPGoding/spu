@@ -1,26 +1,26 @@
 import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
 import { Updater } from '../utils/wheel_chief/updater'
-import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils';
-import { Commands19To111 } from './commands';
-import { ArgumentParser } from '../utils/wheel_chief/argument_parsers';
+import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils'
+import { Commands19To111 } from './commands'
+import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
 import { TargetSelector } from './target_selector'
-import { NbtCompound, NbtInt, NbtString, NbtByte } from '../utils/nbt/nbt';
-import Entities from './mappings/entities';
-import { UpdaterTo19 } from '../to19/updater';
+import { NbtCompound, NbtInt, NbtString, NbtByte } from '../utils/nbt/nbt'
+import Entities from './mappings/entities'
+import { UpdaterTo19 } from '../to19/updater'
 
 class SpuScriptExecutor19To111 implements SpuScriptExecutor {
     public execute(script: string, args: Argument[]) {
-        let splited = script.split(' ')
+        const splited = script.split(' ')
 
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value
             } else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%')
-                let index1 = parseInt(params[1])
-                let index2 = parseInt(params[2])
-                let param1 = args[index1] ? args[index1].value : ''
-                let param2 = args[index2] ? args[index2].value : ''
+                const params = splited[i].slice(1).split('%')
+                const index1 = parseInt(params[1])
+                const index2 = parseInt(params[2])
+                const param1 = args[index1] ? args[index1].value : ''
+                const param2 = args[index2] ? args[index2].value : ''
                 switch (params[0]) {
                     case 'setTypeWithNbt': {
                         const result = UpdaterTo111.upEntityNbtWithType(getNbtCompound(param2, 'before 1.12'), param1)
@@ -92,7 +92,7 @@ class ArgumentParser19To111 extends ArgumentParser {
     protected parseMinecraftNbt(splited: string[], index: number): number {
         let exception
         for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            let test = splited.slice(index, endIndex).join(' ')
+            const test = splited.slice(index, endIndex).join(' ')
             try {
                 getNbtCompound(test, 'before 1.12')
                 return endIndex - index
@@ -144,14 +144,14 @@ export class UpdaterTo111 extends Updater {
         if (input.slice(0, 1) === '"' || isNumeric(input) || input === 'true' || input === 'false') {
             return input
         } else if (input.slice(0, 1) === '[') {
-            let json = JSON.parse(getNbtList(input, 'before 1.12').toJson())
-            let result: string[] = []
+            const json = JSON.parse(getNbtList(input, 'before 1.12').toJson())
+            const result: string[] = []
             for (const i of json) {
                 result.push(this.upMinecraftComponent(JSON.stringify(i)))
             }
             return `[${result.join()}]`
         } else {
-            let json = JSON.parse(getNbtCompound(input, 'before 1.12').toJson())
+            const json = JSON.parse(getNbtCompound(input, 'before 1.12').toJson())
             if (json.selector) {
                 json.selector = this.upMinecraftEntity(json.selector)
             }
@@ -190,10 +190,10 @@ export class UpdaterTo111 extends Updater {
         let ans = input
 
         /* id, Type, Elder, ZombieType, SkeletonType */ {
-            let id = ans.get('id')
+            const id = ans.get('id')
             if (id instanceof NbtString) {
                 id.set(Entities.to111(id.get()))
-                const result = UpdaterTo111.upEntityNbtWithType(ans, id.get());
+                const result = UpdaterTo111.upEntityNbtWithType(ans, id.get())
                 ans = result.nbt
                 id.set(result.type)
             }
@@ -251,7 +251,7 @@ export class UpdaterTo111 extends Updater {
                         case 4:
                         case 5:
                             entityType = 'minecraft:zombie_villager'
-                            let profession = new NbtInt(zombieType.get())
+                            const profession = new NbtInt(zombieType.get())
                             nbt.set('Profession', profession)
                             break
                         case 6:

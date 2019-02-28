@@ -20,7 +20,7 @@ class TargetSelector {
         this.nbt = new nbt_1.NbtCompound();
     }
     parse(str) {
-        let charReader = new char_reader_1.CharReader(str);
+        const charReader = new char_reader_1.CharReader(str);
         let char;
         char = charReader.next();
         if (char !== '@') {
@@ -48,7 +48,7 @@ class TargetSelector {
             if (['a', 'e', 'p', 'r', 's', ']'].indexOf(input.slice(-1)) === -1) {
                 return false;
             }
-            let sel = new TargetSelector();
+            const sel = new TargetSelector();
             sel.parse(input);
         }
         catch (ignored) {
@@ -294,7 +294,7 @@ class TargetSelector {
     getScores() {
         let result = '{';
         for (const i of this.scores.keys()) {
-            let score = this.scores.get(i);
+            const score = this.scores.get(i);
             if (score) {
                 result += `${i}=${score.get1_13()},`;
             }
@@ -350,7 +350,7 @@ class Range {
         this.min = min;
     }
     parse1_13(str) {
-        let arr = str.split('..');
+        const arr = str.split('..');
         if (arr.length === 2) {
             this.min = arr[0] ? Number(arr[0]) : null;
             this.max = arr[1] ? Number(arr[1]) : null;
@@ -360,8 +360,8 @@ class Range {
         }
     }
     get1_13() {
-        let min = this.min;
-        let max = this.max;
+        const min = this.min;
+        const max = this.max;
         if (min !== null && max !== null) {
             if (min !== max) {
                 return `${min}..${max}`;

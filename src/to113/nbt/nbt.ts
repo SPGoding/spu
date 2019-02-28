@@ -1,4 +1,4 @@
-import { escape } from '../utils'
+import { escape } from '../../utils/utils'
 
 export type NbtValue =
     | NbtCompound
@@ -29,15 +29,7 @@ export class NbtString {
         this.value = value
     }
 
-    public toString() {
-        const single = this.value.indexOf("'")
-        const double = this.value.indexOf('"')
-        if (double >= 0 && double < single) {
-            return `'${escape(this.value, "'")}'`
-        } else {
-            return `"${escape(this.value)}"`
-        }
-    }
+    public toString = () => `"${escape(this.value)}"`
 }
 
 export class NbtByte {
