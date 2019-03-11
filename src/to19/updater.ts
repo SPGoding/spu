@@ -4,7 +4,7 @@ import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/ut
 import { Commands18To19 } from './commands'
 import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
 import { TargetSelector } from './target_selector'
-import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString, NbtValue } from '../utils/nbt/nbt'
+import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from '../utils/nbt/nbt'
 import Items from './mappings/items'
 import Blocks from './mappings/blocks'
 

@@ -18,19 +18,19 @@ const entities_1 = require("./mappings/entities");
 const argument_parsers_1 = require("../utils/wheel_chief/argument_parsers");
 class SpuScriptExecutor112To113 {
     execute(script, args) {
-        let splited = script.split(' ');
+        const splited = script.split(' ');
         for (let i = 0; i < splited.length; i++) {
             if (splited[i].slice(0, 1) === '%') {
                 splited[i] = args[parseInt(splited[i].slice(1))].value;
             }
             else if (splited[i].slice(0, 1) === '$') {
-                let params = splited[i].slice(1).split('%');
-                let index1 = parseInt(params[1]);
-                let index2 = parseInt(params[2]);
-                let index3 = parseInt(params[3]);
-                let param1 = args[index1] ? args[index1].value : '';
-                let param2 = args[index2] ? args[index2].value : '';
-                let param3 = args[index3] ? args[index3].value : '';
+                const params = splited[i].slice(1).split('%');
+                const index1 = parseInt(params[1]);
+                const index2 = parseInt(params[2]);
+                const index3 = parseInt(params[3]);
+                const param1 = args[index1] ? args[index1].value : '';
+                const param2 = args[index2] ? args[index2].value : '';
+                const param3 = args[index3] ? args[index3].value : '';
                 switch (params[0]) {
                     case 'setBlockParam':
                         splited[i] = blocks_1.default.to113(blocks_1.default.std112(parseInt(param1))).getFull();
@@ -67,9 +67,9 @@ class SpuScriptExecutor112To113 {
                         }
                         break;
                     case 'setNbtToSelector':
-                        let sel112 = new target_selector_1.TargetSelector();
+                        const sel112 = new target_selector_1.TargetSelector();
                         sel112.parse(param1);
-                        let sel113 = new target_selector_2.TargetSelector(sel112.to113());
+                        const sel113 = new target_selector_2.TargetSelector(sel112.to113());
                         sel113.nbt = utils_1.getNbtCompound(param2);
                         splited[i] = sel113.toString();
                         break;
@@ -100,7 +100,7 @@ class ArgumentParser112To113 extends argument_parsers_1.ArgumentParser {
                     continue;
                 }
             }
-            throw `Expected an entity selector.`;
+            throw 'Expected an entity selector.';
         }
     }
 }
@@ -159,9 +159,9 @@ class UpdaterTo113 extends updater_1.Updater {
         return blocks_1.default.to113(blocks_1.default.std112(undefined, input)).getName();
     }
     upSpgodingBlockNbt(input) {
-        let ans = super.upSpgodingBlockNbt(input);
+        const ans = super.upSpgodingBlockNbt(input);
         {
-            let customName = ans.get('CustomName');
+            const customName = ans.get('CustomName');
             if (customName instanceof nbt_1.NbtString) {
                 customName.set(this.upSpgodingPreJson(customName.get()));
             }
@@ -214,7 +214,7 @@ class UpdaterTo113 extends updater_1.Updater {
         }
     }
     upSpgodingEntityNbt(input) {
-        let ans = super.upSpgodingEntityNbt(input);
+        const ans = super.upSpgodingEntityNbt(input);
         {
             const carried = ans.get('carried');
             const carriedData = ans.get('carriedData');
@@ -330,7 +330,7 @@ class UpdaterTo113 extends updater_1.Updater {
             }
         }
         {
-            let customName = ans.get('CustomName');
+            const customName = ans.get('CustomName');
             if (customName instanceof nbt_1.NbtString) {
                 customName.set(this.upSpgodingPreJson(customName.get()));
             }
@@ -524,7 +524,7 @@ class UpdaterTo113 extends updater_1.Updater {
         }
     }
     upSpgodingSingleSelector(input) {
-        let sel = new target_selector_2.TargetSelector(input);
+        const sel = new target_selector_2.TargetSelector(input);
         if (sel.limit !== undefined || sel.variable === 'a' || sel.variable === 'e') {
             sel.limit = '1';
         }

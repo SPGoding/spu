@@ -73,7 +73,7 @@ class TargetSelector {
                 this.arguments.r = key;
             }
             else {
-                throw `Expected values but got nothing.`;
+                throw 'Expected values but got nothing.';
             }
         }
         else {

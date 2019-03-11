@@ -39,5 +39,7 @@ function getUuidLeastUuidMost(uuid) {
     return { L: uuidLeast, M: uuidMost };
 }
 exports.getUuidLeastUuidMost = getUuidLeastUuidMost;
-exports.escape = (s) => s.replace(/([\\"])/g, '\\$1');
-exports.unescape = (s) => s.replace(/\\([\\"])/g, '$1');
+exports.escape = (str, quote = '"') => quote === '"' ?
+    str.replace(/([\\"])/g, '\\$1') :
+    str.replace(/([\\'])/g, '\\$1');
+exports.unescape = (str) => str.replace(/\\([\\"'])/g, '$1');

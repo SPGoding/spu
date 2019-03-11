@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("../utils");
+const utils_1 = require("../../utils/utils");
 class Tokenizer {
     tokenize(nbt, version = 'after 1.12') {
         const tokens = [];
@@ -56,21 +56,8 @@ class Tokenizer {
             case '':
                 return { token: { type: 'EndOfDocument', value: '' }, pos: pos + 1 };
             case '"': {
-                const readResult = this.readQuotedString(nbt, pos, '"');
+                const readResult = this.readQuotedString(nbt, pos);
                 return { token: { type: 'String', value: readResult.str }, pos: readResult.pos + 1 };
-            }
-            case "'": {
-                if (version === 'after 1.14') {
-                    const readResult = this.readQuotedString(nbt, pos, "'");
-                    return { token: { type: 'String', value: readResult.str }, pos: readResult.pos + 1 };
-                }
-                else {
-                    const readResult = this.readUnquoted(nbt, pos, version, unquotedDealingWay);
-                    return {
-                        token: { type: 'Thing', value: readResult.str },
-                        pos: readResult.pos + 1
-                    };
-                }
             }
             default: {
                 const readResult = this.readUnquoted(nbt, pos, version, unquotedDealingWay);
@@ -90,16 +77,16 @@ class Tokenizer {
         }
         return pos;
     }
-    readQuotedString(nbt, pos, quote) {
+    readQuotedString(nbt, pos) {
         let str = '';
         let flag = false;
         pos += 1;
-        while (nbt.charAt(pos) !== quote || flag) {
+        while (nbt.charAt(pos) !== '"' || flag) {
             if (nbt.charAt(pos) === '\\' && !flag) {
                 flag = true;
             }
             else if (nbt.charAt(pos) === '') {
-                throw `Expected '${quote}' but got EOF for a quoted string.`;
+                throw `Expected '"' but got EOF for a quoted string.`;
             }
             else {
                 str += nbt.charAt(pos);

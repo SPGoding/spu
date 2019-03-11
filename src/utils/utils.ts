@@ -13,10 +13,12 @@ export function isWhiteSpace(char: string) {
     return char === '' || [' ', '\t', '\n', '\r'].indexOf(char) !== -1
 }
 
+export type NbtFormat = 'before 1.12' | 'after 1.12' | 'after 1.14'
+
 /**
  * Get an NbtCompound object from a string.
  */
-export function getNbtCompound(str: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+export function getNbtCompound(str: string, version: NbtFormat = 'after 1.12') {
     const tokenizer = new NbtTokenizer()
     const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
@@ -27,7 +29,7 @@ export function getNbtCompound(str: string, version: 'before 1.12' | 'after 1.12
 /**
  * Get an NbtList object from a string.
  */
-export function getNbtList(str: string, version: 'before 1.12' | 'after 1.12' = 'after 1.12') {
+export function getNbtList(str: string, version: NbtFormat = 'after 1.12') {
     const tokenizer = new NbtTokenizer()
     const tokens = tokenizer.tokenize(str, version)
     const parser = new NbtParser()
@@ -66,5 +68,8 @@ export interface UpdateResult {
  *
  * @author pca006132
  */
-export const escape = (s: string) => s.replace(/([\\"])/g, '\\$1')
-export const unescape = (s: string) => s.replace(/\\([\\"])/g, '$1')
+export const escape = (str: string, quote: '"' | "'" = '"') =>
+    quote === '"' ?
+        str.replace(/([\\"])/g, '\\$1') :
+        str.replace(/([\\'])/g, '\\$1')
+export const unescape = (str: string) => str.replace(/\\([\\"'])/g, '$1')

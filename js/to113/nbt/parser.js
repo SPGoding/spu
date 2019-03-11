@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("../utils");
+const utils_1 = require("../../utils/utils");
 const nbt_1 = require("./nbt");
 class Parser {
     parseCompounds(tokens, version = 'after 1.12') {

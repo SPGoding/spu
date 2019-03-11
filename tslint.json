@@ -37,7 +37,6 @@
         "prefer-method-signature": true,
         "prefer-object-spread": true,
         "prefer-readonly": true,
-        "prefer-template": true,
         "prefer-while": true,
         "no-switch-case-fall-through": true
     }

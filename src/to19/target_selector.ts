@@ -1,5 +1,4 @@
-import { isNumeric } from "../utils/utils";
-import { UpdaterTo19 } from "./updater";
+import { isNumeric } from '../utils/utils'
 
 export class TargetSelector {
     public variable: string
@@ -24,7 +23,7 @@ export class TargetSelector {
     }
 
     public toString() {
-        let result = `@${this.variable}[`;
+        let result = `@${this.variable}[`
 
         for (const key in this.arguments) {
             if (['type', 'name', 'team', 'tag', 'c', 'm', 'r', 'rm', 'x', 'y', 'z', 'dx', 'dy',
@@ -83,7 +82,7 @@ export class TargetSelector {
             } else if (this.arguments.r === undefined) {
                 this.arguments.r = key
             } else {
-                throw `Expected values but got nothing.`
+                throw 'Expected values but got nothing.'
             }
         } else {
             index += 1

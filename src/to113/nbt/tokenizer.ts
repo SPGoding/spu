@@ -1,4 +1,4 @@
-import { isWhiteSpace, isNumeric, NbtFormat } from '../utils'
+import { isWhiteSpace, isNumeric, NbtFormat } from '../../utils/utils'
 
 /**
  * Provides methods to tokenize a nbt string.
@@ -61,23 +61,9 @@ export class Tokenizer {
             case '':
                 return { token: { type: 'EndOfDocument', value: '' }, pos: pos + 1 }
             case '"': {
-                // Quoted.
-                const readResult = this.readQuotedString(nbt, pos, '"')
+                // Quoted
+                const readResult = this.readQuotedString(nbt, pos)
                 return { token: { type: 'String', value: readResult.str }, pos: readResult.pos + 1 }
-            }
-            case "'": {
-                if (version === 'after 1.14') {
-                    // Quoted.
-                    const readResult = this.readQuotedString(nbt, pos, "'")
-                    return { token: { type: 'String', value: readResult.str }, pos: readResult.pos + 1 }
-                } else {
-                    // Unquoted.
-                    const readResult = this.readUnquoted(nbt, pos, version, unquotedDealingWay)
-                    return {
-                        token: { type: 'Thing', value: readResult.str },
-                        pos: readResult.pos + 1
-                    }
-                }
             }
             default: {
                 // Unquoted.
@@ -100,17 +86,17 @@ export class Tokenizer {
         return pos
     }
 
-    private readQuotedString(nbt: string, pos: number, quote: '"' | "'"): ReadStringResult {
+    private readQuotedString(nbt: string, pos: number): ReadStringResult {
         let str = ''
         let flag = false
 
         pos += 1 // Skip the first quote.
 
-        while (nbt.charAt(pos) !== quote || flag) {
+        while (nbt.charAt(pos) !== '"' || flag) {
             if (nbt.charAt(pos) === '\\' && !flag) {
                 flag = true
             } else if (nbt.charAt(pos) === '') {
-                throw `Expected '${quote}' but got EOF for a quoted string.`
+                throw `Expected '"' but got EOF for a quoted string.`
             } else {
                 str += nbt.charAt(pos)
                 flag = false

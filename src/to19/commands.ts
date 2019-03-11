@@ -350,7 +350,7 @@ export class Commands18To19 {
                                 parser: 'spgoding:nbt_contains_riding',
                                 updater: 'spgoding:entity_nbt',
                                 executable: true,
-                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                warning: "'Riding' has been removed in favor of 'Passengers'."
                             },
                             nbt: {
                                 type: 'argument',
@@ -1235,7 +1235,7 @@ export class Commands18To19 {
                                                                 parser: 'spgoding:nbt_contains_riding',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                warning: "'Riding' has been removed in favor of 'Passengers'."
                                                             },
                                                             nbt: {
                                                                 type: 'argument',
@@ -1267,7 +1267,7 @@ export class Commands18To19 {
                                                                 parser: 'spgoding:nbt_contains_riding',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                warning: "'Riding' has been removed in favor of 'Passengers'."
                                                             },
                                                             nbt: {
                                                                 type: 'argument',
@@ -1307,7 +1307,7 @@ export class Commands18To19 {
                                                                 parser: 'spgoding:nbt_contains_riding',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                warning: "'Riding' has been removed in favor of 'Passengers'."
                                                             },
                                                             nbt: {
                                                                 type: 'argument',
@@ -1340,7 +1340,7 @@ export class Commands18To19 {
                                                         parser: 'spgoding:nbt_contains_riding',
                                                         updater: 'spgoding:entity_nbt',
                                                         executable: true,
-                                                        warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                        warning: "'Riding' has been removed in favor of 'Passengers'."
                                                     },
                                                     nbt: {
                                                         type: 'argument',
@@ -1371,7 +1371,7 @@ export class Commands18To19 {
                                                         parser: 'spgoding:nbt_contains_riding',
                                                         updater: 'spgoding:entity_nbt',
                                                         executable: true,
-                                                        warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                        warning: "'Riding' has been removed in favor of 'Passengers'."
                                                     },
                                                     nbt: {
                                                         type: 'argument',
@@ -1425,7 +1425,7 @@ export class Commands18To19 {
                                                                                 parser: 'spgoding:nbt_contains_riding',
                                                                                 updater: 'spgoding:entity_nbt',
                                                                                 executable: true,
-                                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                                warning: "'Riding' has been removed in favor of 'Passengers'."
                                                                             },
                                                                             nbt: {
                                                                                 type: 'argument',
@@ -1469,7 +1469,7 @@ export class Commands18To19 {
                                                                 parser: 'spgoding:nbt_contains_riding',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                warning: "'Riding' has been removed in favor of 'Passengers'."
                                                             },
                                                             nbt: {
                                                                 type: 'argument',
@@ -1523,7 +1523,7 @@ export class Commands18To19 {
                                                                 parser: 'spgoding:nbt_contains_riding',
                                                                 updater: 'spgoding:entity_nbt',
                                                                 executable: true,
-                                                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                                                warning: "'Riding' has been removed in favor of 'Passengers'."
                                                             },
                                                             nbt: {
                                                                 type: 'argument',
@@ -2024,7 +2024,7 @@ export class Commands18To19 {
                                 parser: 'spgoding:nbt_contains_riding',
                                 updater: 'spgoding:entity_nbt',
                                 executable: true,
-                                warning: `'Riding' has been removed in favor of 'Passengers'.`
+                                warning: "'Riding' has been removed in favor of 'Passengers'."
                             },
                             nbt: {
                                 type: 'argument',

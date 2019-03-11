@@ -1,13 +1,13 @@
 import { NbtCompound, NbtList, NbtString, NbtInt, NbtByte, NbtValue, NbtShort } from '../../utils/nbt/nbt'
 import Items from './items'
 import { getNbtCompound, completeNamespace } from '../../utils/utils'
-import { Number_Number_String_StringArray } from './mapping';
+import { Number_Number_String_StringArray } from './mapping'
 
 export class StdBlock {
-    private isBlockTag: boolean
-    private name: string
-    private states: string[]
-    private nbt: NbtCompound
+    private readonly isBlockTag: boolean
+    private readonly name: string
+    private readonly states: string[]
+    private readonly nbt: NbtCompound
 
     public constructor(name: string, states: string[], nbt: NbtCompound, isBlockTag: boolean = false) {
         this.name = name
@@ -155,7 +155,7 @@ export default class Blocks {
     public static to113(std: StdBlock): StdBlock {
         let ansName = std.getName()
         let ansStates = std.getStates()
-        let ansNbt = std.getNbt()
+        const ansNbt = std.getNbt()
         
         if (std.hasBlockTag()) {
             return std
@@ -326,7 +326,7 @@ export default class Blocks {
                         if (rot instanceof NbtByte || rot instanceof NbtInt) {
                             ansStates = [`rotation=${rot.get()}`]
                         } else {
-                            ansStates = [`rotation=0`]
+                            ansStates = ['rotation=0']
                         }
                     } else {
                         // Wall
@@ -389,7 +389,7 @@ export default class Blocks {
     }
 
     private static getStatesFromNominal(input: string) {
-        let arr = input.split('[')
+        const arr = input.split('[')
         if (arr.length === 2) {
             return arr[1].slice(0, -1).split(',')
         } else {
@@ -402,7 +402,7 @@ export default class Blocks {
      * @param customStates Custom states. Will replace the default states.
      */
     public static combineStates(defaultStates: string[], customStates: string[]) {
-        let ans: string[] = []
+        const ans: string[] = []
         for (const i of defaultStates) {
             const str = customStates.find(v => v.split('=')[0] === i.split('=')[0])
             if (str) {

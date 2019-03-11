@@ -1,5 +1,5 @@
 import { Token, TokenType } from './tokenizer'
-import { isNumeric, NbtFormat } from '../utils'
+import { isNumeric, NbtFormat } from '../../utils/utils'
 import {
     NbtValue,
     NbtCompound,
