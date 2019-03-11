@@ -42,8 +42,8 @@ function transformCommand(content, from, to) {
             result.warnings = result.warnings.filter(v => !utils_1.isWhiteSpace(v));
             if (result.warnings.length > 0) {
                 state = 'warning';
-                let log = `Warnings detected when updating Line #${i + 1}: <br/> - `;
-                log += result.warnings.join('<br/> - ');
+                let log = `Warnings detected when updating Line #${i + 1}: \n`;
+                log += result.warnings.join('\n    - ');
                 logs.push(log);
             }
             commands.push(result.command);
@@ -52,7 +52,7 @@ function transformCommand(content, from, to) {
             const ans = {
                 commands: [],
                 state: 'error',
-                logs: [`Errors occurred when updating Line #${i + 1}: <br/>${ex}`]
+                logs: [`Errors occurred when updating Line #${i + 1}: ${ex}`]
             };
             return ans;
         }

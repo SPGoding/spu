@@ -65,9 +65,9 @@ export function transformCommand(content: string, from: number, to: number): Res
                 // We meet some warnings.
                 // Never mind.
                 state = 'warning'
-                // FIXME: Fix multiline of snacks later.
-                let log = `Warnings detected when updating Line #${i + 1}: <br/> - `
-                log += result.warnings.join('<br/> - ')
+                // [TODO] Solved the new line break problem in a odd way.
+                let log = `Warnings detected when updating Line #${i + 1}: \n`
+                log += result.warnings.join('\n    - ')
                 logs.push(log)
             }
             commands.push(result.command)
@@ -79,7 +79,7 @@ export function transformCommand(content: string, from: number, to: number): Res
             const ans: Result = {
                 commands: [],
                 state: 'error',
-                logs: [`Errors occurred when updating Line #${i + 1}: <br/>${ex}`]
+                logs: [`Errors occurred when updating Line #${i + 1}: ${ex}`]
             }
 
             return ans
