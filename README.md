@@ -101,9 +101,13 @@ The WheelChief will update every argument according to its `updater`. All update
 
 Finally the `spu_script` will be executed. `%0` will be replaced with the first argument of the command(`args[0].value`), `%1` will be the second(`args[1].value`), and so on. A token that begins with `$` will be executed as a function with following `%n` as its parameter(s). So finally you will get `foobar @a[nbt={baz:"qux"}]`. Is that amazing?
 
-## How to Contribute
+## Contributing
 
-1.  Fork this this repo and clone it to local.
+I'm thrilled to hear that you'd like to contribute to this project. It's no doubt that spu will be better with your help!
+
+Please note that this project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/). By participating in this project you agree to abide by its terms.
+
+1.  Fork this this repo and clone it to your local.
 
 2.  Install dependencies.
 
@@ -111,8 +115,23 @@ Finally the `spu_script` will be executed. `%0` will be replaced with the first 
 
 3.  Edit files in `./src`.
 
-4.  Build it.
+4. Run tests to make sure that nothing has been broken.
+
+    `npm test`
+
+    If you add new features, it's strongly recommend to write tests for them. All tests should be put under `./src/test`.
+
+5.  Build it.
 
     `npm run build`
 
-5.  Send `Pull Request` to me.
+6. Commit and push your changes. There is some tips for the commit message:
+    1. Begins with an emoji character, like `:sparkles:` and `:bug:`, see also [gitmoji](http://gitmoji.carloscuesta.me/).
+    2. The first letter is expected to be uppercased.
+    3. Use the basic form of verb as the first word.
+    4. Ends the message with a period (`.`).
+    e.g. `:bug:Fix a silly bug.`
+
+7.  Send `Pull Request` to me.
+
+There must be lots of mistakes and bad practice in this repository. If you find something not good or not sure whether it's not good, please don't hesitate to tell me!
