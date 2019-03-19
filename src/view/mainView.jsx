@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -35,10 +36,25 @@ import InfoIcon from "mdi-material-ui/InformationOutline";
 import DeleteIcon from "mdi-material-ui/DeleteOutline";
 import TransferIcon from "mdi-material-ui/TransferRight";
 import CloseIcon from "mdi-material-ui/Close";
+import ColorIcon from "mdi-material-ui/BorderColor";
+
+import blue from '@material-ui/core/colors/blue';
+import red from '@material-ui/core/colors/red';
 
 import { transformCommand } from "../../js/index";
 
 const drawerWidth = 240;
+
+const theme = createMuiTheme({
+    palette: {
+        primary: blue,
+        secondary: blue,
+        error: red
+    },
+    typography: {
+        useNextVariants: true,
+    }
+});
 
 const styles = theme => ({
     root: {
@@ -86,7 +102,7 @@ const versions = {
     8: "1.8"
 };
 
-class ResponsiveDrawer extends React.Component {
+class MainView extends React.Component {
     state = {
         open: false,
         snack: false,
@@ -250,244 +266,252 @@ class ResponsiveDrawer extends React.Component {
 
         return (
             <div className={classes.root}>
-                <CssBaseline />
-                <AppBar position="fixed" className={classes.appBar}>
-                    <Toolbar>
-                        <IconButton
-                            color="inherit"
-                            aria-label="打开侧边栏"
-                            onClick={this.handleDrawerToggle}
-                            className={classes.menuButton}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant="h6" color="inherit" noWrap>
-                            spu
+                <MuiThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <AppBar position="fixed" className={classes.appBar}>
+                        <Toolbar>
+                            <IconButton
+                                color="inherit"
+                                aria-label="打开侧边栏"
+                                onClick={this.handleDrawerToggle}
+                                className={classes.menuButton}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <Typography variant="h6" color="inherit" noWrap>
+                                SPU
                         </Typography>
-                    </Toolbar>
-                </AppBar>
-                <nav>
-                    <Drawer
-                        open={this.state.open}
-                        onClose={this.handleDrawerToggle}
-                        classes={{
-                            paper: classes.drawerPaper
-                        }}
-                    >
-                        <List>
-                            <ListItem button onClick={this.handleAboutDialogToggle}>
-                                <ListItemIcon>
-                                    <InfoIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="关于" />
-                            </ListItem>
-                            <ListItem button onClick={this.handleClearCache}>
-                                <ListItemIcon>
-                                    <DeleteIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="清除缓存" />
-                            </ListItem>
-                        </List>
-                        <Divider />
-                    </Drawer>
-                </nav>
-                <main className={classes.content}>
-                    <div className={classes.toolbar} />
-                    <Grid container spacing={8}>
-                        <Grid item lg md />
-                        <Grid item lg={4} md={8} xs={12}>
-                            <Paper className={classes.paper}>
-                                <div className={classes.center}>
-                                    <Button
-                                        className={classes.button}
-                                        onClick={this.handleFromMenuOpen}
+                        </Toolbar>
+                    </AppBar>
+                    <nav>
+                        <Drawer
+                            open={this.state.open}
+                            onClose={this.handleDrawerToggle}
+                            classes={{
+                                paper: classes.drawerPaper
+                            }}
+                        >
+                            <List>
+                                <ListItem button onClick={this.handleAboutDialogToggle}>
+                                    <ListItemIcon>
+                                        <InfoIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="关于" />
+                                </ListItem>
+                                <ListItem button disabled>
+                                    <ListItemIcon>
+                                        <ColorIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="更换主题" />
+                                </ListItem>
+                                <ListItem button onClick={this.handleClearCache}>
+                                    <ListItemIcon>
+                                        <DeleteIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="清除缓存" />
+                                </ListItem>
+                            </List>
+                            <Divider />
+                        </Drawer>
+                    </nav>
+                    <main className={classes.content}>
+                        <div className={classes.toolbar} />
+                        <Grid container spacing={8}>
+                            <Grid item lg md />
+                            <Grid item lg={4} md={8} xs={12}>
+                                <Paper className={classes.paper}>
+                                    <div className={classes.center}>
+                                        <Button
+                                            className={classes.button}
+                                            onClick={this.handleFromMenuOpen}
+                                        >
+                                            {versions[this.state.fromVersion]}
+                                        </Button>
+                                        <Menu
+                                            open={this.state.fromMenuOpen}
+                                            onClose={this.handleFromMenuToggle()}
+                                            anchorEl={this.state.anchorEl}
+                                        >
+                                            <MenuItem onClick={this.handleFromMenuToggle(13)}>
+                                                {versions[13]}
+                                            </MenuItem>
+                                            <MenuItem onClick={this.handleFromMenuToggle(12)}>
+                                                {versions[12]}
+                                            </MenuItem>
+                                            <MenuItem onClick={this.handleFromMenuToggle(11)}>
+                                                {versions[11]}
+                                            </MenuItem>
+                                            <MenuItem onClick={this.handleFromMenuToggle(9)}>
+                                                {versions[9]}
+                                            </MenuItem>
+                                            <MenuItem onClick={this.handleFromMenuToggle(8)}>
+                                                {versions[8]}
+                                            </MenuItem>
+                                        </Menu>
+                                        <Button
+                                            className={classes.button}
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={this.handleBeginTransform}
+                                        >
+                                            <TransferIcon />
+                                        </Button>
+                                        <Button
+                                            className={classes.button}
+                                            onClick={this.handleToMenuOpen}
+                                        >
+                                            {versions[this.state.toVersion]}
+                                        </Button>
+                                        <Menu
+                                            open={this.state.toMenuOpen}
+                                            onClose={this.handleToMenuToggle()}
+                                            anchorEl={this.state.anchorEl}
+                                        >
+                                            {this.state.fromVersion < 14 && (
+                                                <MenuItem onClick={this.handleToMenuToggle(14)}>
+                                                    {versions[14]}
+                                                </MenuItem>
+                                            )}
+                                            {this.state.fromVersion < 13 && (
+                                                <MenuItem onClick={this.handleToMenuToggle(13)}>
+                                                    {versions[13]}
+                                                </MenuItem>
+                                            )}
+                                            {this.state.fromVersion < 12 && (
+                                                <MenuItem onClick={this.handleToMenuToggle(12)}>
+                                                    {versions[12]}
+                                                </MenuItem>
+                                            )}
+                                            {this.state.fromVersion < 11 && (
+                                                <MenuItem onClick={this.handleToMenuToggle(11)}>
+                                                    {versions[11]}
+                                                </MenuItem>
+                                            )}
+                                            {this.state.fromVersion < 9 && (
+                                                <MenuItem onClick={this.handleToMenuToggle(9)}>
+                                                    {versions[9]}
+                                                </MenuItem>
+                                            )}
+                                        </Menu>
+                                    </div>
+                                </Paper>
+                            </Grid>
+                            <Grid item lg md />
+                        </Grid>
+                        <Grid container spacing={8}>
+                            <Grid item sm={6} xs={12}>
+                                <TextField
+                                    id="before"
+                                    multiline
+                                    label="欲转换的命令/函数"
+                                    className={classes.textField}
+                                    margin="normal"
+                                    variant="outlined"
+                                    fullWidth
+                                    onChange={this.handleChangeInputCommand}
+                                    value={this.state.inputCommands}
+                                />
+                            </Grid>
+                            <Grid item sm={6} xs={12}>
+                                <TextField
+                                    id="before"
+                                    multiline
+                                    label="转换后的命令"
+                                    className={classes.textField}
+                                    margin="normal"
+                                    variant="outlined"
+                                    fullWidth
+                                    value={this.state.resultObject.commands.join('\n')}
+                                    readOnly
+                                    ref="output"
+                                />
+                            </Grid>
+                        </Grid>
+                        {/* 消息条，出现日志信息 */}
+                        <SnackBar
+                            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                            open={this.state.snack === true}
+                            autoHideDuration={5000}
+                        >
+                            <SnackBarContent
+                                message={this.state.warningInfoStack.shift()}
+                                action={[
+                                    <IconButton
+                                        aria-label="Close"
+                                        key={233}
+                                        color="inherit"
+                                        onClick={this.handleCloseSnackBar}
                                     >
-                                        {versions[this.state.fromVersion]}
-                                    </Button>
-                                    <Menu
-                                        open={this.state.fromMenuOpen}
-                                        onClose={this.handleFromMenuToggle()}
-                                        anchorEl={this.state.anchorEl}
-                                    >
-                                        <MenuItem onClick={this.handleFromMenuToggle(13)}>
-                                            {versions[13]}
-                                        </MenuItem>
-                                        <MenuItem onClick={this.handleFromMenuToggle(12)}>
-                                            {versions[12]}
-                                        </MenuItem>
-                                        <MenuItem onClick={this.handleFromMenuToggle(11)}>
-                                            {versions[11]}
-                                        </MenuItem>
-                                        <MenuItem onClick={this.handleFromMenuToggle(9)}>
-                                            {versions[9]}
-                                        </MenuItem>
-                                        <MenuItem onClick={this.handleFromMenuToggle(8)}>
-                                            {versions[8]}
-                                        </MenuItem>
-                                    </Menu>
+                                        <CloseIcon />
+                                    </IconButton>
+                                ]}
+                            />
+                        </SnackBar>
+
+                        {/* 关于窗口 */}
+                        <Dialog
+                            open={this.state.aboutDialogOpen}
+                            onClose={this.handleAboutDialogToggle}
+                            scroll="paper"
+                        >
+                            <DialogTitle>关于</DialogTitle>
+                            <DialogContent>
+                                <Typography paragraph variant="p">
+                                    {"贡献者"}
+                                </Typography>
+                                <Typography paragraph variant="body1">
+                                    {"@SPGoding ("}
+                                    <Button href="http://www.mcbbs.net/?2444378">MCBBS</Button>{" "}
+                                    <Button href="https://github.com/SPGoding">GitHub</Button>{" "}
+                                    <Button href="https://afdian.net/@SPGoding">爱发电</Button>{")"}
+                                </Typography>
+                                <Typography paragraph variant="body1">
+                                    {"@langyo ("}
+                                    <Button href="http://www.mcbbs.net/?1287472">MCBBS</Button>{" "}
+                                    <Button href="https://github.com/langyo">GitHub</Button>{" "}
+                                    <Button href="https://afdian.net/@langyo">爱发电</Button>{")"}
+                                </Typography>
+                                <Typography paragraph variant="body1">
+                                    {"@pca006132 ("}
+                                    <Button href="http://www.mcbbs.net/?193048">MCBBS</Button>{" "}
+                                    <Button href="https://github.com/pca006132">GitHub</Button>{")"}
+                                </Typography>
+                                <Typography paragraph variant="body1">
                                     <Button
                                         className={classes.button}
                                         variant="outlined"
                                         color="primary"
-                                        onClick={this.handleBeginTransform}
+                                        href="https://github.com/SPGoding/spu"
                                     >
-                                        <TransferIcon />
+                                        {"该项目在 GitHub 的开源仓库地址"}
                                     </Button>
                                     <Button
                                         className={classes.button}
-                                        onClick={this.handleToMenuOpen}
+                                        variant="outlined"
+                                        color="primary"
+                                        href="http://www.mcbbs.net/thread-786687-1-1.html"
                                     >
-                                        {versions[this.state.toVersion]}
+                                        {"该项目在 MCBBS 的发布贴"}
                                     </Button>
-                                    <Menu
-                                        open={this.state.toMenuOpen}
-                                        onClose={this.handleToMenuToggle()}
-                                        anchorEl={this.state.anchorEl}
-                                    >
-                                        {this.state.fromVersion < 14 && (
-                                            <MenuItem onClick={this.handleToMenuToggle(14)}>
-                                                {versions[14]}
-                                            </MenuItem>
-                                        )}
-                                        {this.state.fromVersion < 13 && (
-                                            <MenuItem onClick={this.handleToMenuToggle(13)}>
-                                                {versions[13]}
-                                            </MenuItem>
-                                        )}
-                                        {this.state.fromVersion < 12 && (
-                                            <MenuItem onClick={this.handleToMenuToggle(12)}>
-                                                {versions[12]}
-                                            </MenuItem>
-                                        )}
-                                        {this.state.fromVersion < 11 && (
-                                            <MenuItem onClick={this.handleToMenuToggle(11)}>
-                                                {versions[11]}
-                                            </MenuItem>
-                                        )}
-                                        {this.state.fromVersion < 9 && (
-                                            <MenuItem onClick={this.handleToMenuToggle(9)}>
-                                                {versions[9]}
-                                            </MenuItem>
-                                        )}
-                                    </Menu>
-                                </div>
-                            </Paper>
-                        </Grid>
-                        <Grid item lg md />
-                    </Grid>
-                    <Grid container spacing={8}>
-                        <Grid item sm={6} xs={12}>
-                            <TextField
-                                id="before"
-                                multiline
-                                label="欲转换的命令/函数"
-                                className={classes.textField}
-                                margin="normal"
-                                variant="outlined"
-                                fullWidth
-                                onChange={this.handleChangeInputCommand}
-                                value={this.state.inputCommands}
-                            />
-                        </Grid>
-                        <Grid item sm={6} xs={12}>
-                            <TextField
-                                id="before"
-                                multiline
-                                label="转换后的命令"
-                                className={classes.textField}
-                                margin="normal"
-                                variant="outlined"
-                                fullWidth
-                                value={this.state.resultObject.commands.join('\n')}
-                                readOnly
-                                ref="output"
-                            />
-                        </Grid>
-                    </Grid>
-                    {/* 消息条，出现日志信息 */}
-                    <SnackBar
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        open={this.state.snack === true}
-                        autoHideDuration={5000}
-                    >
-                        <SnackBarContent
-                            message={this.state.warningInfoStack.shift()}
-                            action={[
-                                <IconButton
-                                    aria-label="Close"
-                                    key={233}
-                                    color="inherit"
-                                    onClick={this.handleCloseSnackBar}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            ]}
-                        />
-                    </SnackBar>
-
-                    {/* 关于窗口 */}
-                    <Dialog
-                        open={this.state.aboutDialogOpen}
-                        onClose={this.handleAboutDialogToggle}
-                        scroll="paper"
-                    >
-                        <DialogTitle>关于</DialogTitle>
-                        <DialogContent>
-                            <Typography paragraph variant="p">
-                                {"贡献者"}
-                            </Typography>
-                            <Typography paragraph variant="body1">
-                                {"@SPGoding ("}
-                                <Button href="http://www.mcbbs.net/?2444378">MCBBS</Button>{" "}
-                                <Button href="https://github.com/SPGoding">GitHub</Button>{" "}
-                                <Button href="https://afdian.net/@SPGoding">爱发电</Button>{")"}
-                            </Typography>
-                            <Typography paragraph variant="body1">
-                                {"@langyo ("}
-                                <Button href="http://www.mcbbs.net/?1287472">MCBBS</Button>{" "}
-                                <Button href="https://github.com/langyo">GitHub</Button>{" "}
-                                <Button href="https://afdian.net/@langyo">爱发电</Button>{")"}
-                            </Typography>
-                            <Typography paragraph variant="body1">
-                                {"@pca006132 ("}
-                                <Button href="http://www.mcbbs.net/?193048">MCBBS</Button>{" "}
-                                <Button href="https://github.com/pca006132">GitHub</Button>{")"}
-                            </Typography>
-                            <Typography paragraph variant="body1">
-                                <Button
-                                    className={classes.button}
-                                    variant="outlined"
-                                    color="primary"
-                                    href="https://github.com/SPGoding/spu"
-                                >
-                                    {"该项目在 GitHub 的开源仓库地址"}
+                                </Typography>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={this.handleAboutDialogToggle} color="primary">
+                                    {"确定"}
                                 </Button>
-                                <Button
-                                    className={classes.button}
-                                    variant="outlined"
-                                    color="primary"
-                                    href="http://www.mcbbs.net/thread-786687-1-1.html"
-                                >
-                                    {"该项目在 MCBBS 的发布贴"}
-                                </Button>
-                            </Typography>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.handleAboutDialogToggle} color="primary">
-                                {"确定"}
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-                </main>
+                            </DialogActions>
+                        </Dialog>
+                    </main>
+                </MuiThemeProvider>
             </div>
         );
     }
 }
 
-ResponsiveDrawer.propTypes = {
+MainView.propTypes = {
     classes: PropTypes.object.isRequired,
     container: PropTypes.object,
     theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(ResponsiveDrawer);
+export default withStyles(styles, { withTheme: true })(MainView);
