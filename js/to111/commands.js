@@ -930,11 +930,11 @@ Commands19To111.commands = {
                                                                     children: {
                                                                         param: {
                                                                             type: 'argument',
-                                                                            parser: 'brigadier:int',
+                                                                            parser: 'brigadier:integer',
                                                                             children: {
                                                                                 param: {
                                                                                     type: 'argument',
-                                                                                    parser: 'brigadier:int',
+                                                                                    parser: 'brigadier:integer',
                                                                                     executable: true,
                                                                                 }
                                                                             },

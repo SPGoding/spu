@@ -1275,11 +1275,11 @@ export class Commands112To113 {
                                                                         children: {
                                                                             param: {
                                                                                 type: 'argument',
-                                                                                parser: 'brigadier:int',
+                                                                                parser: 'brigadier:integer',
                                                                                 children: {
                                                                                     param: {
                                                                                         type: 'argument',
-                                                                                        parser: 'brigadier:int',
+                                                                                        parser: 'brigadier:integer',
                                                                                         executable: true,
                                                                                         spu_script: '%0 %1 $setItemParams%8%9 %2 %3 %4 %5 %6 %7'
                                                                                     }
