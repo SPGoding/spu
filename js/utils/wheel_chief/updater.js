@@ -44,7 +44,7 @@ class Updater {
                 return input;
         }
     }
-    static upLine(input, from) {
+    static upLine(input, _from) {
         return { command: input, warnings: [] };
     }
     upMinecraftBlockState(input) {
@@ -333,12 +333,6 @@ class Updater {
         return input;
     }
     upSpgodingItemNbt(input) {
-        {
-            const id = input.get('id');
-            if (id instanceof nbt_1.NbtString) {
-                id.set(this.upSpgodingItemName(id.get()));
-            }
-        }
         {
             let tag = input.get('tag');
             if (tag instanceof nbt_1.NbtCompound) {

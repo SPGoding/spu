@@ -145,7 +145,7 @@ export default class Items {
             } else {
                 ansName = 'minecraft:'
             }
-            if (data instanceof NbtInt || data instanceof NbtByte) {
+            if (data instanceof NbtInt || data instanceof NbtByte || data instanceof NbtShort) {
                 ansData = data.get()
             } else {
                 ansData = 0

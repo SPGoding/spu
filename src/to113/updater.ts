@@ -168,14 +168,16 @@ export class UpdaterTo113 extends Updater {
     }
 
     protected upSpgodingBlockNbt(input: NbtCompound) {
-        const ans = super.upSpgodingBlockNbt(input)
+        let ans = super.upSpgodingBlockNbt(input)
 
-        /* CustomName */{
+        /* CustomName */ {
             const customName = ans.get('CustomName')
             if (customName instanceof NbtString) {
                 customName.set(this.upSpgodingPreJson(customName.get()))
             }
         }
+
+        ans = Blocks.to113(Blocks.std112(undefined, undefined, undefined, undefined, input.toString())).getNbt()
 
         return ans
     }
@@ -414,14 +416,11 @@ export class UpdaterTo113 extends Updater {
         }
     }
 
-    protected upSpgodingItemName(input: string) {
-        return Items.to113(Items.std112(undefined, input)).getName()
-    }
-
     protected upSpgodingItemNbt(input: NbtCompound): NbtCompound {
         input = super.upSpgodingItemNbt(input)
 
-        input = Items.to113(Items.std112(undefined, undefined, undefined, undefined, input.toString())).getNbt()
+        const result = Items.to113(Items.std112(undefined, undefined, undefined, undefined, input.toString()))
+        input = result.getNbt()
 
         return input
     }

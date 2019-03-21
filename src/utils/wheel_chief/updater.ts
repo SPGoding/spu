@@ -44,7 +44,7 @@ export class Updater {
         }
     }
 
-    public static upLine(input: string, from: string): UpdateResult {
+    public static upLine(input: string, _from: string): UpdateResult {
         return { command: input, warnings: [] }
     }
 
@@ -367,12 +367,6 @@ export class Updater {
     }
 
     protected upSpgodingItemNbt(input: NbtCompound) {
-        /* id & Count */ {
-            const id = input.get('id')
-            if (id instanceof NbtString) {
-                id.set(this.upSpgodingItemName(id.get()))
-            }
-        }
         /* tag */ {
             let tag = input.get('tag')
             if (tag instanceof NbtCompound) {

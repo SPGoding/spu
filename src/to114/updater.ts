@@ -28,7 +28,7 @@ class SpuScriptExecutor113To114 implements SpuScriptExecutor {
 
 export class UpdaterTo114 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {
-        const ans: UpdateResult = { command: input, warnings: []}
+        const ans: UpdateResult = { command: input, warnings: [] }
 
         if (['18', '19', '111', '112'].indexOf(from) !== -1) {
             const result = UpdaterTo113.upLine(ans.command, from)
@@ -89,6 +89,19 @@ export class UpdaterTo114 extends Updater {
 
         if (result) {
             input = result[1]
+        }
+
+        return input
+    }
+
+    protected upSpgodingItemNbt(input: NbtCompound): NbtCompound {
+        input = super.upSpgodingItemNbt(input)
+
+        /* id */ {
+            const id = input.get('id')
+            if (id instanceof NbtString) {
+                id.set(this.upSpgodingItemName(id.get()))
+            }
         }
 
         return input

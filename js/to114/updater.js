@@ -77,6 +77,16 @@ class UpdaterTo114 extends updater_1.Updater {
         }
         return input;
     }
+    upSpgodingItemNbt(input) {
+        input = super.upSpgodingItemNbt(input);
+        {
+            const id = input.get('id');
+            if (id instanceof nbt_1.NbtString) {
+                id.set(this.upSpgodingItemName(id.get()));
+            }
+        }
+        return input;
+    }
     upSpgodingItemTagNbt(input) {
         input = super.upSpgodingItemTagNbt(input);
         {

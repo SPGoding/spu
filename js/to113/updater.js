@@ -159,13 +159,14 @@ class UpdaterTo113 extends updater_1.Updater {
         return blocks_1.default.to113(blocks_1.default.std112(undefined, input)).getName();
     }
     upSpgodingBlockNbt(input) {
-        const ans = super.upSpgodingBlockNbt(input);
+        let ans = super.upSpgodingBlockNbt(input);
         {
             const customName = ans.get('CustomName');
             if (customName instanceof nbt_1.NbtString) {
                 customName.set(this.upSpgodingPreJson(customName.get()));
             }
         }
+        ans = blocks_1.default.to113(blocks_1.default.std112(undefined, undefined, undefined, undefined, input.toString())).getNbt();
         return ans;
     }
     upSpgodingBlockParam(input) {
@@ -378,12 +379,10 @@ class UpdaterTo113 extends updater_1.Updater {
                 throw `Unknown gamemode: ${input}`;
         }
     }
-    upSpgodingItemName(input) {
-        return items_1.default.to113(items_1.default.std112(undefined, input)).getName();
-    }
     upSpgodingItemNbt(input) {
         input = super.upSpgodingItemNbt(input);
-        input = items_1.default.to113(items_1.default.std112(undefined, undefined, undefined, undefined, input.toString())).getNbt();
+        const result = items_1.default.to113(items_1.default.std112(undefined, undefined, undefined, undefined, input.toString()));
+        input = result.getNbt();
         return input;
     }
     upSpgodingItemTagNbt(input) {

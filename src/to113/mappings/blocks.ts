@@ -4,72 +4,72 @@ import { getNbtCompound, completeNamespace } from '../../utils/utils'
 import { Number_Number_String_StringArray } from './mapping'
 
 export class StdBlock {
-    private readonly isBlockTag: boolean
-    private readonly name: string
-    private readonly states: string[]
-    private readonly nbt: NbtCompound
+    private readonly _isBlockTag: boolean
+    private readonly _name: string
+    private readonly _states: string[]
+    private readonly _nbt: NbtCompound
 
     public constructor(name: string, states: string[], nbt: NbtCompound, isBlockTag: boolean = false) {
-        this.name = name
-        this.states = states.sort()
-        this.nbt = nbt
-        this.isBlockTag = isBlockTag
+        this._name = name
+        this._states = states.sort()
+        this._nbt = nbt
+        this._isBlockTag = isBlockTag
     }
 
     public getName() {
-        return this.name
+        return this._name
     }
 
     public getStates() {
-        return this.states
+        return this._states
     }
 
     public getNbt() {
-        return this.nbt
+        return this._nbt
     }
 
     public getFull() {
         let state = ''
         let nbt = ''
         if (this.hasStates()) {
-            state = `[${this.states.join()}]`
+            state = `[${this._states.join()}]`
         }
         if (this.hasNbt()) {
-            nbt = this.nbt.toString()
+            nbt = this._nbt.toString()
         }
-        return `${this.name}${state}${nbt}`
+        return `${this._name}${state}${nbt}`
     }
 
     public getNominal() {
         let state = ''
         if (this.hasStates()) {
-            state = `[${this.states.join()}]`
+            state = `[${this._states.join()}]`
         }
-        return `${this.name}${state}`
+        return `${this._name}${state}`
     }
 
     public hasStates() {
-        return this.states.length >= 1
+        return this._states.length >= 1
     }
 
     public hasNbt() {
-        return this.nbt.toString() !== '{}'
+        return this._nbt.toString() !== '{}'
     }
 
-    public hasBlockTag() {
-        return this.isBlockTag
+    public isBlockTag() {
+        return this._isBlockTag
     }
 }
 
 /**
- * Providing a map storing old block IDs and new block IDs.
+ * Provides methods to convert blockstacks from 1.12 to 1.13.
  */
 export default class Blocks {
     public static std112(id?: number, name?: string, data?: number, state?: string, nbt?: string): StdBlock {
         let ansName: string
         let ansStates: string[]
         let ansNbt: NbtCompound
-        let isRemovingStates = false // For metadata = -1.
+        let shouldRemoveStates = false // For metadata = -1.
 
         if (id && !name && !state) {
             if (!data) {
@@ -119,19 +119,19 @@ export default class Blocks {
                             return new StdBlock('#minecraft:planks', [], getNbtCompound(nbt), true)
                         default:
                             data = 0
-                            isRemovingStates = true
+                            shouldRemoveStates = true
                             break
                     }
                 }
                 const arr = Blocks.ID_Data_Name_States.find(v => v[1] === data && v[2] === name)
                 if (arr) {
-                    if (isRemovingStates) {
+                    if (shouldRemoveStates) {
                         ansStates = []
                     } else {
                         ansStates = arr[3]
                     }
                 } else {
-                    const brr = Blocks.ID_Data_Name_States.find(v =>v[2] === name)
+                    const brr = Blocks.ID_Data_Name_States.find(v => v[2] === name)
                     if (brr) {
                         throw `Block '${name}' doesn't have such data value: '${data}'.`
                     } else {
@@ -140,13 +140,16 @@ export default class Blocks {
                 }
             } else {
                 throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${
-                    state ? 'state, ' : ''
-                }${nbt ? 'nbt, ' : ''}.`
+                state ? 'state, ' : ''
+                }${nbt ? 'nbt' : ''}.`
             }
+        } else if (nbt && !id && !data && !state) {
+            ansName = name ? name : ''
+            ansStates = []
         } else {
             throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${
-                state ? 'state, ' : ''
-            }${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`
+            state ? 'state, ' : ''
+            }${nbt && nbt !== '{}' ? 'nbt' : ''}.`
         }
         ansNbt = getNbtCompound(nbt)
         return new StdBlock(ansName, ansStates, ansNbt)
@@ -156,8 +159,8 @@ export default class Blocks {
         let ansName = std.getName()
         let ansStates = std.getStates()
         const ansNbt = std.getNbt()
-        
-        if (std.hasBlockTag()) {
+
+        if (std.isBlockTag()) {
             return std
         }
 
@@ -169,183 +172,218 @@ export default class Blocks {
         switch (ansName) {
             case 'minecraft:black_banner':
             case 'minecraft:white_banner': {
-                /* Base */ {
-                    const base = ansNbt.get('Base')
-                    ansNbt.del('Base')
-                    if (base instanceof NbtInt) {
-                        ansName = `${Items.toNominalColor(15 - base.get(), 'banner')}`
-                    }
-                }
-                /* Patterns[n].Color */ {
-                    const patterns = ansNbt.get('Patterns')
-                    if (patterns instanceof NbtList) {
-                        patterns.forEach((p: NbtValue) => {
-                            if (p instanceof NbtCompound) {
-                                const color = p.get('Color')
-                                if (color instanceof NbtInt) {
-                                    color.set(15 - color.get())
-                                }
-                            }
-                        })
-                    }
-                }
+                ansName = Blocks.upBanner(ansNbt, ansName)
                 break
             }
             case 'minecraft:white_wall_banner': {
-                /* Base */ {
-                    const base = ansNbt.get('Base')
-                    ansNbt.del('Base')
-                    if (base instanceof NbtInt) {
-                        ansName = `${Items.toNominalColor(base.get(), 'wall_banner')}`
-                    }
-                }
-                /* Patterns[n].Color */ {
-                    const patterns = ansNbt.get('Patterns')
-                    if (patterns instanceof NbtList) {
-                        patterns.forEach((p: NbtValue) => {
-                            if (p instanceof NbtCompound) {
-                                const color = p.get('Color')
-                                if (color instanceof NbtInt) {
-                                    color.set(15 - color.get())
-                                }
-                            }
-                        })
-                    }
-                }
+                ansName = Blocks.upBanner(ansNbt, ansName)
                 break
             }
             case 'minecraft:red_bed': {
-                /* color */ {
-                    const color = ansNbt.get('color')
-                    ansNbt.del('color')
-                    if (color instanceof NbtInt) {
-                        ansName = Items.toNominalColor(color.get(), 'bed')
-                    }
-                }
+                ansName = Blocks.upBed(ansNbt, ansName)
                 break
             }
             case 'minecraft:potted_cactus': {
-                /* Item & Data */ {
-                    const item = ansNbt.get('Item')
-                    const data = ansNbt.get('Data')
-                    if (item instanceof NbtString && data instanceof NbtInt) {
-                        ansName = `minecraft:potted_${Blocks.to113(Blocks.std112(undefined, item.get(), data.get()))
-                            .getName()
-                            .replace('minecraft:', '')}`
-                    }
-                }
+                ansName = Blocks.upCactus(ansNbt, ansName)
                 break
             }
             case 'minecraft:jukebox': {
-                /* Record */ {
-                    ansNbt.del('Record')
-                }
+                Blocks.updateJukebox(ansNbt)
                 break
             }
             case 'minecraft:note_block': {
-                /* note & powered */ {
-                    const note = ansNbt.get('note')
-                    const powered = ansNbt.get('powered')
-                    if (
-                        (note instanceof NbtByte || note instanceof NbtInt) &&
-                        (powered instanceof NbtByte || powered instanceof NbtInt)
-                    ) {
-                        ansStates = Blocks.combineStates(ansStates, [
-                            `pitch=${note.get()}`,
-                            `powered=${powered.get() !== 0}`
-                        ])
-                    } else if (note instanceof NbtByte || note instanceof NbtInt) {
-                        ansStates = Blocks.combineStates(ansStates, [`pitch=${note.get()}`])
-                    } else if (powered instanceof NbtByte || powered instanceof NbtInt) {
-                        ansStates = Blocks.combineStates(ansStates, [`powered=${powered.get() !== 0}`])
-                    }
-                }
+                ansStates = Blocks.upNoteBlock(ansNbt, ansStates)
                 break
             }
             case 'minecraft:piston': {
-                /* blockId & blockData */ {
-                    const blockID = ansNbt.get('blockId')
-                    const blockData = ansNbt.get('blockData')
-                    ansNbt.del('blockId')
-                    ansNbt.del('blockData')
-                    if (blockID instanceof NbtInt && (blockData instanceof NbtInt || blockData === undefined)) {
-                        const blockState = Blocks.upNumericToBlockState(blockID, blockData)
-                        ansNbt.set('blockState', blockState)
-                    }
-                }
+                Blocks.upPiston(ansNbt)
                 break
             }
             case 'minecraft:skeleton_skull': {
-                /* SkullType & Rot */ {
-                    const skullType = ansNbt.get('SkullType')
-                    const rot = ansNbt.get('Rot')
-                    ansNbt.del('SkullType')
-                    ansNbt.del('Rot')
-
-                    let skullIDPrefix: 'skeleton' | 'wither_skeleton' | 'zombie' | 'player' | 'creeper' | 'dragon'
-                    let skullIDSuffix: 'skull' | 'head'
-
-                    if (skullType instanceof NbtByte || skullType instanceof NbtInt) {
-                        switch (skullType.get()) {
-                            case 0:
-                                skullIDPrefix = 'skeleton'
-                                skullIDSuffix = 'skull'
-                                break
-                            case 1:
-                                skullIDPrefix = 'wither_skeleton'
-                                skullIDSuffix = 'skull'
-                                break
-                            case 2:
-                                skullIDPrefix = 'zombie'
-                                skullIDSuffix = 'head'
-                                break
-                            case 3:
-                                skullIDPrefix = 'player'
-                                skullIDSuffix = 'head'
-                                break
-                            case 4:
-                                skullIDPrefix = 'creeper'
-                                skullIDSuffix = 'head'
-                                break
-                            case 5:
-                                skullIDPrefix = 'dragon'
-                                skullIDSuffix = 'head'
-                                break
-                            default:
-                                skullIDPrefix = 'skeleton'
-                                skullIDSuffix = 'skull'
-                                break
-                        }
-                    } else {
-                        skullIDPrefix = 'skeleton'
-                        skullIDSuffix = 'skull'
-                    }
-                    if (std.getStates().indexOf('facing=up') !== -1 || std.getStates().indexOf('facing=down') !== -1) {
-                        // Floor
-                        ansName = `${skullIDPrefix}_${skullIDSuffix}`
-                        if (rot instanceof NbtByte || rot instanceof NbtInt) {
-                            ansStates = [`rotation=${rot.get()}`]
-                        } else {
-                            ansStates = ['rotation=0']
-                        }
-                    } else {
-                        // Wall
-                        const arr = std.getStates().find(v => v.slice(0, 7) === 'facing=')
-                        let facing = 'north'
-                        if (arr) {
-                            facing = arr.split('=')[1]
-                        }
-                        ansName = `${skullIDPrefix}_wall_${skullIDSuffix}`
-                        ansStates = [`facing=${facing}`]
-                    }
-                }
+                const { name: resultName, states: resultStates } = Blocks.upSkull(ansNbt, std)
+                ansName = resultName
+                ansStates = resultStates
                 break
             }
+            case '':
+                Blocks.updateJukebox(ansNbt)
+                Blocks.upPiston(ansNbt)
+                ansName = Blocks.upBanner(ansNbt, ansName)
+                ansName = Blocks.upBed(ansNbt, ansName)
+                ansName = Blocks.upCactus(ansNbt, ansName)
+                ansStates = Blocks.upNoteBlock(ansNbt, ansStates)
+                const { name: resultName, states: resultStates } = Blocks.upSkull(ansNbt, std)
+                ansName = resultName
+                ansStates = resultStates
+                break
             default:
                 break
         }
 
         return new StdBlock(ansName, ansStates, ansNbt)
+    }
+
+    private static upPiston(ansNbt: NbtCompound) {
+        /* blockId & blockData */ {
+            const blockID = ansNbt.get('blockId')
+            const blockData = ansNbt.get('blockData')
+            ansNbt.del('blockId')
+            ansNbt.del('blockData')
+            if (blockID instanceof NbtInt && (blockData instanceof NbtInt || blockData === undefined)) {
+                const blockState = Blocks.upNumericToBlockState(blockID, blockData)
+                ansNbt.set('blockState', blockState)
+            }
+        }
+    }
+
+    private static upNoteBlock(nbt: NbtCompound, states: string[]) {
+        /* note & powered */ {
+            const note = nbt.get('note')
+            const powered = nbt.get('powered')
+            if ((note instanceof NbtByte || note instanceof NbtInt) &&
+                (powered instanceof NbtByte || powered instanceof NbtInt)) {
+                states = Blocks.combineStates(states, [
+                    `pitch=${note.get()}`,
+                    `powered=${powered.get() !== 0}`
+                ])
+            }
+            else if (note instanceof NbtByte || note instanceof NbtInt) {
+                states = Blocks.combineStates(states, [`pitch=${note.get()}`])
+            }
+            else if (powered instanceof NbtByte || powered instanceof NbtInt) {
+                states = Blocks.combineStates(states, [`powered=${powered.get() !== 0}`])
+            }
+        }
+
+        return states
+    }
+
+    private static upCactus(nbt: NbtCompound, name: string) {
+        /* Item & Data */ {
+            const item = nbt.get('Item')
+            const data = nbt.get('Data')
+            if (item instanceof NbtString && data instanceof NbtInt) {
+                name = `minecraft:potted_${Blocks.to113(Blocks.std112(undefined, item.get(), data.get()))
+                    .getName()
+                    .replace('minecraft:', '')}`
+            }
+        }
+
+        return name
+    }
+
+    private static updateJukebox(nbt: NbtCompound) {
+        /* Record */ {
+            nbt.del('Record')
+        }
+    }
+
+    private static upBed(nbt: NbtCompound, name: string) {
+        /* color */ {
+            const color = nbt.get('color')
+            nbt.del('color')
+            if (color instanceof NbtInt) {
+                name = Items.toNominalColor(color.get(), 'bed')
+            }
+        }
+
+        return name
+    }
+
+    private static upBanner(nbt: NbtCompound, name: string) {
+        /* Base */ {
+            const base = nbt.get('Base')
+            if (base instanceof NbtInt) {
+                name = `${Items.toNominalColor(15 - base.get(), 'banner')}`
+            }
+        }
+
+        /* Patterns[n].Color */ {
+            const patterns = nbt.get('Patterns')
+            if (patterns instanceof NbtList) {
+                patterns.forEach((p: NbtValue) => {
+                    if (p instanceof NbtCompound) {
+                        const color = p.get('Color')
+                        if (color instanceof NbtInt) {
+                            color.set(15 - color.get())
+                        }
+                    }
+                })
+            }
+        }
+
+        return name
+    }
+
+    private static upSkull(nbt: NbtCompound, std: StdBlock) {
+        let ansName: string
+        let ansStates: string[]
+
+        /* SkullType & Rot */ {
+            const skullType = nbt.get('SkullType')
+            const rot = nbt.get('Rot')
+            nbt.del('SkullType')
+            nbt.del('Rot')
+
+            let skullIDPrefix: 'skeleton' | 'wither_skeleton' | 'zombie' | 'player' | 'creeper' | 'dragon'
+            let skullIDSuffix: 'skull' | 'head'
+
+            if (skullType instanceof NbtByte || skullType instanceof NbtInt) {
+                switch (skullType.get()) {
+                    case 0:
+                        skullIDPrefix = 'skeleton'
+                        skullIDSuffix = 'skull'
+                        break
+                    case 1:
+                        skullIDPrefix = 'wither_skeleton'
+                        skullIDSuffix = 'skull'
+                        break
+                    case 2:
+                        skullIDPrefix = 'zombie'
+                        skullIDSuffix = 'head'
+                        break
+                    case 3:
+                        skullIDPrefix = 'player'
+                        skullIDSuffix = 'head'
+                        break
+                    case 4:
+                        skullIDPrefix = 'creeper'
+                        skullIDSuffix = 'head'
+                        break
+                    case 5:
+                        skullIDPrefix = 'dragon'
+                        skullIDSuffix = 'head'
+                        break
+                    default:
+                        skullIDPrefix = 'skeleton'
+                        skullIDSuffix = 'skull'
+                        break
+                }
+            } else {
+                skullIDPrefix = 'skeleton'
+                skullIDSuffix = 'skull'
+            }
+            if (std.getStates().indexOf('facing=up') !== -1 || std.getStates().indexOf('facing=down') !== -1) {
+                // Floor
+                ansName = `${skullIDPrefix}_${skullIDSuffix}`
+                if (rot instanceof NbtByte || rot instanceof NbtInt) {
+                    ansStates = [`rotation=${rot.get()}`]
+                } else {
+                    ansStates = ['rotation=0']
+                }
+            } else {
+                // Wall
+                const arr = std.getStates().find(v => v.slice(0, 7) === 'facing=')
+                let facing = 'north'
+                if (arr) {
+                    facing = arr.split('=')[1]
+                }
+                ansName = `${skullIDPrefix}_wall_${skullIDSuffix}`
+                ansStates = [`facing=${facing}`]
+            }
+        }
+
+        return { name: ansName, states: ansStates }
     }
 
     public static upNumericToBlockState(id: NbtShort | NbtInt, data?: NbtShort | NbtInt) {
@@ -418,7 +456,7 @@ export default class Blocks {
     /**
      * @example
      * [
-     *     ['1.13 Nominal ID', ..'1.12 Normlaize ID']
+     *     ['1.13 Nominal ID', ...'1.12 Normlaize IDs']
      * ]
      */
     public static Nominal112_Nominal113: string[][] = [
@@ -3674,7 +3712,7 @@ export default class Blocks {
         ['minecraft:cracked_stone_bricks', 'minecraft:stonebrick[variant=cracked_stonebrick]'],
         ['minecraft:chiseled_stone_bricks', 'minecraft:stonebrick[variant=chiseled_stonebrick]'],
         [
-            'minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]',
+            'minecraft:brown_mushroom_block[north=false,east=false,south=false,west=false,up=false,down=false]',
             'minecraft:brown_mushroom_block[variant=all_inside]'
         ],
         [
@@ -3717,9 +3755,9 @@ export default class Blocks {
             'minecraft:mushroom_stem[north=true,east=true,south:true,west=true,up:false,down=false]',
             'minecraft:brown_mushroom_block[variant=stem]'
         ],
-        ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-        ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-        ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
+        // ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
+        // ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
+        // ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
         [
             'minecraft:brown_mushroom_block[north=true,east=true,south:true,west=true,up:true,down=true]',
             'minecraft:brown_mushroom_block[variant=all_outside]'
@@ -3772,9 +3810,9 @@ export default class Blocks {
             'minecraft:mushroom_stem[north=true,east=true,south:true,west=true,up:false,down=false]',
             'minecraft:red_mushroom_block[variant=stem]'
         ],
-        ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-        ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-        ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
+        // ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
+        // ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
+        // ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
         [
             'minecraft:red_mushroom_block[north=true,east=true,south:true,west=true,up:true,down=true]',
             'minecraft:red_mushroom_block[variant=all_outside]'
@@ -4579,14 +4617,14 @@ export default class Blocks {
             'minecraft:tripwire[attached=false,disarmed=false,east:true,north=true,powered:true,south=true,west=false]',
             'minecraft:tripwire[attached=false,disarmed=false,east:true,north=true,powered:true,south=true,west=true]'
         ],
-        [
-            'minecraft:tripwire[attached=false,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
-            ''
-        ],
-        [
-            'minecraft:tripwire[attached=false,disarmed=false,east:false,north=false,powered:true,south=false,west=false]',
-            ''
-        ],
+        // [
+        //     'minecraft:tripwire[attached=false,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
+        //     ''
+        // ],
+        // [
+        //     'minecraft:tripwire[attached=false,disarmed=false,east:false,north=false,powered:true,south=false,west=false]',
+        //     ''
+        // ],
         [
             'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
             'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
@@ -4625,14 +4663,14 @@ export default class Blocks {
             'minecraft:tripwire[attached=true,disarmed=false,east:true,north=true,powered:true,south=true,west=false]',
             'minecraft:tripwire[attached=true,disarmed=false,east:true,north=true,powered:true,south=true,west=true]'
         ],
-        [
-            'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
-            ''
-        ],
-        [
-            'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:true,south=false,west=false]',
-            ''
-        ],
+        // [
+        //     'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
+        //     ''
+        // ],
+        // [
+        //     'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:true,south=false,west=false]',
+        //     ''
+        // ],
         [
             'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
             'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
@@ -4671,14 +4709,14 @@ export default class Blocks {
             'minecraft:tripwire[attached=false,disarmed=true,east:true,north=true,powered:true,south=true,west=false]',
             'minecraft:tripwire[attached=false,disarmed=true,east:true,north=true,powered:true,south=true,west=true]'
         ],
-        [
-            'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
-            ''
-        ],
-        [
-            'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:true,south=false,west=false]',
-            ''
-        ],
+        // [
+        //     'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
+        //     ''
+        // ],
+        // [
+        //     'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:true,south=false,west=false]',
+        //     ''
+        // ],
         [
             'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
             'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
@@ -4717,10 +4755,10 @@ export default class Blocks {
             'minecraft:tripwire[attached=true,disarmed=true,east:true,north=true,powered:true,south=true,west=false]',
             'minecraft:tripwire[attached=true,disarmed=true,east:true,north=true,powered:true,south=true,west=true]'
         ],
-        [
-            'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
-            ''
-        ],
+        // [
+        //     'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
+        //     ''
+        // ],
         ['minecraft:emerald_block', 'minecraft:emerald_block'],
         [
             'minecraft:spruce_stairs[facing=east,half=bottom,shape=straight]',

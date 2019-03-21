@@ -5,46 +5,46 @@ const items_1 = require("./items");
 const utils_1 = require("../../utils/utils");
 class StdBlock {
     constructor(name, states, nbt, isBlockTag = false) {
-        this.name = name;
-        this.states = states.sort();
-        this.nbt = nbt;
-        this.isBlockTag = isBlockTag;
+        this._name = name;
+        this._states = states.sort();
+        this._nbt = nbt;
+        this._isBlockTag = isBlockTag;
     }
     getName() {
-        return this.name;
+        return this._name;
     }
     getStates() {
-        return this.states;
+        return this._states;
     }
     getNbt() {
-        return this.nbt;
+        return this._nbt;
     }
     getFull() {
         let state = '';
         let nbt = '';
         if (this.hasStates()) {
-            state = `[${this.states.join()}]`;
+            state = `[${this._states.join()}]`;
         }
         if (this.hasNbt()) {
-            nbt = this.nbt.toString();
+            nbt = this._nbt.toString();
         }
-        return `${this.name}${state}${nbt}`;
+        return `${this._name}${state}${nbt}`;
     }
     getNominal() {
         let state = '';
         if (this.hasStates()) {
-            state = `[${this.states.join()}]`;
+            state = `[${this._states.join()}]`;
         }
-        return `${this.name}${state}`;
+        return `${this._name}${state}`;
     }
     hasStates() {
-        return this.states.length >= 1;
+        return this._states.length >= 1;
     }
     hasNbt() {
-        return this.nbt.toString() !== '{}';
+        return this._nbt.toString() !== '{}';
     }
-    hasBlockTag() {
-        return this.isBlockTag;
+    isBlockTag() {
+        return this._isBlockTag;
     }
 }
 exports.StdBlock = StdBlock;
@@ -53,7 +53,7 @@ class Blocks {
         let ansName;
         let ansStates;
         let ansNbt;
-        let isRemovingStates = false;
+        let shouldRemoveStates = false;
         if (id && !name && !state) {
             if (!data) {
                 data = 0;
@@ -108,13 +108,13 @@ class Blocks {
                             return new StdBlock('#minecraft:planks', [], utils_1.getNbtCompound(nbt), true);
                         default:
                             data = 0;
-                            isRemovingStates = true;
+                            shouldRemoveStates = true;
                             break;
                     }
                 }
                 const arr = Blocks.ID_Data_Name_States.find(v => v[1] === data && v[2] === name);
                 if (arr) {
-                    if (isRemovingStates) {
+                    if (shouldRemoveStates) {
                         ansStates = [];
                     }
                     else {
@@ -132,11 +132,15 @@ class Blocks {
                 }
             }
             else {
-                throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${state ? 'state, ' : ''}${nbt ? 'nbt, ' : ''}.`;
+                throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${state ? 'state, ' : ''}${nbt ? 'nbt' : ''}.`;
             }
         }
+        else if (nbt && !id && !data && !state) {
+            ansName = name ? name : '';
+            ansStates = [];
+        }
         else {
-            throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${state ? 'state, ' : ''}${nbt && nbt !== '{}' ? 'nbt, ' : ''}.`;
+            throw `Argument Error! Used ${id ? 'id, ' : ''}${data ? 'data, ' : ''}${name ? 'name, ' : ''}${state ? 'state, ' : ''}${nbt && nbt !== '{}' ? 'nbt' : ''}.`;
         }
         ansNbt = utils_1.getNbtCompound(nbt);
         return new StdBlock(ansName, ansStates, ansNbt);
@@ -145,7 +149,7 @@ class Blocks {
         let ansName = std.getName();
         let ansStates = std.getStates();
         const ansNbt = std.getNbt();
-        if (std.hasBlockTag()) {
+        if (std.isBlockTag()) {
             return std;
         }
         const arr = Blocks.Nominal112_Nominal113.find(v => v.indexOf(std.getNominal()) >= 1);
@@ -156,181 +160,202 @@ class Blocks {
         switch (ansName) {
             case 'minecraft:black_banner':
             case 'minecraft:white_banner': {
-                {
-                    const base = ansNbt.get('Base');
-                    ansNbt.del('Base');
-                    if (base instanceof nbt_1.NbtInt) {
-                        ansName = `${items_1.default.toNominalColor(15 - base.get(), 'banner')}`;
-                    }
-                }
-                {
-                    const patterns = ansNbt.get('Patterns');
-                    if (patterns instanceof nbt_1.NbtList) {
-                        patterns.forEach((p) => {
-                            if (p instanceof nbt_1.NbtCompound) {
-                                const color = p.get('Color');
-                                if (color instanceof nbt_1.NbtInt) {
-                                    color.set(15 - color.get());
-                                }
-                            }
-                        });
-                    }
-                }
+                ansName = Blocks.upBanner(ansNbt, ansName);
                 break;
             }
             case 'minecraft:white_wall_banner': {
-                {
-                    const base = ansNbt.get('Base');
-                    ansNbt.del('Base');
-                    if (base instanceof nbt_1.NbtInt) {
-                        ansName = `${items_1.default.toNominalColor(base.get(), 'wall_banner')}`;
-                    }
-                }
-                {
-                    const patterns = ansNbt.get('Patterns');
-                    if (patterns instanceof nbt_1.NbtList) {
-                        patterns.forEach((p) => {
-                            if (p instanceof nbt_1.NbtCompound) {
-                                const color = p.get('Color');
-                                if (color instanceof nbt_1.NbtInt) {
-                                    color.set(15 - color.get());
-                                }
-                            }
-                        });
-                    }
-                }
+                ansName = Blocks.upBanner(ansNbt, ansName);
                 break;
             }
             case 'minecraft:red_bed': {
-                {
-                    const color = ansNbt.get('color');
-                    ansNbt.del('color');
-                    if (color instanceof nbt_1.NbtInt) {
-                        ansName = items_1.default.toNominalColor(color.get(), 'bed');
-                    }
-                }
+                ansName = Blocks.upBed(ansNbt, ansName);
                 break;
             }
             case 'minecraft:potted_cactus': {
-                {
-                    const item = ansNbt.get('Item');
-                    const data = ansNbt.get('Data');
-                    if (item instanceof nbt_1.NbtString && data instanceof nbt_1.NbtInt) {
-                        ansName = `minecraft:potted_${Blocks.to113(Blocks.std112(undefined, item.get(), data.get()))
-                            .getName()
-                            .replace('minecraft:', '')}`;
-                    }
-                }
+                ansName = Blocks.upCactus(ansNbt, ansName);
                 break;
             }
             case 'minecraft:jukebox': {
-                {
-                    ansNbt.del('Record');
-                }
+                Blocks.updateJukebox(ansNbt);
                 break;
             }
             case 'minecraft:note_block': {
-                {
-                    const note = ansNbt.get('note');
-                    const powered = ansNbt.get('powered');
-                    if ((note instanceof nbt_1.NbtByte || note instanceof nbt_1.NbtInt) &&
-                        (powered instanceof nbt_1.NbtByte || powered instanceof nbt_1.NbtInt)) {
-                        ansStates = Blocks.combineStates(ansStates, [
-                            `pitch=${note.get()}`,
-                            `powered=${powered.get() !== 0}`
-                        ]);
-                    }
-                    else if (note instanceof nbt_1.NbtByte || note instanceof nbt_1.NbtInt) {
-                        ansStates = Blocks.combineStates(ansStates, [`pitch=${note.get()}`]);
-                    }
-                    else if (powered instanceof nbt_1.NbtByte || powered instanceof nbt_1.NbtInt) {
-                        ansStates = Blocks.combineStates(ansStates, [`powered=${powered.get() !== 0}`]);
-                    }
-                }
+                ansStates = Blocks.upNoteBlock(ansNbt, ansStates);
                 break;
             }
             case 'minecraft:piston': {
-                {
-                    const blockID = ansNbt.get('blockId');
-                    const blockData = ansNbt.get('blockData');
-                    ansNbt.del('blockId');
-                    ansNbt.del('blockData');
-                    if (blockID instanceof nbt_1.NbtInt && (blockData instanceof nbt_1.NbtInt || blockData === undefined)) {
-                        const blockState = Blocks.upNumericToBlockState(blockID, blockData);
-                        ansNbt.set('blockState', blockState);
-                    }
-                }
+                Blocks.upPiston(ansNbt);
                 break;
             }
             case 'minecraft:skeleton_skull': {
-                {
-                    const skullType = ansNbt.get('SkullType');
-                    const rot = ansNbt.get('Rot');
-                    ansNbt.del('SkullType');
-                    ansNbt.del('Rot');
-                    let skullIDPrefix;
-                    let skullIDSuffix;
-                    if (skullType instanceof nbt_1.NbtByte || skullType instanceof nbt_1.NbtInt) {
-                        switch (skullType.get()) {
-                            case 0:
-                                skullIDPrefix = 'skeleton';
-                                skullIDSuffix = 'skull';
-                                break;
-                            case 1:
-                                skullIDPrefix = 'wither_skeleton';
-                                skullIDSuffix = 'skull';
-                                break;
-                            case 2:
-                                skullIDPrefix = 'zombie';
-                                skullIDSuffix = 'head';
-                                break;
-                            case 3:
-                                skullIDPrefix = 'player';
-                                skullIDSuffix = 'head';
-                                break;
-                            case 4:
-                                skullIDPrefix = 'creeper';
-                                skullIDSuffix = 'head';
-                                break;
-                            case 5:
-                                skullIDPrefix = 'dragon';
-                                skullIDSuffix = 'head';
-                                break;
-                            default:
-                                skullIDPrefix = 'skeleton';
-                                skullIDSuffix = 'skull';
-                                break;
-                        }
-                    }
-                    else {
-                        skullIDPrefix = 'skeleton';
-                        skullIDSuffix = 'skull';
-                    }
-                    if (std.getStates().indexOf('facing=up') !== -1 || std.getStates().indexOf('facing=down') !== -1) {
-                        ansName = `${skullIDPrefix}_${skullIDSuffix}`;
-                        if (rot instanceof nbt_1.NbtByte || rot instanceof nbt_1.NbtInt) {
-                            ansStates = [`rotation=${rot.get()}`];
-                        }
-                        else {
-                            ansStates = ['rotation=0'];
-                        }
-                    }
-                    else {
-                        const arr = std.getStates().find(v => v.slice(0, 7) === 'facing=');
-                        let facing = 'north';
-                        if (arr) {
-                            facing = arr.split('=')[1];
-                        }
-                        ansName = `${skullIDPrefix}_wall_${skullIDSuffix}`;
-                        ansStates = [`facing=${facing}`];
-                    }
-                }
+                const { name: resultName, states: resultStates } = Blocks.upSkull(ansNbt, std);
+                ansName = resultName;
+                ansStates = resultStates;
                 break;
             }
+            case '':
+                Blocks.updateJukebox(ansNbt);
+                Blocks.upPiston(ansNbt);
+                ansName = Blocks.upBanner(ansNbt, ansName);
+                ansName = Blocks.upBed(ansNbt, ansName);
+                ansName = Blocks.upCactus(ansNbt, ansName);
+                ansStates = Blocks.upNoteBlock(ansNbt, ansStates);
+                const { name: resultName, states: resultStates } = Blocks.upSkull(ansNbt, std);
+                ansName = resultName;
+                ansStates = resultStates;
+                break;
             default:
                 break;
         }
         return new StdBlock(ansName, ansStates, ansNbt);
+    }
+    static upPiston(ansNbt) {
+        {
+            const blockID = ansNbt.get('blockId');
+            const blockData = ansNbt.get('blockData');
+            ansNbt.del('blockId');
+            ansNbt.del('blockData');
+            if (blockID instanceof nbt_1.NbtInt && (blockData instanceof nbt_1.NbtInt || blockData === undefined)) {
+                const blockState = Blocks.upNumericToBlockState(blockID, blockData);
+                ansNbt.set('blockState', blockState);
+            }
+        }
+    }
+    static upNoteBlock(nbt, states) {
+        {
+            const note = nbt.get('note');
+            const powered = nbt.get('powered');
+            if ((note instanceof nbt_1.NbtByte || note instanceof nbt_1.NbtInt) &&
+                (powered instanceof nbt_1.NbtByte || powered instanceof nbt_1.NbtInt)) {
+                states = Blocks.combineStates(states, [
+                    `pitch=${note.get()}`,
+                    `powered=${powered.get() !== 0}`
+                ]);
+            }
+            else if (note instanceof nbt_1.NbtByte || note instanceof nbt_1.NbtInt) {
+                states = Blocks.combineStates(states, [`pitch=${note.get()}`]);
+            }
+            else if (powered instanceof nbt_1.NbtByte || powered instanceof nbt_1.NbtInt) {
+                states = Blocks.combineStates(states, [`powered=${powered.get() !== 0}`]);
+            }
+        }
+        return states;
+    }
+    static upCactus(nbt, name) {
+        {
+            const item = nbt.get('Item');
+            const data = nbt.get('Data');
+            if (item instanceof nbt_1.NbtString && data instanceof nbt_1.NbtInt) {
+                name = `minecraft:potted_${Blocks.to113(Blocks.std112(undefined, item.get(), data.get()))
+                    .getName()
+                    .replace('minecraft:', '')}`;
+            }
+        }
+        return name;
+    }
+    static updateJukebox(nbt) {
+        {
+            nbt.del('Record');
+        }
+    }
+    static upBed(nbt, name) {
+        {
+            const color = nbt.get('color');
+            nbt.del('color');
+            if (color instanceof nbt_1.NbtInt) {
+                name = items_1.default.toNominalColor(color.get(), 'bed');
+            }
+        }
+        return name;
+    }
+    static upBanner(nbt, name) {
+        {
+            const base = nbt.get('Base');
+            if (base instanceof nbt_1.NbtInt) {
+                name = `${items_1.default.toNominalColor(15 - base.get(), 'banner')}`;
+            }
+        }
+        {
+            const patterns = nbt.get('Patterns');
+            if (patterns instanceof nbt_1.NbtList) {
+                patterns.forEach((p) => {
+                    if (p instanceof nbt_1.NbtCompound) {
+                        const color = p.get('Color');
+                        if (color instanceof nbt_1.NbtInt) {
+                            color.set(15 - color.get());
+                        }
+                    }
+                });
+            }
+        }
+        return name;
+    }
+    static upSkull(nbt, std) {
+        let ansName;
+        let ansStates;
+        {
+            const skullType = nbt.get('SkullType');
+            const rot = nbt.get('Rot');
+            nbt.del('SkullType');
+            nbt.del('Rot');
+            let skullIDPrefix;
+            let skullIDSuffix;
+            if (skullType instanceof nbt_1.NbtByte || skullType instanceof nbt_1.NbtInt) {
+                switch (skullType.get()) {
+                    case 0:
+                        skullIDPrefix = 'skeleton';
+                        skullIDSuffix = 'skull';
+                        break;
+                    case 1:
+                        skullIDPrefix = 'wither_skeleton';
+                        skullIDSuffix = 'skull';
+                        break;
+                    case 2:
+                        skullIDPrefix = 'zombie';
+                        skullIDSuffix = 'head';
+                        break;
+                    case 3:
+                        skullIDPrefix = 'player';
+                        skullIDSuffix = 'head';
+                        break;
+                    case 4:
+                        skullIDPrefix = 'creeper';
+                        skullIDSuffix = 'head';
+                        break;
+                    case 5:
+                        skullIDPrefix = 'dragon';
+                        skullIDSuffix = 'head';
+                        break;
+                    default:
+                        skullIDPrefix = 'skeleton';
+                        skullIDSuffix = 'skull';
+                        break;
+                }
+            }
+            else {
+                skullIDPrefix = 'skeleton';
+                skullIDSuffix = 'skull';
+            }
+            if (std.getStates().indexOf('facing=up') !== -1 || std.getStates().indexOf('facing=down') !== -1) {
+                ansName = `${skullIDPrefix}_${skullIDSuffix}`;
+                if (rot instanceof nbt_1.NbtByte || rot instanceof nbt_1.NbtInt) {
+                    ansStates = [`rotation=${rot.get()}`];
+                }
+                else {
+                    ansStates = ['rotation=0'];
+                }
+            }
+            else {
+                const arr = std.getStates().find(v => v.slice(0, 7) === 'facing=');
+                let facing = 'north';
+                if (arr) {
+                    facing = arr.split('=')[1];
+                }
+                ansName = `${skullIDPrefix}_wall_${skullIDSuffix}`;
+                ansStates = [`facing=${facing}`];
+            }
+        }
+        return { name: ansName, states: ansStates };
     }
     static upNumericToBlockState(id, data) {
         const blockState = new nbt_1.NbtCompound();
@@ -3646,7 +3671,7 @@ Blocks.Nominal112_Nominal113 = [
     ['minecraft:cracked_stone_bricks', 'minecraft:stonebrick[variant=cracked_stonebrick]'],
     ['minecraft:chiseled_stone_bricks', 'minecraft:stonebrick[variant=chiseled_stonebrick]'],
     [
-        'minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]',
+        'minecraft:brown_mushroom_block[north=false,east=false,south=false,west=false,up=false,down=false]',
         'minecraft:brown_mushroom_block[variant=all_inside]'
     ],
     [
@@ -3689,9 +3714,6 @@ Blocks.Nominal112_Nominal113 = [
         'minecraft:mushroom_stem[north=true,east=true,south:true,west=true,up:false,down=false]',
         'minecraft:brown_mushroom_block[variant=stem]'
     ],
-    ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-    ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-    ['minecraft:brown_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
     [
         'minecraft:brown_mushroom_block[north=true,east=true,south:true,west=true,up:true,down=true]',
         'minecraft:brown_mushroom_block[variant=all_outside]'
@@ -3744,9 +3766,6 @@ Blocks.Nominal112_Nominal113 = [
         'minecraft:mushroom_stem[north=true,east=true,south:true,west=true,up:false,down=false]',
         'minecraft:red_mushroom_block[variant=stem]'
     ],
-    ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-    ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
-    ['minecraft:red_mushroom_block[north=false,east=false,south:false,west=false,up:false,down=false]', ''],
     [
         'minecraft:red_mushroom_block[north=true,east=true,south:true,west=true,up:true,down=true]',
         'minecraft:red_mushroom_block[variant=all_outside]'
@@ -4552,14 +4571,6 @@ Blocks.Nominal112_Nominal113 = [
         'minecraft:tripwire[attached=false,disarmed=false,east:true,north=true,powered:true,south=true,west=true]'
     ],
     [
-        'minecraft:tripwire[attached=false,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
-        ''
-    ],
-    [
-        'minecraft:tripwire[attached=false,disarmed=false,east:false,north=false,powered:true,south=false,west=false]',
-        ''
-    ],
-    [
         'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
         'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
         'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=true]',
@@ -4596,14 +4607,6 @@ Blocks.Nominal112_Nominal113 = [
         'minecraft:tripwire[attached=true,disarmed=false,east:true,north=true,powered:true,south=false,west=true]',
         'minecraft:tripwire[attached=true,disarmed=false,east:true,north=true,powered:true,south=true,west=false]',
         'minecraft:tripwire[attached=true,disarmed=false,east:true,north=true,powered:true,south=true,west=true]'
-    ],
-    [
-        'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:false,south=false,west=false]',
-        ''
-    ],
-    [
-        'minecraft:tripwire[attached=true,disarmed=false,east:false,north=false,powered:true,south=false,west=false]',
-        ''
     ],
     [
         'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
@@ -4644,14 +4647,6 @@ Blocks.Nominal112_Nominal113 = [
         'minecraft:tripwire[attached=false,disarmed=true,east:true,north=true,powered:true,south=true,west=true]'
     ],
     [
-        'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
-        ''
-    ],
-    [
-        'minecraft:tripwire[attached=false,disarmed=true,east:false,north=false,powered:true,south=false,west=false]',
-        ''
-    ],
-    [
         'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
         'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
         'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=true]',
@@ -4688,10 +4683,6 @@ Blocks.Nominal112_Nominal113 = [
         'minecraft:tripwire[attached=true,disarmed=true,east:true,north=true,powered:true,south=false,west=true]',
         'minecraft:tripwire[attached=true,disarmed=true,east:true,north=true,powered:true,south=true,west=false]',
         'minecraft:tripwire[attached=true,disarmed=true,east:true,north=true,powered:true,south=true,west=true]'
-    ],
-    [
-        'minecraft:tripwire[attached=true,disarmed=true,east:false,north=false,powered:false,south=false,west=false]',
-        ''
     ],
     ['minecraft:emerald_block', 'minecraft:emerald_block'],
     [

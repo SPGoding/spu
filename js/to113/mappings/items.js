@@ -121,7 +121,7 @@ class Items {
             else {
                 ansName = 'minecraft:';
             }
-            if (data instanceof nbt_1.NbtInt || data instanceof nbt_1.NbtByte) {
+            if (data instanceof nbt_1.NbtInt || data instanceof nbt_1.NbtByte || data instanceof nbt_1.NbtShort) {
                 ansData = data.get();
             }
             else {
