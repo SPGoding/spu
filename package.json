@@ -30,7 +30,8 @@
         "mocha": "^5.2.0",
         "power-assert": "^1.6.1",
         "nyc": "^11.9.0",
-        "ts-node": "^6.0.3",
+        "power-assert": "^1.5.0",
+        "ts-node": "^6.2.0",
         "typescript": "^2.9.2",
         "uglify-js-es6": "^2.8.9"
     },
@@ -44,9 +45,7 @@
         "type": "git",
         "url": "git+https://github.com/SPGoding/spu.git"
     },
-    "keywords": [
-
-    ],
+    "keywords": [],
     "author": "SPGoding",
     "license": "MIT",
     "bugs": {
