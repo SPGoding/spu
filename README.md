@@ -1,6 +1,6 @@
 # spu
 
-![Build Status](https://travis-ci.com/SPGoding/spu.svg?branch=master)](https://travis-ci.com/SPGoding/spu)
+[![Build Status](https://travis-ci.com/SPGoding/spu.svg?branch=master)](https://travis-ci.com/SPGoding/spu)
 ![GitHub Top Language](https://img.shields.io/github/languages/top/CommandBlockLogic/spu.svg)
 ![License](https://img.shields.io/github/license/CommandBlockLogic/spu.svg)
 
