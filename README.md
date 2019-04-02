@@ -115,23 +115,15 @@ Please note that this project is released with a [Contributor Code of Conduct](h
 
 3.  Edit files in `./src`.
 
-4. Run tests to make sure that nothing has been broken.
+4.  If you add new features, it's strongly recommend to write tests for them. All tests should be put under `./src/test`.
 
-    `npm test`
-
-    If you add new features, it's strongly recommend to write tests for them. All tests should be put under `./src/test`.
-
-5.  Build it.
-
-    `npm run build`
-
-6. Commit and push your changes. There is some tips for the commit message:
+5.  Commit and push your changes. There is some tips for the commit message:
     1. Begins with an emoji character, like `:sparkles:` and `:bug:`, see also [gitmoji](http://gitmoji.carloscuesta.me/).
     2. The first letter is expected to be uppercased.
     3. Use the basic form of verb as the first word.
     4. Ends the message with a period (`.`).
     e.g. `:bug:Fix a silly bug.`
 
-7.  Send `Pull Request` to me.
+6.  Send `Pull Request` to me. The travis-ci will build and test your changes automaticly.
 
 There must be lots of mistakes and bad practice in this repository. If you find something not good or not sure whether it's not good, please don't hesitate to tell me!

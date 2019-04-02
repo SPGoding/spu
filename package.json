@@ -44,9 +44,7 @@
         "type": "git",
         "url": "git+https://github.com/SPGoding/spu.git"
     },
-    "keywords": [
-
-    ],
+    "keywords": [],
     "author": "SPGoding",
     "license": "MIT",
     "bugs": {
