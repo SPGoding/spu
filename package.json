@@ -21,7 +21,7 @@
         "react-dom": "^16.8.1"
     },
     "devDependencies": {
-        "@types/mocha": "^5.2.0",
+        "@types/mocha": "^5.2.6",
         "@types/power-assert": "^1.5.0",
         "babelify": "^10.0.0",
         "browserify": "^16.2.0",
@@ -44,7 +44,9 @@
         "type": "git",
         "url": "git+https://github.com/SPGoding/spu.git"
     },
-    "keywords": [],
+    "keywords": [
+
+    ],
     "author": "SPGoding",
     "license": "MIT",
     "bugs": {
