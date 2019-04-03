@@ -29,7 +29,7 @@
         "intelli-espower-loader": "^1.0.1",
         "mocha": "^5.2.0",
         "power-assert": "^1.6.1",
-        "nyc": "^11.9.0",
+        "nyc": "^13.3.0",
         "power-assert": "^1.5.0",
         "ts-node": "^6.2.0",
         "typescript": "^2.9.2",
