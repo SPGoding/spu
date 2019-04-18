@@ -8,10 +8,10 @@
         "test": "src/tests/"
     },
     "dependencies": {
-        "@babel/cli": "^7.2.3",
-        "@babel/core": "^7.4.0",
+        "@babel/cli": "^7.4.3",
+        "@babel/core": "^7.4.3",
         "@babel/plugin-proposal-class-properties": "^7.4.0",
-        "@babel/preset-env": "^7.4.0",
+        "@babel/preset-env": "^7.4.3",
         "@babel/preset-react": "^7.0.0",
         "@material-ui/core": "^3.9.3",
         "babel-loader": "^8.0.5",
@@ -28,8 +28,8 @@
         "espower-typescript": "^8.1.4",
         "intelli-espower-loader": "^1.0.1",
         "mocha": "^5.2.0",
-        "nyc": "^13.3.0",
         "power-assert": "^1.5.0",
+        "nyc": "^13.3.0",
         "ts-node": "^6.2.0",
         "typescript": "^2.9.2",
         "uglify-js-es6": "^2.8.9"
@@ -44,7 +44,9 @@
         "type": "git",
         "url": "git+https://github.com/SPGoding/spu.git"
     },
-    "keywords": [],
+    "keywords": [
+
+    ],
     "author": "SPGoding",
     "license": "MIT",
     "bugs": {
