@@ -15,7 +15,7 @@ Type [https://spu.spgoding.com](https://spu.spgoding.com) in the web browser, or
 - `src`: Main typescript codes and a few jsx files under `./view/`.
 - `js`: All compiled js files. Files in `/src/view/` will import js from this directory.
 - `tmp`: Temp directory.
-- `dist`: The web page. Will be pushed to `gh-pages` branch automaticaly and showed on https://spu.spgoding.com. 
+- `dist`: The web page. Will be pushed to `gh-pages` branch automatically and showed on https://spu.spgoding.com. 
 
 ## How it Works
 
@@ -124,6 +124,6 @@ Please note that this project is released with a [Contributor Code of Conduct](h
     4. Ends the message with a period (`.`).
     e.g. `:bug:Fix a silly bug.`
 
-6.  Send `Pull Request` to me. The travis-ci will build and test your changes automaticly.
+6.  Send `Pull Request` to me. The travis-ci will build and test your changes automatically.
 
 There must be lots of mistakes and bad practice in this repository. If you find something not good or not sure whether it's not good, please don't hesitate to tell me!
