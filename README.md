@@ -14,8 +14,8 @@ Type [https://spu.spgoding.com](https://spu.spgoding.com) in the web browser, or
 
 - `src`: Main typescript codes and a few jsx files under `./view/`.
 - `js`: All compiled js files. Files in `/src/view/` will import js from this directory.
-- `dist`: Temp directory.
-- `docs`: The web page showed on https://spu.spgoding.com.
+- `tmp`: Temp directory.
+- `dist`: The web page. Will be pushed to `gh-pages` branch automaticaly and showed on https://spu.spgoding.com. 
 
 ## How it Works
 
