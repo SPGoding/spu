@@ -1,4 +1,15 @@
 language: node_js
 node_js:
   - "9"
-# script: npm run build
+script:
+- npm install
+- npm test
+- npm run build
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  on:
+    branch: master
+  local_dir: dist

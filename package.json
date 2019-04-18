@@ -36,7 +36,7 @@
     },
     "scripts": {
         "build:ts": "echo Remember to update the package version && tsc",
-        "build:js": "browserify ./src/view/mainViewRender.jsx -o ./dist/uiBundle.js -t babelify && uglifyjs ./dist/uiBundle.js -m -c -o ./docs/bundle.min.js",
+        "build:js": "browserify ./src/view/mainViewRender.jsx -o ./tmp/uiBundle.js -t babelify && uglifyjs ./tmp/uiBundle.js -m -c -o ./dist/bundle.min.js",
         "build": "npm run build:ts && npm run build:js",
         "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
     },
