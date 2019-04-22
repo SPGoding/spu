@@ -5,38 +5,39 @@ import { UpdaterTo113 } from './to113/updater'
 import { UpdaterTo114 } from './to114/updater'
 import { isWhiteSpace, UpdateResult } from './utils/utils'
 
-interface Result { state: 'success' | 'warning' | 'error', commands: string[], logs: string[] }
-
-
-/**
- * @description 该模块唯一一个可调用的函数，用于升级命令
- * @param {string} command 欲转换的命令集
- * @param {number} from 原始命令集的所属游戏版本，传递一个数字进来，例如传递 `8` 代表游戏版本 1.8
- * @param {number} to 欲转换到的游戏版本。也是传递一个数字进来，例如传递 `14` 代表游戏版本 1.14
- */
-export function transformCommand(content: string, from: number, to: number): Result {
+export interface Result {
+    /**
+     * All updated commands.
+     */
+    commands: string[],
+    /**
+     * Human-readable logs.
+     */
+    logs: string[],
     /**
      * `success` means success.  
-     * `warning` means that the commands are correct but we can't update it cuz of some reasons, like Minecraft totally removed them in further versions, or the changes is so break that we can't update it.  
-     * `error` means that the commands have syntax error.
+     * `warning` means that the commands are correct but spu can't update it cuz of some reasons, like Minecraft totally removed them in further versions.
+     * `error` means that the commands have syntax error(s).
      */
+    state: 'success' | 'warning' | 'error'
+}
+
+/**
+ * Update command(s).
+ * @param commands The command(s) that will be updated. Support blank lines and comments. Support slashes(`/`) before commands.
+ * @param from The original version of the command(s). `X` stands for *Minecraft Java Edition 1.X*.
+ * @param to The target version. `X` stands for *Minecraft Java Edition 1.X*.
+ */
+export function update(commands: string[], from: number, to: number): Result {
     let state: 'success' | 'warning' | 'error' = 'success'
-    /**
-     * All information that will be showed to users after updating commands.
-     * Each element will be showed in seperate dialogue.
-     */
     const logs: string[] = []
-    /**
-     * All commands which are updated.
-     */
-    const commands: string[] = []
+    const updatedCommands: string[] = []
     const timeBefore = (new Date()).getTime()
-    const lines = content.split('\n')
 
     // The following region is used to update the input content line by line.
-    for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < commands.length; i++) {
         try {
-            const line = lines[i]
+            const line = commands[i]
 
             let result: UpdateResult
 
@@ -44,7 +45,7 @@ export function transformCommand(content: string, from: number, to: number): Res
                 // Handle comments or empty lines.
                 result = { command: line, warnings: [] }
             } else {
-                // Handle ordinary commands.
+                // Handle commands.
                 if (to === 14) {
                     result = UpdaterTo114.upLine(line, `1${from}`)
                 } else if (to === 13) {
@@ -56,26 +57,22 @@ export function transformCommand(content: string, from: number, to: number): Res
                 } else if (to === 9) {
                     result = UpdaterTo19.upLine(line, `1${from}`)
                 } else {
-                    throw `Unknown version: '${to}'. This should NEVER happen :(`
+                    throw `Unknown version: '${to}'. This should never happen :(`
                 }
             }
 
             result.warnings = result.warnings.filter(v => !isWhiteSpace(v))
             if (result.warnings.length > 0) {
-                // We meet some warnings.
-                // Never mind.
                 state = 'warning'
-                // [TODO] Solved the new line break problem in a odd way.
                 let log = `Warnings detected when updating Line #${i + 1}: \n`
                 log += result.warnings.join('\n    - ')
                 logs.push(log)
             }
-            commands.push(result.command)
+            updatedCommands.push(result.command)
         } catch (ex) {
             // We meet some syntax errors.
             // Stop updating immediately. We will not return any updated commands, even though they are correct.
-            // Because spu is an updater, not a linter. We expect all the input content are definitely correct.
-            // It's even reasonable to crash when we receive commands which have syntax errors :P
+            // Because spu is an updater, not a linter. We expect all the input are definitely correct.
             const ans: Result = {
                 commands: [],
                 state: 'error',
@@ -88,10 +85,10 @@ export function transformCommand(content: string, from: number, to: number): Res
 
     const timeAfter = (new Date()).getTime()
     /**
-     * The time cost to update the input content.
+     * The time cost to update the input.
      */
     const timeDelta = timeAfter - timeBefore
-    logs.push(`Updated ${lines.length} line${lines.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).`)
+    logs.push(`Updated ${commands.length} line${commands.length === 1 ? '' : 's'} (in ${(timeDelta / 1000).toFixed(3)} seconds).`)
 
-    return { commands, logs, state }
+    return { commands: updatedCommands, logs, state }
 }

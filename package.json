@@ -1,78 +1,34 @@
 {
     "name": "spu",
-    "version": "2.0.0",
-    "description": "A web that can help you convert minecraft commands from the older version to the newer version.",
-    "main": "js/index.js",
+    "version": "1.0.0",
+    "description": "A npm package that provides method to update Minecraft commands.",
+    "main": "out/index.js",
     "directories": {
-        "doc": "docs/",
         "test": "src/tests/"
     },
-    "dependencies": {
-        "@babel/cli": "^7.4.3",
-        "@babel/core": "^7.4.3",
-        "@babel/plugin-proposal-class-properties": "^7.4.0",
-        "@babel/preset-env": "^7.4.3",
-        "@babel/preset-react": "^7.0.0",
-        "@material-ui/core": "^3.9.3",
-        "babel-loader": "^8.0.5",
-        "lowdb": "^1.0.0",
-        "mdi-material-ui": "^5.10.0",
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/mocha": "^5.2.6",
         "@types/power-assert": "^1.5.0",
-        "babelify": "^10.0.0",
-        "browserify": "^16.2.3",
         "espower-typescript": "^8.1.4",
-        "intelli-espower-loader": "^1.0.1",
         "mocha": "^5.2.0",
         "power-assert": "^1.5.0",
-        "nyc": "^13.3.0",
         "ts-node": "^6.2.0",
-        "typescript": "^2.9.2",
-        "uglify-js-es6": "^2.8.9"
+        "typescript": "^2.9.2"
     },
     "scripts": {
-        "build:ts": "echo Remember to update the package version && tsc",
-        "build:js": "browserify ./src/view/mainViewRender.jsx -o ./tmp/uiBundle.js -t babelify && uglifyjs ./tmp/uiBundle.js -m -c -o ./dist/bundle.min.js",
-        "build": "npm run build:ts && npm run build:js",
+        "build": "tsc",
         "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/SPGoding/spu.git"
     },
-    "keywords": [
-
-    ],
+    "keywords": [],
     "author": "SPGoding",
-    "license": "MIT",
+    "license": "ISC",
     "bugs": {
         "url": "https://github.com/SPGoding/spu/issues",
         "email": "SPGoding@outlook.com"
-    },
-    "homepage": "https://spgoding.github.io/spu",
-    "babel": {
-        "presets": [
-            [
-                "@babel/preset-env",
-                {
-                    "modules": "commonjs",
-                    "targets": {
-                        "node": "current"
-                    }
-                }
-            ],
-            [
-                "@babel/preset-react"
-            ]
-        ],
-        "plugins": [
-            [
-                "@babel/plugin-proposal-class-properties"
-            ]
-        ]
     }
 }
