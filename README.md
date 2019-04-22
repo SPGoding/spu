@@ -4,7 +4,7 @@
 ![GitHub Top Language](https://img.shields.io/github/languages/top/SPGoding/spu.svg)
 ![License](https://img.shields.io/github/license/SPGoding/spu.svg)
 
-*SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's  npm package that provides method to update Minecraft commands.
+*SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's a npm package that provides method to update Minecraft commands.
 
 ## How to Use
 
