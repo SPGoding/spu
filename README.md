@@ -1,4 +1,4 @@
-# Spu
+# SPU
 
 [![Build Status](https://travis-ci.com/SPGoding/spu.svg?branch=master)](https://travis-ci.com/SPGoding/spu)
 ![GitHub Top Language](https://img.shields.io/github/languages/top/SPGoding/spu.svg)
@@ -9,22 +9,22 @@
 ## How to Use
 
 0. Installation.
-```Bash
-npm install spu
-```
+    ```Bash
+    npm install spu
+    ```
 1. Import.
-```TypeScript
-import { update } from 'spu'
-```
+    ```TypeScript
+    import { update } from 'spu'
+    ```
 2. Update.
-```TypeScript
-update(commands: string[], from: number, to: number) => { commands: string[], logs: string[], state: 'success' | 'warning' | 'error'}
-```
-e.g.
-```TypeScript
-update(['/kill'], 12, 13) // { commands: ['/kill @s'], ... }
-update(['setblock ~ ~ ~ minecraft:sign 0 replace'], 12, 14) // { commands: ['setblock ~ ~ ~ minecraft:oak_sign replace'], ... }
-```
+    ```TypeScript
+    update(commands: string[], from: number, to: number) => { commands: string[], logs: string[], state: 'success' | 'warning' | 'error'}
+    ```
+    e.g.
+    ```TypeScript
+    update(['/kill'], 12, 13) // { commands: ['/kill @s'], ... }
+    update(['setblock ~ ~ ~ minecraft:sign 0 replace'], 12, 14) // { commands: ['setblock ~ ~ ~ minecraft:oak_sign replace'], ... }
+    ```
 
 ## File Structure
 
