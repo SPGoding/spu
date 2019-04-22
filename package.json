@@ -1,6 +1,6 @@
 {
     "name": "spu",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A npm package that provides method to update Minecraft commands.",
     "main": "out/index.js",
     "directories": {
