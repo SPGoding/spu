@@ -1,34 +1,36 @@
 {
-    "name": "spu",
-    "version": "1.0.0",
-    "description": "A npm package that provides method to update Minecraft commands.",
-    "main": "out/index.js",
-    "directories": {
-        "test": "src/tests/"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "@types/mocha": "^5.2.6",
-        "@types/power-assert": "^1.5.0",
-        "espower-typescript": "^8.1.4",
-        "mocha": "^5.2.0",
-        "power-assert": "^1.5.0",
-        "ts-node": "^6.2.0",
-        "typescript": "^2.9.2"
-    },
-    "scripts": {
-        "build": "tsc",
-        "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/SPGoding/spu.git"
-    },
-    "keywords": [],
-    "author": "SPGoding",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/SPGoding/spu/issues",
-        "email": "SPGoding@outlook.com"
-    }
+  "name": "spu",
+  "version": "0.0.0-development",
+  "description": "A npm package that provides method to update Minecraft commands.",
+  "main": "out/index.js",
+  "directories": {
+    "test": "src/tests/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/power-assert": "^1.5.0",
+    "espower-typescript": "^8.1.4",
+    "mocha": "^5.2.0",
+    "power-assert": "^1.5.0",
+    "ts-node": "^6.2.0",
+    "typescript": "^2.9.2",
+    "semantic-release": "^15.13.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\"",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SPGoding/spu.git"
+  },
+  "keywords": [],
+  "author": "SPGoding",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SPGoding/spu/issues",
+    "email": "SPGoding@outlook.com"
+  }
 }

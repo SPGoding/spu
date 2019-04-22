@@ -1,12 +1,10 @@
-# SPU
+# Spu
 
 [![Build Status](https://travis-ci.com/SPGoding/spu.svg?branch=master)](https://travis-ci.com/SPGoding/spu)
-![GitHub Top Language](https://img.shields.io/github/languages/top/CommandBlockLogic/spu.svg)
-![License](https://img.shields.io/github/license/CommandBlockLogic/spu.svg)
+![GitHub Top Language](https://img.shields.io/github/languages/top/SPGoding/spu.svg)
+![License](https://img.shields.io/github/license/SPGoding/spu.svg)
 
-A npm package that provides method to update Minecraft commands. *SPU* is believed to be the abbreviation of *SPU Performs Updating*.
-
-This package follows [Semantic Versioning specification](https://semver.org/).
+*SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's  npm package that provides method to update Minecraft commands.
 
 ## How to Use
 
