@@ -2,7 +2,8 @@
     "name": "spu",
     "version": "1.1.0",
     "description": "A npm package that provides method to update Minecraft commands.",
-    "main": "src/index.ts",
+    "main": "out/index.js",
+    "typings": "out/index.d.ts",
     "directories": {
         "test": "src/tests/"
     },
@@ -14,13 +15,12 @@
         "mocha": "^5.2.0",
         "power-assert": "^1.5.0",
         "ts-node": "^6.2.0",
-        "typescript": "^2.9.2",
-        "semantic-release": "^15.13.3"
+        "typescript": "^2.9.2"
     },
     "scripts": {
         "build": "tsc",
-        "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\"",
-        "semantic-release": "semantic-release"
+        "watch": "tsc -b",
+        "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\""
     },
     "repository": {
         "type": "git",

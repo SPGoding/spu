@@ -5,7 +5,7 @@
         "target": "es2015",
         "rootDir": "src",
         "outDir": "out",
-        "sourceMap": false,
+        "sourceMap": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
@@ -13,6 +13,7 @@
         "pretty": true,
         "alwaysStrict": true,
         "strictNullChecks": true,
-        "removeComments": true
+        "removeComments": true,
+        "declaration": true
     }
 }
