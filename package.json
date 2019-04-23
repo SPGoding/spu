@@ -2,8 +2,8 @@
     "name": "spu",
     "version": "1.2.0",
     "description": "A npm package that provides method to update Minecraft commands.",
-    "main": "out/index.js",
-    "typings": "out/index.d.ts",
+    "main": "lib/index",
+    "types": "lib/index",
     "directories": {
         "test": "src/tests/"
     },

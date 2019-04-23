@@ -4,7 +4,7 @@
         "module": "commonjs",
         "target": "es2015",
         "rootDir": "src",
-        "outDir": "out",
+        "outDir": "lib",
         "sourceMap": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
