@@ -8,8 +8,8 @@ export declare class StdItem1_12 {
     private readonly slot;
     constructor(name: string, data: number, tag: NbtCompound, count?: NbtValue, slot?: NbtValue);
     getName(): string;
-    getCount(): NbtCompound | import("../../../src/utils/nbt/nbt").NbtList | import("../../../src/utils/nbt/nbt").NbtByteArray | import("../../../src/utils/nbt/nbt").NbtIntArray | import("../../../src/utils/nbt/nbt").NbtLongArray | NbtByte | NbtShort | NbtInt | import("../../../src/utils/nbt/nbt").NbtLong | import("../../../src/utils/nbt/nbt").NbtFloat | import("../../../src/utils/nbt/nbt").NbtDouble | NbtString | undefined;
-    getSlot(): NbtCompound | import("../../../src/utils/nbt/nbt").NbtList | import("../../../src/utils/nbt/nbt").NbtByteArray | import("../../../src/utils/nbt/nbt").NbtIntArray | import("../../../src/utils/nbt/nbt").NbtLongArray | NbtByte | NbtShort | NbtInt | import("../../../src/utils/nbt/nbt").NbtLong | import("../../../src/utils/nbt/nbt").NbtFloat | import("../../../src/utils/nbt/nbt").NbtDouble | NbtString | undefined;
+    getCount(): NbtCompound | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtList | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtByteArray | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtIntArray | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtLongArray | NbtByte | NbtShort | NbtInt | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtLong | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtFloat | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtDouble | NbtString | undefined;
+    getSlot(): NbtCompound | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtList | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtByteArray | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtIntArray | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtLongArray | NbtByte | NbtShort | NbtInt | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtLong | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtFloat | import("../../../../../../../SPGoding/project/Typescript/spu/src/utils/nbt/nbt").NbtDouble | NbtString | undefined;
     getData(): number;
     getTag(): NbtCompound;
     getNominal(): string;
@@ -26,6 +26,9 @@ export declare class StdItem1_13 {
     getNbt(): NbtCompound;
     hasTag(): boolean;
 }
+/**
+ * Providing a map storing old item IDs and new item IDs.
+ */
 export default class Items {
     static std112(id?: number, name?: string, data?: number, tag?: string, nbt?: string): StdItem1_12;
     static to113(std: StdItem1_12): StdItem1_13;

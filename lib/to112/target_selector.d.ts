@@ -1,3 +1,8 @@
+/**
+ * Represent a target selector.
+ * Provides methods to operate it.
+ * @author SPGoding
+ */
 export declare class TargetSelector {
     private variable;
     private dx;
@@ -21,8 +26,19 @@ export declare class TargetSelector {
     private readonly advancements;
     private readonly nbt;
     constructor();
+    /**
+     * Parses this selector according to a string in 1.12.
+     * @param str An string representing a target selector.
+     */
     parse(str: string): void;
+    /**
+     * Gets a string that can represent this target selector in 1.13.
+     */
     to113(): string;
+    /**
+     * Returns if a target selector is valid.
+     * @param input a target selector.
+     */
     static isValid(input: string): boolean;
     private parseVariable;
     private parseProperties;

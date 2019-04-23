@@ -7,6 +7,9 @@ export declare class TargetSelector {
         [objective: string]: number;
     };
     constructor(input: string);
+    /**
+     * @returns `VALID` or an error.
+     */
     static tryParse(input: string): any;
     toString(): string;
     private parseHead;
