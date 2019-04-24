@@ -10,7 +10,7 @@
 
 0. Installation.
     ```Bash
-    npm install spu
+    npm i spu
     ```
 1. Import.
     ```TypeScript
@@ -29,11 +29,11 @@
 ## File Structure
 
 - `src`: Source code written in TypeScript.
-- `out`: Output JavaScript files.
+- `lib`: Output JavaScript files.
 
 ## How it Works
 
-The *WheelChief* system will try to parse your command(s) when you click 'Update'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
+The *WheelChief* system will try to parse your command(s) when you called 'update()'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
 
 ```TypeScript
 interface CmdNode {
@@ -48,7 +48,7 @@ interface CmdNode {
 }
 ```
 
-e.g. You type `foobar @a {baz:qux}` and it can be parsed in the following nodes:
+e.g. The input is `foobar @a {baz:qux}` and it can be parsed in the following nodes:
 
 ```TypeScript
 {
@@ -96,7 +96,7 @@ And then the WheelChief will return this (if no `updater` is specific in the `Cm
 }
 ```
 
-The WheelChief will update every argument according to its `updater`. All updaters are defined in `src/utils/wheel_chief/updater.ts` and `src/**to**/updater.ts`. After updating all arguments we will get this (well, it just adds some quotes):
+The WheelChief will update every argument according to its `updater`. All updaters are defined in `src/utils/wheel_chief/updater.ts` and `src/**to**/updater.ts`. After updating all arguments we will get this (well, it just adds some quotes in this example):
 
 
 ```TypeScript
@@ -113,7 +113,7 @@ The WheelChief will update every argument according to its `updater`. All update
 }
 ```
 
-Finally the `spu_script` will be executed. `%0` will be replaced with the first argument of the command(`args[0].value`), `%1` will be the second(`args[1].value`), and so on. A token that begins with `$` will be executed as a function with following `%n` as its parameter(s). So finally you will get `foobar @a[nbt={baz:"qux"}]`. Is that amazing?
+Finally the `spu_script` will be executed. `%0` will be replaced with the first argument of the command(`args[0].value`), `%1` will be the second(`args[1].value`), and so on. A token that begins with `$` will be executed as a function with following `%n` as its parameter(s). So finally you will get `foobar @a[nbt={baz:"qux"}]`.
 
 ## Contributing
 
