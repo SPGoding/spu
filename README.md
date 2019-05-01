@@ -1,16 +1,25 @@
 # SPU
 
-[![Build Status](https://travis-ci.com/SPGoding/spu.svg?branch=master)](https://travis-ci.com/SPGoding/spu)
-![GitHub Top Language](https://img.shields.io/github/languages/top/SPGoding/spu.svg)
-![License](https://img.shields.io/github/license/SPGoding/spu.svg)
+[![Build Status](https://img.shields.io/travis/com/SPGoding/spu.svg?style=flat-square)](https://travis-ci.com/SPGoding/spu)
+[![npm](https://img.shields.io/npm/v/spu.svg?style=flat-square)](https://img.shields.io/npm/v/spu/latest.svg)
+[![License](https://img.shields.io/github/license/SPGoding/spu.svg?style=flat-square)](https://github.com/SPGoding/spu/blob/master/LICENSE)
+[![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.carloscuesta.me/)
 
-*SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's a npm package that provides method to update Minecraft commands.
+
+*SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's a npm package that provides method to update Minecraft: Java Edition commands.
+
+## Highlights
+
+- Update commands from 1.8, 1.9(1.10), 1.11, 1.12, 1.13 and 1.14 to any later version.
+- Support all commands.
+- Support all kinds of parameters. e.g. NBT, entity selector.
+- The author is still alive so if you find something not working as your intention, feel free to open an issue!
 
 ## How to Use
 
 0. Installation.
     ```Bash
-    npm i spu
+    > npm i spu
     ```
 1. Import.
     ```TypeScript
@@ -136,8 +145,9 @@ Please note that this project is released with a [Contributor Code of Conduct](h
     2. The first letter is expected to be uppercased.
     3. Use the basic form of verb as the first word.
     4. Ends the message with a period (`.`).
-    e.g. `:bug:Fix a silly bug.`
 
-6.  Send `Pull Request` to me. The travis-ci will build and test your changes automatically.
+    e.g. `:bug:Fix #1.`
+
+6.  Send Pull Request to me. The travis-ci will build and test your changes automatically.
 
 There must be lots of mistakes and bad practice in this repository. If you find something not good or not sure whether it's not good, please don't hesitate to tell me!
