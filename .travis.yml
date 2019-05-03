@@ -1,5 +1,12 @@
 language: node_js
 node_js:
     - "8"
-    - "9"
     - "10"
+deploy:
+    provider: npm
+    skip_cleanup: true
+    email: spgoding@outlook.com
+    api_key: $NPM_AUTH_KEY
+    on:
+        all_branches: true
+        tags: true
