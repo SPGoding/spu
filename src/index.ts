@@ -57,7 +57,7 @@ export function update(commands: string[], from: number, to: number): Result {
                 } else if (to === 9) {
                     result = UpdaterTo19.upLine(line, `1${from}`)
                 } else {
-                    throw `Unknown version: '${to}'. This should never happen :(`
+                    throw `Unknown version: '${to}'.`
                 }
             }
 

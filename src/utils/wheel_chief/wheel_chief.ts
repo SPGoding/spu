@@ -216,13 +216,13 @@ export class WheelChief {
                     operated = true
                     break
                 } catch (e) {
-                    exception.push(e.replace(/Failed to parse '.*': \<br \/\>/g, ''))
+                    exception.push(e.replace(/Failed to parse '.*': \n/g, ''))
                     continue
                 }
             }
         }
         if (!operated) {
-            throw `Failed to parse '${result.splited.join(' ')}': <br />${exception.join('<br />')}`
+            throw `Failed to parse '${result.splited.join(' ')}': \n${exception.join('\n')}`
         }
         return result
     }
