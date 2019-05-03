@@ -26,9 +26,9 @@
         "type": "git",
         "url": "https://github.com/SPGoding/spu.git"
     },
+    "homepage": "https://github.com/SPGoding/spu",
     "keywords": [
         "minecraft",
-        "minecraft-command",
         "parsers"
     ],
     "engines": {
@@ -37,7 +37,6 @@
     "author": "SPGoding",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/SPGoding/spu/issues",
-        "email": "SPGoding@outlook.com"
+        "url": "https://github.com/SPGoding/spu/issues"
     }
 }
