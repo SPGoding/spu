@@ -1,7 +1,7 @@
 # SPU
 
 [![Build Status](https://img.shields.io/travis/com/SPGoding/spu.svg?style=flat-square)](https://travis-ci.com/SPGoding/spu)
-[![npm](https://img.shields.io/npm/v/spu.svg?style=flat-square)](https://img.shields.io/npm/v/spu/latest.svg)
+[![npm](https://img.shields.io/npm/v/spu.svg?style=flat-square)](https://npmjs.com/package/spu)
 [![License](https://img.shields.io/github/license/SPGoding/spu.svg?style=flat-square)](https://github.com/SPGoding/spu/blob/master/LICENSE)
 [![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.carloscuesta.me/)
 
