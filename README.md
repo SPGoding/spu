@@ -8,6 +8,8 @@
 
 *SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's a npm package that provides method to update Minecraft: Java Edition commands.
 
+See [spu-angular](https://github.com/SPGoding/spu-angular) for a use.
+
 ## Highlights
 
 - Update commands from 1.8, 1.9(1.10), 1.11, 1.12, 1.13 and 1.14 to any later version.
