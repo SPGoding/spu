@@ -358,6 +358,13 @@ export class Updater {
                 input.set('SpawnData', spawnData)
             }
         }
+        /* TileEntityData */ {
+            let tileEntityData = input.get('TileEntityData') 
+            if (tileEntityData instanceof NbtCompound) { 
+                tileEntityData = this.upSpgodingBlockNbt(tileEntityData)
+                input.set('TileEntityData', tileEntityData)
+            }
+        }
 
         return input
     }
