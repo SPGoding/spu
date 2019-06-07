@@ -196,6 +196,29 @@ export class Commands112To113 {
                     }
                 },
                 executable: true
+            },            
+            blockdata: {
+                type: 'literal',
+                children: {
+                    pos: {
+                        type: 'argument',
+                        parser: 'minecraft:block_pos',
+                        children: {
+                            '{}': {
+                                type: 'literal',
+                                executable: true,
+                                spu_script: 'data get block %1'
+                            },
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true,
+                                spu_script: 'data merge block %1 %2'
+                            }
+                        }
+                    }
+                }
             },
             clear: {
                 type: 'literal',
