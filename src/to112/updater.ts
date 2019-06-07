@@ -3,7 +3,7 @@ import { Commands111To112 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { UpdateResult } from '../utils/utils'
 import { UpdaterTo111 } from '../to111/updater'
-import { ArgumentParser } from '../utils/wheel_chief/argument_parser'
+import { ArgumentParser } from '../utils/wheel_chief/parser'
 import { TargetSelector as TargetSelector112 } from './target_selector'
 
 class SpuScriptExecutor111To112 implements SpuScriptExecutor {

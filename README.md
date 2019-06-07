@@ -8,8 +8,6 @@
 
 *SPU* is believed to be the abbreviation of *SPU Performs Updating*. It's a npm package that provides method to update Minecraft: Java Edition commands.
 
-See [spu-angular](https://github.com/SPGoding/spu-angular) for a use.
-
 ## Highlights
 
 - Update commands from 1.8, 1.9(1.10), 1.11, 1.12, 1.13 and 1.14 to any later version.
@@ -17,11 +15,36 @@ See [spu-angular](https://github.com/SPGoding/spu-angular) for a use.
 - Support all kinds of parameters. e.g. NBT, entity selector.
 - The author is still alive so if you find something not working as your intention, feel free to open an issue!
 
-## How to Use
+## Usage
+
+You can use *SPU* to update your Minecraft commands via [the official website](https://spu.spgoding.com), the CLI (command line interface) or importing it to your project.
+
+### Use it Online
+
+Open [the official website](https://spu.spgoding.com).
+
+The website is built with Angular and hosted on [GitHub](https://github.com/SPGoding/spu-angular).
+
+That's all.
+
+### Use the Command Line Interface
 
 0. Installation.
     ```Bash
-    > npm i spu
+    npm i spu -g
+    ```
+1. Run the CLI through command `spu <from> <to>`.
+    - `<from>`: The version of the input command. e.g. `12` stands for *Minecraft: Java Edition 1.12*. Should be one of the following values: `8`, `9`, `11`, `12` and `13`.
+    - `<to>`: The version of the output command. e.g. `12` stands for *Minecraft: Java Edition 1.12*. Should be one of the following values:  `9`, `11`, `12`, `13` and `14`. Should be greater than `<from>`.
+2. Type one of your commands and press *ENTER*, the CLI will return the updated result in real time.
+
+I will enable the CLI to update whole mcfunction files if anyone requests. Feel free to open an issue!
+
+### Import it to your Project
+
+0. Installation.
+    ```Bash
+    npm i spu
     ```
 1. Import.
     ```TypeScript

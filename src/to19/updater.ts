@@ -2,7 +2,7 @@ import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wh
 import { Updater } from '../utils/wheel_chief/updater'
 import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils'
 import { Commands18To19 } from './commands'
-import { ArgumentParser } from '../utils/wheel_chief/argument_parser'
+import { ArgumentParser } from '../utils/wheel_chief/parser'
 import { TargetSelector } from './target_selector'
 import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from '../utils/nbt/nbt'
 import Items from './mappings/items'

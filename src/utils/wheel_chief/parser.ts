@@ -8,7 +8,7 @@ import { ItemStack } from '../item_stack'
 export class ArgumentParser {
     private readonly ResourceLocation = /^(\w+:)?[\w\.]+$/
     private readonly ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
-    private readonly IntRange = /^(\d*(\.\d*)?)?(\.\.)?(\d*(\.\d*)?)?$/
+    private readonly IntRange = /^([-+]?\d*(\.\d*)?)?(\.\.)?([-+]?\d*(\.\d*)?)?$/
     private readonly Swizzle = /^[xyz]+$/
 
     // The vec regex is coppied from

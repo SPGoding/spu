@@ -14,7 +14,7 @@ import Enchantments from './mappings/enchantments'
 import Particles from './mappings/particles'
 import Entities from './mappings/entities'
 import { SpuScriptExecutor112To113 } from './executor'
-import { ArgumentParser112To113 } from './argument_parser'
+import { ArgumentParser112To113 } from './parser'
 
 export class UpdaterTo113 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {

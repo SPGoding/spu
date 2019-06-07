@@ -1,4 +1,4 @@
-import { ArgumentParser } from './argument_parser'
+import { ArgumentParser } from './parser'
 import { isWhiteSpace, UpdateResult } from '../utils'
 import { Updater } from './updater'
 
@@ -117,7 +117,7 @@ export class WheelChief {
                     throw `Unknown command: '${input.splited[input.index]}'.`
                 }
             } else {
-                throw `Expected 'children' for the root node.`
+                throw "Expected 'children' for the root node."
             }
         } else if (node.type === 'literal') {
             if (nodeName === input.splited[input.index]) {
@@ -134,7 +134,7 @@ export class WheelChief {
         } else if (node.type === 'argument') {
             if (node.parser) {
                 try {
-                    let canBeParsed = parser.parseArgument(node.parser, input.splited, input.index, node.properties)
+                    const canBeParsed = parser.parseArgument(node.parser, input.splited, input.index, node.properties)
                     result.command.args.push({
                         value: input.splited.slice(input.index, input.index + canBeParsed).join(' '),
                         updater: node.updater ? node.updater : node.parser
@@ -145,7 +145,7 @@ export class WheelChief {
                 }
                 result = WheelChief.recurse(result, input, node, rootNode, parser)
             } else {
-                throw `Expected 'parser' for the argument node.`
+                throw "Expected 'parser' for the argument node."
             }
         } else {
             throw `Unknown type: '${node.type}'. Can be one of the following values: 'root', 'literal' and 'argument'.`
@@ -170,29 +170,29 @@ export class WheelChief {
                     result.command.warning = node.warning
                 }
             } else {
-                throw `Expected executable command but got EOF.`
+                throw 'Expected executable command but got EOF.'
             }
         } else {
             if (node.children) {
                 result = WheelChief.parseChildren(node.children, result, rootNode, parser)
             } else if (node.redirect) {
                 if (rootNode.children) {
-                    let children = rootNode.children[node.redirect[0]].children
+                    const children = rootNode.children[node.redirect[0]].children
                     if (children) {
                         result = WheelChief.parseChildren(children, result, rootNode, parser)
                     } else {
                         throw `Expected redirect node: '${node.redirect[0]}' but got nothing.`
                     }
                 } else {
-                    throw `Expected 'children' for the root node.`
+                    throw "Expected 'children' for the root node."
                 }
             } else if (node.executable === true) {
-                throw `Expected EOF but got trailing data.`
+                throw 'Expected EOF but got trailing data.'
             } else {
                 if (rootNode.children) {
                     result = WheelChief.parseChildren(rootNode.children, result, rootNode, parser)
                 } else {
-                    throw `Expected 'children' for the root node.`
+                    throw "Expected 'children' for the root node."
                 }
             }
         }
@@ -207,7 +207,7 @@ export class WheelChief {
      */
     private static parseChildren(children: Children, result: ParseResult, rootNode: CmdNode, parser: ArgumentParser) {
         let operated = false
-        let exception: string[] = []
+        const exception: string[] = []
         for (const name in children) {
             if (children.hasOwnProperty(name)) {
                 const child = children[name]

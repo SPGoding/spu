@@ -4,7 +4,7 @@ import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
 import { UpdaterTo113 } from '../to113/updater'
-import { ArgumentParser } from '../utils/wheel_chief/argument_parser'
+import { ArgumentParser } from '../utils/wheel_chief/parser'
 import { SpuScriptExecutor113To114 } from './executor'
 
 export class UpdaterTo114 extends Updater {

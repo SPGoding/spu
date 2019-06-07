@@ -2,7 +2,7 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
-import { ArgumentParser } from '../../../utils/wheel_chief/argument_parser'
+import { ArgumentParser } from '../../../utils/wheel_chief/parser'
 
 describe('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
