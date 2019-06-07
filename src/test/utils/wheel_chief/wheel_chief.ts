@@ -2,7 +2,7 @@ import 'mocha'
 import * as assert from 'power-assert'
 
 import { WheelChief, ParseResult, CmdNode } from '../../../../src/utils/wheel_chief/wheel_chief'
-import { ArgumentParser } from '../../../utils/wheel_chief/argument_parsers';
+import { ArgumentParser } from '../../../utils/wheel_chief/argument_parser'
 
 describe('WheelChief tests', () => {
     describe('parseCmdNode() tests', () => {
@@ -194,7 +194,7 @@ describe('WheelChief tests', () => {
             assert.deepEqual(actual.command.args, [{ value: 'spg' }, { value: 'test' }])
         })
 
-        it(`shouldn't parse out-range number`, () => {
+        it("shouldn't parse out-range number", () => {
             const input: ParseResult = {
                 command: {
                     args: [],
@@ -229,10 +229,10 @@ describe('WheelChief tests', () => {
                 return
             }
 
-            throw `It parsed!`
+            throw 'It parsed!'
         })
 
-        it(`should parse string`, () => {
+        it('should parse string', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
@@ -337,7 +337,7 @@ describe('WheelChief tests', () => {
             ])
         })
 
-        it(`should parse nbt`, () => {
+        it('should parse nbt', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
@@ -384,7 +384,7 @@ describe('WheelChief tests', () => {
             ])
         })
 
-        it(`should store updater`, () => {
+        it('should store updater', () => {
             const input: ParseResult = {
                 command: {
                     args: [],
@@ -418,7 +418,7 @@ describe('WheelChief tests', () => {
             ])
         })
 
-        it(`should store spu script`, () => {
+        it('should store spu script', () => {
             const input: ParseResult = {
                 command: {
                     args: [],

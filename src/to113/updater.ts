@@ -1,7 +1,7 @@
-import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
+import { WheelChief } from '../utils/wheel_chief/wheel_chief'
 import { Commands112To113 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
-import { escape, completeNamespace, isNumeric, getNbtCompound, getUuidLeastUuidMost, UpdateResult } from '../utils/utils'
+import { escape, completeNamespace, isNumeric, getUuidLeastUuidMost, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtString, NbtShort, NbtInt, NbtByte, NbtLong, NbtList } from '../utils/nbt/nbt'
 import { UpdaterTo112 } from '../to112/updater'
 import { TargetSelector as TargetSelector112 } from './target_selector'
@@ -13,96 +13,8 @@ import Effects from './mappings/effects'
 import Enchantments from './mappings/enchantments'
 import Particles from './mappings/particles'
 import Entities from './mappings/entities'
-import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
-
-class SpuScriptExecutor112To113 implements SpuScriptExecutor {
-    public execute(script: string, args: Argument[]) {
-        const splited = script.split(' ')
-
-        for (let i = 0; i < splited.length; i++) {
-            if (splited[i].slice(0, 1) === '%') {
-                splited[i] = args[parseInt(splited[i].slice(1))].value
-            } else if (splited[i].slice(0, 1) === '$') {
-                const params = splited[i].slice(1).split('%')
-                const index1 = parseInt(params[1])
-                const index2 = parseInt(params[2])
-                const index3 = parseInt(params[3])
-                const param1 = args[index1] ? args[index1].value : ''
-                const param2 = args[index2] ? args[index2].value : ''
-                const param3 = args[index3] ? args[index3].value : ''
-                switch (params[0]) {
-                    case 'setBlockParam':
-                        splited[i] = Blocks.to113(Blocks.std112(parseInt(param1))).getFull()
-                        break
-                    case 'setItemParams':
-                        splited[i] = Items.to113(Items.std112(parseInt(param1), undefined, parseInt(param2))).getNominal()
-                        break
-                    case 'setNameToItemStack':
-                        splited[i] = Items.to113(Items.std112(undefined, param1)).getNominal()
-                        break
-                    case 'setNameDataToItemStack':
-                        splited[i] = Items.to113(Items.std112(undefined, param1, parseInt(param2))).getNominal()
-                        break
-                    case 'setNameDataNbtToItemStack':
-                        splited[i] = Items.to113(Items.std112(undefined, param1, parseInt(param2), param3)).getNominal()
-                        break
-                    case 'setNameToBlockState':
-                        splited[i] = Blocks.to113(Blocks.std112(undefined, param1)).getFull()
-                        break
-                    case 'setNameStatesToBlockState':
-                        if (isNumeric(param2)) {
-                            splited[i] = Blocks.to113(Blocks.std112(undefined, param1, parseInt(param2))).getFull()
-                        } else {
-                            splited[i] = Blocks.to113(Blocks.std112(undefined, param1, undefined, param2)).getFull()
-                        }
-                        break
-                    case 'setNameStatesNbtToBlockState':
-                        if (isNumeric(param2)) {
-                            splited[i] = Blocks.to113(Blocks.std112(undefined, param1, parseInt(param2), undefined, param3)).getFull()
-                        } else {
-                            splited[i] = Blocks.to113(Blocks.std112(undefined, param1, undefined, param2, param3)).getFull()
-                        }
-                        break
-                    case 'setNbtToSelector':
-                        const sel112 = new TargetSelector112()
-                        sel112.parse(param1)
-                        const sel113 = new TargetSelector113(sel112.to113())
-                        sel113.nbt = getNbtCompound(param2)
-                        splited[i] = sel113.toString()
-                        break
-                    default:
-                        throw `Unexpected script method: '${params[0]}'.`
-                }
-            }
-        }
-
-        return splited.join(' ')
-    }
-}
-
-class ArgumentParser112To113 extends ArgumentParser {
-    protected parseMinecraftEntity(splited: string[], index: number): number {
-        let join = splited[index]
-
-        if (join.charAt(0) !== '@') {
-            return 1
-        }
-
-        if (TargetSelector112.isValid(join)) {
-            return 1
-        } else {
-            for (let i = index + 1; i < splited.length; i++) {
-                join += ' ' + splited[i]
-                if (TargetSelector112.isValid(join)) {
-                    return i - index + 1
-                } else {
-                    continue
-                }
-            }
-            throw 'Expected an entity selector.'
-        }
-    }
-}
+import { SpuScriptExecutor112To113 } from './executor'
+import { ArgumentParser112To113 } from './argument_parser'
 
 export class UpdaterTo113 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {

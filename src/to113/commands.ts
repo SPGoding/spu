@@ -2414,6 +2414,43 @@ export class Commands112To113 {
                                         }
                                     }
                                 }
+                            },
+                            test: {
+                                type: 'literal',
+                                children: {
+                                    entity: {
+                                        type: 'argument',
+                                        parser: 'minecraft:entity',
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    min: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:integer',
+                                                        properties: {
+                                                            acceptsAsterisk: true
+                                                        },
+                                                        children: {
+                                                            max: {
+                                                                type: 'argument',
+                                                                parser: 'brigadier:integer',
+                                                                properties: {
+                                                                    acceptsAsterisk: true
+                                                                },
+                                                                executable: true,
+                                                                spu_script: 'execute if score %3 %4 matches $setAsRangeWithMinAndMax%5%6'
+                                                            }
+                                                        },
+                                                        executable: true,
+                                                        spu_script: 'execute if score %3 %4 matches $setAsRangeWithMin%5'
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     },

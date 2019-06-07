@@ -1,4 +1,4 @@
-import { ArgumentParser } from './argument_parsers';
+import { ArgumentParser } from './argument_parser';
 import { UpdateResult } from '../utils';
 import { Updater } from './updater';
 export declare type Property = {

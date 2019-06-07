@@ -29,7 +29,7 @@ export class ArgumentParser {
             case 'brigadier:float':
                 return this.parseBrigadierFloat(splited, index, properties.min, properties.max)
             case 'brigadier:integer':
-                return this.parseBrigadierInteger(splited, index, properties.min, properties.max)
+                return this.parseBrigadierInteger(splited, index, properties.min, properties.max, properties.acceptsAsterisk)
             case 'brigadier:string':
                 return this.parseBrigadierString(splited, index, properties.type)
             case 'minecraft:block_pos':
@@ -137,7 +137,7 @@ export class ArgumentParser {
         }
     }
 
-    protected parseBrigadierInteger(splited: string[], index: number, min: number, max: number): number {
+    protected parseBrigadierInteger(splited: string[], index: number, min: number, max: number, acceptsAsterisk: boolean): number {
         if (isNumeric(splited[index])) {
             if (parseInt(splited[index]) === parseFloat(splited[index])) {
                 if ((min === undefined || parseFloat(splited[index]) >= min) &&
@@ -150,6 +150,8 @@ export class ArgumentParser {
             } else {
                 throw `Expected an integer but got double '${splited[index]}'.`
             }
+        } else if (acceptsAsterisk && splited[index] === '*') {
+            return 1
         } else {
             throw `Expected a number but got '${splited[index]}'.`
         }

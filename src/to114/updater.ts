@@ -1,30 +1,11 @@
-import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
+import { WheelChief } from '../utils/wheel_chief/wheel_chief'
 import { Commands113To114 } from './commands'
 import { Updater } from '../utils/wheel_chief/updater'
 import { escape, completeNamespace, UpdateResult } from '../utils/utils'
 import { NbtCompound, NbtList, NbtString } from '../utils/nbt/nbt'
 import { UpdaterTo113 } from '../to113/updater'
-import { ArgumentParser } from '../utils/wheel_chief/argument_parsers'
-
-class SpuScriptExecutor113To114 implements SpuScriptExecutor {
-    public execute(script: string, args: Argument[]): string {
-        const splited = script.split(' ')
-
-        for (let i = 0; i < splited.length; i++) {
-            if (splited[i].slice(0, 1) === '%') {
-                splited[i] = args[parseInt(splited[i].slice(1))].value
-            } else if (splited[i].slice(0, 1) === '$') {
-                const params = splited[i].slice(1).split('%')
-                switch (params[0]) {
-                    default:
-                        throw `Unexpected script method: '${params[0]}'.`
-                }
-            }
-        }
-
-        return splited.join(' ')
-    }
-}
+import { ArgumentParser } from '../utils/wheel_chief/argument_parser'
+import { SpuScriptExecutor113To114 } from './executor'
 
 export class UpdaterTo114 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {

@@ -1,8 +1,5 @@
 {
     "recommendations": [
         "ms-vscode.vscode-typescript-tslint-plugin"
-    ],
-    "unwantedRecommendations": [
-        "pca.datapack-helper"
     ]
 }

@@ -1,11 +1,9 @@
-// This file is adapted from vscode-extension-samples which is released under MIT License.
-// Go to https://github.com/Microsoft/vscode-extension-samples/blob/master/LICENSE for full license details.
 {
 	"version": "2.0.0",
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "compile",
+			"script": "build",
 			"group": "build",
 			"presentation": {
 				"panel": "dedicated",

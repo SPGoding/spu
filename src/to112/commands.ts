@@ -115,6 +115,28 @@ export class Commands111To112 {
                 },
                 executable: true
             },
+            
+            blockdata: {
+                type: 'literal',
+                children: {
+                    pos: {
+                        type: 'argument',
+                        parser: 'minecraft:block_pos',
+                        children: {
+                            '{}': {
+                                type: 'literal',
+                                executable: true
+                            },
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true
+                            }
+                        }
+                    }
+                }
+            },
             clear: {
                 type: 'literal',
                 children: {
@@ -1828,6 +1850,41 @@ export class Commands111To112 {
                                                             }
                                                         },
                                                         executable: true,
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            test: {
+                                type: 'literal',
+                                children: {
+                                    entity: {
+                                        type: 'argument',
+                                        parser: 'minecraft:entity',
+                                        children: {
+                                            objective: {
+                                                type: 'argument',
+                                                parser: 'minecraft:objective',
+                                                children: {
+                                                    min: {
+                                                        type: 'argument',
+                                                        parser: 'brigadier:integer',
+                                                        properties: {
+                                                            acceptsAsterisk: true
+                                                        },
+                                                        children: {
+                                                            max: {
+                                                                type: 'argument',
+                                                                parser: 'brigadier:integer',
+                                                                properties: {
+                                                                    acceptsAsterisk: true
+                                                                },
+                                                                executable: true
+                                                            }
+                                                        },
+                                                        executable: true
                                                     }
                                                 }
                                             }
