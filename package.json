@@ -14,9 +14,10 @@
     "@types/mocha": "^5.2.7",
     "@types/power-assert": "^1.5.0",
     "espower-typescript": "^8.1.4",
+    "gitmoji-cli": "^1.9.2",
     "mocha": "^5.2.0",
     "power-assert": "^1.5.0",
-    "semantic-release": "^15.13.12",
+    "semantic-release": "^15.13.16",
     "semantic-release-gitmoji": "^1.3.0",
     "ts-node": "^6.2.0",
     "tslint": "^5.17.0",
@@ -24,9 +25,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
+    "commit": "gitmoji -c",
+    "release": "semantic-release",
     "test": "mocha --require espower-typescript/guess \"./src/test/**/*.ts\"",
-    "semantic-release": "semantic-release"
+    "watch": "tsc -w"
   },
   "bin": {
     "spu": "lib/cli"
@@ -35,7 +37,7 @@
     "type": "git",
     "url": "https://github.com/SPGoding/spu.git"
   },
-  "homepage": "https://github.com/SPGoding/spu",
+  "homepage": "https://spu.spgoding.com",
   "keywords": [
     "minecraft",
     "parsers"

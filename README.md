@@ -1,8 +1,9 @@
 # SPU
 
-[![Build Status](https://img.shields.io/travis/com/SPGoding/spu.svg?style=flat-square)](https://travis-ci.com/SPGoding/spu)
+[![CircleCI](https://circleci.com/gh/SPGoding/spu.svg?style=svg)](https://circleci.com/gh/SPGoding/spu)
 [![npm](https://img.shields.io/npm/v/spu.svg?style=flat-square)](https://npmjs.com/package/spu)
 [![License](https://img.shields.io/github/license/SPGoding/spu.svg?style=flat-square)](https://github.com/SPGoding/spu/blob/master/LICENSE)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square)](https://github.com/semantic-release/semantic-release)
 [![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.carloscuesta.me/)
 
 
@@ -65,7 +66,7 @@ I will enable the CLI to update whole mcfunction files if anyone requests. Feel 
 - `src`: Source code written in TypeScript.
 - `lib`: Output JavaScript files.
 
-## How it Works
+## How does it work
 
 The *WheelChief* system will try to parse your command(s) when you called 'update()'. All commands is stored in a `CmdNode`, whose format is very similiar to the format of the `commands.json` file that data generator provides:
 
@@ -153,8 +154,6 @@ Finally the `spu_script` will be executed. `%0` will be replaced with the first 
 
 I'm thrilled to hear that you'd like to contribute to this project. It's no doubt that spu will be better with your help!
 
-Please note that this project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/). By participating in this project you agree to abide by its terms.
-
 1.  Fork this this repo and clone it to your local.
 
 2.  Install dependencies.
@@ -165,14 +164,8 @@ Please note that this project is released with a [Contributor Code of Conduct](h
 
 4.  If you add new features, it's strongly recommend to write tests for them. All tests should be put under `./src/test`.
 
-5.  Commit and push your changes. There is some tips for the commit message:
-    1. Begins with an emoji character, like `:sparkles:` and `:bug:`, see also [gitmoji](http://gitmoji.carloscuesta.me/).
-    2. The first letter is expected to be uppercased.
-    3. Use the basic form of verb as the first word.
-    4. Ends the message with a period (`.`).
+5.  Commit and push your changes.
 
-    e.g. `:bug:Fix #1.`
-
-6.  Send Pull Request to me. The travis-ci will build and test your changes automatically.
+6.  Open a Pull Request. The circle ci will build and test your changes automatically.
 
 There must be lots of mistakes and bad practice in this repository. If you find something not good or not sure whether it's not good, please don't hesitate to tell me!

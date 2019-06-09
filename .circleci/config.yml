@@ -1,0 +1,29 @@
+# ~/.circleci/config.yml
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run: npm i
+      - run: npm test
+  release:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run: npm run build
+      - run: npm run release
+
+workflows:
+  version: 2
+  test_and_release:
+    jobs:
+      - test
+      - release:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
