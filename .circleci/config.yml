@@ -13,6 +13,7 @@ jobs:
       - image: circleci/node:10
     steps:
       - checkout
+      - run: npm i
       - run: npm run build
       - run: npm run release
 
