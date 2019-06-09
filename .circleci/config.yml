@@ -15,9 +15,6 @@ jobs:
       - checkout
       - run: npm i
       - run: npm run build
-      - run: git add .
-      - run: 'git commit -m ":package: Build."'
-      - run: git push
       - run: npm run release
 
 workflows:
