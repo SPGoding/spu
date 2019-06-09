@@ -1,5 +1,5 @@
-import { update } from '.'
 import * as readline from 'readline'
+import { update } from '.'
 
 const from = parseInt(process.argv.slice(-2)[0])
 const to = parseInt(process.argv.slice(-2)[1])
