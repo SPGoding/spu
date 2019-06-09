@@ -1,7 +1,7 @@
 # SPU
 
 [![CircleCI](https://img.shields.io/circleci/build/github/SPGoding/spu.svg?logo=circleci&style=flat-square&token=0896104dd8a31e44cf870eceb15aca9ab6a7e155)](https://circleci.com/gh/SPGoding/spu)
-[![npm](https://img.shields.io/npm/v/spu.svg?style=flat-square)](https://npmjs.com/package/spu)
+[![npm](https://img.shields.io/npm/v/spu.svg?logo=npm&style=flat-square)](https://npmjs.com/package/spu)
 [![License](https://img.shields.io/github/license/SPGoding/spu.svg?style=flat-square)](https://github.com/SPGoding/spu/blob/master/LICENSE)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square)](https://github.com/semantic-release/semantic-release)
 [![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.carloscuesta.me/)
