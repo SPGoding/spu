@@ -1,4 +1,4 @@
-import { NbtCompound } from "./nbt/nbt";
+import { NbtCompound } from './nbt/nbt';
 export declare class BlockState {
     name: string;
     nbt: NbtCompound;

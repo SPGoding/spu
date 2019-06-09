@@ -1,4 +1,4 @@
-import { NbtCompound } from "./nbt/nbt";
+import { NbtCompound } from '../utils/nbt/nbt';
 export declare class ItemStack {
     name: string;
     nbt: NbtCompound;
