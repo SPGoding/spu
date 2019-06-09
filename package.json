@@ -32,7 +32,7 @@
     "watch": "tsc -w"
   },
   "bin": {
-    "spu": "lib/cli"
+    "spu": "lib/cli.js"
   },
   "repository": {
     "type": "git",
