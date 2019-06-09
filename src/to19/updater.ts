@@ -1,138 +1,13 @@
-import { SpuScriptExecutor, WheelChief, Argument } from '../utils/wheel_chief/wheel_chief'
+import { WheelChief } from '../utils/wheel_chief/wheel_chief'
 import { Updater } from '../utils/wheel_chief/updater'
 import { UpdateResult, isNumeric, getNbtList, getNbtCompound } from '../utils/utils'
 import { Commands18To19 } from './commands'
-import { ArgumentParser } from '../utils/wheel_chief/parser'
-import { TargetSelector } from './target_selector'
+import { Selector19 } from './utils/selector'
 import { NbtCompound, NbtFloat, NbtInt, NbtList, NbtString } from '../utils/nbt/nbt'
 import Items from './mappings/items'
 import Blocks from './mappings/blocks'
-
-class SpuScriptExecutor18To19 implements SpuScriptExecutor {
-    public execute(script: string, args: Argument[]) {
-        const splited = script.split(' ')
-
-        for (let i = 0; i < splited.length; i++) {
-            if (splited[i].slice(0, 1) === '%') {
-                splited[i] = args[parseInt(splited[i].slice(1))].value
-            } else if (splited[i].slice(0, 1) === '$') {
-                const params = splited[i].slice(1).split('%')
-                const index1 = parseInt(params[1])
-                const index2 = parseInt(params[2])
-                const param1 = args[index1] ? args[index1].value : ''
-                const param2 = args[index2] ? args[index2].value : ''
-                switch (params[0]) {
-                    case 'setTypeByNbt': {
-                        const nbt = getNbtCompound(param1, 'before 1.12')
-                        const riding = nbt.get('Riding')
-                        if (riding instanceof NbtCompound) {
-                            const id = riding.get('id')
-                            if (id instanceof NbtString) {
-                                splited[i] = id.get()
-                            } else {
-                                splited[i] = 'spgoding:undefined'
-                            }
-                        } else {
-                            splited[i] = 'spgoding:undefined'
-                        }
-                        break
-                    }
-                    case 'setNbtWithType': {
-                        const passenger = getNbtCompound(param1, 'before 1.12')
-                        const ridden = passenger.get('Riding')
-                        passenger.del('Riding')
-                        passenger.set('id', new NbtString(param2))
-                        if (ridden instanceof NbtCompound) {
-                            ridden.del('id')
-                            const passengers = new NbtList()
-                            passengers.add(passenger)
-                            ridden.set('Passengers', passengers)
-                            splited[i] = ridden.toString()
-                        } else {
-                            splited[i] = '{}'
-                        }
-                        break
-                    }
-                    default:
-                        throw `Unexpected script method: '${params[0]}'.`
-                }
-            }
-        }
-
-        return splited.join(' ')
-    }
-}
-
-class ArgumentParser18To19 extends ArgumentParser {
-    public parseArgument(parser: string, splited: string[], index: number, properties: any) {
-        switch (parser) {
-            case 'spgoding:nbt_contains_riding':
-                return this.parseSpgodingNbtContainsRiding(splited, index)
-            default:
-                return super.parseArgument(parser, splited, index, properties)
-        }
-    }
-
-    protected parseMinecraftEntity(splited: string[], index: number): number {
-        let join = splited[index]
-        let result = ''
-
-        if (join.charAt(0) !== '@') {
-            return 1
-        }
-
-        result = TargetSelector.tryParse(join)
-
-        if (result === 'VALID') {
-            return 1
-        } else {
-            for (let i = index + 1; i < splited.length; i++) {
-                join += ` ${splited[i]}`
-                result = TargetSelector.tryParse(join)
-                if (result === 'VALID') {
-                    return i - index + 1
-                } else {
-                    continue
-                }
-            }
-            throw `Expected an entity selector: ${result}`
-        }
-    }
-
-    protected parseMinecraftNbt(splited: string[], index: number): number {
-        let exception
-        for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            const test = splited.slice(index, endIndex).join(' ')
-            try {
-                getNbtCompound(test, 'before 1.12')
-                return endIndex - index
-            } catch (e) {
-                exception = e
-                continue
-            }
-        }
-        throw exception
-    }
-
-    protected parseSpgodingNbtContainsRiding(splited: string[], index: number): number {
-        let exception
-        for (let endIndex = splited.length; endIndex > index; endIndex--) {
-            const test = splited.slice(index, endIndex).join(' ')
-            try {
-                const nbt = getNbtCompound(test, 'before 1.12')
-                if (nbt.get('Riding') instanceof NbtCompound) {
-                    return endIndex - index
-                } else {
-                    throw "Should contain 'Riding'."
-                }
-            } catch (e) {
-                exception = e
-                continue
-            }
-        }
-        throw exception
-    }
-}
+import { SpuScriptExecutor18To19 } from './executor'
+import { ArgumentParser18To19 } from './parser'
 
 export class UpdaterTo19 extends Updater {
     public static upLine(input: string, from: string): UpdateResult {
@@ -355,7 +230,7 @@ export class UpdaterTo19 extends Updater {
     }
 
     protected upSpgodingTargetSelector(input: string) {
-        const sel = new TargetSelector(input)
+        const sel = new Selector19(input)
 
         return sel.toString()
     }

@@ -1,14 +1,14 @@
-import { CharReader } from '../utils/char_reader'
-import { UpdaterTo113 as Updater } from '../to113/updater'
-import { NbtCompound } from '../utils/nbt/nbt'
-import Entities from '../to113/mappings/entities'
+import { CharReader } from '../../utils/char_reader'
+import { UpdaterTo113 as Updater } from '../../to113/updater'
+import { NbtCompound } from './nbt/nbt'
+import Entities from '../../to113/mappings/entities'
 
 /**
  * Represent a target selector.
  * Provides methods to operate it.
  * @author SPGoding
  */
-export class TargetSelector {
+export class Selector113 {
     private variable: 'a' | 'e' | 'p' | 'r' | 's'
     private dx: number
     private dy: number
@@ -31,7 +31,7 @@ export class TargetSelector {
     private readonly advancements = new Map<string, boolean | Map<string, boolean>>()
     private readonly nbt = new NbtCompound()
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Parses this selector according to a string in 1.12.
@@ -82,7 +82,7 @@ export class TargetSelector {
             if (['a', 'e', 'p', 'r', 's', ']'].indexOf(input.slice(-1)) === -1) {
                 return false
             }
-            const sel = new TargetSelector()
+            const sel = new Selector113()
             sel.parse(input)
         } catch (ignored) {
             return false

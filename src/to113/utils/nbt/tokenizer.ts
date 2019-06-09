@@ -1,4 +1,4 @@
-import { isWhiteSpace, isNumeric, NbtFormat } from '../../utils/utils'
+import { isWhiteSpace, isNumeric, NbtFormat } from '../../../utils/utils'
 
 /**
  * Provides methods to tokenize a nbt string.

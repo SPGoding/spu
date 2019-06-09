@@ -1,6 +1,6 @@
-import { isNumeric } from '../utils/utils'
+import { isNumeric } from '../../utils/utils'
 
-export class TargetSelector {
+export class Selector19 {
     public variable: string
     public arguments: { [key: string]: any } = {}
     public scores: { [objective: string]: number } = {}
@@ -15,7 +15,7 @@ export class TargetSelector {
      */
     public static tryParse(input: string) {
         try {
-            new TargetSelector(input)
+            new Selector19(input)
         } catch (thisIsMyAnswer) {
             return thisIsMyAnswer
         }

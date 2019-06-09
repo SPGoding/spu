@@ -1,4 +1,4 @@
-import { escape } from '../../utils/utils'
+import { escape } from '../../../utils/utils'
 
 export type NbtValue =
     | NbtCompound

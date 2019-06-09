@@ -1,7 +1,7 @@
-import Entities from './mappings/entities'
-import { isNumeric } from '../utils/utils'
+import Entities from '../mappings/entities'
+import { isNumeric } from '../../utils/utils'
 
-export class TargetSelector {
+export class Selector111 {
     public variable: string
     public arguments: { [key: string]: any } = {}
     public scores: { [objective: string]: number } = {}
@@ -16,7 +16,7 @@ export class TargetSelector {
      */
     public static tryParse(input: string) {
         try {
-            new TargetSelector(input)
+            new Selector111(input)
         } catch (thisIsMyAnswer) {
             return thisIsMyAnswer
         }

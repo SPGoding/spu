@@ -1,5 +1,5 @@
-import { NbtCompound } from "./nbt/nbt";
-import { getNbtCompound, completeNamespace } from "./utils";
+import { NbtCompound } from './nbt/nbt'
+import { getNbtCompound, completeNamespace } from './utils'
 
 export class BlockState {
     public name: string
@@ -16,7 +16,7 @@ export class BlockState {
     public toString() {
         let result = this.name
 
-        let states = JSON.stringify(this.states).replace(/"/g, '').replace(/:/g, '=').replace(/\{/g, '[').replace(/\}/g, ']')
+        const states = JSON.stringify(this.states).replace(/"/g, '').replace(/:/g, '=').replace(/\{/g, '[').replace(/\}/g, ']')
         if (states !== '[]') {
             result += states
         }
@@ -76,7 +76,7 @@ export class BlockState {
         // Read key
         while (input.charAt(index) !== '=') {
             if (input.charAt(index) === '') {
-                throw `Expected '=' but got EOF.`
+                throw "Expected '=' but got EOF."
             } else if (input.charAt(index) === ' ') {
                 index = this.skipSpaces(input, index)
                 if (input.charAt(index) !== '=') {
@@ -98,7 +98,7 @@ export class BlockState {
 
         while (input.charAt(index) !== ']' && input.charAt(index) !== ',') {
             if (input.charAt(index) === '') {
-                throw `Expected ']' or ',' but got EOF.`
+                throw "Expected ']' or ',' but got EOF."
             } else if (input.charAt(index) === ' ') {
                 index = this.skipSpaces(input, index)
                 if (input.charAt(index) !== ']' && input.charAt(index) !== ',') {

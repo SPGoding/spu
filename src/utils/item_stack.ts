@@ -1,5 +1,5 @@
-import { NbtCompound } from "./nbt/nbt";
-import { getNbtCompound, completeNamespace } from "./utils";
+import { NbtCompound } from '../utils/nbt/nbt'
+import { getNbtCompound, completeNamespace } from './utils'
 
 export class ItemStack {
     public name: string

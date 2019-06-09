@@ -1,7 +1,7 @@
 import 'mocha'
 import * as assert from 'power-assert'
 
-import { TargetSelector } from '../../utils/target_selector'
+import { TargetSelector } from '../../utils/selector'
 import { NbtByte } from '../../utils/nbt/nbt'
 
 describe('TargetSelector tests', () => {

@@ -1,6 +1,7 @@
-import { Selector113 as TargetSelector112 } from './utils/selector'
 import { ArgumentParser } from '../utils/wheel_chief/parser'
-export class ArgumentParser112To113 extends ArgumentParser {
+import { Selector112 as TargetSelector112 } from './utils/selector'
+
+export class ArgumentParser111To112 extends ArgumentParser {
     protected parseMinecraftEntity(splited: string[], index: number): number {
         let join = splited[index]
         if (join.charAt(0) !== '@') {

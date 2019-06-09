@@ -1,7 +1,7 @@
 import { SpuScriptExecutor, Argument } from '../utils/wheel_chief/wheel_chief'
 import { isNumeric, getNbtCompound } from '../utils/utils'
-import { TargetSelector as TargetSelector112 } from './target_selector'
-import { TargetSelector as TargetSelector113 } from '../utils/target_selector'
+import { Selector113 as TargetSelector112 } from './utils/selector'
+import { TargetSelector as TargetSelector113 } from '../utils/selector'
 import Blocks from './mappings/blocks'
 import Items from './mappings/items'
 

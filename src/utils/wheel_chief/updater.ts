@@ -1,6 +1,6 @@
 import { getNbtCompound, UpdateResult, isNumeric } from '../utils'
 import { NbtString, NbtList, NbtCompound, NbtValue } from '../nbt/nbt'
-import { TargetSelector } from '../target_selector'
+import { TargetSelector } from '../selector'
 import { BlockState } from '../block_state'
 import { ItemStack } from '../item_stack'
 

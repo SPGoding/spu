@@ -52,16 +52,16 @@ export class TargetSelector {
         }
 
         if (this.scores.size > 0) {
-            result += `scores={`
+            result += 'scores={'
             for (const [objective, value] of this.scores) {
                 result += `${objective}=${value.toString()},`
             }
             result = result.slice(0, -1)
-            result += `},`
+            result += '},'
         }
 
         if (this.advancements.size > 0) {
-            result += `advancements={`
+            result += 'advancements={'
             for (const [advancement, value] of this.advancements) {
                 if (typeof value === 'string') {
                     result += `${advancement}=${value},`
@@ -70,7 +70,7 @@ export class TargetSelector {
                 }
             }
             result = result.slice(0, -1)
-            result += `},`
+            result += '},'
         }
 
         result = result.slice(0, -1)
@@ -254,7 +254,7 @@ export class TargetSelector {
         let advancement = ''
         while (input.charAt(index) !== '=') {
             if (input.charAt(index) === '') {
-                throw `Expected '=' but got EOF.`
+                throw "Expected '=' but got EOF."
             }
             advancement += input.charAt(index)
             index += 1
@@ -376,7 +376,7 @@ class Range {
     public max: number | null
 
     constructor(str: string) {
-        let arr = str.split('..')
+        const arr = str.split('..')
         if (arr.length === 2) {
             this.min = arr[0] ? Number(arr[0]) : null
             this.max = arr[1] ? Number(arr[1]) : null
@@ -386,8 +386,8 @@ class Range {
     }
 
     public toString() {
-        let min = this.min
-        let max = this.max
+        const min = this.min
+        const max = this.max
         if (min !== null && max !== null) {
             if (min !== max) {
                 return `${min}..${max}`
