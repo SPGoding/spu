@@ -1,5 +1,4 @@
 {
-  "$from": "renovatebot/presets#122",
   "semanticCommitType": ":arrow_up:",
   "semanticCommitScope": null,
   "packageRules": [
