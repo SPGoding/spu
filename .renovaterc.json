@@ -1,27 +1,3 @@
 {
-  "semanticCommitType": ":arrow_up:",
-  "semanticCommitScope": null,
-  "semanticCommits": true,
-  "packageRules": [
-    {
-      "updateTypes": [
-        "lockFileMaintenance",
-        "pin"
-      ],
-      "semanticCommitType": ":pushpin:"
-    },
-    {
-      "updateTypes": [
-        "rollback"
-      ],
-      "semanticCommitType": ":arrow_down:"
-    },
-    {
-      "updateTypes": [
-        "digest",
-        "bump"
-      ],
-      "semanticCommitType": ":bookmark:"
-    }
-  ]
+  "extends": ["gitmoji"]
 }
