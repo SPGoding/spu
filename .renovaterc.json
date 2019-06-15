@@ -1,5 +1,27 @@
 {
-  "extends": [
-    "github>Roms1383/robust-database"
+  "$from": "renovatebot/presets#122",
+  "semanticCommitType": ":arrow_up:",
+  "semanticCommitScope": null,
+  "packageRules": [
+    {
+      "updateTypes": [
+        "lockFileMaintenance",
+        "pin"
+      ],
+      "semanticCommitType": ":pushpin:"
+    },
+    {
+      "updateTypes": [
+        "rollback"
+      ],
+      "semanticCommitType": ":arrow_down:"
+    },
+    {
+      "updateTypes": [
+        "digest",
+        "bump"
+      ],
+      "semanticCommitType": ":bookmark:"
+    }
   ]
 }
