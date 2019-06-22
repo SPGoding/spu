@@ -13,6 +13,7 @@
         "pretty": true,
         "alwaysStrict": true,
         "strictNullChecks": true,
-        "declaration": true
+        "declaration": true,
+        "newLine": "LF"
     }
 }
