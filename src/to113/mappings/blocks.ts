@@ -212,9 +212,6 @@ export default class Blocks {
                 ansName = Blocks.upBed(ansNbt, ansName)
                 ansName = Blocks.upCactus(ansNbt, ansName)
                 ansStates = Blocks.upNoteBlock(ansNbt, ansStates)
-                const { name: resultName, states: resultStates } = Blocks.upSkull(ansNbt, std)
-                ansName = resultName
-                ansStates = resultStates
                 break
             default:
                 break
@@ -318,6 +315,8 @@ export default class Blocks {
     private static upSkull(nbt: NbtCompound, std: StdBlock) {
         let ansName: string
         let ansStates: string[]
+
+        console.log(std.getFull())
 
         /* SkullType & Rot */ {
             const skullType = nbt.get('SkullType')

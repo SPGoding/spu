@@ -75,10 +75,6 @@ export class UpdaterTo113 extends Updater {
         return input
     }
 
-    protected upSpgodingBlockName(input: string) {
-        return Blocks.to113(Blocks.std112(undefined, input)).getName()
-    }
-
     protected upSpgodingBlockNbt(input: NbtCompound) {
         let ans = super.upSpgodingBlockNbt(input)
 

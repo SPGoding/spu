@@ -230,7 +230,6 @@ export class Commands112To113 {
                             item: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:item_name',
                                 children: {
                                     data: {
                                         type: 'argument',
@@ -303,7 +302,6 @@ export class Commands112To113 {
                                                             block: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:resource_location',
-                                                                updater: 'spgoding:block_name',
                                                                 children: {
                                                                     states: {
                                                                         type: 'argument',
@@ -513,7 +511,6 @@ export class Commands112To113 {
                                                                     block: {
                                                                         type: 'argument',
                                                                         parser: 'minecraft:resource_location',
-                                                                        updater: 'spgoding:block_name',
                                                                         children: {
                                                                             states: {
                                                                                 type: 'argument',
@@ -570,7 +567,6 @@ export class Commands112To113 {
                                                     block: {
                                                         type: 'argument',
                                                         parser: 'minecraft:resource_location',
-                                                        updater: 'spgoding:block_name',
                                                         children: {
                                                             states: {
                                                                 type: 'argument',
@@ -627,7 +623,6 @@ export class Commands112To113 {
                                     block: {
                                         type: 'argument',
                                         parser: 'minecraft:resource_location',
-                                        updater: 'spgoding:block_name',
                                         children: {
                                             states: {
                                                 type: 'argument',
@@ -642,7 +637,6 @@ export class Commands112To113 {
                                                             block: {
                                                                 type: 'argument',
                                                                 parser: 'minecraft:resource_location',
-                                                                updater: 'spgoding:block_name',
                                                                 children: {
                                                                     states: {
                                                                         type: 'argument',
@@ -1047,7 +1041,6 @@ export class Commands112To113 {
                             item: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:item_name',
                                 children: {
                                     num: {
                                         type: 'argument',
@@ -1917,7 +1910,6 @@ export class Commands112To113 {
                                             item: {
                                                 type: 'argument',
                                                 parser: 'minecraft:resource_location',
-                                                updater: 'spgoding:item_name',
                                                 children: {
                                                     count: {
                                                         type: 'argument',
@@ -2699,14 +2691,12 @@ export class Commands112To113 {
                             block: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:block_name',
                                 children: {
                                     states: {
                                         type: 'argument',
-                                        parser: 'brigadier:integer',
+                                        parser: 'brigadier:string',
                                         properties: {
-                                            min: -1,
-                                            max: 16
+                                            type: 'word'
                                         },
                                         children: {
                                             mode: {
@@ -3113,7 +3103,6 @@ export class Commands112To113 {
                             name: {
                                 type: 'argument',
                                 parser: 'minecraft:resource_location',
-                                updater: 'spgoding:block_name',
                                 children: {
                                     states: {
                                         type: 'argument',

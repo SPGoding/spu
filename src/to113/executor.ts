@@ -59,14 +59,14 @@ export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
                         splited[i] = Blocks.to113(Blocks.std112(undefined, params[0])).getFull()
                         break
                     case 'setNameStatesToBlockState':
-                        if (isNumeric(params[2])) {
+                        if (isNumeric(params[1])) {
                             splited[i] = Blocks.to113(Blocks.std112(undefined, params[0], parseInt(params[1]))).getFull()
                         } else {
                             splited[i] = Blocks.to113(Blocks.std112(undefined, params[0], undefined, params[1])).getFull()
                         }
                         break
                     case 'setNameStatesNbtToBlockState':
-                        if (isNumeric(params[2])) {
+                        if (isNumeric(params[1])) {
                             splited[i] = Blocks.to113(Blocks.std112(undefined, params[0], parseInt(params[1]), undefined, params[2])).getFull()
                         } else {
                             splited[i] = Blocks.to113(Blocks.std112(undefined, params[0], undefined, params[1], params[2])).getFull()

@@ -5,14 +5,13 @@ export declare class UpdaterTo113 extends Updater {
     static upLine(input: string, from: string): UpdateResult;
     upArgument(input: string, updater: string): string;
     protected upMinecraftEntitySummon(input: string): string;
-    protected upSpgodingBlockName(input: string): string;
     protected upSpgodingBlockNbt(input: NbtCompound): NbtCompound;
     protected upSpgodingBlockParam(input: string): string;
     protected upSpgodingCommand(input: string): {
         command: string;
         warnings: string[];
     };
-    protected upSpgodingDifficulty(input: string): "normal" | "peaceful" | "easy" | "hard";
+    protected upSpgodingDifficulty(input: string): "peaceful" | "easy" | "normal" | "hard";
     protected upSpgodingEffect(input: string): string;
     protected upSpgodingEnchantment(input: string): string;
     protected upSpgodingEntityNbt(input: NbtCompound): NbtCompound;
