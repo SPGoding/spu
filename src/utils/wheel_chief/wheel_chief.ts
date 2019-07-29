@@ -45,52 +45,56 @@ export interface SpuScriptExecutor {
 export class WheelChief {
     public static update(input: string, rootNode: CmdNode,
         parser: ArgumentParser, updater: Updater, executor: SpuScriptExecutor): UpdateResult {
-        const slash = input.charAt(0) === '/'
-        if (slash) {
-            input = input.slice(1)
-        }
-
-        // 把输入的命令解析为 `Command`
-        const command = WheelChief.parseCmdNode(
-            {
-                command: {
-                    args: [],
-                    spuScript: '',
-                    warning: ''
-                },
-                index: 0,
-                splited: input.split(' ')
-            },
-            'N/A',
-            rootNode,
-            rootNode,
-            parser
-        ).command
-
-        let ans = ''
-
-        // 对参数根据 updater/parser 进行升级
-        for (const arg of command.args) {
-            if (arg.updater) {
-                arg.value = updater.upArgument(arg.value, arg.updater)
-            }
-        }
-
-        // 最后执行针对整条命令的 spu script 以调整命令语序以及其他内容
-        if (command.spuScript) {
-            ans = executor.execute(command.spuScript, command.args)
+        if (input === '') {
+            return { command: '', warnings: [] }
         } else {
-            for (const argument of command.args) {
-                ans += `${argument.value} `
+            const slash = input.charAt(0) === '/'
+            if (slash) {
+                input = input.slice(1)
             }
-            ans = ans.slice(0, -1)
-        }
 
-        if (slash) {
-            ans = `/${ans}`
-        }
+            // 把输入的命令解析为 `Command`
+            const command = WheelChief.parseCmdNode(
+                {
+                    command: {
+                        args: [],
+                        spuScript: '',
+                        warning: ''
+                    },
+                    index: 0,
+                    splited: input.split(' ')
+                },
+                'N/A',
+                rootNode,
+                rootNode,
+                parser
+            ).command
 
-        return { command: ans, warnings: [command.warning] }
+            let ans = ''
+
+            // 对参数根据 updater/parser 进行升级
+            for (const arg of command.args) {
+                if (arg.updater) {
+                    arg.value = updater.upArgument(arg.value, arg.updater)
+                }
+            }
+
+            // 最后执行针对整条命令的 spu script 以调整命令语序以及其他内容
+            if (command.spuScript) {
+                ans = executor.execute(command.spuScript, command.args)
+            } else {
+                for (const argument of command.args) {
+                    ans += `${argument.value} `
+                }
+                ans = ans.slice(0, -1)
+            }
+
+            if (slash) {
+                ans = `/${ans}`
+            }
+
+            return { command: ans, warnings: [command.warning] }
+        }
     }
 
     /**
