@@ -8,11 +8,11 @@ export declare type NbtFormat = 'before 1.12' | 'after 1.12' | 'after 1.14';
 /**
  * Get an NbtCompound object from a string.
  */
-export declare function getNbtCompound(str: string, version?: NbtFormat): import("../../../../../../SpaceBang/Projects/SPGoding/spu/src/utils/nbt/nbt").NbtCompound;
+export declare function getNbtCompound(str: string, version?: NbtFormat): import("./nbt/nbt").NbtCompound;
 /**
  * Get an NbtList object from a string.
  */
-export declare function getNbtList(str: string, version?: NbtFormat): import("../../../../../../SpaceBang/Projects/SPGoding/spu/src/utils/nbt/nbt").NbtList;
+export declare function getNbtList(str: string, version?: NbtFormat): import("./nbt/nbt").NbtList;
 /**
  * Set the namespace to `minecraft:` if no namespace.
  * @param input A string.
