@@ -4266,20 +4266,7 @@ export class Commands113To114 {
             teleport: {
                 type: 'literal',
                 children: {
-                    destination: {
-                        type: 'argument',
-                        parser: 'minecraft:entity',
-                        properties: {
-                            amount: 'single',
-                            type: 'entities'
-                        },
-                        executable: true
-                    },
-                    location: {
-                        type: 'argument',
-                        parser: 'minecraft:vec3',
-                        executable: true
-                    },
+                    
                     targets: {
                         type: 'argument',
                         parser: 'minecraft:entity',
@@ -4341,6 +4328,20 @@ export class Commands113To114 {
                                 executable: true
                             }
                         }
+                    },
+                    destination: {
+                        type: 'argument',
+                        parser: 'minecraft:entity',
+                        properties: {
+                            amount: 'single',
+                            type: 'entities'
+                        },
+                        executable: true
+                    },
+                    location: {
+                        type: 'argument',
+                        parser: 'minecraft:vec3',
+                        executable: true
                     }
                 }
             },
