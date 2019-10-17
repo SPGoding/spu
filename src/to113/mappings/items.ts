@@ -169,7 +169,7 @@ export default class Items {
         const data = std.getData()
 
         if (Items.DamagableItems.indexOf(ansName) !== -1 && data !== 0) {
-            ansTag.set('Damage', new NbtShort(data))
+            ansTag.set('Damage', new NbtInt(data))
         } else if (Items.MapItems.indexOf(ansName) !== -1 && data !== 0) {
             ansTag.set('map', new NbtInt(data))
         } else {
