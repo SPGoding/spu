@@ -11,7 +11,7 @@
     "readline": "^1.3.0"
   },
   "devDependencies": {
-    "@semantic-release/git": "^7.0.12",
+    "@semantic-release/git": "^8.0.0",
     "@types/mocha": "^5.2.7",
     "@types/power-assert": "^1.5.0",
     "espower-typescript": "^9.0.0",
