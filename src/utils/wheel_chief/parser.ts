@@ -1,12 +1,11 @@
 import { isNumeric, getNbtCompound } from '../utils'
 import { BlockState } from '../block_state'
-import { Selector113 as TargetSelector112 } from '../../to113/utils/selector'
 import { TargetSelector as TargetSelector113 } from '../selector'
 import { ItemStack } from '../item_stack'
 
 
 export class ArgumentParser {
-    private readonly ResourceLocation = /^(\w+:)?[\w\.]+$/
+    private readonly ResourceLocation = /^([a-z0-9\_\-\.]+:)?([a-z0-9\_\-\.]+\/)*[a-z0-9\_\-\.]+$/
     private readonly ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
     private readonly IntRange = /^([-+]?\d*(\.\d*)?)?(\.\.)?([-+]?\d*(\.\d*)?)?$/
     private readonly Swizzle = /^[xyz]+$/
