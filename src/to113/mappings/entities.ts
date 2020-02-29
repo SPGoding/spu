@@ -1,4 +1,4 @@
-import { completeNamespace } from "../../utils/utils";
+import { completeNamespace } from '../../utils/utils'
 
 export default class Entities {
     public static to113(input: string) {

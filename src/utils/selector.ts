@@ -89,7 +89,7 @@ export class TargetSelector {
         } else {
             throw `Expected '/^[aeprs]$/' at [1] but got '${input.charAt(1)}'.`
         }
-        if (!/^$|^\[$/.test(input.charAt(2))) {
+        if (!(/^$|^\[$/.test(input.charAt(2)))) {
             // Neither empty nor open square bracket.
             throw `Expected '/^$|^\[$/' at [2] but got '${input.charAt(2)}'.`
         }
@@ -264,7 +264,7 @@ export class TargetSelector {
 
         if (input.charAt(index) === '{') {
             const result = {}
-            index = this.parseAdvancementCriterias(input, index, result)
+            index = this.parseAdvancementCriteria(input, index, result)
             index += 1
             this.advancements.set(advancement, result)
         } else {
@@ -285,12 +285,12 @@ export class TargetSelector {
     }
 
     /**
-     * Parse advancement criterias.
+     * Parse advancement criteria.
      * @param input A target selector string.
      * @param index The beginning index.
-     * @returns The end index of this `criterias` (should be `}`).
+     * @returns The end index of this `criteria` (should be `}`).
      */
-    private parseAdvancementCriterias(input: string, index: number, result: { [criteria: string]: string }) {
+    private parseAdvancementCriteria(input: string, index: number, result: { [criteria: string]: string }) {
         if (input.charAt(index) !== '{') {
             throw `Expected '{' but got '${input.charAt(index)}'.`
         }
@@ -301,16 +301,16 @@ export class TargetSelector {
             return index
         }
 
-        return this.parseAdvancementCriteria(input, index, result)
+        return this.parseAdvancementCriterion(input, index, result)
     }
 
     /**
-     * Parse a single advancement criteria.
+     * Parse a single advancement criterion.
      * @param input A target selector string.
      * @param index The beginning index.
-     * @returns The end index of this criteria (should be `,` or `}`).
+     * @returns The end index of this criterion (should be `,` or `}`).
      */
-    private parseAdvancementCriteria(input: string, index: number, result: { [criteria: string]: string }) {
+    private parseAdvancementCriterion(input: string, index: number, result: { [criteria: string]: string }) {
         if (input.charAt(index) === '') {
             return index
         }
@@ -337,7 +337,7 @@ export class TargetSelector {
         result[criteria] = value
 
         if (!end) {
-            index = this.parseAdvancementCriteria(input, index + 1, result)
+            index = this.parseAdvancementCriterion(input, index + 1, result)
         }
 
         return index

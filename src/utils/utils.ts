@@ -42,7 +42,11 @@ export function getNbtList(str: string, version: NbtFormat = 'after 1.12') {
  */
 export function completeNamespace(input: string) {
     if (input.indexOf(':') === -1) {
-        input = `minecraft:${input}`
+        if (input.charAt(0) === '!') {
+            input = `!minecraft:${input.slice(1)}`
+        } else {
+            input = `minecraft:${input}`
+        }
     }
 
     return input
