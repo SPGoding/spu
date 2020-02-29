@@ -54,19 +54,19 @@ export declare class TargetSelector {
      */
     private parseAdvancement;
     /**
-     * Parse advancement criterias.
+     * Parse advancement criteria.
      * @param input A target selector string.
      * @param index The beginning index.
-     * @returns The end index of this `criterias` (should be `}`).
-     */
-    private parseAdvancementCriterias;
-    /**
-     * Parse a single advancement criteria.
-     * @param input A target selector string.
-     * @param index The beginning index.
-     * @returns The end index of this criteria (should be `,` or `}`).
+     * @returns The end index of this `criteria` (should be `}`).
      */
     private parseAdvancementCriteria;
+    /**
+     * Parse a single advancement criterion.
+     * @param input A target selector string.
+     * @param index The beginning index.
+     * @returns The end index of this criterion (should be `,` or `}`).
+     */
+    private parseAdvancementCriterion;
     /**
      * Parse the `nbt` argument.
      * @param input A target selector string.
