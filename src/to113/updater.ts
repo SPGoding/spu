@@ -97,7 +97,10 @@ export class UpdaterTo113 extends Updater {
     protected upSpgodingCommand(input: string) {
         const result = WheelChief.update(input, Commands112To113.commands,
             new ArgumentParser112To113(), this, new SpuScriptExecutor112To113())
-        return { command: result.command, warnings: result.warnings }
+        return {
+            command: result.command.charAt(0) === '/' ? result.command.slice(1) : result.command,
+            warnings: result.warnings
+        }
     }
 
     protected upSpgodingDifficulty(input: string) {
