@@ -525,7 +525,7 @@ export class Commands112To113 {
                                                                                         properties: {
                                                                                             type: 'greedy'
                                                                                         },
-                                                                                        updater: 'spgoding:command',
+                                                                                        updater: 'spgoding:command_without_slash',
                                                                                         executable: true,
                                                                                         spu_script: 'execute as %1 at @s if block %6 $setNameStatesToBlockState%7%8 run %9'
                                                                                     }
@@ -543,7 +543,7 @@ export class Commands112To113 {
                                                         properties: {
                                                             type: 'greedy'
                                                         },
-                                                        updater: 'spgoding:command',
+                                                        updater: 'spgoding:command_without_slash',
                                                         executable: true,
                                                         spu_script: 'execute as %1 at @s run %5'
                                                     }
@@ -581,7 +581,7 @@ export class Commands112To113 {
                                                                         properties: {
                                                                             type: 'greedy'
                                                                         },
-                                                                        updater: 'spgoding:command',
+                                                                        updater: 'spgoding:command_without_slash',
                                                                         executable: true,
                                                                         spu_script: 'execute as %1 at @s positioned %2 if block %4 $setNameStatesToBlockState%5%6 run %7'
                                                                     }
@@ -599,7 +599,7 @@ export class Commands112To113 {
                                         properties: {
                                             type: 'greedy'
                                         },
-                                        updater: 'spgoding:command',
+                                        updater: 'spgoding:command_without_slash',
                                         executable: true,
                                         spu_script: 'execute as %1 at @s positioned %2 run %3'
                                     }
@@ -1113,6 +1113,15 @@ export class Commands112To113 {
                     targets: {
                         type: 'argument',
                         parser: 'minecraft:entity',
+                        children: {
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true,
+                                spu_script: 'kill $setNbtToSelector%1%2'
+                            }
+                        },
                         executable: true
                     }
                 },
@@ -2114,6 +2123,7 @@ export class Commands112To113 {
                                                 properties: {
                                                     type: 'word'
                                                 },
+                                                executable: true
                                             }
                                         },
                                         executable: true

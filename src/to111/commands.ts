@@ -829,6 +829,14 @@ export class Commands19To111 {
                     targets: {
                         type: 'argument',
                         parser: 'minecraft:entity',
+                        children: {
+                            nbt: {
+                                type: 'argument',
+                                parser: 'minecraft:nbt',
+                                updater: 'spgoding:entity_nbt',
+                                executable: true
+                            }
+                        },
                         executable: true
                     }
                 },
@@ -1712,6 +1720,7 @@ export class Commands19To111 {
                                                 properties: {
                                                     type: 'word'
                                                 },
+                                                executable: true
                                             }
                                         },
                                         executable: true

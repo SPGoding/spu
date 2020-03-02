@@ -73,11 +73,9 @@ export class SpuScriptExecutor112To113 implements SpuScriptExecutor {
                         }
                         break
                     case 'setNbtToSelector': {
-                        const sel112 = new TargetSelector112()
-                        sel112.parse(params[0])
-                        const sel113 = new TargetSelector113(sel112.to113())
-                        sel113.nbt = getNbtCompound(params[1])
-                        splited[i] = sel113.toString()
+                        const sel = new TargetSelector113(params[0])
+                        sel.nbt = getNbtCompound(params[1])
+                        splited[i] = sel.toString()
                         break
                     }
                     default:

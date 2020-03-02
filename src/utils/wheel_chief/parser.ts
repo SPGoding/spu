@@ -5,7 +5,7 @@ import { ItemStack } from '../item_stack'
 
 
 export class ArgumentParser {
-    private readonly ResourceLocation = /^([a-z0-9\_\-\.]+:)?([a-z0-9\_\-\.]+\/)*[a-z0-9\_\-\.]+$/
+    private readonly ResourceLocation = /^([a-zA-Z0-9\_\-\.]+:)?([a-zA-Z0-9\_\-\.]+\/)*[a-zA-Z0-9\_\-\.]+$/
     private readonly ScoreboardCriteria = /^\w+(\.\w+:\w+\.\w+)?$/
     private readonly IntRange = /^([-+]?\d*(\.\d*)?)?(\.\.)?([-+]?\d*(\.\d*)?)?$/
     private readonly Swizzle = /^[xyz]+$/

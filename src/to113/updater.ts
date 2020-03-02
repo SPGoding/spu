@@ -38,6 +38,8 @@ export class UpdaterTo113 extends Updater {
 
     public upArgument(input: string, updater: string) {
         switch (updater) {
+            case 'spgoding:command_without_slash':
+                return this.upSpgodingCommandWithoutSlash(input)
             case 'spgoding:difficulty':
                 return this.upSpgodingDifficulty(input)
             case 'spgoding:effect':
@@ -97,10 +99,12 @@ export class UpdaterTo113 extends Updater {
     protected upSpgodingCommand(input: string) {
         const result = WheelChief.update(input, Commands112To113.commands,
             new ArgumentParser112To113(), this, new SpuScriptExecutor112To113())
-        return {
-            command: result.command.charAt(0) === '/' ? result.command.slice(1) : result.command,
-            warnings: result.warnings
-        }
+        return { command: result.command, warnings: result.warnings }
+    }
+
+    protected upSpgodingCommandWithoutSlash(input: string) {
+        const { command } = this.upSpgodingCommand(input)
+        return command.charAt(0) === '/' ? command.slice(1) : command
     }
 
     protected upSpgodingDifficulty(input: string) {
@@ -480,12 +484,14 @@ export class UpdaterTo113 extends Updater {
     }
 
     protected upSpgodingSingleSelector(input: string) {
-        const sel = new TargetSelector113(input)
-        if (sel.limit !== undefined || sel.variable === 'a' || sel.variable === 'e') {
-            sel.limit = '1'
+        const sel112 = new TargetSelector112()
+        sel112.parse(input)
+        const sel113 = new TargetSelector113(sel112.to113())
+        if (sel113.limit !== undefined || sel113.variable === 'a' || sel113.variable === 'e') {
+            sel113.limit = '1'
         }
 
-        return sel.toString()
+        return sel113.toString()
     }
 
     protected upSpgodingSound(input: string) {
