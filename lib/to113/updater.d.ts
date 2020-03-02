@@ -11,6 +11,7 @@ export declare class UpdaterTo113 extends Updater {
         command: string;
         warnings: string[];
     };
+    protected upSpgodingCommandWithoutSlash(input: string): string;
     protected upSpgodingDifficulty(input: string): "normal" | "peaceful" | "easy" | "hard";
     protected upSpgodingEffect(input: string): string;
     protected upSpgodingEnchantment(input: string): string;
