@@ -1,3 +1,6 @@
+# This project is no longer maintained.
+# I recommend you to use the code actions of [datapack-language-server](https://github.com/SPGoding/datapack-language-server) to update your newer datapacks.
+
 # SPU
 
 [![CircleCI](https://img.shields.io/circleci/build/github/SPGoding/spu.svg?logo=circleci&style=flat-square&token=0896104dd8a31e44cf870eceb15aca9ab6a7e155)](https://circleci.com/gh/SPGoding/spu)
